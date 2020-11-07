@@ -5,6 +5,11 @@ class InvalidArgumentType(Exception):
     """Invalid parameter type."""
 
     def __init__(self, message="Invalid argument type, double check the type."):
+        """Construct the exception.
+
+        :param message: the exception message
+        :type message: str
+        """
         self.message = message
         super().__init__(self.message)
 
@@ -12,4 +17,11 @@ class InvalidArgumentType(Exception):
 class RequiredKeyNotFound(Exception):
     """Required keys for question is not present."""
 
-    pass
+    def __init__(self, message="Required keys for question is not present"):
+        """Construct the exception.
+
+        :param message: the exception message
+        :type message: str
+        """
+        self.message = message
+        super().__init__(self.message)

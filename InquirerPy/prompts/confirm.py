@@ -1,81 +1,99 @@
-# -*- coding: utf-8 -*-
-"""
-confirm type question
-"""
+"""Module contains the main question function to create a confirm prompt."""
+from typing import Any, Dict, List, Tuple, TypeVar, Union
+
 from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
 from prompt_toolkit.styles import Style
 
 
-def question(message, **kwargs):
-    # TODO need ENTER confirmation
-    default = kwargs.pop("default", True)
+def question(
+    message: str, style: Dict[str, str], default_true: bool = False, symbol: str = "?"
+) -> bool:
+    """Display a confirm prompt and get user input for confirmation.
 
-    # TODO style defaults on detail level
-    style = kwargs.pop(
-        "style",
-        Style.from_dict(
-            {
-                "questionmark": "#5F819D",
-                #'selected': '#FF9D00',  # AWS orange
-                "instruction": "",  # default
-                "answer": "#FF9D00 bold",  # AWS orange
-                "question": "bold",
-            }
-        ),
-    )
-    status = {"answer": None}
+    :param message: the question message to display
+    :type message: str
+    :param style: the style dictionary to apply
+    :type style: Dict[str, str]
+    :param default_true: set default answer to true
+    :type default_true: bool
+    :param symbol: the custom symbol to display infront of the question
+    :type symbol: str
+    :return: user selected answer
+    :rtype: bool
+    """
+    question_style = Style.from_dict(style)
+    status = {"answered": False, "result": None}
 
-    qmark = kwargs.pop("qmark", "?")
-
-    def get_prompt_tokens():
-        tokens = []
-
-        tokens.append(("class:questionmark", qmark))
-        tokens.append(("class:question", " %s " % message))
-        if isinstance(status["answer"], bool):
-            tokens.append(("class:answer", " Yes" if status["answer"] else " No"))
-        else:
-            if default:
-                instruction = " (Y/n)"
-            else:
-                instruction = " (y/N)"
-            tokens.append(("class:instruction", instruction))
-        return tokens
-
-    # key bindings
     kb = KeyBindings()
 
-    @kb.add("c-q", eager=True)
-    @kb.add("c-c", eager=True)
-    def _(event):
-        raise KeyboardInterrupt()
+    @kb.add("c-c")
+    def _(event) -> None:
+        """Raise KeyboardInterrupt when ctrl-c is pressed.
 
-    @kb.add("n")
-    @kb.add("N")
-    def key_n(event):
-        status["answer"] = False
-        event.app.exit(result=False)
+        Remove the extra empty line raised by prompt_toolkit by default.
+        """
+        raise KeyboardInterrupt
 
     @kb.add("y")
     @kb.add("Y")
-    def key_y(event):
-        status["answer"] = True
+    def _(event) -> None:
+        """Bind y and Y to accept confirmation."""
+        session.default_buffer.text = ""
+        status["answered"] = True
+        status["result"] = True
         event.app.exit(result=True)
 
-    @kb.add("enter", eager=True)
-    def set_answer(event):
-        status["answer"] = default
-        event.app.exit(result=default)
+    @kb.add("n")
+    @kb.add("N")
+    def _(event) -> None:
+        """Bind n and N to reject confirmation."""
+        session.default_buffer.text = ""
+        status["answered"] = True
+        status["result"] = False
+        event.app.exit(result=False)
 
-    return PromptSession(
-        message=get_prompt_tokens,
+    @kb.add(Keys.Any)
+    def _(event) -> None:
+        """Disable all other key presses."""
+        pass
+
+    @kb.add(Keys.Enter)
+    def _(event) -> None:
+        """Bind enter to use the default answer."""
+        status["answered"] = True
+        status["result"] = default_true
+        event.app.exit(result=default_true)
+
+    def get_prompt_message() -> List[Tuple[str, str]]:
+        """Dynamically update the prompt message.
+
+        After user select an answer, remove (Y/n) or (y/N) and inject
+        the pretty answer.
+
+        :return: a list of formatted message to use for PromptSession
+        :rtype: List[Tuple[str, str]]
+        """
+        display_message = []
+        display_message.append(("class:symbol", symbol))
+        display_message.append(("class:question", " %s " % message))
+        if status["answered"]:
+            display_message.append(
+                ("class:answer", " Yes" if status["result"] else " No")
+            )
+        else:
+            display_message.append(
+                ("class:instruction", " %s" % " (Y/n)" if default_true else " (y/N)")
+            )
+        return display_message
+
+    session = PromptSession(
+        message=get_prompt_message,
         key_bindings=kb,
         mouse_support=False,
-        style=style,
+        style=question_style,
         erase_when_done=False,
     )
 
-
-result = question(message="hello").prompt()
-print(result)
+    return session.prompt()
