@@ -35,7 +35,7 @@ def prompt(questions: List[Dict[str, Any]]) -> Dict[str, Union[str, List[str], b
             question_style = questions[i].pop("style", DEFAULT_STYLE)
             result[question_name] = question_mapping[question_type](
                 message=question_content, style=question_style, **questions[i]
-            )()
+            ).execute()
         except KeyError:
             raise RequiredKeyNotFound
         except KeyboardInterrupt:

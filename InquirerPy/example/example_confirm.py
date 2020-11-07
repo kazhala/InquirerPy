@@ -6,7 +6,7 @@ questions = [
         "type": "confirm",
         "name": "hello",
         "question": "adfasfadsfasd",
-        "default_true": True,
+        "default_true": False,
         "symbol": "x",
     }
 ]

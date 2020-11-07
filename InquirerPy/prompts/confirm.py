@@ -79,10 +79,9 @@ class Confirm:
         self.session = PromptSession(
             message=self.get_prompt_message,
             key_bindings=self.kb,
-            mouse_support=False,
             style=self.question_style,
-            erase_when_done=False,
-            **kwargs
+            input=kwargs.pop("input", None),
+            output=kwargs.pop("output", None),
         )
 
     def get_prompt_message(self) -> List[Tuple[str, str]]:
@@ -105,12 +104,12 @@ class Confirm:
             display_message.append(
                 (
                     "class:instruction",
-                    " %s" % " (Y/n)" if self.default_true else " (y/N)",
+                    "%s" % " (Y/n)" if self.default_true else " (y/N)",
                 )
             )
         return display_message
 
-    def __call__(self) -> bool:
+    def execute(self) -> bool:
         """Display a confirm prompt and get user input for confirmation.
 
         :return: user selected answer, either True or False
