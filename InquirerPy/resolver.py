@@ -2,7 +2,7 @@
 from typing import Any, Dict, List, Union
 
 from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
-from InquirerPy.prompts.confirm import question as confirm
+from InquirerPy.prompts.confirm import Confirm
 
 DEFAULT_STYLE = {
     "symbol": "#5F819D",
@@ -11,7 +11,7 @@ DEFAULT_STYLE = {
     "instruction": "",
 }
 
-question_mapping = {"confirm": confirm}
+question_mapping = {"confirm": Confirm}
 
 
 def prompt(questions: List[Dict[str, Any]]) -> Dict[str, Union[str, List[str], bool]]:
@@ -35,7 +35,7 @@ def prompt(questions: List[Dict[str, Any]]) -> Dict[str, Union[str, List[str], b
             question_style = questions[i].pop("style", DEFAULT_STYLE)
             result[question_name] = question_mapping[question_type](
                 message=question_content, style=question_style, **questions[i]
-            )
+            )()
         except KeyError:
             raise RequiredKeyNotFound
         except KeyboardInterrupt:

@@ -7,6 +7,7 @@ questions = [
         "name": "hello",
         "question": "adfasfadsfasd",
         "default_true": True,
+        "symbol": "x",
     }
 ]
 
