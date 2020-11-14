@@ -6,6 +6,8 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
 from prompt_toolkit.styles import Style
 
+from InquirerPy.exceptions import InvalidArgumentType
+
 
 class Confirm:
     """A wrapper class around PromptSession.
@@ -16,8 +18,8 @@ class Confirm:
     :type message: str
     :param style: the style dictionary to apply
     :type style: Dict[str, str]
-    :param default_true: set default answer to true
-    :type default_true: bool
+    :param default: set default answer to true
+    :type default: bool
     :param symbol: the custom symbol to display infront of the question
     :type symbol: str
     """
@@ -26,14 +28,18 @@ class Confirm:
         self,
         message: str,
         style: Dict[str, str],
-        default_true: bool = False,
+        default: bool = False,
         symbol: str = "?",
         **kwargs
     ) -> None:
         """Construct a PromptSession object and apply keybings."""
         self.message = message
         self.question_style = Style.from_dict(style)
-        self.default_true = default_true
+        self.default = default
+        if not isinstance(self.default, bool):
+            raise InvalidArgumentType(
+                "default for confirm type question should be type of bool."
+            )
         self.symbol = symbol
         self.status = {"answered": False, "result": None}
         self.kb = KeyBindings()
@@ -73,8 +79,8 @@ class Confirm:
         def _(event) -> None:
             """Bind enter to use the default answer."""
             self.status["answered"] = True
-            self.status["result"] = default_true
-            event.app.exit(result=default_true)
+            self.status["result"] = self.default
+            event.app.exit(result=self.default)
 
         self.session = PromptSession(
             message=self.get_prompt_message,
@@ -104,7 +110,7 @@ class Confirm:
             display_message.append(
                 (
                     "class:instruction",
-                    "%s" % " (Y/n)" if self.default_true else " (y/N)",
+                    "%s" % " (Y/n)" if self.default else " (y/N)",
                 )
             )
         return display_message

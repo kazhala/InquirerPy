@@ -1,16 +1,19 @@
 """Module contains exceptions dedicated to InquirerPy."""
 
 
+from typing import Optional
+
+
 class InvalidArgumentType(Exception):
     """Invalid parameter type."""
 
-    def __init__(self, message="Invalid argument type, double check the type."):
+    def __init__(self, message: Optional[str]):
         """Construct the exception.
 
         :param message: the exception message
         :type message: str
         """
-        self.message = message
+        self.message = "Invalid argument type" if not message else message
         super().__init__(self.message)
 
 

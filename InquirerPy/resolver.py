@@ -5,9 +5,9 @@ from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import Confirm
 
 DEFAULT_STYLE = {
-    "symbol": "#5F819D",
-    "answer": "#FF9D00 bold",
-    "question": "bold",
+    "symbol": "#ffcb04",
+    "answer": "#61afef",
+    "question": "",
     "instruction": "",
 }
 
@@ -24,8 +24,8 @@ def prompt(questions: List[Dict[str, Any]]) -> Dict[str, Union[str, List[str], b
     """
     result: Dict[str, Union[str, List[str], bool]] = {}
 
-    if type(questions) != list:
-        raise InvalidArgumentType
+    if not isinstance(questions, list):
+        raise InvalidArgumentType("questions should be type of list.")
 
     for i in range(len(questions)):
         try:
