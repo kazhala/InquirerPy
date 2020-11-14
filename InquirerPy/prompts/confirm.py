@@ -83,14 +83,14 @@ class Confirm:
             event.app.exit(result=self.default)
 
         self.session = PromptSession(
-            message=self.get_prompt_message,
+            message=self._get_prompt_message,
             key_bindings=self.kb,
             style=self.question_style,
             input=kwargs.pop("input", None),
             output=kwargs.pop("output", None),
         )
 
-    def get_prompt_message(self) -> List[Tuple[str, str]]:
+    def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Dynamically update the prompt message.
 
         After user select an answer, remove (Y/n) or (y/N) and inject
