@@ -1,5 +1,5 @@
 """This module contains the main prompt entrypoint."""
-from typing import Any, Dict, List, Union
+from typing import Any, Callable, Dict, List, Union
 
 from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import Confirm
@@ -33,6 +33,8 @@ def prompt(questions: List[Dict[str, Any]]) -> Dict[str, Union[str, List[str], b
             question_name = questions[i].pop("name", str(i))
             question_content = questions[i].pop("question")
             question_style = questions[i].pop("style", DEFAULT_STYLE)
+            if questions[i].get("condition") and not questions[i]["condition"](result):
+                continue
             result[question_name] = question_mapping[question_type](
                 message=question_content, style=question_style, **questions[i]
             ).execute()
