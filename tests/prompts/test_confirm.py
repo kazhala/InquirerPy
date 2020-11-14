@@ -1,8 +1,7 @@
 import unittest
-from unittest.mock import ANY, patch
+from unittest.mock import patch
 
 from prompt_toolkit.input.defaults import create_pipe_input
-from prompt_toolkit.keys import Keys
 from prompt_toolkit.output import DummyOutput
 
 from InquirerPy.prompts.confirm import Confirm
@@ -99,14 +98,14 @@ class TestConfirmPrompt(unittest.TestCase):
         result = confirm_prompt.execute()
         self.assertEqual(result, False)
 
-    def test_get_prompt_message(self):
+    def test__get_prompt_message(self):
         confirm_prompt = Confirm(
             message="hello",
             style={},
             default=True,
             symbol="?",
         )
-        message = confirm_prompt.get_prompt_message()
+        message = confirm_prompt._get_prompt_message()
         self.assertEqual(
             message,
             [
@@ -118,7 +117,7 @@ class TestConfirmPrompt(unittest.TestCase):
 
         confirm_prompt.status["answered"] = True
         confirm_prompt.status["result"] = True
-        message = confirm_prompt.get_prompt_message()
+        message = confirm_prompt._get_prompt_message()
         self.assertEqual(
             message,
             [
@@ -134,7 +133,7 @@ class TestConfirmPrompt(unittest.TestCase):
             default=False,
             symbol="x",
         )
-        message = confirm_prompt.get_prompt_message()
+        message = confirm_prompt._get_prompt_message()
         self.assertEqual(
             message,
             [
@@ -146,7 +145,7 @@ class TestConfirmPrompt(unittest.TestCase):
 
         confirm_prompt.status["answered"] = True
         confirm_prompt.status["result"] = False
-        message = confirm_prompt.get_prompt_message()
+        message = confirm_prompt._get_prompt_message()
         self.assertEqual(
             message,
             [
@@ -156,7 +155,7 @@ class TestConfirmPrompt(unittest.TestCase):
             ],
         )
 
-    @patch("InquirerPy.prompts.confirm.Confirm.get_prompt_message")
+    @patch("InquirerPy.prompts.confirm.Confirm._get_prompt_message")
     @patch("InquirerPy.prompts.confirm.Style.from_dict")
     @patch("InquirerPy.prompts.confirm.KeyBindings")
     @patch("InquirerPy.prompts.confirm.PromptSession")
