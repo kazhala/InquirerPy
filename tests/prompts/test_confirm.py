@@ -20,7 +20,7 @@ class TestConfirmPrompt(unittest.TestCase):
         confirm_prompt = Confirm(
             message="hello",
             style={"symbol": "bold"},
-            default_true=False,
+            default=False,
             symbol="x",
             output=DummyOutput(),
             input=self.inp,
@@ -35,7 +35,7 @@ class TestConfirmPrompt(unittest.TestCase):
         confirm_prompt = Confirm(
             message="hello",
             style={"symbol": "bold", "answer": "#000000"},
-            default_true=True,
+            default=True,
             symbol="x",
             output=DummyOutput(),
             input=self.inp,
@@ -50,7 +50,7 @@ class TestConfirmPrompt(unittest.TestCase):
         confirm_prompt = Confirm(
             message="hello",
             style={},
-            default_true=True,
+            default=True,
             symbol="?",
             output=DummyOutput(),
             input=self.inp,
@@ -64,7 +64,7 @@ class TestConfirmPrompt(unittest.TestCase):
         confirm_prompt = Confirm(
             message="hello",
             style={},
-            default_true=True,
+            default=True,
             symbol="?",
             output=DummyOutput(),
             input=self.inp,
@@ -77,7 +77,7 @@ class TestConfirmPrompt(unittest.TestCase):
         confirm_prompt = Confirm(
             message="hello",
             style={},
-            default_true=True,
+            default=True,
             symbol="?",
             output=DummyOutput(),
             input=self.inp,
@@ -91,7 +91,7 @@ class TestConfirmPrompt(unittest.TestCase):
         confirm_prompt = Confirm(
             message="hello",
             style={},
-            default_true=True,
+            default=True,
             symbol="?",
             output=DummyOutput(),
             input=self.inp,
@@ -103,7 +103,7 @@ class TestConfirmPrompt(unittest.TestCase):
         confirm_prompt = Confirm(
             message="hello",
             style={},
-            default_true=True,
+            default=True,
             symbol="?",
         )
         message = confirm_prompt.get_prompt_message()
@@ -131,7 +131,7 @@ class TestConfirmPrompt(unittest.TestCase):
         confirm_prompt = Confirm(
             message="Are you sure?",
             style={},
-            default_true=False,
+            default=False,
             symbol="x",
         )
         message = confirm_prompt.get_prompt_message()
@@ -166,7 +166,7 @@ class TestConfirmPrompt(unittest.TestCase):
         prompt = Confirm(
             message="Are you sure?",
             style={},
-            default_true=False,
+            default=False,
             symbol="x",
         )
         kb = MockedKeyBindings()
