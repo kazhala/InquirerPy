@@ -32,7 +32,7 @@ class Confirm:
         symbol: str = "?",
         **kwargs
     ) -> None:
-        """Construct a PromptSession object and apply keybings."""
+        """Construct a PromptSession object and apply keybindings."""
         self.message = message
         self.question_style = Style.from_dict(style)
         self.default = default

@@ -1,15 +1,18 @@
 """This module contains the main prompt entrypoint."""
-from typing import Any, Callable, Dict, List, Union
+import os
+from typing import Any, Dict, List, Union
 
 from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import Confirm
 
 DEFAULT_STYLE = {
-    "symbol": "#ffcb04",
-    "answer": "#61afef",
-    "question": "",
-    "instruction": "",
+    "symbol": os.getenv("INQUIRERPY_STYLE_SYMBOL", "#ffcb04"),
+    "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", "#61afef"),
+    "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
+    "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
 }
+
+DEFAULT_KEYBINDING_MODE = os.getenv("INQUIRERPY_KEYBINDING_MODE", "default")
 
 question_mapping = {"confirm": Confirm}
 
@@ -35,6 +38,8 @@ def prompt(questions: List[Dict[str, Any]]) -> Dict[str, Union[str, List[str], b
             question_style = questions[i].pop("style", DEFAULT_STYLE)
             if questions[i].get("condition") and not questions[i]["condition"](result):
                 continue
+            if not questions[i].get("keybinding"):
+                questions[i]["keybinding"] = DEFAULT_KEYBINDING_MODE
             result[question_name] = question_mapping[question_type](
                 message=question_content, style=question_style, **questions[i]
             ).execute()
