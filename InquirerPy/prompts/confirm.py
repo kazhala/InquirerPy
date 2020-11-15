@@ -86,21 +86,12 @@ class Confirm(BaseSimplePrompt):
         :return: a list of formatted message to use for PromptSession
         :rtype: List[Tuple[str, str]]
         """
-        display_message = []
-        display_message.append(("class:symbol", self.symbol))
-        display_message.append(("class:question", " %s " % self.message))
-        if self.status["answered"]:
-            display_message.append(
-                ("class:answer", " Yes" if self.status["result"] else " No")
-            )
-        else:
-            display_message.append(
-                (
-                    "class:instruction",
-                    "%s" % " (Y/n)" if self.default else " (y/N)",
-                )
-            )
-        return display_message
+        pre_answer = (
+            "class:instruction",
+            "%s" % " (Y/n)" if self.default else " (y/N)",
+        )
+        post_answer = ("class:answer", " Yes" if self.status["result"] else " No")
+        return super()._get_prompt_message(pre_answer, post_answer)
 
     def execute(self) -> bool:
         """Display a confirm prompt and get user input for confirmation.
