@@ -4,8 +4,9 @@ from typing import Any, Dict, List, Optional, Union
 
 from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import Confirm
+from InquirerPy.prompts.filepath import FilePath
 
-question_mapping = {"confirm": Confirm}
+question_mapping = {"confirm": Confirm, "filepath": FilePath}
 
 
 def prompt(
