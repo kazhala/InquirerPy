@@ -26,7 +26,21 @@ class BaseSimplePrompt:
         self.status = {"answered": False, "result": None}
         self.kb = KeyBindings()
 
-    def _get_prompt_message(self, pre_answer, post_answer) -> List[Tuple[str, str]]:
+    def _get_prompt_message(
+        self, pre_answer: Tuple[str, str], post_answer: Tuple[str, str]
+    ) -> List[Tuple[str, str]]:
+        """Return the formatted text to display in the prompt.
+
+        Leveraging the nature of Dict in python, we can dynamically update the prompt
+        message of the PromptSession.
+
+        This is useful to format/customize user input for better visual.
+
+        :param pre_answer: the information to display before answering the question
+        :type pre_answer: str
+        :param post_answer: the information to display after answering the question
+        :type post_answer: str
+        """
         display_message = []
         display_message.append(("class:symbol", self.symbol))
         display_message.append(("class:question", " %s " % self.message))

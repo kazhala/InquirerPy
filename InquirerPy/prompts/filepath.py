@@ -1,6 +1,7 @@
+"""Module contains the filepath prompt and its completer class."""
 import os
 from pathlib import Path
-from typing import Callable, Dict, Optional, Union
+from typing import Callable, Dict, Generator, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.enums import EditingMode
@@ -11,7 +12,7 @@ from prompt_toolkit.validation import ValidationError, Validator
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgumentType
 
-accepted_keybindings = {
+accepted_keybindings: Dict[str, EditingMode] = {
     "default": EditingMode.EMACS,
     "emacs": EditingMode.EMACS,
     "vim": EditingMode.VI,
@@ -19,7 +20,15 @@ accepted_keybindings = {
 
 
 class FilePathCompleter(Completer):
-    def get_completions(self, document, complete_event):
+    """An auto completion class used for prompt session.
+
+    The class structure is defined by prompt_toolkit and is only intended to be used by PromptSession.
+    """
+
+    def get_completions(
+        self, document, complete_event
+    ) -> Generator[Completion, None, None]:
+        """Return a completion item (valid file path)."""
         if document.cursor_position == 0 or document.text == "~":
             return
 
@@ -40,7 +49,10 @@ class FilePathCompleter(Completer):
         for item in self._get_completion(document, path, validation):
             yield item
 
-    def _get_completion(self, document, path, validation):
+    def _get_completion(
+        self, document, path, validation
+    ) -> Generator[Completion, None, None]:
+        """Return filepaths based on user input path."""
         for file in path.iterdir():
             if validation(file, document.text):
                 yield Completion(
@@ -50,17 +62,38 @@ class FilePathCompleter(Completer):
 
 
 class FilePath(BaseSimplePrompt):
+    """A wrapper class around PromptSession.
+
+    This class is used for filepath prompt.
+
+    :param message: the question to ask
+    :type message: str
+    :param style: a dictionary of style to apply
+    :type style: Dict[str, str]
+    :param default: the default result
+    :type default: str
+    :param symbol: question symbol to display
+    :type symbol: str
+    :param editing_mode: the mode of editing
+    :type editing_mode: Literal['default', 'emacs', 'vim']
+    :param validator: a callable or a validation class to validate user input
+    :type validator: Optional[Union[Callable[[str], bool], Validator]]
+    :param invalid_message: the error message to display when input is invalid
+    :type invalid_message: str
+    """
+
     def __init__(
         self,
         message: str,
         style: Dict[str, str],
         default: str = "",
         symbol: str = "?",
-        editing_mode: str = "default",
+        editing_mode: Literal["default", "emacs", "vim"] = "default",
         validator: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
         **kwargs,
-    ):
+    ) -> None:
+        """Construct a PromptSession based on parameters and apply key_bindings."""
         super().__init__(message, style, symbol)
         self.default = default
         if not isinstance(self.default, str):
@@ -118,10 +151,22 @@ class FilePath(BaseSimplePrompt):
             editing_mode=self.editing_mode,
         )
 
-    def _get_prompt_message(self):
+    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+        """Dynamically update the prompt message.
+
+        Change the user input path to the 'answer' color in style.
+
+        :return: the formatted text for PromptSession
+        :rtype: List[Tuple[str, str]]
+        """
         pre_answer = ("class:instruction", " ")
         post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
 
-    def execute(self):
+    def execute(self) -> str:
+        """Display the filepath prompt and returns the result.
+
+        :return: user entered filepath
+        :rtype: str
+        """
         return self.session.prompt()
