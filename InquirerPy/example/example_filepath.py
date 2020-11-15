@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from InquirerPy.resolver import prompt
+from InquirerPy.validator import PathValidator
 
 questions = [
     {
@@ -9,6 +10,7 @@ questions = [
         "invalid_message": "Input is not a valid filepath",
         "name": "location",
         "default": str(Path.cwd()),
+        "validator": PathValidator(),
     },
     {
         "type": "filepath",
@@ -16,6 +18,8 @@ questions = [
         "validator": None,
         "name": "destination",
         "symbol": "[?]",
+        "validator": lambda x: x != "",
+        "editing_mode": "vim",
     },
 ]
 

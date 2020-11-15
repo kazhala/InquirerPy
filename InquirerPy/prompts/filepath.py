@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Callable, Dict, Optional, Union
 
 from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.validation import ValidationError, Validator
@@ -10,7 +11,11 @@ from prompt_toolkit.validation import ValidationError, Validator
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgumentType
 
-accepted_keybindings = {"default", "emacs", "vim"}
+accepted_keybindings = {
+    "default": EditingMode.EMACS,
+    "emacs": EditingMode.EMACS,
+    "vim": EditingMode.VI,
+}
 
 
 class FilePathCompleter(Completer):
@@ -51,7 +56,7 @@ class FilePath(BaseSimplePrompt):
         style: Dict[str, str],
         default: str = "",
         symbol: str = "?",
-        key_binding_mode: str = "default",
+        editing_mode: str = "default",
         validator: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
         **kwargs,
@@ -62,10 +67,11 @@ class FilePath(BaseSimplePrompt):
             raise InvalidArgumentType(
                 "default for filepath type question should be type of str."
             )
-        self.key_binding_mode = key_binding_mode
-        if self.key_binding_mode not in accepted_keybindings:
+        try:
+            self.editing_mode = accepted_keybindings[editing_mode]
+        except KeyError:
             raise InvalidArgumentType(
-                "key_binding_mode must be one of 'default' 'emacs' 'vim'."
+                "editing_mode must be one of 'default' 'emacs' 'vim'."
             )
         if isinstance(validator, Validator):
             self.validator = validator
@@ -109,6 +115,7 @@ class FilePath(BaseSimplePrompt):
             validate_while_typing=False,
             input=kwargs.pop("input", None),
             output=kwargs.pop("output", None),
+            editing_mode=self.editing_mode,
         )
 
     def _get_prompt_message(self):
