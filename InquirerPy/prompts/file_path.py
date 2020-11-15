@@ -7,6 +7,11 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.validation import ValidationError, Validator
 
 
+class FilePath:
+    def __init__(self, message, style, default, symbol, key_binding_mode, **kwargs):
+        pass
+
+
 class MyCustomCompleter(Completer):
     def get_completions(self, document, complete_event):
         if document.cursor_position == 0 or document.text == "~":

@@ -1,15 +1,14 @@
 """Module contains the main question function to create a confirm prompt."""
 from typing import Dict, List, Tuple
 
-from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
-from prompt_toolkit.styles import Style
 
+from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgumentType
 
 
-class Confirm:
+class Confirm(BaseSimplePrompt):
     """A wrapper class around PromptSession.
 
     This class is used for confirm prompt.
@@ -33,17 +32,12 @@ class Confirm:
         **kwargs
     ) -> None:
         """Construct a PromptSession object and apply keybindings."""
-        self.message = message
-        self.question_style = Style.from_dict(style)
+        super().__init__(message, style, symbol)
         self.default = default
         if not isinstance(self.default, bool):
             raise InvalidArgumentType(
                 "default for confirm type question should be type of bool."
             )
-        self.symbol = symbol
-        self.status = {"answered": False, "result": None}
-        self.kb = KeyBindings()
-
 
         @self.kb.add("y")
         @self.kb.add("Y")
