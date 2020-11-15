@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Dict
+from typing import Callable, Dict, Optional, Union
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.keys import Keys
@@ -44,15 +44,6 @@ class FilePathCompleter(Completer):
                 )
 
 
-class PathValidator(Validator):
-    def validate(self, document):
-        if not Path(document.text).expanduser().exists():
-            raise ValidationError(
-                message="The input is not valid path",
-                cursor_position=document.cursor_position,
-            )
-
-
 class FilePath(BaseSimplePrompt):
     def __init__(
         self,
@@ -61,7 +52,9 @@ class FilePath(BaseSimplePrompt):
         default: str = "",
         symbol: str = "?",
         key_binding_mode: str = "default",
-        **kwargs
+        validator: Optional[Union[Callable[[str], bool], Validator]] = None,
+        invalid_message: str = "Invalid input",
+        **kwargs,
     ):
         super().__init__(message, style, symbol)
         self.default = default
@@ -73,6 +66,14 @@ class FilePath(BaseSimplePrompt):
         if self.key_binding_mode not in accepted_keybindings:
             raise InvalidArgumentType(
                 "key_binding_mode must be one of 'default' 'emacs' 'vim'."
+            )
+        if isinstance(validator, Validator):
+            self.validator = validator
+        else:
+            self.validator = Validator.from_callable(
+                validator if validator else lambda x: True,
+                invalid_message,
+                move_cursor_to_end=True,
             )
 
         @self.kb.add("c-space")
@@ -91,7 +92,11 @@ class FilePath(BaseSimplePrompt):
                 self.session.default_buffer.validate_and_handle()
             else:
                 self.status["answered"] = True
-                self.status["result"] = self.session.default_buffer.text
+                self.status["result"] = (
+                    self.session.default_buffer.text
+                    if self.session.default_buffer.text
+                    else self.default
+                )
                 self.session.default_buffer.text = ""
                 event.app.exit(result=self.status["result"])
 
@@ -100,7 +105,7 @@ class FilePath(BaseSimplePrompt):
             key_bindings=self.kb,
             style=self.question_style,
             completer=FilePathCompleter(),
-            validator=PathValidator(),
+            validator=self.validator,
             validate_while_typing=False,
             input=kwargs.pop("input", None),
             output=kwargs.pop("output", None),
