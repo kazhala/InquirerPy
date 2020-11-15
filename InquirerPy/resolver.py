@@ -55,8 +55,5 @@ def prompt(
             ).execute()
         except KeyError:
             raise RequiredKeyNotFound
-        except KeyboardInterrupt:
-            print("")
-            raise
 
     return result

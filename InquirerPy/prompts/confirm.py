@@ -44,13 +44,6 @@ class Confirm:
         self.status = {"answered": False, "result": None}
         self.kb = KeyBindings()
 
-        @self.kb.add("c-c")
-        def _(event) -> None:
-            """Raise KeyboardInterrupt when ctrl-c is pressed.
-
-            Remove the extra empty line raised by prompt_toolkit by default.
-            """
-            raise KeyboardInterrupt
 
         @self.kb.add("y")
         @self.kb.add("Y")
