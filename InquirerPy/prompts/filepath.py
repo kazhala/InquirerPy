@@ -23,7 +23,14 @@ class FilePathCompleter(Completer):
     """An auto completion class used for prompt session.
 
     The class structure is defined by prompt_toolkit and is only intended to be used by PromptSession.
+
+    :param only_directories: complete directories only
+    :type only_directories: bool
     """
+
+    def __init__(self, only_directories: bool = False):
+        """Set base params."""
+        self.only_directories = only_directories
 
     def get_completions(
         self, document, complete_event
@@ -54,10 +61,17 @@ class FilePathCompleter(Completer):
     ) -> Generator[Completion, None, None]:
         """Return filepaths based on user input path."""
         for file in path.iterdir():
+            if self.only_directories and not os.path.isdir(file):
+                continue
             if validation(file, document.text):
+                file_name = os.path.basename(file)
+                display_name = file_name
+                if os.path.isdir(file):
+                    display_name = "%s/" % file_name
                 yield Completion(
                     "%s" % os.path.basename(str(file)),
                     start_position=-1 * len(os.path.basename(document.text)),
+                    display=display_name,
                 )
 
 
@@ -80,6 +94,8 @@ class FilePath(BaseSimplePrompt):
     :type validator: Optional[Union[Callable[[str], bool], Validator]]
     :param invalid_message: the error message to display when input is invalid
     :type invalid_message: str
+    :param only_directories: only complete directories
+    :type only_directories: bool
     """
 
     def __init__(
@@ -91,6 +107,7 @@ class FilePath(BaseSimplePrompt):
         editing_mode: Literal["default", "emacs", "vim"] = "default",
         validator: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
+        only_directories: bool = False,
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""
@@ -114,6 +131,7 @@ class FilePath(BaseSimplePrompt):
                 invalid_message,
                 move_cursor_to_end=True,
             )
+        self.only_directories = only_directories
 
         @self.kb.add("c-space")
         def _(event):
@@ -143,7 +161,7 @@ class FilePath(BaseSimplePrompt):
             message=self._get_prompt_message,
             key_bindings=self.kb,
             style=self.question_style,
-            completer=FilePathCompleter(),
+            completer=FilePathCompleter(only_directories=self.only_directories),
             validator=self.validator,
             validate_while_typing=False,
             input=kwargs.pop("input", None),

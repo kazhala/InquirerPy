@@ -11,6 +11,7 @@ questions = [
         "name": "location",
         "default": str(Path.cwd()),
         "validator": PathValidator(),
+        "only_directories": True,
     },
     {
         "type": "filepath",
