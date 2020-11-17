@@ -98,7 +98,7 @@ class TestConfirmPrompt(unittest.TestCase):
         result = confirm_prompt.execute()
         self.assertEqual(result, False)
 
-    def test__get_prompt_message(self):
+    def test_get_prompt_message(self):
         confirm_prompt = Confirm(
             message="hello",
             style={},
@@ -162,7 +162,7 @@ class TestConfirmPrompt(unittest.TestCase):
     def test_callable_called(
         self, MockedSession, MockedKeyBindings, MockedStyle, mocked_message
     ):
-        prompt = Confirm(
+        Confirm(
             message="Are you sure?",
             style={},
             default=False,
