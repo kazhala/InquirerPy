@@ -51,7 +51,7 @@ class TestResolver(unittest.TestCase):
                 "question": "",
                 "instruction": "",
             },
-            key_binding_mode="default",
+            editing_mode="default",
         )
         mocked_execute.assert_called_once()
         self.assertEqual(result, {"0": False})
@@ -73,7 +73,7 @@ class TestResolver(unittest.TestCase):
                         "question": "",
                         "instruction": "",
                     },
-                    key_binding_mode="default",
+                    editing_mode="default",
                 ),
                 call(
                     message="world",
@@ -83,7 +83,7 @@ class TestResolver(unittest.TestCase):
                         "question": "",
                         "instruction": "",
                     },
-                    key_binding_mode="default",
+                    editing_mode="default",
                 ),
             ]
         )
@@ -99,7 +99,7 @@ class TestResolver(unittest.TestCase):
         os.environ["INQUIRERPY_STYLE_ANSWER"] = "#111111"
         os.environ["INQUIRERPY_STYLE_QUESTION"] = "#222222"
         os.environ["INQUIRERPY_STYLE_INSTRUCTION"] = "#333333"
-        os.environ["INQUIRERPY_KEYBINDING_MODE"] = "emacs"
+        os.environ["INQUIRERPY_EDITING_MODE"] = "emacs"
 
         questions = [{"type": "confirm", "question": "Confirm?", "name": "question1"}]
         result = prompt(questions)
@@ -112,14 +112,14 @@ class TestResolver(unittest.TestCase):
                 "question": "#222222",
                 "instruction": "#333333",
             },
-            key_binding_mode="emacs",
+            editing_mode="emacs",
         )
         self.assertEqual(result, {"question1": False})
         del os.environ["INQUIRERPY_STYLE_SYMBOL"]
         del os.environ["INQUIRERPY_STYLE_ANSWER"]
         del os.environ["INQUIRERPY_STYLE_QUESTION"]
         del os.environ["INQUIRERPY_STYLE_INSTRUCTION"]
-        del os.environ["INQUIRERPY_KEYBINDING_MODE"]
+        del os.environ["INQUIRERPY_EDITING_MODE"]
 
         mocked_execute.reset_mock()
         mocked_init.reset_mock()
@@ -128,7 +128,7 @@ class TestResolver(unittest.TestCase):
             {"type": "confirm", "question": "Confirm?", "name": "10"},
             {"type": "confirm", "question": "What?"},
         ]
-        result = prompt(questions, style={"symbol": "#ffffff"}, key_binding_mode="vim")
+        result = prompt(questions, style={"symbol": "#ffffff"}, editing_mode="vim")
         mocked_execute.assert_has_calls([call(), call()])
         mocked_init.assert_has_calls(
             [
@@ -137,14 +137,14 @@ class TestResolver(unittest.TestCase):
                     style={
                         "symbol": "#ffffff",
                     },
-                    key_binding_mode="vim",
+                    editing_mode="vim",
                 ),
                 call(
                     message="What?",
                     style={
                         "symbol": "#ffffff",
                     },
-                    key_binding_mode="vim",
+                    editing_mode="vim",
                 ),
             ]
         )
@@ -187,7 +187,7 @@ class TestResolver(unittest.TestCase):
                         "question": "",
                         "instruction": "",
                     },
-                    key_binding_mode="default",
+                    editing_mode="default",
                     default=True,
                 ),
                 call(
@@ -198,7 +198,7 @@ class TestResolver(unittest.TestCase):
                         "question": "",
                         "instruction": "",
                     },
-                    key_binding_mode="default",
+                    editing_mode="default",
                     condition=ANY,
                 ),
             ]
@@ -239,7 +239,7 @@ class TestResolver(unittest.TestCase):
                         "question": "",
                         "instruction": "",
                     },
-                    key_binding_mode="default",
+                    editing_mode="default",
                     default=True,
                 ),
                 call(
@@ -250,7 +250,7 @@ class TestResolver(unittest.TestCase):
                         "question": "",
                         "instruction": "",
                     },
-                    key_binding_mode="default",
+                    editing_mode="default",
                     condition=ANY,
                 ),
             ]

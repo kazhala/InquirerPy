@@ -11,9 +11,7 @@ from prompt_toolkit.completion import CompleteEvent
 from prompt_toolkit.document import Document
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input.defaults import create_pipe_input
-from prompt_toolkit.keys import Keys
 from prompt_toolkit.output import DummyOutput
-from prompt_toolkit.validation import Validator
 
 from InquirerPy.prompts.filepath import FilePath
 from InquirerPy.prompts.filepath import FilePathCompleter
@@ -210,7 +208,7 @@ class TestFilePath(unittest.TestCase):
         mocked_validator,
         MockedPathCompleter,
     ):
-        def _validation(x):
+        def _validation(_):
             return True
 
         FilePath(

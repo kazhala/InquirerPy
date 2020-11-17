@@ -32,7 +32,7 @@ class Confirm(BaseSimplePrompt):
         **kwargs
     ) -> None:
         """Construct a PromptSession object and apply keybindings."""
-        super().__init__(message, style, symbol)
+        super().__init__(message, style, "default", symbol)
         self.default = default
         if not isinstance(self.default, bool):
             raise InvalidArgumentType(
