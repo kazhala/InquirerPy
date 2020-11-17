@@ -4,19 +4,12 @@ from pathlib import Path
 from typing import Callable, Dict, Generator, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.completion import Completer, Completion
-from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.validation import ValidationError, Validator
 
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgumentType
-
-accepted_keybindings: Dict[str, EditingMode] = {
-    "default": EditingMode.EMACS,
-    "emacs": EditingMode.EMACS,
-    "vim": EditingMode.VI,
-}
 
 
 class FilePathCompleter(Completer):
@@ -111,25 +104,18 @@ class FilePath(BaseSimplePrompt):
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""
-        super().__init__(message, style, symbol)
+        super().__init__(
+            message,
+            style,
+            symbol,
+            editing_mode=editing_mode,
+            validator=validator,
+            invalid_message=invalid_message,
+        )
         self.default = default
         if not isinstance(self.default, str):
             raise InvalidArgumentType(
                 "default for filepath type question should be type of str."
-            )
-        try:
-            self.editing_mode = accepted_keybindings[editing_mode]
-        except KeyError:
-            raise InvalidArgumentType(
-                "editing_mode must be one of 'default' 'emacs' 'vim'."
-            )
-        if isinstance(validator, Validator):
-            self.validator = validator
-        else:
-            self.validator = Validator.from_callable(
-                validator if validator else lambda x: True,
-                invalid_message,
-                move_cursor_to_end=True,
             )
         self.only_directories = only_directories
 

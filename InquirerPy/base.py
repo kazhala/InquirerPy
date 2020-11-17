@@ -1,9 +1,20 @@
 """Module contains base class for prompts."""
 
-from typing import Dict, List, Tuple
+from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
 
+from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
 from prompt_toolkit.styles.style import Style
+from prompt_toolkit.validation import Validator
+
+from InquirerPy.exceptions import InvalidArgumentType
+
+
+ACCEPTED_KEYBINDINGS: Dict[str, EditingMode] = {
+    "default": EditingMode.EMACS,
+    "emacs": EditingMode.EMACS,
+    "vim": EditingMode.VI,
+}
 
 
 class BaseSimplePrompt:
@@ -18,13 +29,35 @@ class BaseSimplePrompt:
     :type symbol: str
     """
 
-    def __init__(self, message: str, style: Dict[str, str], symbol: str = "?") -> None:
+    def __init__(
+        self,
+        message: str,
+        style: Dict[str, str],
+        symbol: str = "?",
+        editing_mode: Literal["emacs", "default", "vim"] = "default",
+        validator: Optional[Union[Callable[[str], bool], Validator]] = None,
+        invalid_message: str = "Invalid input",
+    ) -> None:
         """Construct the base class for simple prompts."""
         self.message = message
         self.question_style = Style.from_dict(style)
         self.symbol = symbol
         self.status = {"answered": False, "result": None}
         self.kb = KeyBindings()
+        try:
+            self.editing_mode = ACCEPTED_KEYBINDINGS[editing_mode]
+        except KeyError:
+            raise InvalidArgumentType(
+                "editing_mode must be one of 'default' 'emacs' 'vim'."
+            )
+        if isinstance(validator, Validator):
+            self.validator = validator
+        else:
+            self.validator = Validator.from_callable(
+                validator if validator else lambda _: True,
+                invalid_message,
+                move_cursor_to_end=True,
+            )
 
     def _get_prompt_message(
         self, pre_answer: Tuple[str, str], post_answer: Tuple[str, str]
