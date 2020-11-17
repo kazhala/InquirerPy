@@ -172,7 +172,28 @@ class TestFilePath(unittest.TestCase):
         self.assertEqual(filepath_prompt.status["result"], None)
 
     def test_get_prompt_message(self):
-        pass
+        filepath_prompt = FilePath(message="brah", style={"foo": ""}, symbol="!")
+        message = filepath_prompt._get_prompt_message()
+        self.assertEqual(
+            message,
+            [
+                ("class:symbol", "!"),
+                ("class:question", " brah "),
+                ("class:instruction", " "),
+            ],
+        )
+
+        filepath_prompt.status["answered"] = True
+        filepath_prompt.status["result"] = "hello"
+        message = filepath_prompt._get_prompt_message()
+        self.assertEqual(
+            message,
+            [
+                ("class:symbol", "!"),
+                ("class:question", " brah "),
+                ("class:answer", " hello"),
+            ],
+        )
 
     @patch("InquirerPy.prompts.filepath.FilePathCompleter")
     @patch("InquirerPy.prompts.filepath.Validator.from_callable")
