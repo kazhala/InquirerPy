@@ -77,12 +77,12 @@ class FilePath(BaseSimplePrompt):
     :type message: str
     :param style: a dictionary of style to apply
     :type style: Dict[str, str]
+    :param editing_mode: the mode of editing
+    :type editing_mode: Literal['default', 'emacs', 'vim']
     :param default: the default result
     :type default: str
     :param symbol: question symbol to display
     :type symbol: str
-    :param editing_mode: the mode of editing
-    :type editing_mode: Literal['default', 'emacs', 'vim']
     :param validator: a callable or a validation class to validate user input
     :type validator: Optional[Union[Callable[[str], bool], Validator]]
     :param invalid_message: the error message to display when input is invalid
@@ -95,9 +95,9 @@ class FilePath(BaseSimplePrompt):
         self,
         message: str,
         style: Dict[str, str],
+        editing_mode: Literal["default", "emacs", "vim"] = "default",
         default: str = "",
         symbol: str = "?",
-        editing_mode: Literal["default", "emacs", "vim"] = "default",
         validator: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
         only_directories: bool = False,
@@ -107,8 +107,8 @@ class FilePath(BaseSimplePrompt):
         super().__init__(
             message,
             style,
-            symbol,
             editing_mode=editing_mode,
+            symbol=symbol,
             validator=validator,
             invalid_message=invalid_message,
         )

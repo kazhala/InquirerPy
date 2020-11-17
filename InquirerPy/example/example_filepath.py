@@ -20,9 +20,8 @@ questions = [
         "name": "destination",
         "symbol": "[?]",
         "validator": lambda x: x != "",
-        "editing_mode": "vim",
     },
 ]
 
-result = prompt(questions)
+result = prompt(questions, editing_mode="vim")
 print(result)

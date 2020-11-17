@@ -33,8 +33,8 @@ class BaseSimplePrompt:
         self,
         message: str,
         style: Dict[str, str],
-        symbol: str = "?",
         editing_mode: Literal["emacs", "default", "vim"] = "default",
+        symbol: str = "?",
         validator: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
     ) -> None:
