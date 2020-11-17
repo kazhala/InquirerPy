@@ -156,8 +156,8 @@ class TestConfirmPrompt(unittest.TestCase):
         )
 
     @patch("InquirerPy.prompts.confirm.Confirm._get_prompt_message")
-    @patch("InquirerPy.prompts.confirm.Style.from_dict")
-    @patch("InquirerPy.prompts.confirm.KeyBindings")
+    @patch("InquirerPy.base.Style.from_dict")
+    @patch("InquirerPy.base.KeyBindings")
     @patch("InquirerPy.prompts.confirm.PromptSession")
     def test_callable_called(
         self, MockedSession, MockedKeyBindings, MockedStyle, mocked_message
