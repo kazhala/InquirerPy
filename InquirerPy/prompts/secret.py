@@ -1,4 +1,5 @@
-from typing import Callable, Dict, Literal, Optional, Union
+"""Module contains the class to create a secret prompt."""
+from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts.prompt import PromptSession
@@ -9,6 +10,24 @@ from InquirerPy.exceptions import InvalidArgumentType
 
 
 class Secret(BaseSimplePrompt):
+    """A wrapper class around PromptSession to create a secret prompt.
+
+    :param message: the message to display in the prompt
+    :type message: str
+    :param style: style to apply to the prompt
+    :type style: Dict[str, str]
+    :param default: the default value
+    :type default: str
+    :param symbol: symbol to display infront of the question
+    :type symbol: str
+    :param editing_mode: the key binding mode to use
+    :type editing_mode: Literal["default", "vim", "emacs"]
+    :param validator: a callable to validate the user input
+    :type validator: Optional[Union[Validator, Callable[[str], bool]]]
+    :param invalid_message: the error message to display when validator failed
+    :type invalid_message: str
+    """
+
     def __init__(
         self,
         message: str,
@@ -20,6 +39,7 @@ class Secret(BaseSimplePrompt):
         invalid_message: str = "Invalid input",
         **kwargs
     ) -> None:
+        """Construct the prompt session."""
         super().__init__(
             message,
             style,
@@ -62,7 +82,12 @@ class Secret(BaseSimplePrompt):
             output=kwargs.pop("output", None),
         )
 
-    def _get_prompt_message(self):
+    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+        """Get formatted message to display in prompt.
+
+        :return: a list of formatted message
+        :rtype: List[Tuple[str, str]]
+        """
         pre_answer = ("class:instruction", " ")
         post_answer = (
             "class:answer",
@@ -73,4 +98,5 @@ class Secret(BaseSimplePrompt):
         return super()._get_prompt_message(pre_answer, post_answer)
 
     def execute(self) -> None:
+        """Execute the prompt."""
         return self.session.prompt()
