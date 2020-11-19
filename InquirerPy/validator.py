@@ -14,3 +14,15 @@ class PathValidator(Validator):
                 message="Input is not a valid path",
                 cursor_position=document.cursor_position,
             )
+
+
+class EmptyInputValidator(Validator):
+    """Validator class to detect empty input."""
+
+    def validate(self, document):
+        """Check if user input is empty."""
+        if not len(document.text) > 0:
+            raise ValidationError(
+                message="Input cannot be empty",
+                cursor_position=document.cursor_position,
+            )

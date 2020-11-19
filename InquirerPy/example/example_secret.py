@@ -1,4 +1,5 @@
 from InquirerPy.resolver import prompt
+from InquirerPy.validator import EmptyInputValidator
 
 questions = [
     {
@@ -10,7 +11,7 @@ questions = [
         "question": "Enter secret",
         "name": "secret_key",
         "symbol": "*",
-        "validator": lambda x: len(x) > 0,
+        "validator": EmptyInputValidator(),
     },
 ]
 result = prompt(questions, editing_mode="vim")
