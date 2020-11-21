@@ -48,6 +48,7 @@ class TestResolver(unittest.TestCase):
             style={
                 "symbol": "#ffcb04",
                 "answer": "#61afef",
+                "input": "#98c379",
                 "question": "",
                 "instruction": "",
             },
@@ -70,6 +71,7 @@ class TestResolver(unittest.TestCase):
                     style={
                         "symbol": "#ffcb04",
                         "answer": "#61afef",
+                        "input": "#98c379",
                         "question": "",
                         "instruction": "",
                     },
@@ -80,6 +82,7 @@ class TestResolver(unittest.TestCase):
                     style={
                         "symbol": "#ffcb04",
                         "answer": "#61afef",
+                        "input": "#98c379",
                         "question": "",
                         "instruction": "",
                     },
@@ -99,6 +102,7 @@ class TestResolver(unittest.TestCase):
         os.environ["INQUIRERPY_STYLE_ANSWER"] = "#111111"
         os.environ["INQUIRERPY_STYLE_QUESTION"] = "#222222"
         os.environ["INQUIRERPY_STYLE_INSTRUCTION"] = "#333333"
+        os.environ["INQUIRERPY_STYLE_INPUT"] = "#444444"
         os.environ["INQUIRERPY_EDITING_MODE"] = "emacs"
 
         questions = [{"type": "confirm", "question": "Confirm?", "name": "question1"}]
@@ -109,6 +113,7 @@ class TestResolver(unittest.TestCase):
             style={
                 "symbol": "#000000",
                 "answer": "#111111",
+                "input": "#444444",
                 "question": "#222222",
                 "instruction": "#333333",
             },
@@ -184,6 +189,7 @@ class TestResolver(unittest.TestCase):
                     style={
                         "symbol": "#ffcb04",
                         "answer": "#61afef",
+                        "input": "#98c379",
                         "question": "",
                         "instruction": "",
                     },
@@ -195,6 +201,7 @@ class TestResolver(unittest.TestCase):
                     style={
                         "symbol": "#ffcb04",
                         "answer": "#61afef",
+                        "input": "#98c379",
                         "question": "",
                         "instruction": "",
                     },
@@ -236,6 +243,7 @@ class TestResolver(unittest.TestCase):
                     style={
                         "symbol": "#ffcb04",
                         "answer": "#61afef",
+                        "input": "#98c379",
                         "question": "",
                         "instruction": "",
                     },
@@ -247,6 +255,7 @@ class TestResolver(unittest.TestCase):
                     style={
                         "symbol": "#ffcb04",
                         "answer": "#61afef",
+                        "input": "#98c379",
                         "question": "",
                         "instruction": "",
                     },

@@ -11,6 +11,7 @@ from prompt_toolkit.completion import CompleteEvent
 from prompt_toolkit.document import Document
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input.defaults import create_pipe_input
+from prompt_toolkit.lexers.base import SimpleLexer
 from prompt_toolkit.output import DummyOutput
 
 from InquirerPy.prompts.filepath import FilePath
@@ -193,6 +194,7 @@ class TestFilePath(unittest.TestCase):
             ],
         )
 
+    @patch("InquirerPy.prompts.filepath.SimpleLexer")
     @patch("InquirerPy.prompts.filepath.FilePathCompleter")
     @patch("InquirerPy.prompts.filepath.Validator.from_callable")
     @patch("InquirerPy.prompts.filepath.FilePath._get_prompt_message")
@@ -207,6 +209,7 @@ class TestFilePath(unittest.TestCase):
         mocked_message,
         mocked_validator,
         MockedPathCompleter,
+        MockedLexer,
     ):
         def _validation(_):
             return True
@@ -223,6 +226,7 @@ class TestFilePath(unittest.TestCase):
         kb = MockedKeyBindings()
         style = MockedStyle()
         completer = MockedPathCompleter()
+        lexer = MockedLexer()
         MockedSession.assert_called_once_with(
             message=mocked_message,
             key_bindings=kb,
@@ -233,6 +237,7 @@ class TestFilePath(unittest.TestCase):
             input=None,
             output=None,
             editing_mode=EditingMode.VI,
+            lexer=lexer,
         )
 
         MockedStyle.assert_has_calls([call({"yes": ""})])
@@ -240,3 +245,4 @@ class TestFilePath(unittest.TestCase):
         mocked_validator.assert_has_calls(
             [call(_validation, "Invalid input", move_cursor_to_end=True)]
         )
+        MockedLexer.assert_has_calls([call("class:input")])
