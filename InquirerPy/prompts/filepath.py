@@ -5,6 +5,7 @@ from typing import Callable, Dict, Generator, List, Literal, Optional, Tuple, Un
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.keys import Keys
+from prompt_toolkit.lexers import SimpleLexer
 from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.validation import ValidationError, Validator
 
@@ -135,11 +136,7 @@ class FilePath(BaseSimplePrompt):
                 self.session.default_buffer.validate_and_handle()
             else:
                 self.status["answered"] = True
-                self.status["result"] = (
-                    self.session.default_buffer.text
-                    if self.session.default_buffer.text
-                    else self.default
-                )
+                self.status["result"] = self.session.default_buffer.text
                 self.session.default_buffer.text = ""
                 event.app.exit(result=self.status["result"])
 
@@ -153,6 +150,7 @@ class FilePath(BaseSimplePrompt):
             input=kwargs.pop("input", None),
             output=kwargs.pop("output", None),
             editing_mode=self.editing_mode,
+            lexer=SimpleLexer("class:input"),
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
@@ -173,4 +171,4 @@ class FilePath(BaseSimplePrompt):
         :return: user entered filepath
         :rtype: str
         """
-        return self.session.prompt()
+        return self.session.prompt(default=self.default)

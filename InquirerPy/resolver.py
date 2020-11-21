@@ -36,6 +36,7 @@ def prompt(
         style = {
             "symbol": os.getenv("INQUIRERPY_STYLE_SYMBOL", "#ffcb04"),
             "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", "#61afef"),
+            "input": os.getenv("INQUIRERPY_STYLE_INPUT", "#98c379"),
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
         }

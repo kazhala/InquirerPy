@@ -2,6 +2,7 @@
 from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.keys import Keys
+from prompt_toolkit.lexers.base import SimpleLexer
 from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.validation import ValidationError, Validator
 
@@ -62,11 +63,7 @@ class Secret(BaseSimplePrompt):
                 self.session.default_buffer.validate_and_handle()
             else:
                 self.status["answered"] = True
-                self.status["result"] = (
-                    self.session.default_buffer.text
-                    if self.session.default_buffer.text
-                    else self.default
-                )
+                self.status["result"] = self.session.default_buffer.text
                 self.session.default_buffer.text = ""
                 event.app.exit(result=self.status["result"])
 
@@ -80,6 +77,7 @@ class Secret(BaseSimplePrompt):
             editing_mode=self.editing_mode,
             input=kwargs.pop("input", None),
             output=kwargs.pop("output", None),
+            lexer=SimpleLexer("class:input"),
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
@@ -99,4 +97,4 @@ class Secret(BaseSimplePrompt):
 
     def execute(self) -> None:
         """Execute the prompt."""
-        return self.session.prompt()
+        return self.session.prompt(default=self.default)
