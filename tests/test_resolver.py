@@ -2,21 +2,14 @@ import os
 import unittest
 from unittest.mock import ANY, call, patch
 
-from prompt_toolkit.input.defaults import create_pipe_input
-from prompt_toolkit.output import DummyOutput
-
 from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import Confirm
+from InquirerPy.prompts.filepath import FilePath
+from InquirerPy.prompts.secret import Secret
 from InquirerPy.resolver import prompt
 
 
 class TestResolver(unittest.TestCase):
-    def setUp(self):
-        self.inp = create_pipe_input()
-
-    def tearDown(self):
-        self.inp.close()
-
     @patch("InquirerPy.resolver.Confirm.execute")
     def test_exceptions(self, mocked_confirm):
         questions = "hello"
@@ -34,16 +27,24 @@ class TestResolver(unittest.TestCase):
         mocked_confirm.assert_called_once()
         self.assertEqual(result, {"0": True})
 
+    @patch.object(FilePath, "__init__")
+    @patch.object(FilePath, "execute")
     @patch.object(Confirm, "__init__")
     @patch.object(Confirm, "execute")
-    def test_resolver_normal(self, mocked_execute, mocked_init):
-        mocked_init.return_value = None
-        mocked_execute.return_value = False
+    def test_resolver_normal(
+        self,
+        mocked_confirm_execute,
+        mocked_confirm_init,
+        mocked_filepath_execute,
+        mocked_filepath_init,
+    ):
+        mocked_confirm_init.return_value = None
+        mocked_confirm_execute.return_value = False
         questions = [
             {"type": "confirm", "question": "hello"},
         ]
         result = prompt(questions)
-        mocked_init.assert_called_once_with(
+        mocked_confirm_init.assert_called_once_with(
             message="hello",
             style={
                 "symbol": "#ffcb04",
@@ -54,17 +55,20 @@ class TestResolver(unittest.TestCase):
             },
             editing_mode="default",
         )
-        mocked_execute.assert_called_once()
+        mocked_confirm_execute.assert_called_once()
         self.assertEqual(result, {"0": False})
 
-        mocked_init.reset_mock()
-        mocked_execute.reset_mock()
+        mocked_filepath_init.return_value = None
+        mocked_filepath_execute.return_value = "hello.py"
+        mocked_confirm_init.reset_mock()
+        mocked_confirm_execute.reset_mock()
         questions = [
             {"type": "confirm", "question": "hello"},
             {"type": "confirm", "question": "world", "name": "foo"},
+            {"type": "filepath", "question": "whaat", "name": "boo", "default": "./"},
         ]
         result = prompt(questions)
-        mocked_init.assert_has_calls(
+        mocked_confirm_init.assert_has_calls(
             [
                 call(
                     message="hello",
@@ -90,14 +94,38 @@ class TestResolver(unittest.TestCase):
                 ),
             ]
         )
-        mocked_execute.assert_has_calls([call(), call()])
-        self.assertEqual(result, {"0": False, "foo": False})
+        mocked_filepath_init.assert_has_calls(
+            [
+                call(
+                    message="whaat",
+                    style={
+                        "symbol": "#ffcb04",
+                        "answer": "#61afef",
+                        "input": "#98c379",
+                        "question": "",
+                        "instruction": "",
+                    },
+                    default="./",
+                    editing_mode="default",
+                )
+            ]
+        )
+        mocked_confirm_execute.assert_has_calls([call(), call()])
+        self.assertEqual(result, {"0": False, "foo": False, "boo": "hello.py"})
 
+    @patch.object(Secret, "__init__")
+    @patch.object(Secret, "execute")
     @patch.object(Confirm, "__init__")
     @patch.object(Confirm, "execute")
-    def test_resolver_style_keys(self, mocked_execute, mocked_init):
-        mocked_execute.return_value = False
-        mocked_init.return_value = None
+    def test_resolver_style_keys(
+        self,
+        mocked_confirm_execute,
+        mocked_confirm_init,
+        mocked_secret_execute,
+        mocked_secret_init,
+    ):
+        mocked_confirm_execute.return_value = False
+        mocked_confirm_init.return_value = None
         os.environ["INQUIRERPY_STYLE_SYMBOL"] = "#000000"
         os.environ["INQUIRERPY_STYLE_ANSWER"] = "#111111"
         os.environ["INQUIRERPY_STYLE_QUESTION"] = "#222222"
@@ -107,8 +135,8 @@ class TestResolver(unittest.TestCase):
 
         questions = [{"type": "confirm", "question": "Confirm?", "name": "question1"}]
         result = prompt(questions)
-        mocked_execute.assert_called_once()
-        mocked_init.assert_called_once_with(
+        mocked_confirm_execute.assert_called_once()
+        mocked_confirm_init.assert_called_once_with(
             message="Confirm?",
             style={
                 "symbol": "#000000",
@@ -126,16 +154,19 @@ class TestResolver(unittest.TestCase):
         del os.environ["INQUIRERPY_STYLE_INSTRUCTION"]
         del os.environ["INQUIRERPY_EDITING_MODE"]
 
-        mocked_execute.reset_mock()
-        mocked_init.reset_mock()
-        mocked_execute.return_value = True
+        mocked_secret_init.return_value = None
+        mocked_secret_execute.return_value = "111111"
+        mocked_confirm_execute.reset_mock()
+        mocked_confirm_init.reset_mock()
+        mocked_confirm_execute.return_value = True
         questions = [
             {"type": "confirm", "question": "Confirm?", "name": "10"},
             {"type": "confirm", "question": "What?"},
+            {"type": "secret", "question": "haha"},
         ]
         result = prompt(questions, style={"symbol": "#ffffff"}, editing_mode="vim")
-        mocked_execute.assert_has_calls([call(), call()])
-        mocked_init.assert_has_calls(
+        mocked_confirm_execute.assert_has_calls([call(), call()])
+        mocked_confirm_init.assert_has_calls(
             [
                 call(
                     message="Confirm?",
@@ -153,7 +184,10 @@ class TestResolver(unittest.TestCase):
                 ),
             ]
         )
-        self.assertEqual(result, {"10": True, "1": True})
+        mocked_secret_init.assert_has_calls(
+            [call(message="haha", style={"symbol": "#ffffff"}, editing_mode="vim")]
+        )
+        self.assertEqual(result, {"10": True, "1": True, "2": "111111"})
 
     @patch.object(Confirm, "__init__")
     @patch.object(Confirm, "execute")
