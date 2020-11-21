@@ -1,5 +1,5 @@
 from InquirerPy.resolver import prompt
-from InquirerPy.validator import EmptyInputValidator
+from InquirerPy.validator import EmptyInputValidator, PasswordValidator
 
 questions = [
     {"type": "secret", "question": "Enter your password", "default": "1"},
@@ -9,6 +9,12 @@ questions = [
         "name": "secret_key",
         "symbol": "*",
         "validator": EmptyInputValidator(),
+    },
+    {
+        "type": "secret",
+        "question": "New password",
+        "name": "password",
+        "validator": PasswordValidator(length=8, cap=True, special=True, number=True),
     },
 ]
 result = prompt(questions, editing_mode="vim")
