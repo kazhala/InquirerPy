@@ -148,7 +148,10 @@ class InputPrompt(BaseSimplePrompt):
         :rtype: List[Tuple[str, str]]
         """
         if not pre_answer:
-            pre_answer = ("class:instruction", " ")
+            if self.multiline:
+                pre_answer = ("class:instruction", " ESC + Enter to finish input")
+            else:
+                pre_answer = ("class:instruction", " ")
         if not post_answer:
             if self.multiline and self.status["result"]:
                 lines = self.status["result"].split("\n")
@@ -161,7 +164,11 @@ class InputPrompt(BaseSimplePrompt):
                 post_answer = ("class:answer", " %s" % lines[0])
             else:
                 post_answer = ("class:answer", " %s" % self.status["result"])
-        return super()._get_prompt_message(pre_answer, post_answer)
+
+        formatted_message = super()._get_prompt_message(pre_answer, post_answer)
+        if not self.status["answered"] and self.multiline:
+            formatted_message.append(("class:symbol", "\n> "))
+        return formatted_message
 
     def execute(self) -> str:
         """Display the filepath prompt and returns the result.
