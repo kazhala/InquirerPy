@@ -150,7 +150,7 @@ class FilePath(BaseSimplePrompt):
             input=kwargs.pop("input", None),
             output=kwargs.pop("output", None),
             editing_mode=self.editing_mode,
-            lexer=SimpleLexer("class:input"),
+            lexer=SimpleLexer(self.lexer),
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:

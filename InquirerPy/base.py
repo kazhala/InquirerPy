@@ -44,6 +44,7 @@ class BaseSimplePrompt:
         self.symbol = symbol
         self.status = {"answered": False, "result": None}
         self.kb = KeyBindings()
+        self.lexer = "class:input"
         try:
             self.editing_mode = ACCEPTED_KEYBINDINGS[editing_mode]
         except KeyError:

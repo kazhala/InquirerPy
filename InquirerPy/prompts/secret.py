@@ -77,7 +77,7 @@ class Secret(BaseSimplePrompt):
             editing_mode=self.editing_mode,
             input=kwargs.pop("input", None),
             output=kwargs.pop("output", None),
-            lexer=SimpleLexer("class:input"),
+            lexer=SimpleLexer(self.lexer),
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
