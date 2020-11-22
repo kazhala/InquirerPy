@@ -4,13 +4,10 @@ from pathlib import Path
 from typing import Callable, Dict, Generator, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.completion import Completer, Completion
-from prompt_toolkit.keys import Keys
-from prompt_toolkit.lexers import SimpleLexer
-from prompt_toolkit.shortcuts.prompt import PromptSession
-from prompt_toolkit.validation import ValidationError, Validator
+from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgumentType
+from InquirerPy.prompts.input import InputPrompt
 
 
 class FilePathCompleter(Completer):
@@ -69,7 +66,7 @@ class FilePathCompleter(Completer):
                 )
 
 
-class FilePathPrompt(BaseSimplePrompt):
+class FilePathPrompt(InputPrompt):
     """A wrapper class around PromptSession.
 
     This class is used for filepath prompt.
@@ -105,52 +102,20 @@ class FilePathPrompt(BaseSimplePrompt):
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""
-        super().__init__(
-            message,
-            style,
-            editing_mode=editing_mode,
-            symbol=symbol,
-            validator=validator,
-            invalid_message=invalid_message,
-        )
-        self.default = default
-        if not isinstance(self.default, str):
+        if not isinstance(default, str):
             raise InvalidArgumentType(
                 "default for filepath type question should be type of str."
             )
-        self.only_directories = only_directories
-
-        @self.kb.add("c-space")
-        def _(event):
-            buff = event.app.current_buffer
-            if buff.complete_state:
-                buff.complete_next()
-            else:
-                buff.start_completion(select_first=False)
-
-        @self.kb.add(Keys.Enter)
-        def _(event):
-            try:
-                self.session.validator.validate(self.session.default_buffer)
-            except ValidationError:
-                self.session.default_buffer.validate_and_handle()
-            else:
-                self.status["answered"] = True
-                self.status["result"] = self.session.default_buffer.text
-                self.session.default_buffer.text = ""
-                event.app.exit(result=self.status["result"])
-
-        self.session = PromptSession(
-            message=self._get_prompt_message,
-            key_bindings=self.kb,
-            style=self.question_style,
-            completer=FilePathCompleter(only_directories=self.only_directories),
-            validator=self.validator,
-            validate_while_typing=False,
-            input=kwargs.pop("input", None),
-            output=kwargs.pop("output", None),
-            editing_mode=self.editing_mode,
-            lexer=SimpleLexer(self.lexer),
+        super().__init__(
+            message=message,
+            style=style,
+            editing_mode=editing_mode,
+            default=default,
+            symbol=symbol,
+            completer=FilePathCompleter(only_directories=only_directories),
+            validator=validator,
+            invalid_message=invalid_message,
+            **kwargs,
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
@@ -161,9 +126,7 @@ class FilePathPrompt(BaseSimplePrompt):
         :return: the formatted text for PromptSession
         :rtype: List[Tuple[str, str]]
         """
-        pre_answer = ("class:instruction", " ")
-        post_answer = ("class:answer", " %s" % self.status["result"])
-        return super()._get_prompt_message(pre_answer, post_answer)
+        return super()._get_prompt_message()
 
     def execute(self) -> str:
         """Display the filepath prompt and returns the result.

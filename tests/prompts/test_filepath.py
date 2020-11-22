@@ -4,7 +4,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import unittest
-from unittest.mock import call, patch
+from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.completion import CompleteEvent
@@ -193,13 +193,12 @@ class TestFilePath(unittest.TestCase):
             ],
         )
 
-    @patch("InquirerPy.prompts.filepath.SimpleLexer")
-    @patch("InquirerPy.prompts.filepath.FilePathCompleter")
+    @patch("InquirerPy.prompts.input.SimpleLexer")
     @patch("InquirerPy.prompts.filepath.Validator.from_callable")
     @patch("InquirerPy.prompts.filepath.FilePathPrompt._get_prompt_message")
     @patch("InquirerPy.base.Style.from_dict")
     @patch("InquirerPy.base.KeyBindings")
-    @patch("InquirerPy.prompts.filepath.PromptSession")
+    @patch("InquirerPy.prompts.input.PromptSession")
     def test_callable_called(
         self,
         MockedSession,
@@ -207,7 +206,6 @@ class TestFilePath(unittest.TestCase):
         MockedStyle,
         mocked_message,
         mocked_validator,
-        MockedPathCompleter,
         MockedLexer,
     ):
         def _validation(_):
@@ -224,13 +222,12 @@ class TestFilePath(unittest.TestCase):
         )
         kb = MockedKeyBindings()
         style = MockedStyle()
-        completer = MockedPathCompleter()
         lexer = MockedLexer()
         MockedSession.assert_called_once_with(
             message=mocked_message,
             key_bindings=kb,
             style=style,
-            completer=completer,
+            completer=ANY,
             validator=mocked_validator(),
             validate_while_typing=False,
             input=None,
@@ -240,7 +237,6 @@ class TestFilePath(unittest.TestCase):
         )
 
         MockedStyle.assert_has_calls([call({"yes": ""})])
-        MockedPathCompleter.assert_has_calls([call(only_directories=True)])
         mocked_validator.assert_has_calls(
             [call(_validation, "Invalid input", move_cursor_to_end=True)]
         )
