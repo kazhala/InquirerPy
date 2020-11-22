@@ -74,7 +74,7 @@ class TestSecret(unittest.TestCase):
             [
                 ("class:symbol", "[?]"),
                 ("class:question", " fooboo "),
-                ("class:answer", "*****"),
+                ("class:answer", " *****"),
             ],
         )
 
