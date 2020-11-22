@@ -114,6 +114,7 @@ class TestSecret(unittest.TestCase):
             editing_mode=EditingMode.VI,
             lexer=lexer,
             is_password=True,
+            multiline=False,
         )
         MockedStyle.assert_has_calls([call({})])
         MockedLexer.assert_has_calls([call("class:input")])

@@ -30,6 +30,8 @@ class InputPrompt(BaseSimplePrompt):
     :type symbol: str
     :param completer: add auto completer to user input
     :type completer: Optional[Union[Dict[str, str], Completer]]
+    :param multiline: enable multiline mode
+    :type multiline: bool
     :param validator: a callable or a validation class to validate user input
     :type validator: Optional[Union[Callable[[str], bool], Validator]]
     :param invalid_message: the error message to display when input is invalid
@@ -44,6 +46,7 @@ class InputPrompt(BaseSimplePrompt):
         default: str = "",
         symbol: str = "?",
         completer: Optional[Union[Dict[str, str], Completer]] = None,
+        multiline: bool = False,
         validator: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
         **kwargs,
@@ -67,6 +70,15 @@ class InputPrompt(BaseSimplePrompt):
             self.completer = NestedCompleter.from_nested_dict(completer)
         elif isinstance(completer, Completer):
             self.completer = completer
+        self.multiline = multiline
+
+        @Condition
+        def not_multiline():
+            return not self.multiline
+
+        @Condition
+        def is_multiline():
+            return self.multiline
 
         @Condition
         def has_completion():
@@ -80,7 +92,19 @@ class InputPrompt(BaseSimplePrompt):
             else:
                 buff.start_completion(select_first=False)
 
-        @self.kb.add(Keys.Enter)
+        @self.kb.add(Keys.Enter, filter=not_multiline)
+        def _(event):
+            try:
+                self.session.validator.validate(self.session.default_buffer)
+            except ValidationError:
+                self.session.default_buffer.validate_and_handle()
+            else:
+                self.status["answered"] = True
+                self.status["result"] = self.session.default_buffer.text
+                self.session.default_buffer.text = ""
+                event.app.exit(result=self.status["result"])
+
+        @self.kb.add(Keys.Escape, Keys.Enter, filter=is_multiline)
         def _(event):
             try:
                 self.session.validator.validate(self.session.default_buffer)
@@ -104,6 +128,7 @@ class InputPrompt(BaseSimplePrompt):
             editing_mode=self.editing_mode,
             lexer=SimpleLexer(self.lexer),
             is_password=kwargs.pop("is_password", False),
+            multiline=self.multiline,
         )
 
     def _get_prompt_message(
@@ -125,7 +150,17 @@ class InputPrompt(BaseSimplePrompt):
         if not pre_answer:
             pre_answer = ("class:instruction", " ")
         if not post_answer:
-            post_answer = ("class:answer", " %s" % self.status["result"])
+            if self.multiline and self.status["result"]:
+                lines = self.status["result"].split("\n")
+                if len(lines) > 1:
+                    number_of_chars = len("".join(lines[1:]))
+                    lines[0] += "...[%s char%s]" % (
+                        number_of_chars,
+                        "s" if number_of_chars > 1 else "",
+                    )
+                post_answer = ("class:answer", " %s" % lines[0])
+            else:
+                post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
 
     def execute(self) -> str:
