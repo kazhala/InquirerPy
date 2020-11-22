@@ -9,10 +9,14 @@ __all__ = ["PathValidator", "EmptyInputValidator", "PasswordValidator"]
 
 
 class PathValidator(Validator):
-    """Validator class to use for filepath type prompt."""
+    """Validator class to use for filepath type prompt.
+
+    :param message: error message to display
+    :type message: str
+    """
 
     def __init__(self, message: str = "Input is not a valid path"):
-        """Setup invalid message."""
+        """Set invalid message."""
         self.message = message
 
     def validate(self, document):
@@ -25,10 +29,14 @@ class PathValidator(Validator):
 
 
 class EmptyInputValidator(Validator):
-    """Validator class to detect empty input."""
+    """Validator class to detect empty input.
+
+    :param message: error message to display
+    :type message: str
+    """
 
     def __init__(self, message: str = "Input cannot be empty"):
-        """Setup invalid message."""
+        """Set invalid message."""
         self.message = message
 
     def validate(self, document):
@@ -41,7 +49,19 @@ class EmptyInputValidator(Validator):
 
 
 class PasswordValidator(Validator):
-    """Validator class to check password compliance."""
+    """Validator class to check password compliance.
+
+    :param length: the minimum length of the password
+    :type length: Optional[int]
+    :param cap: password include at least one cap
+    :type cap: bool
+    :param special: password include at least one special char "@$!%*#?&"
+    :type special: bool
+    :param number: password include at least one number
+    :type number: bool
+    :param message: error message to display
+    :type message: str
+    """
 
     def __init__(
         self,
@@ -51,7 +71,7 @@ class PasswordValidator(Validator):
         number: bool = False,
         message: str = "Input is not a valid pattern",
     ) -> None:
-        """Setup regex pattern and invalid message."""
+        """Set regex pattern and invalid message."""
         password_pattern = r"^"
         if cap:
             password_pattern += r"(?=.*[A-Z])"

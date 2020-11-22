@@ -78,11 +78,11 @@ class TestSecret(unittest.TestCase):
             ],
         )
 
-    @patch("InquirerPy.prompts.secret.SimpleLexer")
+    @patch("InquirerPy.prompts.input.SimpleLexer")
     @patch("InquirerPy.prompts.secret.SecretPrompt._get_prompt_message")
     @patch("InquirerPy.base.Style.from_dict")
     @patch("InquirerPy.base.KeyBindings")
-    @patch("InquirerPy.prompts.secret.PromptSession")
+    @patch("InquirerPy.prompts.input.PromptSession")
     def test_callable_called(
         self,
         MockedSession,
@@ -105,14 +105,15 @@ class TestSecret(unittest.TestCase):
         MockedSession.assert_called_once_with(
             message=mocked_message,
             key_bindings=kb,
-            is_password=True,
             style=style,
+            completer=None,
             validator=ANY,
             validate_while_typing=False,
             input=None,
             output=None,
             editing_mode=EditingMode.VI,
             lexer=lexer,
+            is_password=True,
         )
         MockedStyle.assert_has_calls([call({})])
         MockedLexer.assert_has_calls([call("class:input")])

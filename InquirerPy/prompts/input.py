@@ -103,6 +103,7 @@ class InputPrompt(BaseSimplePrompt):
             output=kwargs.pop("output", None),
             editing_mode=self.editing_mode,
             lexer=SimpleLexer(self.lexer),
+            is_password=kwargs.pop("is_password", False),
         )
 
     def _get_prompt_message(

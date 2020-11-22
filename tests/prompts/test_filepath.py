@@ -234,6 +234,7 @@ class TestFilePath(unittest.TestCase):
             output=None,
             editing_mode=EditingMode.VI,
             lexer=lexer,
+            is_password=False,
         )
 
         MockedStyle.assert_has_calls([call({"yes": ""})])

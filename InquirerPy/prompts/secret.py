@@ -1,16 +1,13 @@
 """Module contains the class to create a secret prompt."""
 from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
 
-from prompt_toolkit.keys import Keys
-from prompt_toolkit.lexers.base import SimpleLexer
-from prompt_toolkit.shortcuts.prompt import PromptSession
-from prompt_toolkit.validation import ValidationError, Validator
+from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgumentType
+from InquirerPy.prompts.input import InputPrompt
 
 
-class SecretPrompt(BaseSimplePrompt):
+class SecretPrompt(InputPrompt):
     """A wrapper class around PromptSession to create a secret prompt.
 
     :param message: the message to display in the prompt
@@ -41,43 +38,20 @@ class SecretPrompt(BaseSimplePrompt):
         **kwargs
     ) -> None:
         """Construct the prompt session."""
+        if not isinstance(default, str):
+            raise InvalidArgumentType(
+                "default for secret type question should be type of str."
+            )
         super().__init__(
-            message,
-            style,
-            editing_mode,
-            symbol,
+            message=message,
+            style=style,
+            editing_mode=editing_mode,
+            default=default,
+            symbol=symbol,
             validator=validator,
             invalid_message=invalid_message,
-        )
-        self.default = default
-        if not isinstance(self.default, str):
-            raise InvalidArgumentType(
-                "default for filepath type question should be type of str."
-            )
-
-        @self.kb.add(Keys.Enter)
-        def _(event):
-            try:
-                self.session.validator.validate(self.session.default_buffer)
-            except ValidationError:
-                self.session.default_buffer.validate_and_handle()
-            else:
-                self.status["answered"] = True
-                self.status["result"] = self.session.default_buffer.text
-                self.session.default_buffer.text = ""
-                event.app.exit(result=self.status["result"])
-
-        self.session = PromptSession(
-            message=self._get_prompt_message,
-            key_bindings=self.kb,
             is_password=True,
-            style=self.question_style,
-            validator=self.validator,
-            validate_while_typing=False,
-            editing_mode=self.editing_mode,
-            input=kwargs.pop("input", None),
-            output=kwargs.pop("output", None),
-            lexer=SimpleLexer(self.lexer),
+            **kwargs
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
