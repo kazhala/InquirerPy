@@ -6,9 +6,15 @@ from InquirerPy.base import ACCEPTED_KEYBINDINGS
 from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import Confirm
 from InquirerPy.prompts.filepath import FilePath
+from InquirerPy.prompts.input import Input
 from InquirerPy.prompts.secret import Secret
 
-question_mapping = {"confirm": Confirm, "filepath": FilePath, "secret": Secret}
+question_mapping = {
+    "confirm": Confirm,
+    "filepath": FilePath,
+    "secret": Secret,
+    "input": Input,
+}
 
 
 def prompt(
