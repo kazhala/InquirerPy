@@ -45,7 +45,7 @@ class InputPrompt(BaseSimplePrompt):
         editing_mode: Literal["default", "emacs", "vim"] = "default",
         default: str = "",
         symbol: str = "?",
-        completer: Optional[Union[Dict[str, str], Completer]] = None,
+        completer: Optional[Union[Dict[str, Optional[str]], Completer]] = None,
         multiline: bool = False,
         validator: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
