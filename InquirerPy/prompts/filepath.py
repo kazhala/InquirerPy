@@ -69,7 +69,7 @@ class FilePathCompleter(Completer):
                 )
 
 
-class FilePath(BaseSimplePrompt):
+class FilePathPrompt(BaseSimplePrompt):
     """A wrapper class around PromptSession.
 
     This class is used for filepath prompt.

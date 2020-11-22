@@ -11,10 +11,9 @@ from prompt_toolkit.completion import CompleteEvent
 from prompt_toolkit.document import Document
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input.defaults import create_pipe_input
-from prompt_toolkit.lexers.base import SimpleLexer
 from prompt_toolkit.output import DummyOutput
 
-from InquirerPy.prompts.filepath import FilePath
+from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.filepath import FilePathCompleter
 from InquirerPy.validator import PathValidator
 
@@ -124,7 +123,7 @@ class TestFilePath(unittest.TestCase):
 
     def test_input(self):
         self.inp.send_text("./file1\n")
-        filepath_prompt = FilePath(
+        filepath_prompt = FilePathPrompt(
             message="hello",
             style={"symbol": "bold"},
             input=self.inp,
@@ -137,7 +136,7 @@ class TestFilePath(unittest.TestCase):
 
     def test_default_answer(self):
         self.inp.send_text("\n")
-        filepath_prompt = FilePath(
+        filepath_prompt = FilePathPrompt(
             message="hello",
             style={"symbol": "bold"},
             default=".vim",
@@ -156,7 +155,7 @@ class TestFilePath(unittest.TestCase):
 
         mocked_validate.side_effect = _hello
         self.inp.send_text("hello\n")
-        filepath_prompt = FilePath(
+        filepath_prompt = FilePathPrompt(
             message="fooboo",
             style={"symbol": ""},
             default=".vim",
@@ -171,7 +170,7 @@ class TestFilePath(unittest.TestCase):
         self.assertEqual(filepath_prompt.status["result"], None)
 
     def test_get_prompt_message(self):
-        filepath_prompt = FilePath(message="brah", style={"foo": ""}, symbol="!")
+        filepath_prompt = FilePathPrompt(message="brah", style={"foo": ""}, symbol="!")
         message = filepath_prompt._get_prompt_message()
         self.assertEqual(
             message,
@@ -197,7 +196,7 @@ class TestFilePath(unittest.TestCase):
     @patch("InquirerPy.prompts.filepath.SimpleLexer")
     @patch("InquirerPy.prompts.filepath.FilePathCompleter")
     @patch("InquirerPy.prompts.filepath.Validator.from_callable")
-    @patch("InquirerPy.prompts.filepath.FilePath._get_prompt_message")
+    @patch("InquirerPy.prompts.filepath.FilePathPrompt._get_prompt_message")
     @patch("InquirerPy.base.Style.from_dict")
     @patch("InquirerPy.base.KeyBindings")
     @patch("InquirerPy.prompts.filepath.PromptSession")
@@ -214,7 +213,7 @@ class TestFilePath(unittest.TestCase):
         def _validation(_):
             return True
 
-        FilePath(
+        FilePathPrompt(
             message="yes",
             style={"yes": ""},
             default="",

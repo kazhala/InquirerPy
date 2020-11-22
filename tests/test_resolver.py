@@ -3,14 +3,14 @@ import unittest
 from unittest.mock import ANY, call, patch
 
 from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
-from InquirerPy.prompts.confirm import Confirm
-from InquirerPy.prompts.filepath import FilePath
-from InquirerPy.prompts.secret import Secret
+from InquirerPy.prompts.confirm import ConfirmPrompt
+from InquirerPy.prompts.filepath import FilePathPrompt
+from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.resolver import prompt
 
 
 class TestResolver(unittest.TestCase):
-    @patch("InquirerPy.resolver.Confirm.execute")
+    @patch("InquirerPy.resolver.ConfirmPrompt.execute")
     def test_exceptions(self, mocked_confirm):
         questions = "hello"
         self.assertRaises(InvalidArgumentType, prompt, questions)
@@ -27,10 +27,10 @@ class TestResolver(unittest.TestCase):
         mocked_confirm.assert_called_once()
         self.assertEqual(result, {"0": True})
 
-    @patch.object(FilePath, "__init__")
-    @patch.object(FilePath, "execute")
-    @patch.object(Confirm, "__init__")
-    @patch.object(Confirm, "execute")
+    @patch.object(FilePathPrompt, "__init__")
+    @patch.object(FilePathPrompt, "execute")
+    @patch.object(ConfirmPrompt, "__init__")
+    @patch.object(ConfirmPrompt, "execute")
     def test_resolver_normal(
         self,
         mocked_confirm_execute,
@@ -113,10 +113,10 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_execute.assert_has_calls([call(), call()])
         self.assertEqual(result, {"0": False, "foo": False, "boo": "hello.py"})
 
-    @patch.object(Secret, "__init__")
-    @patch.object(Secret, "execute")
-    @patch.object(Confirm, "__init__")
-    @patch.object(Confirm, "execute")
+    @patch.object(SecretPrompt, "__init__")
+    @patch.object(SecretPrompt, "execute")
+    @patch.object(ConfirmPrompt, "__init__")
+    @patch.object(ConfirmPrompt, "execute")
     def test_resolver_style_keys(
         self,
         mocked_confirm_execute,
@@ -189,8 +189,8 @@ class TestResolver(unittest.TestCase):
         )
         self.assertEqual(result, {"10": True, "1": True, "2": "111111"})
 
-    @patch.object(Confirm, "__init__")
-    @patch.object(Confirm, "execute")
+    @patch.object(ConfirmPrompt, "__init__")
+    @patch.object(ConfirmPrompt, "execute")
     def test_resolver_condition(self, mocked_execute, mocked_init):
         mocked_init.return_value = None
         mocked_execute.return_value = True

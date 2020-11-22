@@ -13,7 +13,7 @@ from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgumentType
 
 
-class Input(BaseSimplePrompt):
+class InputPrompt(BaseSimplePrompt):
     """A wrapper class around PromptSession.
 
     This class is used for input prompt.

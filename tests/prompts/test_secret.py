@@ -6,7 +6,7 @@ from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 
-from InquirerPy.prompts.secret import Secret
+from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.validator import PasswordValidator
 
 
@@ -19,7 +19,7 @@ class TestSecret(unittest.TestCase):
 
     def test_prompt_result(self):
         self.inp.send_text("what\n")
-        secret_prompt = Secret(
+        secret_prompt = SecretPrompt(
             message="hello",
             style={"answer": ""},
             default="yes",
@@ -39,7 +39,7 @@ class TestSecret(unittest.TestCase):
 
         mocked_validate.side_effect = _hello
         self.inp.send_text("afas\n")
-        secret_prompt = Secret(
+        secret_prompt = SecretPrompt(
             message="what",
             style={},
             validator=PasswordValidator(length=8),
@@ -53,7 +53,7 @@ class TestSecret(unittest.TestCase):
         self.assertEqual(secret_prompt.status["result"], None)
 
     def test_prompt_message(self):
-        secret_prompt = Secret(
+        secret_prompt = SecretPrompt(
             message="fooboo", style={}, symbol="[?]", editing_mode="vim"
         )
         message = secret_prompt._get_prompt_message()
@@ -79,7 +79,7 @@ class TestSecret(unittest.TestCase):
         )
 
     @patch("InquirerPy.prompts.secret.SimpleLexer")
-    @patch("InquirerPy.prompts.secret.Secret._get_prompt_message")
+    @patch("InquirerPy.prompts.secret.SecretPrompt._get_prompt_message")
     @patch("InquirerPy.base.Style.from_dict")
     @patch("InquirerPy.base.KeyBindings")
     @patch("InquirerPy.prompts.secret.PromptSession")
@@ -94,7 +94,7 @@ class TestSecret(unittest.TestCase):
         kb = MockedKeyBindings()
         style = MockedStyle()
         lexer = MockedLexer()
-        Secret(
+        SecretPrompt(
             message="what",
             style={},
             default="111",

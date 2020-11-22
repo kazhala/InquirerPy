@@ -10,7 +10,7 @@ from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgumentType
 
 
-class Secret(BaseSimplePrompt):
+class SecretPrompt(BaseSimplePrompt):
     """A wrapper class around PromptSession to create a secret prompt.
 
     :param message: the message to display in the prompt

@@ -4,16 +4,16 @@ from typing import Any, Dict, List, Literal, Optional, Union
 
 from InquirerPy.base import ACCEPTED_KEYBINDINGS
 from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
-from InquirerPy.prompts.confirm import Confirm
-from InquirerPy.prompts.filepath import FilePath
-from InquirerPy.prompts.input import Input
-from InquirerPy.prompts.secret import Secret
+from InquirerPy.prompts.confirm import ConfirmPrompt
+from InquirerPy.prompts.filepath import FilePathPrompt
+from InquirerPy.prompts.input import InputPrompt
+from InquirerPy.prompts.secret import SecretPrompt
 
 question_mapping = {
-    "confirm": Confirm,
-    "filepath": FilePath,
-    "secret": Secret,
-    "input": Input,
+    "confirm": ConfirmPrompt,
+    "filepath": FilePathPrompt,
+    "secret": SecretPrompt,
+    "input": InputPrompt,
 }
 
 

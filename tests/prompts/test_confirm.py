@@ -4,7 +4,7 @@ from unittest.mock import patch
 from prompt_toolkit.input.defaults import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 
-from InquirerPy.prompts.confirm import Confirm
+from InquirerPy.prompts.confirm import ConfirmPrompt
 
 
 class TestConfirmPrompt(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestConfirmPrompt(unittest.TestCase):
 
     def test_default_false(self):
         self.inp.send_text("\n")
-        confirm_prompt = Confirm(
+        confirm_prompt = ConfirmPrompt(
             message="hello",
             style={"symbol": "bold"},
             default=False,
@@ -31,7 +31,7 @@ class TestConfirmPrompt(unittest.TestCase):
 
     def test_default_true(self):
         self.inp.send_text("\n")
-        confirm_prompt = Confirm(
+        confirm_prompt = ConfirmPrompt(
             message="hello",
             style={"symbol": "bold", "answer": "#000000"},
             default=True,
@@ -46,7 +46,7 @@ class TestConfirmPrompt(unittest.TestCase):
 
     def test_input_y(self):
         self.inp.send_text("y")
-        confirm_prompt = Confirm(
+        confirm_prompt = ConfirmPrompt(
             message="hello",
             style={},
             default=True,
@@ -60,7 +60,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.assertEqual(confirm_prompt.status["result"], True)
 
         self.inp.send_text("Y")
-        confirm_prompt = Confirm(
+        confirm_prompt = ConfirmPrompt(
             message="hello",
             style={},
             default=True,
@@ -73,7 +73,7 @@ class TestConfirmPrompt(unittest.TestCase):
 
     def test_input_n(self):
         self.inp.send_text("n")
-        confirm_prompt = Confirm(
+        confirm_prompt = ConfirmPrompt(
             message="hello",
             style={},
             default=True,
@@ -87,7 +87,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.assertEqual(confirm_prompt.status["result"], False)
 
         self.inp.send_text("N")
-        confirm_prompt = Confirm(
+        confirm_prompt = ConfirmPrompt(
             message="hello",
             style={},
             default=True,
@@ -99,7 +99,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.assertEqual(result, False)
 
     def test_get_prompt_message(self):
-        confirm_prompt = Confirm(
+        confirm_prompt = ConfirmPrompt(
             message="hello",
             style={},
             default=True,
@@ -127,7 +127,7 @@ class TestConfirmPrompt(unittest.TestCase):
             ],
         )
 
-        confirm_prompt = Confirm(
+        confirm_prompt = ConfirmPrompt(
             message="Are you sure?",
             style={},
             default=False,
@@ -155,14 +155,14 @@ class TestConfirmPrompt(unittest.TestCase):
             ],
         )
 
-    @patch("InquirerPy.prompts.confirm.Confirm._get_prompt_message")
+    @patch("InquirerPy.prompts.confirm.ConfirmPrompt._get_prompt_message")
     @patch("InquirerPy.base.Style.from_dict")
     @patch("InquirerPy.base.KeyBindings")
     @patch("InquirerPy.prompts.confirm.PromptSession")
     def test_callable_called(
         self, MockedSession, MockedKeyBindings, MockedStyle, mocked_message
     ):
-        Confirm(
+        ConfirmPrompt(
             message="Are you sure?",
             style={},
             default=False,

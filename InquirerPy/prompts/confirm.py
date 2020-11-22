@@ -8,7 +8,7 @@ from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgumentType
 
 
-class Confirm(BaseSimplePrompt):
+class ConfirmPrompt(BaseSimplePrompt):
     """A wrapper class around PromptSession.
 
     This class is used for confirm prompt.
