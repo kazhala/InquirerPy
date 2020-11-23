@@ -43,7 +43,7 @@ class FilePathCompleter(Completer):
                 "%s%s" % (Path.home(), doc_text[1:])
             )
         elif document.text.startswith("./"):
-            dirname = Path.cwd()
+            dirname = Path(os.path.dirname(document.text))
             validation = lambda file, doc_text: str(file).startswith(doc_text[2:])
         else:
             dirname = Path(os.path.dirname(document.text))
@@ -55,6 +55,8 @@ class FilePathCompleter(Completer):
         self, document, path, validation
     ) -> Generator[Completion, None, None]:
         """Return filepaths based on user input path."""
+        if not path.is_dir():
+            return
         for file in path.iterdir():
             if self.only_directories and not file.is_dir():
                 continue
