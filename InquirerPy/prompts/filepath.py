@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Callable, Dict, Generator, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.completion.base import ThreadedCompleter
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgumentType
@@ -27,24 +28,27 @@ class FilePathCompleter(Completer):
         self, document, complete_event
     ) -> Generator[Completion, None, None]:
         """Return a completion item (valid file path)."""
-        if document.cursor_position == 0 or document.text == "~":
+
+        if document.text == "~":
             return
 
         validation = lambda file, doc_text: str(file).startswith(doc_text)
 
-        if document.text.startswith("~"):
-            dirname = os.path.dirname("%s%s" % (Path.home(), document.text[1:]))
+        if document.cursor_position == 0:
+            dirname = Path.cwd()
+            validation = lambda file, doc_text: True
+        elif document.text.startswith("~"):
+            dirname = Path(os.path.dirname("%s%s" % (Path.home(), document.text[1:])))
             validation = lambda file, doc_text: str(file).startswith(
                 "%s%s" % (Path.home(), doc_text[1:])
             )
         elif document.text.startswith("./"):
-            dirname = os.path.curdir
+            dirname = Path.cwd()
             validation = lambda file, doc_text: str(file).startswith(doc_text[2:])
         else:
-            dirname = os.path.dirname(document.text)
-        path = Path(dirname)
+            dirname = Path(os.path.dirname(document.text))
 
-        for item in self._get_completion(document, path, validation):
+        for item in self._get_completion(document, dirname, validation):
             yield item
 
     def _get_completion(
@@ -52,15 +56,15 @@ class FilePathCompleter(Completer):
     ) -> Generator[Completion, None, None]:
         """Return filepaths based on user input path."""
         for file in path.iterdir():
-            if self.only_directories and not os.path.isdir(file):
+            if self.only_directories and not file.is_dir():
                 continue
             if validation(file, document.text):
-                file_name = os.path.basename(file)
+                file_name = file.name
                 display_name = file_name
-                if os.path.isdir(file):
+                if file.is_dir():
                     display_name = "%s/" % file_name
                 yield Completion(
-                    "%s" % os.path.basename(str(file)),
+                    "%s" % file.name,
                     start_position=-1 * len(os.path.basename(document.text)),
                     display=display_name,
                 )
@@ -112,7 +116,9 @@ class FilePathPrompt(InputPrompt):
             editing_mode=editing_mode,
             default=default,
             symbol=symbol,
-            completer=FilePathCompleter(only_directories=only_directories),
+            completer=ThreadedCompleter(
+                FilePathCompleter(only_directories=only_directories)
+            ),
             validator=validator,
             invalid_message=invalid_message,
             **kwargs,
