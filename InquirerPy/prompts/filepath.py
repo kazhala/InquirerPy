@@ -28,7 +28,6 @@ class FilePathCompleter(Completer):
         self, document, complete_event
     ) -> Generator[Completion, None, None]:
         """Return a completion item (valid file path)."""
-
         if document.text == "~":
             return
 

@@ -82,7 +82,7 @@ class InputPrompt(BaseSimplePrompt):
 
         @Condition
         def has_completion():
-            return self.completer != None
+            return self.completer is not None
 
         @self.kb.add("c-space", filter=has_completion)
         def _(event):
