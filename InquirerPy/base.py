@@ -1,14 +1,15 @@
 """Module contains base class for prompts."""
 
 from abc import abstractmethod
-from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
+from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.exceptions import InvalidArgument
+from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 
 
 ACCEPTED_KEYBINDINGS: Dict[str, EditingMode] = {
@@ -89,3 +90,101 @@ class BaseSimplePrompt:
         else:
             display_message.append(pre_answer)
         return display_message
+
+
+class InquirerPyUIControl(FormattedTextControl):
+    """A UIControl class intended to be consumed by prompt_toolkit window.
+
+    Dynamically adapt to user input and update formatted text
+
+    :param options: list of options to display as the content
+    :type options: List[Union[str, Dict[str, Any]]]
+    :param default: default value, will impact the cursor position
+    :type default: Any
+    """
+
+    def __init__(
+        self,
+        options: List[Union[str, Dict[str, Any]]],
+        default: Any,
+    ) -> None:
+        """Initialise options and construct a FormattedTextControl object."""
+        self.selected_option_index: int = 0
+        self.options: List[Dict[str, Any]] = self._get_options(options, default)
+        if not options:
+            raise InvalidArgument("options cannot be empty.")
+        super().__init__(self._get_formatted_options)
+
+    def _get_options(
+        self, options: List[Union[str, Dict[str, Any]]], default: Any
+    ) -> List[Dict[str, Any]]:
+        """Process the raw user input options and format it into dictionary.
+
+        :param options: list of options to display
+        :type options: List[Union[str, Dict[str, Any]]]
+        :param default: default value, this affect selected_option_index
+        :type default: Any
+        :return: formatted options
+        :rtype: List[Dict[str, Any]]
+        """
+        processed_options: List[Dict[str, Any]] = []
+        try:
+            for index, option in enumerate(options, start=0):
+                if isinstance(option, str):
+                    if option == default:
+                        self.selected_option_index = index
+                    processed_options.append({"name": option, "value": option})
+                elif isinstance(option, dict):
+                    if option["value"] == default:
+                        self.selected_option_index = index
+                    processed_options.append(
+                        {"name": option["name"], "value": option["value"]}
+                    )
+                else:
+                    raise InvalidArgument(
+                        "each option has to be either a string or dictionary."
+                    )
+        except KeyError:
+            raise RequiredKeyNotFound(
+                "dictionary option require a name key and a value key."
+            )
+        except InvalidArgument:
+            raise
+        return processed_options
+
+    def _get_formatted_options(self) -> List[Tuple[str, str]]:
+        """Get all choice in formatted text format.
+
+        :return: a list of formatted options
+        :rtype: List[Tuple[str, str]]
+        """
+        display_choices = []
+
+        for index, option in enumerate(self.options):
+            if index == self.selected_option_index:
+                display_choices += self._get_hover_text(option)
+            else:
+                display_choices += self._get_normal_text(option)
+            display_choices.append(("", "\n"))
+        display_choices.pop()
+        return display_choices
+
+    @abstractmethod
+    def _get_hover_text(self, option) -> List[Tuple[str, str]]:
+        """Generate the formatted text for hovered option."""
+        pass
+
+    @abstractmethod
+    def _get_normal_text(self, option) -> List[Tuple[str, str]]:
+        """Generate the formatted text for non-hovered options."""
+        pass
+
+    @property
+    def option_count(self) -> int:
+        """Get the option count."""
+        return len(self.options)
+
+    @property
+    def selection(self) -> Any:
+        """Get current selection value."""
+        return self.options[self.selected_option_index]["value"]

@@ -7,6 +7,7 @@ from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import ConfirmPrompt
 from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.input import InputPrompt
+from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.secret import SecretPrompt
 
 question_mapping = {
@@ -14,6 +15,7 @@ question_mapping = {
     "filepath": FilePathPrompt,
     "secret": SecretPrompt,
     "input": InputPrompt,
+    "list": ListPrompt,
 }
 
 
@@ -70,6 +72,8 @@ def prompt(
                 editing_mode=editing_mode,
                 **questions[i]
             ).execute()
+            if result[question_name] == "INQUIRERPY_KEYBOARD_INTERRUPT":
+                raise KeyboardInterrupt
         except KeyError:
             raise RequiredKeyNotFound
 
