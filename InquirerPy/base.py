@@ -1,6 +1,6 @@
 """Module contains base class for prompts."""
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.enums import EditingMode
@@ -23,7 +23,7 @@ INQUIRERPY_KEYBOARD_INTERRUPT = "INQUIRERPY_KEYBOARD_INTERRUPT"
 INQUIRERPY_POINTER_SEQUENCE = "\u276f"
 
 
-class BaseSimplePrompt:
+class BaseSimplePrompt(ABC):
     """The base class for simple prompts.
 
     :param message: the question message to display
@@ -90,6 +90,11 @@ class BaseSimplePrompt:
         else:
             display_message.append(pre_answer)
         return display_message
+
+    @abstractmethod
+    def execute(self) -> Any:
+        """Abstractmethod to enforce a execute function is implemented for eaiser management."""
+        pass
 
 
 class InquirerPyUIControl(FormattedTextControl):

@@ -55,70 +55,6 @@ class InquirerPyListControl(InquirerPyUIControl):
         return display_options
 
 
-# class InquirerListControl(FormattedTextControl):
-#     def __init__(
-#         self,
-#         choices: List[Union[str, Dict[str, Any]]],
-#         default: Any,
-#         pointer=INQUIRERPY_POINTER_SEQUENCE,
-#     ):
-#         self.selected_option_index: int = 0
-#         self.pointer: str = pointer
-#         self.choices: List[Dict[str, Any]] = self._get_choices(choices, default)
-#         if not choices:
-#             raise InvalidArgument("choices cannot be empty.")
-#         super().__init__(self._get_formatted_choices)
-
-#     def _get_choices(self, choices, default) -> List[Dict[str, Any]]:
-#         processed_choices: List[Dict[str, Any]] = []
-#         try:
-#             for index, choice in enumerate(choices, start=0):
-#                 if isinstance(choice, str):
-#                     if choice == default:
-#                         self.selected_option_index = index
-#                     processed_choices.append({"name": choice, "value": choice})
-#                 elif isinstance(choice, dict):
-#                     if choice["value"] == default:
-#                         self.selected_option_index = index
-#                     processed_choices.append(
-#                         {"name": choice["name"], "value": choice["value"]}
-#                     )
-#                 else:
-#                     raise InvalidArgument(
-#                         "choice has to be either a string or dictionary."
-#                     )
-#         except KeyError:
-#             raise RequiredKeyNotFound(
-#                 "dictionary choice require a name key and a value key."
-#             )
-#         except InvalidArgument:
-#             raise
-#         return processed_choices
-
-#     def _get_formatted_choices(self):
-#         display_choices = []
-
-#         for index, choice in enumerate(self.choices):
-#             if index == self.selected_option_index:
-#                 display_choices.append(("class:pointer", " %s " % self.pointer))
-#                 display_choices.append(("[SetCursorPosition]", ""))
-#                 display_choices.append(("class:pointer", str(choice["name"])))
-#             else:
-#                 display_choices.append(("", "   "))
-#                 display_choices.append(("", str(choice["name"])))
-#             display_choices.append(("", "\n"))
-#         display_choices.pop()
-#         return display_choices
-
-#     @property
-#     def choice_count(self) -> int:
-#         return len(self.choices)
-
-#     @property
-#     def selection(self) -> Any:
-#         return self.choices[self.selected_option_index]["value"]
-
-
 class ListPrompt(BaseSimplePrompt):
     """A wrapper class around prompt_toolkit Application to create a list prompt.
 
@@ -196,11 +132,12 @@ class ListPrompt(BaseSimplePrompt):
             layout=Layout(self.layout), style=self.question_style, key_bindings=self.kb
         )
 
-    def _get_prompt_message(self):
+    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+        """Get the formatted prompt message."""
         pre_answer = ("class:instruction", " %s" % self.message)
         post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
 
     def execute(self) -> Any:
-        """Run the application and get the result."""
+        """Execute the application and get the result."""
         return self.application.run()
