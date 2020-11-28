@@ -7,7 +7,7 @@ from prompt_toolkit.key_binding.key_bindings import KeyBindings
 from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.exceptions import InvalidArgumentType
+from InquirerPy.exceptions import InvalidArgument
 
 
 ACCEPTED_KEYBINDINGS: Dict[str, EditingMode] = {
@@ -48,7 +48,7 @@ class BaseSimplePrompt:
         try:
             self.editing_mode = ACCEPTED_KEYBINDINGS[editing_mode]
         except KeyError:
-            raise InvalidArgumentType(
+            raise InvalidArgument(
                 "editing_mode must be one of 'default' 'emacs' 'vim'."
             )
         if isinstance(validator, Validator):

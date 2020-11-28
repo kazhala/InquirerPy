@@ -2,7 +2,7 @@ import os
 import unittest
 from unittest.mock import ANY, call, patch
 
-from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
+from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import ConfirmPrompt
 from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.secret import SecretPrompt
@@ -13,7 +13,7 @@ class TestResolver(unittest.TestCase):
     @patch("InquirerPy.resolver.ConfirmPrompt.execute")
     def test_exceptions(self, mocked_confirm):
         questions = "hello"
-        self.assertRaises(InvalidArgumentType, prompt, questions)
+        self.assertRaises(InvalidArgument, prompt, questions)
 
         questions = [{"name": "hello"}]
         self.assertRaises(RequiredKeyNotFound, prompt, questions)

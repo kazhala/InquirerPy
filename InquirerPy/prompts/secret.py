@@ -3,7 +3,7 @@ from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.exceptions import InvalidArgumentType
+from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
 
 
@@ -39,7 +39,7 @@ class SecretPrompt(InputPrompt):
     ) -> None:
         """Construct the prompt session."""
         if not isinstance(default, str):
-            raise InvalidArgumentType(
+            raise InvalidArgument(
                 "default for secret type question should be type of str."
             )
         super().__init__(

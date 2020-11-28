@@ -5,7 +5,7 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
 
 from InquirerPy.base import BaseSimplePrompt
-from InquirerPy.exceptions import InvalidArgumentType
+from InquirerPy.exceptions import InvalidArgument
 
 
 class ConfirmPrompt(BaseSimplePrompt):
@@ -35,7 +35,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         super().__init__(message, style, "default", symbol)
         self.default = default
         if not isinstance(self.default, bool):
-            raise InvalidArgumentType(
+            raise InvalidArgument(
                 "default for confirm type question should be type of bool."
             )
 

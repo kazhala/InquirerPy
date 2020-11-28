@@ -4,7 +4,7 @@
 from typing import Optional
 
 
-class InvalidArgumentType(Exception):
+class InvalidArgument(Exception):
     """Invalid parameter type."""
 
     def __init__(self, message: Optional[str]):

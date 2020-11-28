@@ -3,7 +3,7 @@ import os
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from InquirerPy.base import ACCEPTED_KEYBINDINGS
-from InquirerPy.exceptions import InvalidArgumentType, RequiredKeyNotFound
+from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import ConfirmPrompt
 from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.input import InputPrompt
@@ -36,7 +36,7 @@ def prompt(
     result: Dict[str, Optional[Union[str, List[str], bool]]] = {}
 
     if not isinstance(questions, list):
-        raise InvalidArgumentType("questions should be type of list.")
+        raise InvalidArgument("questions should be type of list.")
 
     if not style:
         style = {
@@ -45,11 +45,12 @@ def prompt(
             "input": os.getenv("INQUIRERPY_STYLE_INPUT", "#98c379"),
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
+            "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
         }
     if not editing_mode:
         default_mode = os.getenv("INQUIRERPY_EDITING_MODE", "default")
         if default_mode not in ACCEPTED_KEYBINDINGS:
-            raise InvalidArgumentType(
+            raise InvalidArgument(
                 "INQUIRERPY_EDITING_MODE must be one of 'default' 'emacs' 'vim'."
             )
         else:

@@ -10,7 +10,7 @@ from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.validation import ValidationError, Validator
 
 from InquirerPy.base import BaseSimplePrompt
-from InquirerPy.exceptions import InvalidArgumentType
+from InquirerPy.exceptions import InvalidArgument
 
 
 class InputPrompt(BaseSimplePrompt):
@@ -62,7 +62,7 @@ class InputPrompt(BaseSimplePrompt):
         )
         self.default = default
         if not isinstance(self.default, str):
-            raise InvalidArgumentType(
+            raise InvalidArgument(
                 "default for input type question should be type of str."
             )
         self.completer = None

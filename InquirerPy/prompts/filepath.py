@@ -7,7 +7,7 @@ from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.exceptions import InvalidArgumentType
+from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
 
 
@@ -108,7 +108,7 @@ class FilePathPrompt(InputPrompt):
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""
         if not isinstance(default, str):
-            raise InvalidArgumentType(
+            raise InvalidArgument(
                 "default for filepath type question should be type of str."
             )
         super().__init__(
