@@ -9,7 +9,7 @@ from prompt_toolkit.lexers import SimpleLexer
 from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.validation import ValidationError, Validator
 
-from InquirerPy.base import BaseSimplePrompt
+from InquirerPy.base import BaseSimplePrompt, INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 
 
@@ -167,7 +167,9 @@ class InputPrompt(BaseSimplePrompt):
 
         formatted_message = super()._get_prompt_message(pre_answer, post_answer)
         if not self.status["answered"] and self.multiline:
-            formatted_message.append(("class:symbol", "\n> "))
+            formatted_message.append(
+                ("class:symbol", "\n%s " % INQUIRERPY_POINTER_SEQUENCE)
+            )
         return formatted_message
 
     def execute(self) -> str:

@@ -1,5 +1,6 @@
 """Module contains base class for prompts."""
 
+from abc import abstractmethod
 from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.enums import EditingMode
@@ -15,6 +16,10 @@ ACCEPTED_KEYBINDINGS: Dict[str, EditingMode] = {
     "emacs": EditingMode.EMACS,
     "vim": EditingMode.VI,
 }
+
+INQUIRERPY_KEYBOARD_INTERRUPT = "INQUIRERPY_KEYBOARD_INTERRUPT"
+
+INQUIRERPY_POINTER_SEQUENCE = "\u276f"
 
 
 class BaseSimplePrompt:
@@ -60,6 +65,7 @@ class BaseSimplePrompt:
                 move_cursor_to_end=True,
             )
 
+    @abstractmethod
     def _get_prompt_message(
         self, pre_answer: Tuple[str, str], post_answer: Tuple[str, str]
     ) -> List[Tuple[str, str]]:
@@ -71,9 +77,9 @@ class BaseSimplePrompt:
         This is useful to format/customize user input for better visual.
 
         :param pre_answer: the information to display before answering the question
-        :type pre_answer: str
+        :type pre_answer: Tuple[str, str]
         :param post_answer: the information to display after answering the question
-        :type post_answer: str
+        :type post_answer: Tuple[str, str]
         """
         display_message = []
         display_message.append(("class:symbol", self.symbol))
