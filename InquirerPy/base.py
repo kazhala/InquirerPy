@@ -235,7 +235,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         style: Dict[str, str],
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         symbol: str = "?",
-        **kwargs
     ) -> None:
         """Initialise the Application."""
         super().__init__(message, style, editing_mode, symbol)
@@ -286,8 +285,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
             layout=Layout(self.layout),
             style=self.question_style,
             key_bindings=self.kb,
-            input=kwargs.pop("input", None),
-            output=kwargs.pop("output", None),
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
