@@ -109,14 +109,14 @@ class InquirerPyUIControl(FormattedTextControl):
     Dynamically adapt to user input and update formatted text.
 
     :param options: list of options to display as the content
-    :type options: List[Union[str, Dict[str, Any]]]
+    :type options: List[Union[Any, Dict[str, Any]]]
     :param default: default value, will impact the cursor position
     :type default: Any
     """
 
     def __init__(
         self,
-        options: List[Union[str, Dict[str, Any]]],
+        options: List[Union[Any, Dict[str, Any]]],
         default: Any,
     ) -> None:
         """Initialise options and construct a FormattedTextControl object."""
@@ -127,7 +127,7 @@ class InquirerPyUIControl(FormattedTextControl):
         super().__init__(self._get_formatted_options)
 
     def _get_options(
-        self, options: List[Union[str, Dict[str, Any]]], default: Any
+        self, options: List[Union[Any, Dict[str, Any]]], default: Any
     ) -> List[Dict[str, Any]]:
         """Process the raw user input options and format it into dictionary.
 
@@ -141,26 +141,20 @@ class InquirerPyUIControl(FormattedTextControl):
         processed_options: List[Dict[str, Any]] = []
         try:
             for index, option in enumerate(options, start=0):
-                if isinstance(option, str):
-                    if option == default:
-                        self.selected_option_index = index
-                    processed_options.append({"name": option, "value": option})
-                elif isinstance(option, dict):
+                if isinstance(option, dict):
                     if option["value"] == default:
                         self.selected_option_index = index
                     processed_options.append(
                         {"name": option["name"], "value": option["value"]}
                     )
                 else:
-                    raise InvalidArgument(
-                        "each option has to be either a string or dictionary."
-                    )
+                    if option == default:
+                        self.selected_option_index = index
+                    processed_options.append({"name": option, "value": option})
         except KeyError:
             raise RequiredKeyNotFound(
                 "dictionary option require a name key and a value key."
             )
-        except InvalidArgument:
-            raise
         return processed_options
 
     def _get_formatted_options(self) -> List[Tuple[str, str]]:
@@ -241,6 +235,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         style: Dict[str, str],
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         symbol: str = "?",
+        **kwargs
     ) -> None:
         """Initialise the Application."""
         super().__init__(message, style, editing_mode, symbol)
@@ -262,7 +257,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         )
 
         @Condition
-        def is_vim_edit():
+        def is_vim_edit() -> bool:
             return self.editing_mode == EditingMode.VI
 
         @self.kb.add("down")
@@ -288,7 +283,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
             event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
 
         self.application = Application(
-            layout=Layout(self.layout), style=self.question_style, key_bindings=self.kb
+            layout=Layout(self.layout),
+            style=self.question_style,
+            key_bindings=self.kb,
+            input=kwargs.pop("input", None),
+            output=kwargs.pop("output", None),
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:

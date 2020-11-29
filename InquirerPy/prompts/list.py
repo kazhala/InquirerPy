@@ -15,7 +15,7 @@ class InquirerPyListControl(InquirerPyUIControl):
     Used to dynamically render the list and update the content based on input
 
     :param options: a list of options to display
-    :type options: List[Union[str, Dict[str, Any]]]
+    :type options: List[Union[Any, Dict[str, Any]]]
     :param default: default selection
     :type default: Any
     :param pointer: the pointer char to display, default is unicode ">"
@@ -24,7 +24,7 @@ class InquirerPyListControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        options: List[Union[str, Dict[str, Any]]],
+        options: List[Union[Any, Dict[str, Any]]],
         default: Any,
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
     ) -> None:
@@ -52,7 +52,7 @@ class ListPrompt(BaseComplexPrompt):
     :param message: message to display
     :type message: str
     :param options: list of options to display
-    :type options: List[Union[str, Dict[str, Any]]]
+    :type options: List[Union[Any, Dict[str, Any]]]
     :param default: default value
     :type default: Any
     :param style: a dictionary of style
@@ -70,7 +70,7 @@ class ListPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        options: List[Union[str, Dict[str, Any]]],
+        options: List[Union[Any, Dict[str, Any]]],
         default: Any,
         style: Dict[str, str],
         editing_mode: Literal["emacs", "default", "vim"] = "default",
