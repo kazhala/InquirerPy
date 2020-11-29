@@ -3,9 +3,15 @@
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
+from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
+from prompt_toolkit.filters import IsDone
+from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
+from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
+from prompt_toolkit.layout.dimension import LayoutDimension
+from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import Validator
 
@@ -84,7 +90,7 @@ class BaseSimplePrompt(ABC):
         """
         display_message = []
         display_message.append(("class:symbol", self.symbol))
-        display_message.append(("class:question", " %s " % self.message))
+        display_message.append(("class:question", " %s" % self.message))
         if self.status["answered"]:
             display_message.append(post_answer)
         else:
@@ -100,7 +106,7 @@ class BaseSimplePrompt(ABC):
 class InquirerPyUIControl(FormattedTextControl):
     """A UIControl class intended to be consumed by prompt_toolkit window.
 
-    Dynamically adapt to user input and update formatted text
+    Dynamically adapt to user input and update formatted text.
 
     :param options: list of options to display as the content
     :type options: List[Union[str, Dict[str, Any]]]
@@ -192,4 +198,136 @@ class InquirerPyUIControl(FormattedTextControl):
     @property
     def selection(self) -> Any:
         """Get current selection value."""
-        return self.options[self.selected_option_index]["value"]
+        return self.options[self.selected_option_index]
+
+
+class BaseComplexPrompt(BaseSimplePrompt):
+    """A base class to create a complex prompt using `prompt_toolkit` Application.
+
+    Consists of 2 horizontally splitted Window with one being the question and the second
+    window responsible to dynamically generate the content.
+
+    Upon entering the answer, update the first window's formatted text.
+
+    :param message: question to display to the user
+    :type message: str
+    :param style: style to apply to the prompt
+    :type style: Dict[str, str]
+    :param editing_mod: controls the key_binding
+    :type editing_mod: Literal["emacs", "default", "vim"]
+    :param symbol: question mark to display
+    :type symbol: str
+    """
+
+    def __init__(
+        self,
+        message: str,
+        style: Dict[str, str],
+        editing_mode: Literal["emacs", "default", "vim"] = "default",
+        symbol: str = "?",
+    ) -> None:
+        """Initialise the Application."""
+        super().__init__(message, style, editing_mode, symbol)
+        self._content_control: InquirerPyUIControl
+
+        self.layout = HSplit(
+            [
+                Window(
+                    height=LayoutDimension.exact(1),
+                    content=FormattedTextControl(
+                        self._get_prompt_message, show_cursor=False
+                    ),
+                ),
+                ConditionalContainer(
+                    Window(content=self.content_control),
+                    filter=~IsDone(),
+                ),
+            ]
+        )
+
+        @Condition
+        def is_vim_edit():
+            return self.editing_mode == EditingMode.VI
+
+        @self.kb.add("down")
+        @self.kb.add("c-n", filter=~is_vim_edit)
+        @self.kb.add("j", filter=is_vim_edit)
+        def _(event):
+            self.handle_down()
+
+        @self.kb.add("up")
+        @self.kb.add("c-p", filter=~is_vim_edit)
+        @self.kb.add("k", filter=is_vim_edit)
+        def _(event):
+            self.handle_up()
+
+        @self.kb.add("enter")
+        def _(event):
+            self.handle_enter(event)
+
+        @self.kb.add("c-c")
+        def _(event) -> None:
+            self.status["answered"] = True
+            self.status["result"] = ""
+            event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
+
+        self.application = Application(
+            layout=Layout(self.layout), style=self.question_style, key_bindings=self.kb
+        )
+
+    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+        """Get the formatted prompt message."""
+        pre_answer = ("class:instruction", " %s" % self.instruction)
+        post_answer = ("class:answer", " %s" % self.status["result"])
+        return super()._get_prompt_message(pre_answer, post_answer)
+
+    def execute(self) -> Any:
+        """Execute the application and get the result."""
+        return self.application.run()
+
+    @abstractmethod
+    def handle_enter(self, event) -> None:
+        """Handle the event when user hit Enter key.
+
+        Require implementation at child classes.
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def instruction(self) -> str:
+        """Instruction to display next to question."""
+        pass
+
+    @property
+    def content_control(self) -> InquirerPyUIControl:
+        """Get the content controller object.
+
+        Needs to be an instance of InquirerPyUIControl.
+        """
+        if not self._content_control:
+            raise NotImplementedError
+        return self._content_control
+
+    @content_control.setter
+    def content_control(self, value: InquirerPyUIControl) -> None:
+        """Setter of content_control."""
+        self._content_control = value
+
+    def handle_up(self) -> None:
+        """Handle the event when user attempt to move up.
+
+        Override this method for prompts that doesn't require moving up/down.
+        """
+        self.content_control.selected_option_index = (
+            self.content_control.selected_option_index - 1
+        ) % self.content_control.option_count
+
+    def handle_down(self) -> None:
+        """Handle the event when user attempt to move down.
+
+        Override this method for prompts that doesn't require moving up/down.
+        """
+        self.content_control.selected_option_index = (
+            self.content_control.selected_option_index + 1
+        ) % self.content_control.option_count

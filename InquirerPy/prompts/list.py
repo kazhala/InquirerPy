@@ -2,17 +2,8 @@
 
 from typing import Any, Dict, List, Literal, Tuple, Union
 
-from prompt_toolkit.application import Application
-from prompt_toolkit.filters import IsDone
-from prompt_toolkit.layout import Layout
-from prompt_toolkit.layout.containers import Window
-from prompt_toolkit.layout.containers import ConditionalContainer, HSplit
-from prompt_toolkit.layout.controls import FormattedTextControl
-from prompt_toolkit.layout.dimension import LayoutDimension
-
 from InquirerPy.base import (
-    BaseSimplePrompt,
-    INQUIRERPY_KEYBOARD_INTERRUPT,
+    BaseComplexPrompt,
     INQUIRERPY_POINTER_SEQUENCE,
     InquirerPyUIControl,
 )
@@ -55,7 +46,7 @@ class InquirerPyListControl(InquirerPyUIControl):
         return display_options
 
 
-class ListPrompt(BaseSimplePrompt):
+class ListPrompt(BaseComplexPrompt):
     """A wrapper class around prompt_toolkit Application to create a list prompt.
 
     :param message: message to display
@@ -72,6 +63,8 @@ class ListPrompt(BaseSimplePrompt):
     :type symbol: str
     :param pointer: the pointer symbol of hovered option
     :type pointer: str
+    :param instruction: instruction to display to user
+    :type instruction: str
     """
 
     def __init__(
@@ -83,61 +76,21 @@ class ListPrompt(BaseSimplePrompt):
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         symbol: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
+        instruction: str = "",
     ) -> None:
-        """Initialise the Application."""
-        super().__init__(message, style, editing_mode, symbol)
+        """Initialise the content_control and create Application."""
         self.pointer = pointer
         self.content_control = InquirerPyListControl(options, default, pointer)
+        self._instruction = instruction
+        super().__init__(message, style, editing_mode, symbol)
 
-        self.layout = HSplit(
-            [
-                Window(
-                    height=LayoutDimension.exact(1),
-                    content=FormattedTextControl(
-                        self._get_prompt_message, show_cursor=False
-                    ),
-                ),
-                ConditionalContainer(
-                    Window(content=self.content_control),
-                    filter=~IsDone(),
-                ),
-            ]
-        )
+    def handle_enter(self, event) -> None:
+        """Handle the event when user hit Enter."""
+        self.status["answered"] = True
+        self.status["result"] = self.content_control.selection["name"]
+        event.app.exit(result=self.content_control.selection["value"])
 
-        @self.kb.add("j")
-        def _(event):
-            self.content_control.selected_option_index = (
-                self.content_control.selected_option_index + 1
-            ) % self.content_control.option_count
-
-        @self.kb.add("k")
-        def _(event):
-            self.content_control.selected_option_index = (
-                self.content_control.selected_option_index - 1
-            ) % self.content_control.option_count
-
-        @self.kb.add("enter")
-        def _(event):
-            self.status["answered"] = True
-            self.status["result"] = self.content_control.selection
-            event.app.exit(result=self.status["result"])
-
-        @self.kb.add("c-c")
-        def _(event) -> None:
-            self.status["answered"] = True
-            self.status["result"] = ""
-            event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
-
-        self.application = Application(
-            layout=Layout(self.layout), style=self.question_style, key_bindings=self.kb
-        )
-
-    def _get_prompt_message(self) -> List[Tuple[str, str]]:
-        """Get the formatted prompt message."""
-        pre_answer = ("class:instruction", " %s" % self.message)
-        post_answer = ("class:answer", " %s" % self.status["result"])
-        return super()._get_prompt_message(pre_answer, post_answer)
-
-    def execute(self) -> Any:
-        """Execute the application and get the result."""
-        return self.application.run()
+    @property
+    def instruction(self) -> str:
+        """Get the instruction to print."""
+        return self._instruction

@@ -3,7 +3,7 @@ from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.completion.base import Completer
-from prompt_toolkit.filters import Condition
+from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.lexers import SimpleLexer
 from prompt_toolkit.shortcuts.prompt import PromptSession
