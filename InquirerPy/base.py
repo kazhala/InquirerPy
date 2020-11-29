@@ -164,7 +164,7 @@ class InquirerPyUIControl(FormattedTextControl):
         return processed_options
 
     def _get_formatted_options(self) -> List[Tuple[str, str]]:
-        """Get all choice in formatted text format.
+        """Get all options in formatted text format.
 
         :return: a list of formatted options
         :rtype: List[Tuple[str, str]]
@@ -182,22 +182,38 @@ class InquirerPyUIControl(FormattedTextControl):
 
     @abstractmethod
     def _get_hover_text(self, option) -> List[Tuple[str, str]]:
-        """Generate the formatted text for hovered option."""
+        """Generate the formatted text for hovered option.
+
+        :return: list of formatted text
+        :rtype: List[Tuple[str, str]]
+        """
         pass
 
     @abstractmethod
     def _get_normal_text(self, option) -> List[Tuple[str, str]]:
-        """Generate the formatted text for non-hovered options."""
+        """Generate the formatted text for non-hovered options.
+
+        :return: list of formatted text
+        :rtype: List[Tuple[str, str]]]
+        """
         pass
 
     @property
     def option_count(self) -> int:
-        """Get the option count."""
+        """Get the option count.
+
+        :return: total count of options
+        :rtype: int
+        """
         return len(self.options)
 
     @property
-    def selection(self) -> Any:
-        """Get current selection value."""
+    def selection(self) -> Dict[str, Any]:
+        """Get current selection value.
+
+        :return: a dictionary of name and value for the current pointed option
+        :rtype: Dict[str, Any]
+        """
         return self.options[self.selected_option_index]
 
 
@@ -276,7 +292,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
-        """Get the formatted prompt message."""
+        """Get the prompt message.
+
+        :return: list of formatted text
+        :rtype: List[Tuple[str, str]]
+        """
         pre_answer = ("class:instruction", " %s" % self.instruction)
         post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
@@ -296,7 +316,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
     @property
     @abstractmethod
     def instruction(self) -> str:
-        """Instruction to display next to question."""
+        """Instruction to display next to question.
+
+        :return: instruction text
+        :rtype: str
+        """
         pass
 
     @property
