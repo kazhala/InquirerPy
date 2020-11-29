@@ -61,7 +61,7 @@ class TestSecret(unittest.TestCase):
             message,
             [
                 ("class:symbol", "[?]"),
-                ("class:question", " fooboo "),
+                ("class:question", " fooboo"),
                 ("class:instruction", " "),
             ],
         )
@@ -73,7 +73,7 @@ class TestSecret(unittest.TestCase):
             message,
             [
                 ("class:symbol", "[?]"),
-                ("class:question", " fooboo "),
+                ("class:question", " fooboo"),
                 ("class:answer", " *****"),
             ],
         )

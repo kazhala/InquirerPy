@@ -8,6 +8,15 @@ from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.resolver import prompt
 
+style = {
+    "symbol": "#ffcb04",
+    "answer": "#61afef",
+    "input": "#98c379",
+    "question": "",
+    "instruction": "",
+    "pointer": "#61afef",
+}
+
 
 class TestResolver(unittest.TestCase):
     @patch("InquirerPy.resolver.ConfirmPrompt.execute")
@@ -46,13 +55,7 @@ class TestResolver(unittest.TestCase):
         result = prompt(questions)
         mocked_confirm_init.assert_called_once_with(
             message="hello",
-            style={
-                "symbol": "#ffcb04",
-                "answer": "#61afef",
-                "input": "#98c379",
-                "question": "",
-                "instruction": "",
-            },
+            style=style,
             editing_mode="default",
         )
         mocked_confirm_execute.assert_called_once()
@@ -72,24 +75,12 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="hello",
-                    style={
-                        "symbol": "#ffcb04",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "instruction": "",
-                    },
+                    style=style,
                     editing_mode="default",
                 ),
                 call(
                     message="world",
-                    style={
-                        "symbol": "#ffcb04",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "instruction": "",
-                    },
+                    style=style,
                     editing_mode="default",
                 ),
             ]
@@ -98,13 +89,7 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="whaat",
-                    style={
-                        "symbol": "#ffcb04",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "instruction": "",
-                    },
+                    style=style,
                     default="./",
                     editing_mode="default",
                 )
@@ -144,6 +129,7 @@ class TestResolver(unittest.TestCase):
                 "input": "#444444",
                 "question": "#222222",
                 "instruction": "#333333",
+                "pointer": "#61afef",
             },
             editing_mode="emacs",
         )
@@ -220,25 +206,13 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="Confirm first?",
-                    style={
-                        "symbol": "#ffcb04",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "instruction": "",
-                    },
+                    style=style,
                     editing_mode="default",
                     default=True,
                 ),
                 call(
                     message="Confirm second?",
-                    style={
-                        "symbol": "#ffcb04",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "instruction": "",
-                    },
+                    style=style,
                     editing_mode="default",
                     condition=ANY,
                 ),
@@ -274,25 +248,13 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="Confirm first?",
-                    style={
-                        "symbol": "#ffcb04",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "instruction": "",
-                    },
+                    style=style,
                     editing_mode="default",
                     default=True,
                 ),
                 call(
                     message="Confirm?",
-                    style={
-                        "symbol": "#ffcb04",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "instruction": "",
-                    },
+                    style=style,
                     editing_mode="default",
                     condition=ANY,
                 ),

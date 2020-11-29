@@ -176,7 +176,7 @@ class TestFilePath(unittest.TestCase):
             message,
             [
                 ("class:symbol", "!"),
-                ("class:question", " brah "),
+                ("class:question", " brah"),
                 ("class:instruction", " "),
             ],
         )
@@ -188,7 +188,7 @@ class TestFilePath(unittest.TestCase):
             message,
             [
                 ("class:symbol", "!"),
-                ("class:question", " brah "),
+                ("class:question", " brah"),
                 ("class:answer", " hello"),
             ],
         )

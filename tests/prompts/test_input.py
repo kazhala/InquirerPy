@@ -5,9 +5,9 @@ from prompt_toolkit.completion.base import CompleteEvent
 from prompt_toolkit.document import Document
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input import create_pipe_input
-from prompt_toolkit.keys import Keys
 from prompt_toolkit.output import DummyOutput
 
+from InquirerPy.base import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.input import InputPrompt
 
 
@@ -83,7 +83,7 @@ class TestInputPrompt(unittest.TestCase):
             message,
             [
                 ("class:symbol", "[?]"),
-                ("class:question", " Enter your name "),
+                ("class:question", " Enter your name"),
                 ("class:instruction", " "),
             ],
         )
@@ -94,7 +94,7 @@ class TestInputPrompt(unittest.TestCase):
             message,
             [
                 ("class:symbol", "[?]"),
-                ("class:question", " Enter your name "),
+                ("class:question", " Enter your name"),
                 ("class:answer", " haha"),
             ],
         )
@@ -113,9 +113,9 @@ class TestInputPrompt(unittest.TestCase):
             message,
             [
                 ("class:symbol", "[?]"),
-                ("class:question", " Enter your name "),
+                ("class:question", " Enter your name"),
                 ("class:instruction", " ESC + Enter to finish input"),
-                ("class:symbol", "\n> "),
+                ("class:symbol", "\n%s " % INQUIRERPY_POINTER_SEQUENCE),
             ],
         )
         input_prompt.status["answered"] = True
@@ -125,7 +125,7 @@ class TestInputPrompt(unittest.TestCase):
             message,
             [
                 ("class:symbol", "[?]"),
-                ("class:question", " Enter your name "),
+                ("class:question", " Enter your name"),
                 ("class:answer", " haha...[3 chars]"),
             ],
         )
