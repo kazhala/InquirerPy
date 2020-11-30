@@ -117,7 +117,7 @@ class InquirerPyUIControl(FormattedTextControl):
     def __init__(
         self,
         options: List[Union[Any, Dict[str, Any]]],
-        default: Any,
+        default: Any = None,
     ) -> None:
         """Initialise options and construct a FormattedTextControl object."""
         self.selected_option_index: int = 0
