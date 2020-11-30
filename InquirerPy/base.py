@@ -16,6 +16,7 @@ from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
+from InquirerPy.separator import Separator
 
 
 ACCEPTED_KEYBINDINGS: Dict[str, EditingMode] = {
@@ -122,8 +123,7 @@ class InquirerPyUIControl(FormattedTextControl):
         """Initialise options and construct a FormattedTextControl object."""
         self.selected_option_index: int = 0
         self.options: List[Dict[str, Any]] = self._get_options(options, default)
-        if not options:
-            raise InvalidArgument("options cannot be empty.")
+        self._safety_check()
         super().__init__(self._get_formatted_options)
 
     def _get_options(
@@ -147,6 +147,12 @@ class InquirerPyUIControl(FormattedTextControl):
                     processed_options.append(
                         {"name": option["name"], "value": option["value"]}
                     )
+                elif isinstance(option, Separator):
+                    if self.selected_option_index == index:
+                        self.selected_option_index = (
+                            self.selected_option_index + 1
+                        ) % len(options)
+                    processed_options.append({"name": str(option), "value": option})
                 else:
                     if option == default:
                         self.selected_option_index = index
@@ -156,6 +162,20 @@ class InquirerPyUIControl(FormattedTextControl):
                 "dictionary option require a name key and a value key."
             )
         return processed_options
+
+    def _safety_check(self) -> None:
+        """Validate options, check empty or all Separator."""
+        if not self.options:
+            raise InvalidArgument("options cannot be empty.")
+        should_proceed: bool = False
+        for option in self.options:
+            if not isinstance(option["value"], Separator):
+                should_proceed = True
+                break
+        if not should_proceed:
+            raise InvalidArgument(
+                "options should contain content other than separator."
+            )
 
     def _get_formatted_options(self) -> List[Tuple[str, str]]:
         """Get all options in formatted text format.
@@ -339,15 +359,21 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         Override this method for prompts that doesn't require moving up/down.
         """
-        self.content_control.selected_option_index = (
-            self.content_control.selected_option_index - 1
-        ) % self.content_control.option_count
+        while True:
+            self.content_control.selected_option_index = (
+                self.content_control.selected_option_index - 1
+            ) % self.content_control.option_count
+            if not isinstance(self.content_control.selection["value"], Separator):
+                break
 
     def handle_down(self) -> None:
         """Handle the event when user attempt to move down.
 
         Override this method for prompts that doesn't require moving up/down.
         """
-        self.content_control.selected_option_index = (
-            self.content_control.selected_option_index + 1
-        ) % self.content_control.option_count
+        while True:
+            self.content_control.selected_option_index = (
+                self.content_control.selected_option_index + 1
+            ) % self.content_control.option_count
+            if not isinstance(self.content_control.selection["value"], Separator):
+                break

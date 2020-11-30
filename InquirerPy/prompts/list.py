@@ -7,6 +7,7 @@ from InquirerPy.base import (
     INQUIRERPY_POINTER_SEQUENCE,
     InquirerPyUIControl,
 )
+from InquirerPy.separator import Separator
 
 
 class InquirerPyListControl(InquirerPyUIControl):
@@ -25,7 +26,7 @@ class InquirerPyListControl(InquirerPyUIControl):
     def __init__(
         self,
         options: List[Union[Any, Dict[str, Any]]],
-        default: Any,
+        default: Any = None,
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
     ) -> None:
         """Construct and init a custom FormattedTextControl object."""
@@ -71,8 +72,8 @@ class ListPrompt(BaseComplexPrompt):
         self,
         message: str,
         options: List[Union[Any, Dict[str, Any]]],
-        style: Dict[str, str],
         default: Any = None,
+        style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         symbol: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,

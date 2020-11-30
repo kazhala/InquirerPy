@@ -1,4 +1,5 @@
 from InquirerPy.resolver import prompt
+from InquirerPy.separator import Separator
 
 questions = [
     {
@@ -13,6 +14,7 @@ questions = [
         "options": [
             {"name": "Basketball", "value": "NBA"},
             {"name": "Rugby", "value": "NFL"},
+            Separator(),
             "Soccer",
         ],
         "default": "apple",
