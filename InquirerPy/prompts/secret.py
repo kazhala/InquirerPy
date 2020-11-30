@@ -29,7 +29,7 @@ class SecretPrompt(InputPrompt):
     def __init__(
         self,
         message: str,
-        style: Dict[str, str],
+        style: Dict[str, str] = {},
         default: str = "",
         symbol: str = "?",
         editing_mode: Literal["default", "vim", "emacs"] = "default",

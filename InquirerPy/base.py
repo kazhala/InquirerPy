@@ -45,7 +45,7 @@ class BaseSimplePrompt(ABC):
     def __init__(
         self,
         message: str,
-        style: Dict[str, str],
+        style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         symbol: str = "?",
         validator: Optional[Union[Callable[[str], bool], Validator]] = None,
@@ -252,7 +252,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: str,
-        style: Dict[str, str],
+        style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         symbol: str = "?",
     ) -> None:

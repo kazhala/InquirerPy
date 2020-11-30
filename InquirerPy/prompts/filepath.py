@@ -97,7 +97,7 @@ class FilePathPrompt(InputPrompt):
     def __init__(
         self,
         message: str,
-        style: Dict[str, str],
+        style: Dict[str, str] = {},
         editing_mode: Literal["default", "emacs", "vim"] = "default",
         default: str = "",
         symbol: str = "?",
