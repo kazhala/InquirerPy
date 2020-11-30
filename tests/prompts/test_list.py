@@ -86,6 +86,9 @@ class TestListPrompt(unittest.TestCase):
         self.assertIsInstance(window_list[0], Window)
         self.assertIsInstance(window_list[1], ConditionalContainer)
 
+    def test_minimum_args(self):
+        ListPrompt(message="Select a fruit", options=self.options, style={})
+
     def test_list_prompt_message(self):
         prompt = ListPrompt(
             message="Select a fruit",
