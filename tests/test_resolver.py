@@ -9,12 +9,13 @@ from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.resolver import prompt
 
 style = {
-    "symbol": "#ffcb04",
+    "symbol": "#e5c07b",
     "answer": "#61afef",
     "input": "#98c379",
     "question": "",
     "instruction": "",
     "pointer": "#61afef",
+    "selected": "#e5c07b",
 }
 
 
@@ -130,6 +131,7 @@ class TestResolver(unittest.TestCase):
                 "question": "#222222",
                 "instruction": "#333333",
                 "pointer": "#61afef",
+                "selected": "#e5c07b",
             },
             editing_mode="emacs",
         )

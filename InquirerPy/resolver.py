@@ -42,12 +42,13 @@ def prompt(
 
     if not style:
         style = {
-            "symbol": os.getenv("INQUIRERPY_STYLE_SYMBOL", "#ffcb04"),
+            "symbol": os.getenv("INQUIRERPY_STYLE_SYMBOL", "#e5c07b"),
             "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", "#61afef"),
             "input": os.getenv("INQUIRERPY_STYLE_INPUT", "#98c379"),
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
+            "selected": os.getenv("INQUIRERPY_STYLE_SELECTED", "#e5c07b"),
         }
     if not editing_mode:
         default_mode = os.getenv("INQUIRERPY_EDITING_MODE", "default")
