@@ -7,7 +7,6 @@ from InquirerPy.base import (
     INQUIRERPY_POINTER_SEQUENCE,
     InquirerPyUIControl,
 )
-from InquirerPy.separator import Separator
 
 
 class InquirerPyListControl(InquirerPyUIControl):
@@ -36,14 +35,13 @@ class InquirerPyListControl(InquirerPyUIControl):
     def _get_hover_text(self, option) -> List[Tuple[str, str]]:
         display_options = []
         display_options.append(("class:pointer", " %s " % self.pointer))
-        display_options.append(("[SetCursorPosition]", ""))
-        display_options.append(("class:pointer", str(option["name"])))
+        display_options.append(("class:pointer", option["name"]))
         return display_options
 
     def _get_normal_text(self, option) -> List[Tuple[str, str]]:
         display_options = []
         display_options.append(("", "   "))
-        display_options.append(("", str(option["name"])))
+        display_options.append(("", option["name"]))
         return display_options
 
 
