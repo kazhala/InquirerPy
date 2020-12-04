@@ -78,7 +78,6 @@ class ListPrompt(BaseComplexPrompt):
         instruction: str = "",
     ) -> None:
         """Initialise the content_control and create Application."""
-        self.pointer = pointer
         self.content_control = InquirerPyListControl(options, default, pointer)
         self._instruction = instruction
         super().__init__(message, style, editing_mode, symbol)
