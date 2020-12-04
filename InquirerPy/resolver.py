@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Literal, Optional, Union
 
 from InquirerPy.base import ACCEPTED_KEYBINDINGS
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
+from InquirerPy.prompts.checkbox import CheckboxPrompt
 from InquirerPy.prompts.confirm import ConfirmPrompt
 from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.input import InputPrompt
@@ -16,6 +17,7 @@ question_mapping = {
     "secret": SecretPrompt,
     "input": InputPrompt,
     "list": ListPrompt,
+    "checkbox": CheckboxPrompt,
 }
 
 
@@ -48,7 +50,7 @@ def prompt(
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
-            "selected": os.getenv("INQUIRERPY_STYLE_SELECTED", "#e5c07b"),
+            "enabled": os.getenv("INQUIRERPY_STYLE_ENABLED", "#e5c07b"),
         }
     if not editing_mode:
         default_mode = os.getenv("INQUIRERPY_EDITING_MODE", "default")
