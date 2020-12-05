@@ -55,9 +55,10 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         display_message = []
         display_message.append(("class:pointer", " %s " % self.pointer))
         display_message.append(
-            ("class:enabled", self.enabled_symbol)
-            if option["enabled"]
-            else ("", self.disabled_symbol)
+            (
+                "class:checkbox",
+                self.enabled_symbol if option["enabled"] else self.disabled_symbol,
+            )
         )
         display_message.append(("class:pointer", " %s" % option["name"]))
         return display_message
@@ -66,9 +67,10 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         display_message = []
         display_message.append(("", "   "))
         display_message.append(
-            ("class:enabled", self.enabled_symbol)
-            if option["enabled"]
-            else ("", self.disabled_symbol)
+            (
+                "class:checkbox",
+                self.enabled_symbol if option["enabled"] else self.disabled_symbol,
+            )
         )
         display_message.append(("", " %s" % option["name"]))
         return display_message

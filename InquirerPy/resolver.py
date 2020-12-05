@@ -50,7 +50,7 @@ def prompt(
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
-            "enabled": os.getenv("INQUIRERPY_STYLE_ENABLED", "#e5c07b"),
+            "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
         }
     if not editing_mode:
         default_mode = os.getenv("INQUIRERPY_EDITING_MODE", "default")
