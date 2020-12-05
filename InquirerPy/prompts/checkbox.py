@@ -1,8 +1,7 @@
 """Module contains checkbox prompt."""
 
-from typing import Any, Dict, List, Literal, Set, Tuple, Union
+from typing import Any, Dict, List, Literal, Tuple, Union
 
-from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.keys import Keys
 
 from InquirerPy.base import (
@@ -12,6 +11,7 @@ from InquirerPy.base import (
     INQUIRERPY_POINTER_SEQUENCE,
     InquirerPyUIControl,
 )
+from InquirerPy.separator import Separator
 
 
 class InquirerPyCheckboxControl(InquirerPyUIControl):
@@ -54,25 +54,31 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
     def _get_hover_text(self, option) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("class:pointer", " %s " % self.pointer))
-        display_message.append(
-            (
-                "class:checkbox",
-                self.enabled_symbol if option["enabled"] else self.disabled_symbol,
+        if not isinstance(option["value"], Separator):
+            display_message.append(
+                (
+                    "class:checkbox",
+                    "%s " % self.enabled_symbol
+                    if option["enabled"]
+                    else "%s " % self.disabled_symbol,
+                )
             )
-        )
-        display_message.append(("class:pointer", " %s" % option["name"]))
+        display_message.append(("class:pointer", option["name"]))
         return display_message
 
     def _get_normal_text(self, option) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("", "   "))
-        display_message.append(
-            (
-                "class:checkbox",
-                self.enabled_symbol if option["enabled"] else self.disabled_symbol,
+        if not isinstance(option["value"], Separator):
+            display_message.append(
+                (
+                    "class:checkbox",
+                    "%s " % self.enabled_symbol
+                    if option["enabled"]
+                    else "%s " % self.disabled_symbol,
+                )
             )
-        )
-        display_message.append(("", " %s" % option["name"]))
+        display_message.append(("", option["name"]))
         return display_message
 
 
@@ -152,6 +158,8 @@ class CheckboxPrompt(BaseComplexPrompt):
     @property
     def selected_options(self) -> List[Any]:
         """Get all user selected options."""
-        return list(
-            filter(lambda option: option["enabled"], self.content_control.options)
-        )
+
+        def filter_option(option):
+            return not isinstance(option, Separator) and option["enabled"]
+
+        return list(filter(filter_option, self.content_control.options))
