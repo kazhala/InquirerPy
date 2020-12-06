@@ -6,6 +6,7 @@ from InquirerPy.base import (
     INQUIRERPY_POINTER_SEQUENCE,
     InquirerPyUIControl,
 )
+from InquirerPy.separator import Separator
 
 
 class InquirerPyRawlistControl(InquirerPyUIControl):
@@ -44,16 +45,20 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
     def _get_hover_text(self, option) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("class:pointer", " %s " % self.pointer))
-        display_message.append(
-            ("class:pointer", "%s%s " % (str(option["index"]), self.separator))
-        )
+        if not isinstance(option["value"], Separator):
+            display_message.append(
+                ("class:pointer", "%s%s " % (str(option["index"]), self.separator))
+            )
         display_message.append(("class:pointer", option["name"]))
         return display_message
 
     def _get_normal_text(self, option) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("", "   "))
-        display_message.append(("", "%s%s " % (str(option["index"]), self.separator)))
+        if not isinstance(option["value"], Separator):
+            display_message.append(
+                ("", "%s%s " % (str(option["index"]), self.separator))
+            )
         display_message.append(("", option["name"]))
         return display_message
 
