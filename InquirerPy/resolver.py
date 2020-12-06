@@ -9,6 +9,7 @@ from InquirerPy.prompts.confirm import ConfirmPrompt
 from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
+from InquirerPy.prompts.rawlist import RawlistPrompt
 from InquirerPy.prompts.secret import SecretPrompt
 
 question_mapping = {
@@ -18,6 +19,7 @@ question_mapping = {
     "input": InputPrompt,
     "list": ListPrompt,
     "checkbox": CheckboxPrompt,
+    "rawlist": RawlistPrompt,
 }
 
 
