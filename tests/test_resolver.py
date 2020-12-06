@@ -15,7 +15,7 @@ style = {
     "question": "",
     "instruction": "",
     "pointer": "#61afef",
-    "selected": "#e5c07b",
+    "checkbox": "#98c379",
 }
 
 
@@ -131,7 +131,7 @@ class TestResolver(unittest.TestCase):
                 "question": "#222222",
                 "instruction": "#333333",
                 "pointer": "#61afef",
-                "selected": "#e5c07b",
+                "checkbox": "#98c379",
             },
             editing_mode="emacs",
         )

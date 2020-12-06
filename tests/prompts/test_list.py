@@ -6,7 +6,6 @@ from prompt_toolkit.key_binding.key_bindings import KeyBindings
 from prompt_toolkit.layout.containers import ConditionalContainer, Window
 from prompt_toolkit.styles.style import Style
 
-from InquirerPy.base import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.list import InquirerPyListControl, ListPrompt
 from InquirerPy.separator import Separator
@@ -80,7 +79,6 @@ class TestListPrompt(unittest.TestCase):
         self.assertIsInstance(prompt.question_style, Style)
         self.assertEqual(prompt.message, "Select a fruit")
         self.assertEqual(prompt.symbol, "[?]")
-        self.assertEqual(prompt.pointer, ">")
         self.assertEqual(prompt.instruction, "(j/k)")
 
         window_list = list(prompt.layout.children)
@@ -94,7 +92,6 @@ class TestListPrompt(unittest.TestCase):
     def test_option_combination(self):
         prompt = ListPrompt(message="Test combo", options=["hello"])
         self.assertEqual(prompt.symbol, "?")
-        self.assertEqual(prompt.pointer, INQUIRERPY_POINTER_SEQUENCE)
         self.assertEqual(prompt.instruction, "")
 
         self.assertRaises(InvalidArgument, ListPrompt, "", [Separator(), Separator()])
