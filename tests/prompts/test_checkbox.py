@@ -138,3 +138,25 @@ class TestCheckbox(unittest.TestCase):
                 {"enabled": True, "name": "mix", "value": "boy&girl"},
             ],
         )
+
+        prompt._toggle_all()
+        self.assertEqual(
+            prompt.content_control.options,
+            [
+                {"enabled": True, "name": "boy", "value": "boy"},
+                {"enabled": False, "name": "girl", "value": "girl"},
+                {"enabled": False, "name": "---------------", "value": ANY},
+                {"enabled": False, "name": "mix", "value": "boy&girl"},
+            ],
+        )
+
+        prompt._toggle_all(True)
+        self.assertEqual(
+            prompt.content_control.options,
+            [
+                {"enabled": True, "name": "boy", "value": "boy"},
+                {"enabled": True, "name": "girl", "value": "girl"},
+                {"enabled": False, "name": "---------------", "value": ANY},
+                {"enabled": True, "name": "mix", "value": "boy&girl"},
+            ],
+        )
