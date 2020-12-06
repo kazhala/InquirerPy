@@ -245,8 +245,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
     :type message: str
     :param style: style to apply to the prompt
     :type style: Dict[str, str]
-    :param editing_mod: controls the key_binding
-    :type editing_mod: Literal["emacs", "default", "vim"]
+    :param editing_mode: controls the key_binding
+    :type editing_mode: Literal["emacs", "default", "vim"]
     :param symbol: question mark to display
     :type symbol: str
     """
