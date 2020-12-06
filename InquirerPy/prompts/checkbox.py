@@ -141,18 +141,22 @@ class CheckboxPrompt(BaseComplexPrompt):
 
         @self.kb.add("a")
         def _(event) -> None:
-            for option in self.content_control.options:
-                option["enabled"] = True
+            self._toggle_all(True)
 
         @self.kb.add("i")
         def _(event) -> None:
-            for option in self.content_control.options:
-                option["enabled"] = not option["enabled"]
+            self._toggle_all()
 
-    def _toggle_option(self):
+    def _toggle_option(self) -> None:
         self.content_control.selection["enabled"] = not self.content_control.selection[
             "enabled"
         ]
+
+    def _toggle_all(self, value: bool = None) -> None:
+        for option in self.content_control.options:
+            if isinstance(option["value"], Separator):
+                continue
+            option["enabled"] = value if value else not option["enabled"]
 
     def handle_enter(self, event) -> None:
         """Handle the event when user hit enter."""
