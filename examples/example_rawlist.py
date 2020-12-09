@@ -10,7 +10,15 @@ questions = [
     },
     {
         "type": "rawlist",
-        "options": [{"name": "foo", "value": "boo"}, "hello", Separator(), "yes"],
+        "options": [
+            {"name": "foo", "value": "boo"},
+            "hello",
+            Separator(),
+            Separator(),
+            "yes",
+            Separator(),
+            "blah",
+        ],
         "question": "Select things apply",
     },
 ]
