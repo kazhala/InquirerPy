@@ -123,7 +123,6 @@ class RawlistPrompt(BaseComplexPrompt):
 
         for option in self.content_control.options:
             if not isinstance(option["value"], Separator):
-                print(option)
                 keybinding_factory(option)
 
     def handle_enter(self, event) -> None:
