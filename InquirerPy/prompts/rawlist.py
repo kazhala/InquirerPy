@@ -21,9 +21,6 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
     :param pointer: the pointer symbol
     :type pointer: str
     :param separator: the separator between the index number and the options
-        e.g. default separator is ")"
-            1) whatever
-            2) whatever
     :type separator: str
     """
 
@@ -39,15 +36,23 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         self.separator = separator
         super().__init__(options, default)
 
+        separator_count = 0
         for index, option in enumerate(self.options):
-            option["index"] = index + 1
+            if isinstance(option["value"], Separator):
+                separator_count += 1
+                continue
+            option["display_index"] = index + 1 - separator_count
+            option["actual_index"] = index + 1
 
     def _get_hover_text(self, option) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("class:pointer", " %s " % self.pointer))
         if not isinstance(option["value"], Separator):
             display_message.append(
-                ("class:pointer", "%s%s " % (str(option["index"]), self.separator))
+                (
+                    "class:pointer",
+                    "%s%s " % (str(option["display_index"]), self.separator),
+                )
             )
         display_message.append(("class:pointer", option["name"]))
         return display_message
@@ -57,7 +62,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         display_message.append(("", "   "))
         if not isinstance(option["value"], Separator):
             display_message.append(
-                ("", "%s%s " % (str(option["index"]), self.separator))
+                ("", "%s%s " % (str(option["display_index"]), self.separator))
             )
         display_message.append(("", option["name"]))
         return display_message
@@ -108,16 +113,18 @@ class RawlistPrompt(BaseComplexPrompt):
         self._instruction = instruction
         super().__init__(message, style, editing_mode, symbol)
 
-        def keybinding_factory(index):
-            @self.kb.add(index)
+        def keybinding_factory(option):
+            @self.kb.add(str(option["display_index"]))
             def keybinding(_) -> None:
-                self.content_control.selected_option_index = int(index)
+                self.content_control.selected_option_index = int(option["actual_index"])
                 self.handle_up()
 
             return keybinding
 
         for option in self.content_control.options:
-            keybinding_factory(str(option["index"]))
+            if not isinstance(option["value"], Separator):
+                print(option)
+                keybinding_factory(option)
 
     def handle_enter(self, event) -> None:
         """Handle the event of user hitting enter."""
