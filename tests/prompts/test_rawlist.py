@@ -14,21 +14,21 @@ class TestRawList(unittest.TestCase):
 
     def test_content_control(self):
         content_control = InquirerPyRawlistControl(self.options, default="yes")
-        self.assertEqual(content_control.pointer, INQUIRERPY_POINTER_SEQUENCE)
+        self.assertEqual(content_control.pointer, "  ")
         self.assertEqual(content_control.separator, ")")
         self.assertEqual(content_control.option_count, 4)
         self.assertEqual(content_control.selected_option_index, 3)
         self.assertEqual(
             content_control._get_hover_text(content_control.options[0]),
             [
-                ("class:pointer", " ❯ "),
+                ("class:pointer", "  "),
                 ("class:pointer", "1) "),
                 ("class:pointer", "foo"),
             ],
         )
         self.assertEqual(
             content_control._get_normal_text(content_control.options[0]),
-            [("", "   "), ("", "1) "), ("", "foo")],
+            [("", "  "), ("", "1) "), ("", "foo")],
         )
         self.assertEqual(
             content_control.options,
@@ -47,18 +47,18 @@ class TestRawList(unittest.TestCase):
         self.assertEqual(
             content_control._get_formatted_options(),
             [
-                ("", "   "),
+                ("", "  "),
                 ("", "1) "),
                 ("", "foo"),
                 ("", "\n"),
-                ("", "   "),
+                ("", "  "),
                 ("", "2) "),
                 ("", "hello"),
                 ("", "\n"),
-                ("", "   "),
+                ("", "  "),
                 ("", "---------------"),
                 ("", "\n"),
-                ("class:pointer", " ❯ "),
+                ("class:pointer", "  "),
                 ("class:pointer", "3) "),
                 ("class:pointer", "yes"),
             ],
