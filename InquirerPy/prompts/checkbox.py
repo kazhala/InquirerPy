@@ -40,7 +40,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
     ) -> None:
         """Initialise required attributes and call base class."""
-        self.pointer = pointer
+        self.pointer = "%s " % pointer
         self.enabled_symbol = enabled_symbol
         self.disabled_symbol = disabled_symbol
         super().__init__(options, default)
@@ -53,7 +53,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
 
     def _get_hover_text(self, option) -> List[Tuple[str, str]]:
         display_message = []
-        display_message.append(("class:pointer", " %s " % self.pointer))
+        display_message.append(("class:pointer", self.pointer))
         if not isinstance(option["value"], Separator):
             display_message.append(
                 (
@@ -68,7 +68,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
 
     def _get_normal_text(self, option) -> List[Tuple[str, str]]:
         display_message = []
-        display_message.append(("", "   "))
+        display_message.append(("", len(self.pointer) * " "))
         if not isinstance(option["value"], Separator):
             display_message.append(
                 (
