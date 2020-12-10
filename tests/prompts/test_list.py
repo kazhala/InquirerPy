@@ -35,13 +35,13 @@ class TestListPrompt(unittest.TestCase):
         self.assertEqual(
             list_control._get_formatted_options(),
             [
-                ("", "   "),
+                ("", "  "),
                 ("", "apple"),
                 ("", "\n"),
-                ("", "   "),
+                ("", "  "),
                 ("", "pear"),
                 ("", "\n"),
-                ("class:pointer", " ❯ "),
+                ("class:pointer", "❯ "),
                 ("class:pointer", "melon"),
             ],
         )
