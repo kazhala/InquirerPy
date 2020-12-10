@@ -7,6 +7,8 @@ questions = [
         "options": ["hello", "world", "foo", "boo"],
         "question": "Select one of them",
         "default": "boo",
+        "symbol": "[?]",
+        "pointer": "   ",
     },
     {
         "type": "rawlist",

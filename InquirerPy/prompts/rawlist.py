@@ -1,11 +1,7 @@
 """Module contains the rawlist prompt."""
 from typing import Any, Dict, List, Literal, Tuple, Union
 
-from InquirerPy.base import (
-    BaseComplexPrompt,
-    INQUIRERPY_POINTER_SEQUENCE,
-    InquirerPyUIControl,
-)
+from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
 from InquirerPy.separator import Separator
 
 
@@ -28,11 +24,11 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         self,
         options: List[Union[Any, Dict[str, Any]]],
         default: Any = None,
-        pointer: str = INQUIRERPY_POINTER_SEQUENCE,
+        pointer: str = " ",
         separator: str = ")",
     ) -> None:
         """Construct the content control object and add the index to each option for visual purposes."""
-        self.pointer = pointer
+        self.pointer = "%s " % pointer
         self.separator = separator
         super().__init__(options, default)
 
@@ -46,7 +42,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
 
     def _get_hover_text(self, option) -> List[Tuple[str, str]]:
         display_message = []
-        display_message.append(("class:pointer", " %s " % self.pointer))
+        display_message.append(("class:pointer", self.pointer))
         if not isinstance(option["value"], Separator):
             display_message.append(
                 (
@@ -59,7 +55,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
 
     def _get_normal_text(self, option) -> List[Tuple[str, str]]:
         display_message = []
-        display_message.append(("", "   "))
+        display_message.append(("", len(self.pointer) * " "))
         if not isinstance(option["value"], Separator):
             display_message.append(
                 ("", "%s%s " % (str(option["display_index"]), self.separator))
@@ -103,7 +99,7 @@ class RawlistPrompt(BaseComplexPrompt):
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "vim", "default"] = "default",
         symbol: str = "?",
-        pointer: str = INQUIRERPY_POINTER_SEQUENCE,
+        pointer: str = " ",
         instruction: str = "",
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
