@@ -29,18 +29,18 @@ class InquirerPyListControl(InquirerPyUIControl):
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
     ) -> None:
         """Construct and init a custom FormattedTextControl object."""
-        self.pointer: str = pointer
+        self.pointer: str = "%s " % pointer
         super().__init__(options=options, default=default)
 
     def _get_hover_text(self, option) -> List[Tuple[str, str]]:
         display_options = []
-        display_options.append(("class:pointer", " %s " % self.pointer))
+        display_options.append(("class:pointer", self.pointer))
         display_options.append(("class:pointer", option["name"]))
         return display_options
 
     def _get_normal_text(self, option) -> List[Tuple[str, str]]:
         display_options = []
-        display_options.append(("", "   "))
+        display_options.append(("", len(self.pointer) * " "))
         display_options.append(("", option["name"]))
         return display_options
 
