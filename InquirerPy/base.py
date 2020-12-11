@@ -147,7 +147,7 @@ class InquirerPyUIControl(FormattedTextControl):
                     if option["value"] == default:
                         self.selected_option_index = index
                     processed_options.append(
-                        {"name": option["name"], "value": option["value"]}
+                        {"name": str(option["name"]), "value": option["value"]}
                     )
                 elif isinstance(option, Separator):
                     if self.selected_option_index == index:
@@ -158,7 +158,7 @@ class InquirerPyUIControl(FormattedTextControl):
                 else:
                     if option == default:
                         self.selected_option_index = index
-                    processed_options.append({"name": option, "value": option})
+                    processed_options.append({"name": str(option), "value": option})
         except KeyError:
             raise RequiredKeyNotFound(
                 "dictionary option require a name key and a value key."
