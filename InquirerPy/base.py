@@ -112,14 +112,14 @@ class InquirerPyUIControl(FormattedTextControl):
     Dynamically adapt to user input and update formatted text.
 
     :param options: list of options to display as the content
-    :type options: List[Union[Any, Dict[str, Any]]]
+    :type options: List[Any]
     :param default: default value, will impact the cursor position
     :type default: Any
     """
 
     def __init__(
         self,
-        options: List[Union[Any, Dict[str, Any]]],
+        options: List[Any],
         default: Any = None,
     ) -> None:
         """Initialise options and construct a FormattedTextControl object."""
