@@ -6,6 +6,7 @@ from InquirerPy.base import ACCEPTED_KEYBINDINGS
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
 from InquirerPy.prompts.confirm import ConfirmPrompt
+from InquirerPy.prompts.expand import ExpandPrompt
 from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
@@ -20,6 +21,7 @@ question_mapping = {
     "list": ListPrompt,
     "checkbox": CheckboxPrompt,
     "rawlist": RawlistPrompt,
+    "expand": ExpandPrompt,
 }
 
 

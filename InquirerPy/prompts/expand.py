@@ -1,9 +1,15 @@
 """Module contains the expand prompt and its related helper classes."""
-from typing import Any, Dict, List, Literal, Tuple, Union
+from typing import Any, Dict, List, Literal, NamedTuple, Tuple
 
 from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
+
+
+class ExpandHelp(NamedTuple):
+    """A struct class to identify if user selected the help option."""
+
+    help_msg: str
 
 
 class InquirerPyExpandControl(InquirerPyUIControl):
@@ -17,6 +23,8 @@ class InquirerPyExpandControl(InquirerPyUIControl):
     :type pointer: str
     :param separator: separator symbol to display between the shortcut key and the content
     :type separator: str
+    :param help_msg: help message to display to the user
+    :type help_msg: str
     """
 
     def __init__(
@@ -25,12 +33,13 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         default: str = None,
         pointer: str = " ",
         separator: str = ")",
+        help_msg: str = "Help, list all options",
     ) -> None:
         """Construct UIControl object and initialise options."""
         self.pointer = "%s " % pointer
         self.separator = separator
         self.expanded = False
-        self.key_maps = {"h": -1}
+        self.key_maps = {}
         super().__init__(options, default)
 
         try:
@@ -52,6 +61,11 @@ class InquirerPyExpandControl(InquirerPyUIControl):
                 "each option require the dictionary key 'key' to be present."
             )
 
+        self.options.append(
+            {"key": "h", "value": ExpandHelp(help_msg), "name": help_msg}
+        )
+        self.key_maps["h"] = len(self.options) - 1
+
     def _get_formatted_options(self) -> List[Tuple[str, str]]:
         """Override this parent class method as expand require visual switch of content.
 
@@ -67,7 +81,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
             display_choices = []
             display_choices.append(("class:pointer", ">> "))
             display_choices.append(
-                ("", self.options[self.selected_option_index]["value"])
+                ("", self.options[self.selected_option_index]["name"])
             )
         return display_choices
 
@@ -104,16 +118,17 @@ class ExpandPrompt(BaseComplexPrompt):
         self,
         message: str,
         options: List[Dict[str, Any]],
-        default: str,
+        default: str = None,
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "emacs", "vim"] = "default",
         symbol: str = "?",
         pointer: str = " ",
         separator: str = ")",
+        help_msg: str = "Help, list all options",
     ) -> None:
         """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
-            options, default, pointer, separator
+            options, default, pointer, separator, help_msg
         )
         super().__init__(message, style, editing_mode, symbol)
 
@@ -123,3 +138,27 @@ class ExpandPrompt(BaseComplexPrompt):
                 self.content_control.selected_option_index = (
                     self.content_control.key_maps[key]
                 )
+
+            return keybinding
+
+        for option in self.content_control.options:
+            if not isinstance(option["value"], Separator):
+                keybinding_factory(option["key"])
+
+    def handle_enter(self, event) -> None:
+        """Handle the event of user hitting enter.
+
+        If user selected `h`, then decide to expand the prompt or not.
+        """
+        if isinstance(self.content_control.selection["value"], ExpandHelp):
+            self.content_control.expanded = not self.content_control.expanded
+        else:
+            super().handle_enter(event)
+
+    @property
+    def instruction(self) -> str:
+        """Render the instruction behind the question.
+
+        This method is also responsible to display the user input.
+        """
+        return "(%s)" % "".join(self.content_control.key_maps.keys())
