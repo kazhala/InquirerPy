@@ -17,7 +17,7 @@ class ExpandHelp(NamedTuple):
 
 
 class InquirerPyExpandControl(InquirerPyUIControl):
-    """A UI control object intended to be used by `prompt_toolkit` window.
+    """A content control intended to be used by `prompt_toolkit` window.
 
     All parameter types and purposes, reference `ExpandPrompt`.
     """
@@ -31,13 +31,13 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         help_msg: str,
         expand_pointer: str,
     ) -> None:
-        """Construct UIControl object and initialise options."""
+        """Construct content control object and initialise options."""
         self.pointer = "%s " % pointer
         self.separator = separator
         self.expanded = False
         self.key_maps = {}
         self.expand_pointer = expand_pointer
-        super().__init__(options, None)
+        super().__init__(options, default)
 
         try:
             count = 0
@@ -65,14 +65,13 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         )
         self.key_maps["h"] = len(self.options) - 1
 
-        for index, option in enumerate(self.options):
-            if isinstance(option["value"], Separator):
-                continue
-            if option["key"] == default:
-                self.selected_option_index = index
-                break
-            else:
-                continue
+        if self.selected_option_index == 0:
+            for index, option in enumerate(self.options):
+                if isinstance(option["value"], Separator):
+                    continue
+                if option["key"] == default:
+                    self.selected_option_index = index
+                    break
 
     def _get_formatted_options(self) -> List[Tuple[str, str]]:
         """Override this parent class method as expand require visual switch of content.

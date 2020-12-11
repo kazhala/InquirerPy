@@ -8,24 +8,15 @@ from InquirerPy.separator import Separator
 class InquirerPyRawlistControl(InquirerPyUIControl):
     """A content control instance intended to used by `prompt_tool_kit` Window.
 
-    Used to dynamically generate the content to display based on user interaction.
-
-    :param options: available options
-    :type options: List[Union[Any, Dict[str, Any]]]
-    :param default: default value
-    :type default: str
-    :param pointer: the pointer symbol
-    :type pointer: str
-    :param separator: the separator between the index number and the options
-    :type separator: str
+    All parameter types and purposes, reference `RawlistPrompt`.
     """
 
     def __init__(
         self,
         options: List[Union[Any, Dict[str, Any]]],
-        default: Any = None,
-        pointer: str = " ",
-        separator: str = ")",
+        default: Any,
+        pointer: str,
+        separator: str,
     ) -> None:
         """Construct the content control object and add the index to each option for visual purposes."""
         self.pointer = "%s " % pointer
@@ -38,7 +29,15 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
                 separator_count += 1
                 continue
             option["display_index"] = index + 1 - separator_count
-            option["actual_index"] = index + 1
+            option["actual_index"] = index
+
+        if self.selected_option_index == 0:
+            for option in self.options:
+                if isinstance(option["value"], Separator):
+                    continue
+                if option["display_index"] == default:
+                    self.selected_option_index = option["actual_index"]
+                    break
 
     def _get_hover_text(self, option) -> List[Tuple[str, str]]:
         display_message = []
@@ -113,7 +112,6 @@ class RawlistPrompt(BaseComplexPrompt):
             @self.kb.add(str(option["display_index"]))
             def keybinding(_) -> None:
                 self.content_control.selected_option_index = int(option["actual_index"])
-                self._handle_up()
 
             return keybinding
 

@@ -7,8 +7,10 @@ questions = [
         "options": [
             {"key": "j", "name": "Jump", "value": "Jump"},
             {"key": "y", "name": "Yes", "value": "No"},
+            {"key": "w", "name": "Word", "value": "HAHAHA"},
         ],
         "question": "What do you think?",
+        "default": "No",
     },
     {
         "type": "expand",

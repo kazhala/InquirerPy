@@ -22,6 +22,7 @@ questions = [
             "blah",
         ],
         "question": "Select things apply",
+        "default": 3,
     },
 ]
 
