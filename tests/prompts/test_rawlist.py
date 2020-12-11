@@ -3,7 +3,6 @@ from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
 
-from InquirerPy.base import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.rawlist import InquirerPyRawlistControl, RawlistPrompt
 from InquirerPy.separator import Separator
@@ -124,19 +123,19 @@ class TestRawList(unittest.TestCase):
             instruction="bb",
         )
         self.assertEqual(prompt.content_control.selected_option_index, 1)
-        prompt.handle_down()
+        prompt._handle_down()
         self.assertEqual(prompt.content_control.selected_option_index, 3)
-        prompt.handle_down()
+        prompt._handle_down()
         self.assertEqual(prompt.content_control.selected_option_index, 0)
-        prompt.handle_up()
+        prompt._handle_up()
         self.assertEqual(prompt.content_control.selected_option_index, 3)
-        prompt.handle_up()
+        prompt._handle_up()
         self.assertEqual(prompt.content_control.selected_option_index, 1)
 
         self.assertEqual(prompt.status, {"result": None, "answered": False})
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
-            prompt.handle_enter(event)
+            prompt._handle_enter(event)
         self.assertEqual(prompt.status, {"result": "hello", "answered": True})
 
     @patch.object(KeyBindings, "add")

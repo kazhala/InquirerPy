@@ -113,7 +113,7 @@ class RawlistPrompt(BaseComplexPrompt):
             @self.kb.add(str(option["display_index"]))
             def keybinding(_) -> None:
                 self.content_control.selected_option_index = int(option["actual_index"])
-                self.handle_up()
+                self._handle_up()
 
             return keybinding
 

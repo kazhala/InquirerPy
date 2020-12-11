@@ -133,12 +133,12 @@ class CheckboxPrompt(BaseComplexPrompt):
         @self.kb.add(Keys.Tab)
         def _(event) -> None:
             self._toggle_option()
-            self.handle_down()
+            self._handle_down()
 
         @self.kb.add(Keys.BackTab)
         def _(event) -> None:
             self._toggle_option()
-            self.handle_up()
+            self._handle_up()
 
         @self.kb.add("a")
         def _(event) -> None:

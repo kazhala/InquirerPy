@@ -163,7 +163,7 @@ class ExpandPrompt(BaseComplexPrompt):
             if not isinstance(option["value"], Separator):
                 keybinding_factory(option["key"])
 
-    def handle_up(self) -> None:
+    def _handle_up(self) -> None:
         """Handle the event when user attempt to move up.
 
         Overriding this method to skip the help option.
@@ -177,7 +177,7 @@ class ExpandPrompt(BaseComplexPrompt):
             ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
                 break
 
-    def handle_down(self) -> None:
+    def _handle_down(self) -> None:
         """Handle the event when user attempt to move down.
 
         Overriding this method to skip the help option.

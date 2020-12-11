@@ -128,36 +128,36 @@ class TestListPrompt(unittest.TestCase):
             instruction="(j/k)",
         )
         self.assertEqual(prompt.content_control.selected_option_index, 2)
-        prompt.handle_down()
+        prompt._handle_down()
         self.assertEqual(prompt.content_control.selected_option_index, 0)
-        prompt.handle_up()
+        prompt._handle_up()
         self.assertEqual(prompt.content_control.selected_option_index, 2)
-        prompt.handle_up()
+        prompt._handle_up()
         self.assertEqual(prompt.content_control.selected_option_index, 1)
-        prompt.handle_down()
+        prompt._handle_down()
         self.assertEqual(prompt.content_control.selected_option_index, 2)
 
         self.assertEqual(prompt.status, {"result": None, "answered": False})
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
-            prompt.handle_enter(event)
+            prompt._handle_enter(event)
         self.assertEqual(prompt.status, {"result": "melon", "answered": True})
 
     def test_separator_movement(self):
         prompt = ListPrompt(message="..", options=[Separator("hello"), "yes"])
         self.assertEqual(prompt.content_control.selected_option_index, 1)
-        prompt.handle_down()
+        prompt._handle_down()
         self.assertEqual(prompt.content_control.selected_option_index, 1)
-        prompt.handle_up()
+        prompt._handle_up()
         self.assertEqual(prompt.content_control.selected_option_index, 1)
 
         prompt = ListPrompt(
             message="..", options=[Separator("hello"), "yes", Separator(), "no"]
         )
         self.assertEqual(prompt.content_control.selected_option_index, 1)
-        prompt.handle_down()
+        prompt._handle_down()
         self.assertEqual(prompt.content_control.selected_option_index, 3)
-        prompt.handle_up()
+        prompt._handle_up()
         self.assertEqual(prompt.content_control.selected_option_index, 1)
-        prompt.handle_up()
+        prompt._handle_up()
         self.assertEqual(prompt.content_control.selected_option_index, 3)

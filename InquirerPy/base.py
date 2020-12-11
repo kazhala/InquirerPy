@@ -35,6 +35,12 @@ INQUIRERPY_EMPTY_HEX_SEQUENCE = "\u2b21"
 class BaseSimplePrompt(ABC):
     """The base class for simple prompts.
 
+    Inherit this class to create a simple prompt that leverage `prompt_toolkit`
+    PromptSession.
+
+    Note: the PromptSession is not initialised in the constructor, require
+    a call of `self.session = PromptSession(...)`.
+
     :param message: the question message to display
     :type message: str
     :param style: the style dictionary to apply
@@ -90,6 +96,8 @@ class BaseSimplePrompt(ABC):
         :type pre_answer: Tuple[str, str]
         :param post_answer: the information to display after answering the question
         :type post_answer: Tuple[str, str]
+        :return: formatted text thats ready to be consumed by PromptSession
+        :rtype: List[Tuple[str, str]]
         """
         display_message = []
         display_message.append(("class:symbol", self.symbol))
@@ -102,12 +110,16 @@ class BaseSimplePrompt(ABC):
 
     @abstractmethod
     def execute(self) -> Any:
-        """Abstractmethod to enforce a execute function is implemented for eaiser management."""
+        """Abstractmethod to enforce a execute function is implemented for eaiser management.
+
+        All prompt instance require a execute call to initialised the `PromptSession` or `Application`.
+        This is being called in the resolver.
+        """
         pass
 
 
 class InquirerPyUIControl(FormattedTextControl):
-    """A UIControl class intended to be consumed by prompt_toolkit window.
+    """A UIControl class intended to be consumed by `prompt_toolkit` window.
 
     Dynamically adapt to user input and update formatted text.
 
@@ -261,7 +273,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         symbol: str = "?",
         instruction: str = "",
     ) -> None:
-        """Initialise the Application."""
+        """Initialise the Application with Layout and keybindings."""
         super().__init__(message, style, editing_mode, symbol)
         self._content_control: InquirerPyUIControl
         self._instruction = instruction
@@ -288,17 +300,17 @@ class BaseComplexPrompt(BaseSimplePrompt):
         @self.kb.add("c-n", filter=~is_vim_edit)
         @self.kb.add("j", filter=is_vim_edit)
         def _(event):
-            self.handle_down()
+            self._handle_down()
 
         @self.kb.add("up")
         @self.kb.add("c-p", filter=~is_vim_edit)
         @self.kb.add("k", filter=is_vim_edit)
         def _(event):
-            self.handle_up()
+            self._handle_up()
 
         @self.kb.add("enter")
         def _(event):
-            self.handle_enter(event)
+            self._handle_enter(event)
 
         @self.kb.add("c-c")
         def _(event) -> None:
@@ -350,7 +362,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """Setter of content_control."""
         self._content_control = value
 
-    def handle_up(self) -> None:
+    def _handle_up(self) -> None:
         """Handle the event when user attempt to move up."""
         while True:
             self.content_control.selected_option_index = (
@@ -359,7 +371,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
 
-    def handle_down(self) -> None:
+    def _handle_down(self) -> None:
         """Handle the event when user attempt to move down."""
         while True:
             self.content_control.selected_option_index = (
@@ -368,8 +380,13 @@ class BaseComplexPrompt(BaseSimplePrompt):
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
 
-    def handle_enter(self, event) -> None:
-        """Handle the event when user hit Enter key."""
+    def _handle_enter(self, event) -> None:
+        """Handle the event when user hit Enter key.
+
+        * Set the state to answered for an update to the prompt display.
+        * Set the result to user selected option's name for display purpose.
+        * Let the app exit with the user selected option's value and return the actual value back to resolver.
+        """
         self.status["answered"] = True
         self.status["result"] = self.content_control.selection["name"]
         event.app.exit(result=self.content_control.selection["value"])
