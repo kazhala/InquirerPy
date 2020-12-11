@@ -12,7 +12,7 @@ class TestRawList(unittest.TestCase):
     options = [{"name": "foo", "value": "boo"}, "hello", Separator(), "yes"]
 
     def test_content_control(self):
-        content_control = InquirerPyRawlistControl(self.options, default="yes")
+        content_control = InquirerPyRawlistControl(self.options, "yes", " ", ")")
         self.assertEqual(content_control.pointer, "  ")
         self.assertEqual(content_control.separator, ")")
         self.assertEqual(content_control.option_count, 4)
@@ -32,15 +32,15 @@ class TestRawList(unittest.TestCase):
         self.assertEqual(
             content_control.options,
             [
-                {"actual_index": 1, "display_index": 1, "name": "foo", "value": "boo"},
+                {"actual_index": 0, "display_index": 1, "name": "foo", "value": "boo"},
                 {
-                    "actual_index": 2,
+                    "actual_index": 1,
                     "display_index": 2,
                     "name": "hello",
                     "value": "hello",
                 },
                 {"name": "---------------", "value": ANY},
-                {"actual_index": 4, "display_index": 3, "name": "yes", "value": "yes"},
+                {"actual_index": 3, "display_index": 3, "name": "yes", "value": "yes"},
             ],
         )
         self.assertEqual(
@@ -63,15 +63,24 @@ class TestRawList(unittest.TestCase):
             ],
         )
 
+        content_control = InquirerPyRawlistControl(self.options, 2, " ", ")")
+        self.assertEqual(content_control.selected_option_index, 1)
+
     def test_content_control_exceptions(self):
         options = [{"hello": "hello"}]
-        self.assertRaises(RequiredKeyNotFound, InquirerPyRawlistControl, options)
+        self.assertRaises(
+            RequiredKeyNotFound, InquirerPyRawlistControl, options, "", "", ""
+        )
 
         options = [Separator(), Separator()]
-        self.assertRaises(InvalidArgument, InquirerPyRawlistControl, options)
+        self.assertRaises(
+            InvalidArgument, InquirerPyRawlistControl, options, "", "", ""
+        )
 
         options = []
-        self.assertRaises(InvalidArgument, InquirerPyRawlistControl, options)
+        self.assertRaises(
+            InvalidArgument, InquirerPyRawlistControl, options, "", "", ""
+        )
 
     def test_prompt(self):
         rawlist_prompt = RawlistPrompt(
