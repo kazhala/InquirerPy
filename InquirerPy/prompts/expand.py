@@ -1,7 +1,11 @@
 """Module contains the expand prompt and its related helper classes."""
 from typing import Any, Dict, List, Literal, NamedTuple, Tuple
 
-from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
+from InquirerPy.base import (
+    BaseComplexPrompt,
+    INQUIRERPY_POINTER_SEQUENCE,
+    InquirerPyUIControl,
+)
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
 
@@ -15,42 +19,37 @@ class ExpandHelp(NamedTuple):
 class InquirerPyExpandControl(InquirerPyUIControl):
     """A UI control object intended to be used by `prompt_toolkit` window.
 
-    :param options: list of options to display
-    :type options: List[Dict[str, Any]]
-    :param default: default value, must be one of the "key" of the options
-    :type default: str
-    :param pointer: the pointer symbol to use indicating current highlighted line
-    :type pointer: str
-    :param separator: separator symbol to display between the shortcut key and the content
-    :type separator: str
-    :param help_msg: help message to display to the user
-    :type help_msg: str
+    All parameter types and purposes, reference `ExpandPrompt`.
     """
 
     def __init__(
         self,
         options: List[Dict[str, Any]],
-        default: str = None,
-        pointer: str = " ",
-        separator: str = ")",
-        help_msg: str = "Help, list all options",
+        default: str,
+        pointer: str,
+        separator: str,
+        help_msg: str,
+        expand_pointer: str,
     ) -> None:
         """Construct UIControl object and initialise options."""
         self.pointer = "%s " % pointer
         self.separator = separator
         self.expanded = False
         self.key_maps = {}
+        self.expand_pointer = expand_pointer
         super().__init__(options, default)
 
         try:
             count = 0
             separator_count = 0
             for raw_option, option in zip(options, self.options):
-                if not isinstance(raw_option, dict):
+                if not isinstance(raw_option, dict) and not isinstance(
+                    raw_option, Separator
+                ):
                     raise InvalidArgument(
                         "expand type prompt require each option to be a dictionary."
                     )
-                if isinstance(option["value"], Separator):
+                if isinstance(raw_option, Separator):
                     separator_count += 1
                 else:
                     option["key"] = raw_option["key"]
@@ -71,15 +70,12 @@ class InquirerPyExpandControl(InquirerPyUIControl):
 
         1. non expand mode
         2. expand mode
-
-        :return: a list of formatted options
-        :rtype: List[Tuple[str, str]]
         """
         if self.expanded:
             return super()._get_formatted_options()
         else:
             display_choices = []
-            display_choices.append(("class:pointer", ">> "))
+            display_choices.append(("class:pointer", "%s " % self.expand_pointer))
             display_choices.append(
                 ("", self.options[self.selected_option_index]["name"])
             )
@@ -103,32 +99,51 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         display_message.append(("", option["name"]))
         return display_message
 
-    def _set_selected_option(self, key: str) -> None:
-        self.selected_option_index = self.key_maps[key]
-
 
 class ExpandPrompt(BaseComplexPrompt):
     """Create a `prompt_toolkit` application and responsible to render the expand prompt.
 
+    Prompt contains 2 state, expanded and not expanded. The visual effect are
+    all controled via InquirerPyExpandControl under one window.
+
+    :param message: message to ask user
+    :type message: str
     :param options: list of options to display
     :type options: List[Dict[str, Any]]
+    :param default: default value, needs to be a key of the options
+    :type default: str
+    :param style: style dict to apply to the prompt
+    :type style: Dict[str, str]
+    :param editing_mode: controls the keybindings of movement
+    :type editing_mode: Literal["default", "emacs", "vim"]
+    :param symbol: question symbol to display
+    :type symbol: str
+    :param pointer: pointer symbol to indicate current selected line
+    :type pointer: str
+    :param separator: separator symbol to display between the shortcut key and the content
+    :type separator: str
+    :param help_msg: help message to display to the user
+    :type help_msg: str
+    :param expand_pointer: visual pointer before expansion of the prompt
+    :type expand_pointer: str
     """
 
     def __init__(
         self,
         message: str,
         options: List[Dict[str, Any]],
-        default: str = None,
+        default: str = "",
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "emacs", "vim"] = "default",
         symbol: str = "?",
         pointer: str = " ",
         separator: str = ")",
         help_msg: str = "Help, list all options",
+        expand_pointer: str = INQUIRERPY_POINTER_SEQUENCE,
     ) -> None:
         """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
-            options, default, pointer, separator, help_msg
+            options, default, pointer, separator, help_msg, expand_pointer
         )
         super().__init__(message, style, editing_mode, symbol)
 
@@ -178,9 +193,10 @@ class ExpandPrompt(BaseComplexPrompt):
 
     @property
     def instruction(self) -> str:
-        """Render the instruction behind the question.
+        """Construct the instruction behind the question.
 
-        This method is also responsible to display the user input.
+        :return: instruction
+        :rtype: str
         """
         return "(%s)" % "".join(self.content_control.key_maps.keys())
 
