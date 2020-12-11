@@ -249,6 +249,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
     :type editing_mode: Literal["emacs", "default", "vim"]
     :param symbol: question mark to display
     :type symbol: str
+    :param instruction: instruction to display after the question message
+    :type instruction: str
     """
 
     def __init__(
@@ -257,11 +259,12 @@ class BaseComplexPrompt(BaseSimplePrompt):
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         symbol: str = "?",
+        instruction: str = "",
     ) -> None:
         """Initialise the Application."""
         super().__init__(message, style, editing_mode, symbol)
         self._content_control: InquirerPyUIControl
-
+        self._instruction = instruction
         self.layout = HSplit(
             [
                 Window(
@@ -323,23 +326,14 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """Execute the application and get the result."""
         return self.application.run()
 
-    @abstractmethod
-    def handle_enter(self, event) -> None:
-        """Handle the event when user hit Enter key.
-
-        Require implementation at child classes.
-        """
-        pass
-
     @property
-    @abstractmethod
     def instruction(self) -> str:
         """Instruction to display next to question.
 
         :return: instruction text
         :rtype: str
         """
-        pass
+        return self._instruction
 
     @property
     def content_control(self) -> InquirerPyUIControl:
@@ -357,10 +351,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._content_control = value
 
     def handle_up(self) -> None:
-        """Handle the event when user attempt to move up.
-
-        Override this method for prompts that doesn't require moving up/down.
-        """
+        """Handle the event when user attempt to move up."""
         while True:
             self.content_control.selected_option_index = (
                 self.content_control.selected_option_index - 1
@@ -369,13 +360,16 @@ class BaseComplexPrompt(BaseSimplePrompt):
                 break
 
     def handle_down(self) -> None:
-        """Handle the event when user attempt to move down.
-
-        Override this method for prompts that doesn't require moving up/down.
-        """
+        """Handle the event when user attempt to move down."""
         while True:
             self.content_control.selected_option_index = (
                 self.content_control.selected_option_index + 1
             ) % self.content_control.option_count
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
+
+    def handle_enter(self, event) -> None:
+        """Handle the event when user hit Enter key."""
+        self.status["answered"] = True
+        self.status["result"] = self.content_control.selection["name"]
+        event.app.exit(result=self.content_control.selection["value"])

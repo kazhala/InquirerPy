@@ -103,6 +103,8 @@ class CheckboxPrompt(BaseComplexPrompt):
     :type enabled_symbol: str
     :param disabled_symbol: symbol indicating not selected symbol
     :type disabled_symbol: str
+    :param instruction: instruction to display after the message
+    :type instruction: str
     """
 
     def __init__(
@@ -122,8 +124,7 @@ class CheckboxPrompt(BaseComplexPrompt):
         self.content_control = InquirerPyCheckboxControl(
             options, default, pointer, enabled_symbol, disabled_symbol
         )
-        self._instruction = instruction
-        super().__init__(message, style, editing_mode, symbol)
+        super().__init__(message, style, editing_mode, symbol, instruction)
 
         @self.kb.add(" ")
         def _(event) -> None:
@@ -159,15 +160,13 @@ class CheckboxPrompt(BaseComplexPrompt):
             option["enabled"] = value if value else not option["enabled"]
 
     def handle_enter(self, event) -> None:
-        """Handle the event when user hit enter."""
+        """Handle the event when user hit enter.
+
+        Get all current user selected options and exit application using them as the result.
+        """
         self.status["answered"] = True
         self.status["result"] = [option["name"] for option in self.selected_options]
         event.app.exit(result=[option["value"] for option in self.selected_options])
-
-    @property
-    def instruction(self) -> str:
-        """Get the instruction to display."""
-        return self._instruction
 
     @property
     def selected_options(self) -> List[Any]:

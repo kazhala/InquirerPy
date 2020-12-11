@@ -107,7 +107,7 @@ class RawlistPrompt(BaseComplexPrompt):
             options, default, pointer, separator
         )
         self._instruction = instruction
-        super().__init__(message, style, editing_mode, symbol)
+        super().__init__(message, style, editing_mode, symbol, instruction)
 
         def keybinding_factory(option):
             @self.kb.add(str(option["display_index"]))
@@ -120,14 +120,3 @@ class RawlistPrompt(BaseComplexPrompt):
         for option in self.content_control.options:
             if not isinstance(option["value"], Separator):
                 keybinding_factory(option)
-
-    def handle_enter(self, event) -> None:
-        """Handle the event of user hitting enter."""
-        self.status["answered"] = True
-        self.status["result"] = self.content_control.selection["name"]
-        event.app.exit(result=self.content_control.selection["value"])
-
-    @property
-    def instruction(self) -> str:
-        """Get the instruction to display."""
-        return self._instruction

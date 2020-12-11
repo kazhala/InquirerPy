@@ -80,15 +80,4 @@ class ListPrompt(BaseComplexPrompt):
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyListControl(options, default, pointer)
         self._instruction = instruction
-        super().__init__(message, style, editing_mode, symbol)
-
-    def handle_enter(self, event) -> None:
-        """Handle the event when user hit Enter."""
-        self.status["answered"] = True
-        self.status["result"] = self.content_control.selection["name"]
-        event.app.exit(result=self.content_control.selection["value"])
-
-    @property
-    def instruction(self) -> str:
-        """Get the instruction to print."""
-        return self._instruction
+        super().__init__(message, style, editing_mode, symbol, instruction)
