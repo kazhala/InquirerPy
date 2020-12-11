@@ -133,11 +133,14 @@ class ExpandPrompt(BaseComplexPrompt):
         super().__init__(message, style, editing_mode, symbol)
 
         def keybinding_factory(key):
-            @self.kb.add(key)
+            @self.kb.add(key.lower())
             def keybinding(_) -> None:
-                self.content_control.selected_option_index = (
-                    self.content_control.key_maps[key]
-                )
+                if key == "h":
+                    self.content_control.expanded = not self.content_control.expanded
+                else:
+                    self.content_control.selected_option_index = (
+                        self.content_control.key_maps[key]
+                    )
 
             return keybinding
 
@@ -145,15 +148,33 @@ class ExpandPrompt(BaseComplexPrompt):
             if not isinstance(option["value"], Separator):
                 keybinding_factory(option["key"])
 
-    def handle_enter(self, event) -> None:
-        """Handle the event of user hitting enter.
+    def handle_up(self) -> None:
+        """Handle the event when user attempt to move up.
 
-        If user selected `h`, then decide to expand the prompt or not.
+        Overriding this method to skip the help option.
         """
-        if isinstance(self.content_control.selection["value"], ExpandHelp):
-            self.content_control.expanded = not self.content_control.expanded
-        else:
-            super().handle_enter(event)
+        while True:
+            self.content_control.selected_option_index = (
+                self.content_control.selected_option_index - 1
+            ) % self.content_control.option_count
+            if not isinstance(
+                self.content_control.selection["value"], Separator
+            ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
+                break
+
+    def handle_down(self) -> None:
+        """Handle the event when user attempt to move down.
+
+        Overriding this method to skip the help option.
+        """
+        while True:
+            self.content_control.selected_option_index = (
+                self.content_control.selected_option_index + 1
+            ) % self.content_control.option_count
+            if not isinstance(
+                self.content_control.selection["value"], Separator
+            ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
+                break
 
     @property
     def instruction(self) -> str:
@@ -162,3 +183,20 @@ class ExpandPrompt(BaseComplexPrompt):
         This method is also responsible to display the user input.
         """
         return "(%s)" % "".join(self.content_control.key_maps.keys())
+
+    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+        """Return the formatted text to display in the prompt.
+
+        Overriding this method to allow multiple formatted class to be displayed.
+        """
+        display_message = []
+        display_message.append(("class:symbol", self.symbol))
+        display_message.append(("class:question", " %s" % self.message))
+        if self.status["answered"]:
+            display_message.append(("class:answer", " %s" % self.status["result"]))
+        else:
+            display_message.append(("class:instruction", " %s" % self.instruction))
+            display_message.append(
+                ("class:input", " %s" % self.content_control.selection["key"])
+            )
+        return display_message
