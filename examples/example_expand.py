@@ -19,6 +19,7 @@ questions = [
             {"name": "foo", "value": "boo", "key": "f"},
         ],
         "question": "What do you think?",
+        "default": "f",
     },
 ]
 

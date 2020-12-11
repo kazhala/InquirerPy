@@ -37,7 +37,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         self.expanded = False
         self.key_maps = {}
         self.expand_pointer = expand_pointer
-        super().__init__(options, default)
+        super().__init__(options, None)
 
         try:
             count = 0
@@ -64,6 +64,15 @@ class InquirerPyExpandControl(InquirerPyUIControl):
             {"key": "h", "value": ExpandHelp(help_msg), "name": help_msg}
         )
         self.key_maps["h"] = len(self.options) - 1
+
+        for index, option in enumerate(self.options):
+            if isinstance(option["value"], Separator):
+                continue
+            if option["key"] == default:
+                self.selected_option_index = index
+                break
+            else:
+                continue
 
     def _get_formatted_options(self) -> List[Tuple[str, str]]:
         """Override this parent class method as expand require visual switch of content.
