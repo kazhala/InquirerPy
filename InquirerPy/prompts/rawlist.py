@@ -31,7 +31,10 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
             option["display_index"] = index + 1 - separator_count
             option["actual_index"] = index
 
-        if self.selected_option_index == 0:
+        first_valid_option_index = 0
+        while isinstance(self.options[first_valid_option_index]["value"], Separator):
+            first_valid_option_index += 1
+        if self.selected_option_index == first_valid_option_index:
             for option in self.options:
                 if isinstance(option["value"], Separator):
                     continue

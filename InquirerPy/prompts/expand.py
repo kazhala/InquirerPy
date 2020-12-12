@@ -1,5 +1,5 @@
 """Module contains the expand prompt and its related helper classes."""
-from typing import Any, Dict, List, Literal, NamedTuple, Tuple
+from typing import Any, Dict, List, Literal, NamedTuple, Tuple, Union
 
 from InquirerPy.base import (
     BaseComplexPrompt,
@@ -24,7 +24,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        options: List[Dict[str, Any]],
+        options: List[Union[Separator, Dict[str, Any]]],
         default: str,
         pointer: str,
         separator: str,
@@ -36,7 +36,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         self.separator = separator
         self.expanded = False
         self.key_maps = {}
-        self.expand_pointer = expand_pointer
+        self.expand_pointer = "%s " % expand_pointer
         super().__init__(options, default)
 
         try:
@@ -47,7 +47,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
                     raw_option, Separator
                 ):
                     raise InvalidArgument(
-                        "expand type prompt require each option to be a dictionary."
+                        "expand type prompt require each option to be a dictionary or Separator."
                     )
                 if isinstance(raw_option, Separator):
                     separator_count += 1
@@ -57,7 +57,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
                 count += 1
         except KeyError:
             raise RequiredKeyNotFound(
-                "each option require the dictionary key 'key' to be present."
+                "each dictionary option require the dictionary key 'key' to be present."
             )
 
         self.options.append(
@@ -65,7 +65,10 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         )
         self.key_maps["h"] = len(self.options) - 1
 
-        if self.selected_option_index == 0:
+        first_valid_option_index = 0
+        while isinstance(self.options[first_valid_option_index]["value"], Separator):
+            first_valid_option_index += 1
+        if self.selected_option_index == first_valid_option_index:
             for index, option in enumerate(self.options):
                 if isinstance(option["value"], Separator):
                     continue
@@ -83,7 +86,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
             return super()._get_formatted_options()
         else:
             display_choices = []
-            display_choices.append(("class:pointer", "%s " % self.expand_pointer))
+            display_choices.append(("class:pointer", self.expand_pointer))
             display_choices.append(
                 ("", self.options[self.selected_option_index]["name"])
             )
@@ -117,7 +120,7 @@ class ExpandPrompt(BaseComplexPrompt):
     :param message: message to ask user
     :type message: str
     :param options: list of options to display
-    :type options: List[Dict[str, Any]]
+    :type options: List[Union[Separator, Dict[str, Any]]]
     :param default: default value, needs to be a key of the options
     :type default: str
     :param style: style dict to apply to the prompt
@@ -139,7 +142,7 @@ class ExpandPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        options: List[Dict[str, Any]],
+        options: List[Union[Dict[str, Any], Separator]],
         default: str = "",
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "emacs", "vim"] = "default",
