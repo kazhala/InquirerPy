@@ -137,6 +137,8 @@ class ExpandPrompt(BaseComplexPrompt):
     :type help_msg: str
     :param expand_pointer: visual pointer before expansion of the prompt
     :type expand_pointer: str
+    :param instruction: override the default instruction e.g. (Yabh)
+    :type instruction: str
     """
 
     def __init__(
@@ -151,12 +153,14 @@ class ExpandPrompt(BaseComplexPrompt):
         separator: str = ")",
         help_msg: str = "Help, list all options",
         expand_pointer: str = INQUIRERPY_POINTER_SEQUENCE,
+        instruction: str = "",
     ) -> None:
         """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
             options, default, pointer, separator, help_msg, expand_pointer
         )
         super().__init__(message, style, editing_mode, symbol)
+        self._instruction = instruction
 
         def keybinding_factory(key):
             @self.kb.add(key.lower())
@@ -206,10 +210,16 @@ class ExpandPrompt(BaseComplexPrompt):
     def instruction(self) -> str:
         """Construct the instruction behind the question.
 
+        If _instruction exists, use that.
+
         :return: instruction
         :rtype: str
         """
-        return "(%s)" % "".join(self.content_control.key_maps.keys())
+        return (
+            "(%s)" % "".join(self.content_control.key_maps.keys())
+            if not self._instruction
+            else self._instruction
+        )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Return the formatted text to display in the prompt.
