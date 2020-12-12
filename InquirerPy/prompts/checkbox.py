@@ -160,7 +160,7 @@ class CheckboxPrompt(BaseComplexPrompt):
                 continue
             choice["enabled"] = value if value else not choice["enabled"]
 
-    def handle_enter(self, event) -> None:
+    def _handle_enter(self, event) -> None:
         """Handle the event when user hit enter.
 
         Get all current user selected choices and exit application using them as the result.

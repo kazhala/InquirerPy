@@ -125,7 +125,7 @@ class TestCheckbox(unittest.TestCase):
         self.assertEqual(prompt.status, {"result": None, "answered": False})
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
-            prompt.handle_enter(event)
+            prompt._handle_enter(event)
         self.assertEqual(prompt.status, {"result": ["mix"], "answered": True})
 
         prompt._toggle_choice()
