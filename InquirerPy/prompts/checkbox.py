@@ -18,21 +18,21 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
 
     Used to dynamically update the content and indicate the current user selection
 
-    :param options: a list of options to display
-    :type options: List[Union[Any, Dict[str, Any]]]
+    :param choices: a list of choices to display
+    :type choices: List[Union[Any, Dict[str, Any]]]
     :param default: default value for selection
     :type default: Any
     :param pointer: the pointer to display, indicating current line, default is unicode ">"
     :type pointer: str
-    :param selected_symbol: the symbol to indicate selected options
+    :param selected_symbol: the symbol to indicate selected choices
     :type selected_symbol: str
-    :param disabled_symbol: the symbol to indicate not selected options
+    :param disabled_symbol: the symbol to indicate not selected choices
     :type disabled_symbol: str
     """
 
     def __init__(
         self,
-        options: List[Union[Any, Dict[str, Any]]],
+        choices: List[Union[Any, Dict[str, Any]]],
         default: Any = None,
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
@@ -42,42 +42,42 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         self.pointer = "%s " % pointer
         self.enabled_symbol = enabled_symbol
         self.disabled_symbol = disabled_symbol
-        super().__init__(options, default)
+        super().__init__(choices, default)
 
-        for raw_option, option in zip(options, self.options):
-            if isinstance(raw_option, dict):
-                option["enabled"] = raw_option.get("enabled", False)
+        for raw_choice, choice in zip(choices, self.choices):
+            if isinstance(raw_choice, dict):
+                choice["enabled"] = raw_choice.get("enabled", False)
             else:
-                option["enabled"] = False
+                choice["enabled"] = False
 
-    def _get_hover_text(self, option) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("class:pointer", self.pointer))
-        if not isinstance(option["value"], Separator):
+        if not isinstance(choice["value"], Separator):
             display_message.append(
                 (
                     "class:checkbox",
                     "%s " % self.enabled_symbol
-                    if option["enabled"]
+                    if choice["enabled"]
                     else "%s " % self.disabled_symbol,
                 )
             )
-        display_message.append(("class:pointer", option["name"]))
+        display_message.append(("class:pointer", choice["name"]))
         return display_message
 
-    def _get_normal_text(self, option) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("", len(self.pointer) * " "))
-        if not isinstance(option["value"], Separator):
+        if not isinstance(choice["value"], Separator):
             display_message.append(
                 (
                     "class:checkbox",
                     "%s " % self.enabled_symbol
-                    if option["enabled"]
+                    if choice["enabled"]
                     else "%s " % self.disabled_symbol,
                 )
             )
-        display_message.append(("", option["name"]))
+        display_message.append(("", choice["name"]))
         return display_message
 
 
@@ -86,8 +86,8 @@ class CheckboxPrompt(BaseComplexPrompt):
 
     :param message: message to display
     :type message: str
-    :param options: list of options to display
-    :type options: List[Union[Any, Dict[str, Any]]]
+    :param choices: list of choices to display
+    :type choices: List[Union[Any, Dict[str, Any]]]
     :param default: default value
     :type default: Any
     :param style: a dictionary of style
@@ -109,7 +109,7 @@ class CheckboxPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        options: List[Union[Any, Dict[str, Any]]],
+        choices: List[Union[Any, Dict[str, Any]]],
         default: Any = None,
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
@@ -121,22 +121,22 @@ class CheckboxPrompt(BaseComplexPrompt):
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyCheckboxControl(
-            options, default, pointer, enabled_symbol, disabled_symbol
+            choices, default, pointer, enabled_symbol, disabled_symbol
         )
         super().__init__(message, style, editing_mode, symbol, instruction)
 
         @self.kb.add(" ")
         def _(event) -> None:
-            self._toggle_option()
+            self._toggle_choice()
 
         @self.kb.add(Keys.Tab)
         def _(event) -> None:
-            self._toggle_option()
+            self._toggle_choice()
             self._handle_down()
 
         @self.kb.add(Keys.BackTab)
         def _(event) -> None:
-            self._toggle_option()
+            self._toggle_choice()
             self._handle_up()
 
         @self.kb.add("a")
@@ -147,31 +147,31 @@ class CheckboxPrompt(BaseComplexPrompt):
         def _(event) -> None:
             self._toggle_all()
 
-    def _toggle_option(self) -> None:
+    def _toggle_choice(self) -> None:
         self.content_control.selection["enabled"] = not self.content_control.selection[
             "enabled"
         ]
 
     def _toggle_all(self, value: bool = None) -> None:
-        for option in self.content_control.options:
-            if isinstance(option["value"], Separator):
+        for choice in self.content_control.choices:
+            if isinstance(choice["value"], Separator):
                 continue
-            option["enabled"] = value if value else not option["enabled"]
+            choice["enabled"] = value if value else not choice["enabled"]
 
     def handle_enter(self, event) -> None:
         """Handle the event when user hit enter.
 
-        Get all current user selected options and exit application using them as the result.
+        Get all current user selected choices and exit application using them as the result.
         """
         self.status["answered"] = True
-        self.status["result"] = [option["name"] for option in self.selected_options]
-        event.app.exit(result=[option["value"] for option in self.selected_options])
+        self.status["result"] = [choice["name"] for choice in self.selected_choices]
+        event.app.exit(result=[choice["value"] for choice in self.selected_choices])
 
     @property
-    def selected_options(self) -> List[Any]:
-        """Get all user selected options."""
+    def selected_choices(self) -> List[Any]:
+        """Get all user selected choices."""
 
-        def filter_option(option):
-            return not isinstance(option, Separator) and option["enabled"]
+        def filter_choice(choice):
+            return not isinstance(choice, Separator) and choice["enabled"]
 
-        return list(filter(filter_option, self.content_control.options))
+        return list(filter(filter_choice, self.content_control.choices))

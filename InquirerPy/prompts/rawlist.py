@@ -13,56 +13,56 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        options: List[Union[Any, Dict[str, Any]]],
+        choices: List[Union[Any, Dict[str, Any]]],
         default: Any,
         pointer: str,
         separator: str,
     ) -> None:
-        """Construct the content control object and add the index to each option for visual purposes."""
+        """Construct the content control object and add the index to each choice for visual purposes."""
         self.pointer = "%s " % pointer
         self.separator = separator
-        super().__init__(options, default)
+        super().__init__(choices, default)
 
         separator_count = 0
-        for index, option in enumerate(self.options):
-            if isinstance(option["value"], Separator):
+        for index, choice in enumerate(self.choices):
+            if isinstance(choice["value"], Separator):
                 separator_count += 1
                 continue
-            option["display_index"] = index + 1 - separator_count
-            option["actual_index"] = index
+            choice["display_index"] = index + 1 - separator_count
+            choice["actual_index"] = index
 
-        first_valid_option_index = 0
-        while isinstance(self.options[first_valid_option_index]["value"], Separator):
-            first_valid_option_index += 1
-        if self.selected_option_index == first_valid_option_index:
-            for option in self.options:
-                if isinstance(option["value"], Separator):
+        first_valid_choice_index = 0
+        while isinstance(self.choices[first_valid_choice_index]["value"], Separator):
+            first_valid_choice_index += 1
+        if self.selected_choice_index == first_valid_choice_index:
+            for choice in self.choices:
+                if isinstance(choice["value"], Separator):
                     continue
-                if option["display_index"] == default:
-                    self.selected_option_index = option["actual_index"]
+                if choice["display_index"] == default:
+                    self.selected_choice_index = choice["actual_index"]
                     break
 
-    def _get_hover_text(self, option) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("class:pointer", self.pointer))
-        if not isinstance(option["value"], Separator):
+        if not isinstance(choice["value"], Separator):
             display_message.append(
                 (
                     "class:pointer",
-                    "%s%s " % (str(option["display_index"]), self.separator),
+                    "%s%s " % (str(choice["display_index"]), self.separator),
                 )
             )
-        display_message.append(("class:pointer", option["name"]))
+        display_message.append(("class:pointer", choice["name"]))
         return display_message
 
-    def _get_normal_text(self, option) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("", len(self.pointer) * " "))
-        if not isinstance(option["value"], Separator):
+        if not isinstance(choice["value"], Separator):
             display_message.append(
-                ("", "%s%s " % (str(option["display_index"]), self.separator))
+                ("", "%s%s " % (str(choice["display_index"]), self.separator))
             )
-        display_message.append(("", option["name"]))
+        display_message.append(("", choice["name"]))
         return display_message
 
 
@@ -71,11 +71,11 @@ class RawlistPrompt(BaseComplexPrompt):
 
     :param message: message to display as question
     :type message: str
-    :param options: list of options available for selection
-    :type options: List[Union[Any, Dict[str, Any]]]
+    :param choices: list of choices available for selection
+    :type choices: List[Union[Any, Dict[str, Any]]]
     :param default: default value
     :type default: Any
-    :param separator: the separator between the index number and the options
+    :param separator: the separator between the index number and the choices
         e.g. default separator is ")"
             1) whatever
             2) whatever
@@ -95,7 +95,7 @@ class RawlistPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        options: List[Union[Any, Dict[str, Any]]],
+        choices: List[Union[Any, Dict[str, Any]]],
         default: Any = None,
         separator: str = ")",
         style: Dict[str, str] = {},
@@ -106,18 +106,18 @@ class RawlistPrompt(BaseComplexPrompt):
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
         self.content_control = InquirerPyRawlistControl(
-            options, default, pointer, separator
+            choices, default, pointer, separator
         )
         self._instruction = instruction
         super().__init__(message, style, editing_mode, symbol, instruction)
 
-        def keybinding_factory(option):
-            @self.kb.add(str(option["display_index"]))
+        def keybinding_factory(choice):
+            @self.kb.add(str(choice["display_index"]))
             def keybinding(_) -> None:
-                self.content_control.selected_option_index = int(option["actual_index"])
+                self.content_control.selected_choice_index = int(choice["actual_index"])
 
             return keybinding
 
-        for option in self.content_control.options:
-            if not isinstance(option["value"], Separator):
-                keybinding_factory(option)
+        for choice in self.content_control.choices:
+            if not isinstance(choice["value"], Separator):
+                keybinding_factory(choice)

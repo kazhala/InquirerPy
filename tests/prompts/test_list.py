@@ -12,7 +12,7 @@ from InquirerPy.separator import Separator
 
 
 class TestListPrompt(unittest.TestCase):
-    options = [
+    choices = [
         {"name": "apple", "value": "peach"},
         "pear",
         {"name": "melon", "value": "watermelon"},
@@ -20,20 +20,20 @@ class TestListPrompt(unittest.TestCase):
 
     def test_list_control(self):
         list_control = InquirerPyListControl(
-            self.options,
+            self.choices,
             "watermelon",
         )
         self.assertEqual(
-            list_control.options,
+            list_control.choices,
             [
                 {"name": "apple", "value": "peach"},
                 {"name": "pear", "value": "pear"},
                 {"name": "melon", "value": "watermelon"},
             ],
         )
-        self.assertEqual(list_control.selected_option_index, 2)
+        self.assertEqual(list_control.selected_choice_index, 2)
         self.assertEqual(
-            list_control._get_formatted_options(),
+            list_control._get_formatted_choices(),
             [
                 ("", "  "),
                 ("", "apple"),
@@ -45,7 +45,7 @@ class TestListPrompt(unittest.TestCase):
                 ("class:pointer", "melon"),
             ],
         )
-        self.assertEqual(list_control.option_count, 3)
+        self.assertEqual(list_control.choice_count, 3)
         self.assertEqual(
             list_control.selection, {"name": "melon", "value": "watermelon"}
         )
@@ -65,7 +65,7 @@ class TestListPrompt(unittest.TestCase):
     def test_list_prompt(self):
         prompt = ListPrompt(
             message="Select a fruit",
-            options=self.options,
+            choices=self.choices,
             default="watermelon",
             style={"pointer": "#61afef"},
             editing_mode="vim",
@@ -87,10 +87,10 @@ class TestListPrompt(unittest.TestCase):
         self.assertIsInstance(window_list[1], ConditionalContainer)
 
     def test_minimum_args(self):
-        ListPrompt(message="Select a fruit", options=self.options, style={})
+        ListPrompt(message="Select a fruit", choices=self.choices, style={})
 
-    def test_option_combination(self):
-        prompt = ListPrompt(message="Test combo", options=["hello"])
+    def test_choice_combination(self):
+        prompt = ListPrompt(message="Test combo", choices=["hello"])
         self.assertEqual(prompt.symbol, "?")
         self.assertEqual(prompt.instruction, "")
 
@@ -99,7 +99,7 @@ class TestListPrompt(unittest.TestCase):
     def test_list_prompt_message(self):
         prompt = ListPrompt(
             message="Select a fruit",
-            options=self.options,
+            choices=self.choices,
             default="watermelon",
             style={"pointer": "#61afef"},
             editing_mode="vim",
@@ -119,7 +119,7 @@ class TestListPrompt(unittest.TestCase):
     def test_list_bindings(self):
         prompt = ListPrompt(
             message="Select a fruit",
-            options=self.options,
+            choices=self.choices,
             default="watermelon",
             style={"pointer": "#61afef"},
             editing_mode="vim",
@@ -127,15 +127,15 @@ class TestListPrompt(unittest.TestCase):
             pointer=">",
             instruction="(j/k)",
         )
-        self.assertEqual(prompt.content_control.selected_option_index, 2)
+        self.assertEqual(prompt.content_control.selected_choice_index, 2)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 0)
+        self.assertEqual(prompt.content_control.selected_choice_index, 0)
         prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_option_index, 2)
+        self.assertEqual(prompt.content_control.selected_choice_index, 2)
         prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 2)
+        self.assertEqual(prompt.content_control.selected_choice_index, 2)
 
         self.assertEqual(prompt.status, {"result": None, "answered": False})
         with patch("prompt_toolkit.utils.Event") as mock:
@@ -144,20 +144,20 @@ class TestListPrompt(unittest.TestCase):
         self.assertEqual(prompt.status, {"result": "melon", "answered": True})
 
     def test_separator_movement(self):
-        prompt = ListPrompt(message="..", options=[Separator("hello"), "yes"])
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        prompt = ListPrompt(message="..", choices=[Separator("hello"), "yes"])
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
 
         prompt = ListPrompt(
-            message="..", options=[Separator("hello"), "yes", Separator(), "no"]
+            message="..", choices=[Separator("hello"), "yes", Separator(), "no"]
         )
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        self.assertEqual(prompt.content_control.selected_choice_index, 3)
         prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        self.assertEqual(prompt.content_control.selected_choice_index, 3)

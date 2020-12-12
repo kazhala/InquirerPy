@@ -111,94 +111,94 @@ class InquirerPyUIControl(FormattedTextControl):
 
     Dynamically adapt to user input and update formatted text.
 
-    :param options: list of options to display as the content
-    :type options: List[Any]
+    :param choices: list of choices to display as the content
+    :type choices: List[Any]
     :param default: default value, will impact the cursor position
     :type default: Any
     """
 
     def __init__(
         self,
-        options: List[Any],
+        choices: List[Any],
         default: Any = None,
     ) -> None:
-        """Initialise options and construct a FormattedTextControl object."""
-        self.selected_option_index: int = 0
-        self.options: List[Dict[str, Any]] = self._get_options(options, default)
+        """Initialise choices and construct a FormattedTextControl object."""
+        self.selected_choice_index: int = 0
+        self.choices: List[Dict[str, Any]] = self._get_choices(choices, default)
         self._safety_check()
-        super().__init__(self._get_formatted_options)
+        super().__init__(self._get_formatted_choices)
 
-    def _get_options(
-        self, options: List[Union[Any, Dict[str, Any]]], default: Any
+    def _get_choices(
+        self, choices: List[Union[Any, Dict[str, Any]]], default: Any
     ) -> List[Dict[str, Any]]:
-        """Process the raw user input options and format it into dictionary.
+        """Process the raw user input choices and format it into dictionary.
 
-        :param options: list of options to display
-        :type options: List[Union[str, Dict[str, Any]]]
-        :param default: default value, this affect selected_option_index
+        :param choices: list of choices to display
+        :type choices: List[Union[str, Dict[str, Any]]]
+        :param default: default value, this affect selected_choice_index
         :type default: Any
-        :return: formatted options
+        :return: formatted choices
         :rtype: List[Dict[str, Any]]
         """
-        processed_options: List[Dict[str, Any]] = []
+        processed_choices: List[Dict[str, Any]] = []
         try:
-            for index, option in enumerate(options, start=0):
-                if isinstance(option, dict):
-                    if option["value"] == default:
-                        self.selected_option_index = index
-                    processed_options.append(
-                        {"name": str(option["name"]), "value": option["value"]}
+            for index, choice in enumerate(choices, start=0):
+                if isinstance(choice, dict):
+                    if choice["value"] == default:
+                        self.selected_choice_index = index
+                    processed_choices.append(
+                        {"name": str(choice["name"]), "value": choice["value"]}
                     )
-                elif isinstance(option, Separator):
-                    if self.selected_option_index == index:
-                        self.selected_option_index = (
-                            self.selected_option_index + 1
-                        ) % len(options)
-                    processed_options.append({"name": str(option), "value": option})
+                elif isinstance(choice, Separator):
+                    if self.selected_choice_index == index:
+                        self.selected_choice_index = (
+                            self.selected_choice_index + 1
+                        ) % len(choices)
+                    processed_choices.append({"name": str(choice), "value": choice})
                 else:
-                    if option == default:
-                        self.selected_option_index = index
-                    processed_options.append({"name": str(option), "value": option})
+                    if choice == default:
+                        self.selected_choice_index = index
+                    processed_choices.append({"name": str(choice), "value": choice})
         except KeyError:
             raise RequiredKeyNotFound(
-                "dictionary option require a name key and a value key."
+                "dictionary choice require a name key and a value key."
             )
-        return processed_options
+        return processed_choices
 
     def _safety_check(self) -> None:
-        """Validate options, check empty or all Separator."""
-        if not self.options:
-            raise InvalidArgument("options cannot be empty.")
+        """Validate choices, check empty or all Separator."""
+        if not self.choices:
+            raise InvalidArgument("choices cannot be empty.")
         should_proceed: bool = False
-        for option in self.options:
-            if not isinstance(option["value"], Separator):
+        for choice in self.choices:
+            if not isinstance(choice["value"], Separator):
                 should_proceed = True
                 break
         if not should_proceed:
             raise InvalidArgument(
-                "options should contain content other than separator."
+                "choices should contain content other than separator."
             )
 
-    def _get_formatted_options(self) -> List[Tuple[str, str]]:
-        """Get all options in formatted text format.
+    def _get_formatted_choices(self) -> List[Tuple[str, str]]:
+        """Get all choices in formatted text format.
 
-        :return: a list of formatted options
+        :return: a list of formatted choices
         :rtype: List[Tuple[str, str]]
         """
         display_choices = []
 
-        for index, option in enumerate(self.options):
-            if index == self.selected_option_index:
-                display_choices += self._get_hover_text(option)
+        for index, choice in enumerate(self.choices):
+            if index == self.selected_choice_index:
+                display_choices += self._get_hover_text(choice)
             else:
-                display_choices += self._get_normal_text(option)
+                display_choices += self._get_normal_text(choice)
             display_choices.append(("", "\n"))
         display_choices.pop()
         return display_choices
 
     @abstractmethod
-    def _get_hover_text(self, option) -> List[Tuple[str, str]]:
-        """Generate the formatted text for hovered option.
+    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
+        """Generate the formatted text for hovered choice.
 
         :return: list of formatted text
         :rtype: List[Tuple[str, str]]
@@ -206,8 +206,8 @@ class InquirerPyUIControl(FormattedTextControl):
         pass
 
     @abstractmethod
-    def _get_normal_text(self, option) -> List[Tuple[str, str]]:
-        """Generate the formatted text for non-hovered options.
+    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
+        """Generate the formatted text for non-hovered choices.
 
         :return: list of formatted text
         :rtype: List[Tuple[str, str]]]
@@ -215,22 +215,22 @@ class InquirerPyUIControl(FormattedTextControl):
         pass
 
     @property
-    def option_count(self) -> int:
-        """Get the option count.
+    def choice_count(self) -> int:
+        """Get the choice count.
 
-        :return: total count of options
+        :return: total count of choices
         :rtype: int
         """
-        return len(self.options)
+        return len(self.choices)
 
     @property
     def selection(self) -> Dict[str, Any]:
         """Get current selection value.
 
-        :return: a dictionary of name and value for the current pointed option
+        :return: a dictionary of name and value for the current pointed choice
         :rtype: Dict[str, Any]
         """
-        return self.options[self.selected_option_index]
+        return self.choices[self.selected_choice_index]
 
 
 class BaseComplexPrompt(BaseSimplePrompt):
@@ -353,18 +353,18 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def _handle_up(self) -> None:
         """Handle the event when user attempt to move up."""
         while True:
-            self.content_control.selected_option_index = (
-                self.content_control.selected_option_index - 1
-            ) % self.content_control.option_count
+            self.content_control.selected_choice_index = (
+                self.content_control.selected_choice_index - 1
+            ) % self.content_control.choice_count
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
 
     def _handle_down(self) -> None:
         """Handle the event when user attempt to move down."""
         while True:
-            self.content_control.selected_option_index = (
-                self.content_control.selected_option_index + 1
-            ) % self.content_control.option_count
+            self.content_control.selected_choice_index = (
+                self.content_control.selected_choice_index + 1
+            ) % self.content_control.choice_count
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
 
@@ -372,8 +372,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """Handle the event when user hit Enter key.
 
         * Set the state to answered for an update to the prompt display.
-        * Set the result to user selected option's name for display purpose.
-        * Let the app exit with the user selected option's value and return the actual value back to resolver.
+        * Set the result to user selected choice's name for display purpose.
+        * Let the app exit with the user selected choice's value and return the actual value back to resolver.
         """
         self.status["answered"] = True
         self.status["result"] = self.content_control.selection["name"]

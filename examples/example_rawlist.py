@@ -4,7 +4,7 @@ from InquirerPy.separator import Separator
 questions = [
     {
         "type": "rawlist",
-        "options": ["hello", "world", "foo", "boo"],
+        "choices": ["hello", "world", "foo", "boo"],
         "message": "Select one of them",
         "default": "boo",
         "symbol": "[?]",
@@ -12,7 +12,7 @@ questions = [
     },
     {
         "type": "rawlist",
-        "options": [
+        "choices": [
             {"name": "foo", "value": "boo"},
             "hello",
             Separator(),

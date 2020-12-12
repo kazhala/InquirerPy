@@ -11,8 +11,8 @@ class InquirerPyListControl(InquirerPyUIControl):
 
     Used to dynamically render the list and update the content based on input
 
-    :param options: a list of options to display
-    :type options: List[Union[Any, Dict[str, Any]]]
+    :param choices: a list of choices to display
+    :type choices: List[Union[Any, Dict[str, Any]]]
     :param default: default selection
     :type default: Any
     :param pointer: the pointer char to display, default is unicode ">"
@@ -21,25 +21,25 @@ class InquirerPyListControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        options: List[Union[Any, Dict[str, Any]]],
+        choices: List[Union[Any, Dict[str, Any]]],
         default: Any = None,
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
     ) -> None:
         """Construct and init a custom FormattedTextControl object."""
         self.pointer: str = "%s " % pointer
-        super().__init__(options=options, default=default)
+        super().__init__(choices=choices, default=default)
 
-    def _get_hover_text(self, option) -> List[Tuple[str, str]]:
-        display_options = []
-        display_options.append(("class:pointer", self.pointer))
-        display_options.append(("class:pointer", option["name"]))
-        return display_options
+    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
+        display_choices = []
+        display_choices.append(("class:pointer", self.pointer))
+        display_choices.append(("class:pointer", choice["name"]))
+        return display_choices
 
-    def _get_normal_text(self, option) -> List[Tuple[str, str]]:
-        display_options = []
-        display_options.append(("", len(self.pointer) * " "))
-        display_options.append(("", option["name"]))
-        return display_options
+    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
+        display_choices = []
+        display_choices.append(("", len(self.pointer) * " "))
+        display_choices.append(("", choice["name"]))
+        return display_choices
 
 
 class ListPrompt(BaseComplexPrompt):
@@ -47,8 +47,8 @@ class ListPrompt(BaseComplexPrompt):
 
     :param message: message to display
     :type message: str
-    :param options: list of options to display
-    :type options: List[Union[Any, Dict[str, Any]]]
+    :param choices: list of choices to display
+    :type choices: List[Union[Any, Dict[str, Any]]]
     :param default: default value
     :type default: Any
     :param style: a dictionary of style
@@ -57,7 +57,7 @@ class ListPrompt(BaseComplexPrompt):
     :type editing_mode: Literal["emacs", "default", "vim"]
     :param symbol: question symbol to display
     :type symbol: str
-    :param pointer: the pointer symbol of hovered option
+    :param pointer: the pointer symbol of hovered choice
     :type pointer: str
     :param instruction: instruction to display to user
     :type instruction: str
@@ -66,7 +66,7 @@ class ListPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        options: List[Union[Any, Dict[str, Any]]],
+        choices: List[Union[Any, Dict[str, Any]]],
         default: Any = None,
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
@@ -75,6 +75,6 @@ class ListPrompt(BaseComplexPrompt):
         instruction: str = "",
     ) -> None:
         """Initialise the content_control and create Application."""
-        self.content_control = InquirerPyListControl(options, default, pointer)
+        self.content_control = InquirerPyListControl(choices, default, pointer)
         self._instruction = instruction
         super().__init__(message, style, editing_mode, symbol, instruction)

@@ -12,7 +12,7 @@ from InquirerPy.separator import Separator
 
 class TestCheckbox(unittest.TestCase):
     separator = Separator()
-    options = [
+    choices = [
         "boy",
         "girl",
         separator,
@@ -20,9 +20,9 @@ class TestCheckbox(unittest.TestCase):
     ]
 
     def test_checkbox_control(self):
-        checkbox_control = InquirerPyCheckboxControl(self.options, "boy&girl")
+        checkbox_control = InquirerPyCheckboxControl(self.choices, "boy&girl")
         self.assertEqual(
-            checkbox_control.options,
+            checkbox_control.choices,
             [
                 {"name": "boy", "value": "boy", "enabled": False},
                 {"name": "girl", "value": "girl", "enabled": False},
@@ -30,9 +30,9 @@ class TestCheckbox(unittest.TestCase):
                 {"name": "mix", "value": "boy&girl", "enabled": True},
             ],
         )
-        self.assertEqual(checkbox_control.selected_option_index, 3)
+        self.assertEqual(checkbox_control.selected_choice_index, 3)
         self.assertEqual(
-            checkbox_control._get_formatted_options(),
+            checkbox_control._get_formatted_choices(),
             [
                 ("", "  "),
                 ("class:checkbox", "⬡ "),
@@ -50,7 +50,7 @@ class TestCheckbox(unittest.TestCase):
                 ("class:pointer", "mix"),
             ],
         )
-        self.assertEqual(checkbox_control.option_count, 4)
+        self.assertEqual(checkbox_control.choice_count, 4)
         self.assertEqual(
             checkbox_control.selection,
             {"name": "mix", "value": "boy&girl", "enabled": True},
@@ -74,7 +74,7 @@ class TestCheckbox(unittest.TestCase):
     def test_checkbox_prompt(self):
         prompt = CheckboxPrompt(
             message="Select something",
-            options=self.options,
+            choices=self.choices,
             default="boy&girl",
             style={},
             editing_mode="emacs",
@@ -91,12 +91,12 @@ class TestCheckbox(unittest.TestCase):
         self.assertEqual(prompt.instruction, "TAB")
 
     def test_minimum_args(self):
-        CheckboxPrompt(message="yes", options=self.options)
+        CheckboxPrompt(message="yes", choices=self.choices)
 
     def test_checkbox_prompt_message(self):
         prompt = CheckboxPrompt(
             message="Select something",
-            options=self.options,
+            choices=self.choices,
             instruction="TAB",
         )
         self.assertEqual(
@@ -109,18 +109,18 @@ class TestCheckbox(unittest.TestCase):
         )
 
     def test_checkbox_bindings(self):
-        prompt = CheckboxPrompt(message="", options=self.options)
-        self.assertEqual(prompt.content_control.selected_option_index, 0)
+        prompt = CheckboxPrompt(message="", choices=self.choices)
+        self.assertEqual(prompt.content_control.selected_choice_index, 0)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        self.assertEqual(prompt.content_control.selected_choice_index, 3)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 0)
+        self.assertEqual(prompt.content_control.selected_choice_index, 0)
         prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        self.assertEqual(prompt.content_control.selected_choice_index, 3)
         prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
 
         self.assertEqual(prompt.status, {"result": None, "answered": False})
         with patch("prompt_toolkit.utils.Event") as mock:
@@ -128,9 +128,9 @@ class TestCheckbox(unittest.TestCase):
             prompt.handle_enter(event)
         self.assertEqual(prompt.status, {"result": ["mix"], "answered": True})
 
-        prompt._toggle_option()
+        prompt._toggle_choice()
         self.assertEqual(
-            prompt.content_control.options,
+            prompt.content_control.choices,
             [
                 {"enabled": False, "name": "boy", "value": "boy"},
                 {"enabled": True, "name": "girl", "value": "girl"},
@@ -141,7 +141,7 @@ class TestCheckbox(unittest.TestCase):
 
         prompt._toggle_all()
         self.assertEqual(
-            prompt.content_control.options,
+            prompt.content_control.choices,
             [
                 {"enabled": True, "name": "boy", "value": "boy"},
                 {"enabled": False, "name": "girl", "value": "girl"},
@@ -152,7 +152,7 @@ class TestCheckbox(unittest.TestCase):
 
         prompt._toggle_all(True)
         self.assertEqual(
-            prompt.content_control.options,
+            prompt.content_control.choices,
             [
                 {"enabled": True, "name": "boy", "value": "boy"},
                 {"enabled": True, "name": "girl", "value": "girl"},

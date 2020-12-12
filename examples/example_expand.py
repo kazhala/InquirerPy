@@ -4,7 +4,7 @@ from InquirerPy.separator import Separator
 questions = [
     {
         "type": "expand",
-        "options": [
+        "choices": [
             {"key": "j", "name": "Jump", "value": "Jump"},
             {"key": "y", "name": "Yes", "value": "No"},
             {"key": "w", "name": "Word", "value": "HAHAHA"},
@@ -14,7 +14,7 @@ questions = [
     },
     {
         "type": "expand",
-        "options": [
+        "choices": [
             Separator(),
             {"name": "hello", "value": "world", "key": "b"},
             Separator("**********"),

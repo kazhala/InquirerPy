@@ -8,7 +8,7 @@ from InquirerPy.separator import Separator
 
 
 class ExpandHelp(NamedTuple):
-    """A struct class to identify if user selected the help option."""
+    """A struct class to identify if user selected the help choice."""
 
     help_msg: str
 
@@ -21,90 +21,90 @@ class InquirerPyExpandControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        options: List[Union[Separator, Dict[str, Any]]],
+        choices: List[Union[Separator, Dict[str, Any]]],
         default: str,
         pointer: str,
         separator: str,
         help_msg: str,
         expand_pointer: str,
     ) -> None:
-        """Construct content control object and initialise options."""
+        """Construct content control object and initialise choices."""
         self.pointer = "%s " % pointer
         self.separator = separator
         self.expanded = False
         self.key_maps = {}
         self.expand_pointer = "%s " % expand_pointer
-        super().__init__(options, default)
+        super().__init__(choices, default)
 
         try:
             count = 0
             separator_count = 0
-            for raw_option, option in zip(options, self.options):
-                if not isinstance(raw_option, dict) and not isinstance(
-                    raw_option, Separator
+            for raw_choice, choice in zip(choices, self.choices):
+                if not isinstance(raw_choice, dict) and not isinstance(
+                    raw_choice, Separator
                 ):
                     raise InvalidArgument(
-                        "expand type prompt require each option to be a dictionary or Separator."
+                        "expand type prompt require each choice to be a dictionary or Separator."
                     )
-                if isinstance(raw_option, Separator):
+                if isinstance(raw_choice, Separator):
                     separator_count += 1
                 else:
-                    option["key"] = raw_option["key"]
-                    self.key_maps[option["key"]] = count
+                    choice["key"] = raw_choice["key"]
+                    self.key_maps[choice["key"]] = count
                 count += 1
         except KeyError:
             raise RequiredKeyNotFound(
-                "each dictionary option require the dictionary key 'key' to be present."
+                "each dictionary choice require the dictionary key 'key' to be present."
             )
 
-        self.options.append(
+        self.choices.append(
             {"key": "h", "value": ExpandHelp(help_msg), "name": help_msg}
         )
-        self.key_maps["h"] = len(self.options) - 1
+        self.key_maps["h"] = len(self.choices) - 1
 
-        first_valid_option_index = 0
-        while isinstance(self.options[first_valid_option_index]["value"], Separator):
-            first_valid_option_index += 1
-        if self.selected_option_index == first_valid_option_index:
-            for index, option in enumerate(self.options):
-                if isinstance(option["value"], Separator):
+        first_valid_choice_index = 0
+        while isinstance(self.choices[first_valid_choice_index]["value"], Separator):
+            first_valid_choice_index += 1
+        if self.selected_choice_index == first_valid_choice_index:
+            for index, choice in enumerate(self.choices):
+                if isinstance(choice["value"], Separator):
                     continue
-                if option["key"] == default:
-                    self.selected_option_index = index
+                if choice["key"] == default:
+                    self.selected_choice_index = index
                     break
 
-    def _get_formatted_options(self) -> List[Tuple[str, str]]:
+    def _get_formatted_choices(self) -> List[Tuple[str, str]]:
         """Override this parent class method as expand require visual switch of content.
 
         1. non expand mode
         2. expand mode
         """
         if self.expanded:
-            return super()._get_formatted_options()
+            return super()._get_formatted_choices()
         else:
             display_choices = []
             display_choices.append(("class:pointer", self.expand_pointer))
             display_choices.append(
-                ("", self.options[self.selected_option_index]["name"])
+                ("", self.choices[self.selected_choice_index]["name"])
             )
         return display_choices
 
-    def _get_hover_text(self, option) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("class:pointer", self.pointer))
-        if not isinstance(option["value"], Separator):
+        if not isinstance(choice["value"], Separator):
             display_message.append(
-                ("class:pointer", "%s%s " % (option["key"], self.separator))
+                ("class:pointer", "%s%s " % (choice["key"], self.separator))
             )
-        display_message.append(("class:pointer", option["name"]))
+        display_message.append(("class:pointer", choice["name"]))
         return display_message
 
-    def _get_normal_text(self, option) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         display_message = []
         display_message.append(("", len(self.pointer) * " "))
-        if not isinstance(option["value"], Separator):
-            display_message.append(("", "%s%s " % (option["key"], self.separator)))
-        display_message.append(("", option["name"]))
+        if not isinstance(choice["value"], Separator):
+            display_message.append(("", "%s%s " % (choice["key"], self.separator)))
+        display_message.append(("", choice["name"]))
         return display_message
 
 
@@ -116,9 +116,9 @@ class ExpandPrompt(BaseComplexPrompt):
 
     :param message: message to ask user
     :type message: str
-    :param options: list of options to display
-    :type options: List[Union[Separator, Dict[str, Any]]]
-    :param default: default value, needs to be a key of the options
+    :param choices: list of choices to display
+    :type choices: List[Union[Separator, Dict[str, Any]]]
+    :param default: default value, needs to be a key of the choices
     :type default: str
     :param style: style dict to apply to the prompt
     :type style: Dict[str, str]
@@ -141,20 +141,20 @@ class ExpandPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        options: List[Union[Dict[str, Any], Separator]],
+        choices: List[Union[Dict[str, Any], Separator]],
         default: str = "",
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "emacs", "vim"] = "default",
         symbol: str = "?",
         pointer: str = " ",
         separator: str = ")",
-        help_msg: str = "Help, list all options",
+        help_msg: str = "Help, list all choices",
         expand_pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
     ) -> None:
         """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
-            options, default, pointer, separator, help_msg, expand_pointer
+            choices, default, pointer, separator, help_msg, expand_pointer
         )
         super().__init__(message, style, editing_mode, symbol)
         self._instruction = instruction
@@ -165,25 +165,25 @@ class ExpandPrompt(BaseComplexPrompt):
                 if key == "h":
                     self.content_control.expanded = not self.content_control.expanded
                 else:
-                    self.content_control.selected_option_index = (
+                    self.content_control.selected_choice_index = (
                         self.content_control.key_maps[key]
                     )
 
             return keybinding
 
-        for option in self.content_control.options:
-            if not isinstance(option["value"], Separator):
-                keybinding_factory(option["key"])
+        for choice in self.content_control.choices:
+            if not isinstance(choice["value"], Separator):
+                keybinding_factory(choice["key"])
 
     def _handle_up(self) -> None:
         """Handle the event when user attempt to move up.
 
-        Overriding this method to skip the help option.
+        Overriding this method to skip the help choice.
         """
         while True:
-            self.content_control.selected_option_index = (
-                self.content_control.selected_option_index - 1
-            ) % self.content_control.option_count
+            self.content_control.selected_choice_index = (
+                self.content_control.selected_choice_index - 1
+            ) % self.content_control.choice_count
             if not isinstance(
                 self.content_control.selection["value"], Separator
             ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
@@ -192,12 +192,12 @@ class ExpandPrompt(BaseComplexPrompt):
     def _handle_down(self) -> None:
         """Handle the event when user attempt to move down.
 
-        Overriding this method to skip the help option.
+        Overriding this method to skip the help choice.
         """
         while True:
-            self.content_control.selected_option_index = (
-                self.content_control.selected_option_index + 1
-            ) % self.content_control.option_count
+            self.content_control.selected_choice_index = (
+                self.content_control.selected_choice_index + 1
+            ) % self.content_control.choice_count
             if not isinstance(
                 self.content_control.selection["value"], Separator
             ) and not isinstance(self.content_control.selection["value"], ExpandHelp):

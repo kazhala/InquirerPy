@@ -9,7 +9,7 @@ from InquirerPy.separator import Separator
 
 
 class TestExpandPrompt(unittest.TestCase):
-    options = [
+    choices = [
         Separator(),
         {"name": "hello", "value": "world", "key": "b"},
         Separator("**********"),
@@ -18,7 +18,7 @@ class TestExpandPrompt(unittest.TestCase):
 
     def test_content_control(self):
         content_control = InquirerPyExpandControl(
-            options=self.options,
+            choices=self.choices,
             default="f",
             help_msg="(haha)",
             expand_pointer=">>",
@@ -31,7 +31,7 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(content_control.key_maps, {"b": 1, "f": 3, "h": 4})
         self.assertEqual(content_control.expand_pointer, ">> ")
         self.assertEqual(
-            content_control.options,
+            content_control.choices,
             [
                 {"name": "---------------", "value": ANY},
                 {"key": "b", "name": "hello", "value": "world"},
@@ -40,18 +40,18 @@ class TestExpandPrompt(unittest.TestCase):
                 {"key": "h", "name": "(haha)", "value": ExpandHelp(help_msg="(haha)")},
             ],
         )
-        self.assertIsInstance(content_control.options[0]["value"], Separator)
+        self.assertIsInstance(content_control.choices[0]["value"], Separator)
 
         self.assertEqual(
-            content_control._get_formatted_options(),
+            content_control._get_formatted_choices(),
             [("class:pointer", ">> "), ("", "foo")],
         )
         self.assertEqual(
-            content_control._get_hover_text(content_control.options[0]),
+            content_control._get_hover_text(content_control.choices[0]),
             [("class:pointer", "  "), ("class:pointer", "---------------")],
         )
         self.assertEqual(
-            content_control._get_hover_text(content_control.options[1]),
+            content_control._get_hover_text(content_control.choices[1]),
             [
                 ("class:pointer", "  "),
                 ("class:pointer", "b) "),
@@ -59,7 +59,7 @@ class TestExpandPrompt(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            content_control._get_normal_text(content_control.options[1]),
+            content_control._get_normal_text(content_control.choices[1]),
             [("", "  "), ("", "b) "), ("", "hello")],
         )
 
@@ -93,11 +93,11 @@ class TestExpandPrompt(unittest.TestCase):
         prompt = ExpandPrompt(
             message="Choose one of the following",
             default="boo",
-            options=self.options,
+            choices=self.choices,
             editing_mode="vim",
             help_msg="What",
         )
-        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        self.assertEqual(prompt.content_control.selected_choice_index, 3)
         self.assertEqual(prompt.instruction, "(bfh)")
         prompt._instruction = "hello"
         self.assertEqual(prompt.instruction, "hello")
@@ -106,14 +106,14 @@ class TestExpandPrompt(unittest.TestCase):
     def test_kb_added(self, mocked_add):
         ExpandPrompt(
             message="hello",
-            options=self.options,
+            choices=self.choices,
         )
         mocked_add.assert_has_calls([call("b")])
         mocked_add.assert_has_calls([call("f")])
         mocked_add.assert_has_calls([call("h")])
 
     def test_prompt_message(self):
-        prompt = ExpandPrompt(message="Choose one", options=self.options)
+        prompt = ExpandPrompt(message="Choose one", choices=self.choices)
         self.assertEqual(
             prompt._get_prompt_message(),
             [
@@ -124,7 +124,7 @@ class TestExpandPrompt(unittest.TestCase):
             ],
         )
 
-        prompt = ExpandPrompt(message="Choose one", options=self.options, default="f")
+        prompt = ExpandPrompt(message="Choose one", choices=self.choices, default="f")
         self.assertEqual(
             prompt._get_prompt_message(),
             [
@@ -157,14 +157,14 @@ class TestExpandPrompt(unittest.TestCase):
         )
 
     def test_bindings(self):
-        prompt = ExpandPrompt(message="Choose one", options=self.options)
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        prompt = ExpandPrompt(message="Choose one", choices=self.choices)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        self.assertEqual(prompt.content_control.selected_choice_index, 3)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        self.assertEqual(prompt.content_control.selected_choice_index, 3)
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)

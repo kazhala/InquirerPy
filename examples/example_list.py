@@ -5,13 +5,13 @@ questions = [
     {
         "type": "list",
         "message": "Select a fruit:",
-        "options": [{"name": "banana", "value": "peach"}, "apple", "orange"],
+        "choices": [{"name": "banana", "value": "peach"}, "apple", "orange"],
         "default": "apple",
     },
     {
         "type": "list",
         "message": "Select a sport:",
-        "options": [
+        "choices": [
             {"name": "Basketball", "value": "NBA"},
             {"name": "Rugby", "value": "NFL"},
             Separator(),

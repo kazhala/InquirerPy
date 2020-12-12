@@ -9,16 +9,16 @@ from InquirerPy.separator import Separator
 
 
 class TestRawList(unittest.TestCase):
-    options = [{"name": "foo", "value": "boo"}, "hello", Separator(), "yes"]
+    choices = [{"name": "foo", "value": "boo"}, "hello", Separator(), "yes"]
 
     def test_content_control(self):
-        content_control = InquirerPyRawlistControl(self.options, "yes", " ", ")")
+        content_control = InquirerPyRawlistControl(self.choices, "yes", " ", ")")
         self.assertEqual(content_control.pointer, "  ")
         self.assertEqual(content_control.separator, ")")
-        self.assertEqual(content_control.option_count, 4)
-        self.assertEqual(content_control.selected_option_index, 3)
+        self.assertEqual(content_control.choice_count, 4)
+        self.assertEqual(content_control.selected_choice_index, 3)
         self.assertEqual(
-            content_control._get_hover_text(content_control.options[0]),
+            content_control._get_hover_text(content_control.choices[0]),
             [
                 ("class:pointer", "  "),
                 ("class:pointer", "1) "),
@@ -26,11 +26,11 @@ class TestRawList(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            content_control._get_normal_text(content_control.options[0]),
+            content_control._get_normal_text(content_control.choices[0]),
             [("", "  "), ("", "1) "), ("", "foo")],
         )
         self.assertEqual(
-            content_control.options,
+            content_control.choices,
             [
                 {"actual_index": 0, "display_index": 1, "name": "foo", "value": "boo"},
                 {
@@ -44,7 +44,7 @@ class TestRawList(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            content_control._get_formatted_options(),
+            content_control._get_formatted_choices(),
             [
                 ("", "  "),
                 ("", "1) "),
@@ -63,29 +63,29 @@ class TestRawList(unittest.TestCase):
             ],
         )
 
-        content_control = InquirerPyRawlistControl(self.options, 2, " ", ")")
-        self.assertEqual(content_control.selected_option_index, 1)
+        content_control = InquirerPyRawlistControl(self.choices, 2, " ", ")")
+        self.assertEqual(content_control.selected_choice_index, 1)
 
     def test_content_control_exceptions(self):
-        options = [{"hello": "hello"}]
+        choices = [{"hello": "hello"}]
         self.assertRaises(
-            RequiredKeyNotFound, InquirerPyRawlistControl, options, "", "", ""
+            RequiredKeyNotFound, InquirerPyRawlistControl, choices, "", "", ""
         )
 
-        options = [Separator(), Separator()]
+        choices = [Separator(), Separator()]
         self.assertRaises(
-            InvalidArgument, InquirerPyRawlistControl, options, "", "", ""
+            InvalidArgument, InquirerPyRawlistControl, choices, "", "", ""
         )
 
-        options = []
+        choices = []
         self.assertRaises(
-            InvalidArgument, InquirerPyRawlistControl, options, "", "", ""
+            InvalidArgument, InquirerPyRawlistControl, choices, "", "", ""
         )
 
     def test_prompt(self):
         rawlist_prompt = RawlistPrompt(
             message="hello",
-            options=self.options,
+            choices=self.choices,
             default="hello",
             separator=".",
             instruction="bb",
@@ -94,12 +94,12 @@ class TestRawList(unittest.TestCase):
         self.assertEqual(rawlist_prompt.message, "hello")
 
     def test_minimum_args(self):
-        RawlistPrompt(message="what", options=self.options)
+        RawlistPrompt(message="what", choices=self.choices)
 
     def test_prompt_message(self):
         prompt = RawlistPrompt(
             message="hello",
-            options=self.options,
+            choices=self.choices,
             default="hello",
             separator=".",
             instruction="bb",
@@ -126,20 +126,20 @@ class TestRawList(unittest.TestCase):
     def test_prompt_bindings(self):
         prompt = RawlistPrompt(
             message="hello",
-            options=self.options,
+            choices=self.choices,
             default="hello",
             separator=".",
             instruction="bb",
         )
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        self.assertEqual(prompt.content_control.selected_choice_index, 3)
         prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_option_index, 0)
+        self.assertEqual(prompt.content_control.selected_choice_index, 0)
         prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        self.assertEqual(prompt.content_control.selected_choice_index, 3)
         prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
 
         self.assertEqual(prompt.status, {"result": None, "answered": False})
         with patch("prompt_toolkit.utils.Event") as mock:
@@ -151,7 +151,7 @@ class TestRawList(unittest.TestCase):
     def test_kb_added(self, mocked_add):
         RawlistPrompt(
             message="hello",
-            options=self.options,
+            choices=self.choices,
             default="hello",
             separator=".",
             instruction="bb",

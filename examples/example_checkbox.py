@@ -5,7 +5,7 @@ questions = [
     {
         "type": "checkbox",
         "message": "Select which applies",
-        "options": [
+        "choices": [
             "boy",
             "girl",
             Separator(),
@@ -16,7 +16,7 @@ questions = [
         "name": "nba",
         "type": "checkbox",
         "message": "Select players you want",
-        "options": [
+        "choices": [
             {"name": "Chris Paul", "value": "pg"},
             {"name": "Kobe, Bryant", "value": "sg"},
             {"name": "Lebron James", "value": "sf"},
