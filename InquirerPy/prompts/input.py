@@ -169,7 +169,7 @@ class InputPrompt(BaseSimplePrompt):
         formatted_message = super()._get_prompt_message(pre_answer, post_answer)
         if not self.status["answered"] and self.multiline:
             formatted_message.append(
-                ("class:qmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE)
+                ("class:questionmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE)
             )
         return formatted_message
 

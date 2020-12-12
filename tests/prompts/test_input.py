@@ -82,7 +82,7 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "[?]"),
+                ("class:questionmark", "[?]"),
                 ("class:question", " Enter your name"),
                 ("class:instruction", " "),
             ],
@@ -93,7 +93,7 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "[?]"),
+                ("class:questionmark", "[?]"),
                 ("class:question", " Enter your name"),
                 ("class:answer", " haha"),
             ],
@@ -112,10 +112,10 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "[?]"),
+                ("class:questionmark", "[?]"),
                 ("class:question", " Enter your name"),
                 ("class:instruction", " ESC + Enter to finish input"),
-                ("class:qmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE),
+                ("class:questionmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE),
             ],
         )
         input_prompt.status["answered"] = True
@@ -124,7 +124,7 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "[?]"),
+                ("class:questionmark", "[?]"),
                 ("class:question", " Enter your name"),
                 ("class:answer", " haha...[3 chars]"),
             ],

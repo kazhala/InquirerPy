@@ -109,7 +109,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "?"),
+                ("class:questionmark", "?"),
                 ("class:question", " hello"),
                 ("class:instruction", " (Y/n)"),
             ],
@@ -121,7 +121,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "?"),
+                ("class:questionmark", "?"),
                 ("class:question", " hello"),
                 ("class:answer", " Yes"),
             ],
@@ -137,7 +137,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "x"),
+                ("class:questionmark", "x"),
                 ("class:question", " Are you sure?"),
                 ("class:instruction", " (y/N)"),
             ],
@@ -149,7 +149,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "x"),
+                ("class:questionmark", "x"),
                 ("class:question", " Are you sure?"),
                 ("class:answer", " No"),
             ],

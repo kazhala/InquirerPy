@@ -102,7 +102,7 @@ class TestCheckbox(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:qmark", "?"),
+                ("class:questionmark", "?"),
                 ("class:question", " Select something"),
                 ("class:instruction", " TAB"),
             ],

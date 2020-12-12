@@ -175,7 +175,7 @@ class TestFilePath(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "!"),
+                ("class:questionmark", "!"),
                 ("class:question", " brah"),
                 ("class:instruction", " "),
             ],
@@ -187,7 +187,7 @@ class TestFilePath(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "!"),
+                ("class:questionmark", "!"),
                 ("class:question", " brah"),
                 ("class:answer", " hello"),
             ],

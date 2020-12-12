@@ -226,7 +226,7 @@ class ExpandPrompt(BaseComplexPrompt):
         Overriding this method to allow multiple formatted class to be displayed.
         """
         display_message = []
-        display_message.append(("class:qmark", self.qmark))
+        display_message.append(("class:questionmark", self.qmark))
         display_message.append(("class:question", " %s" % self.message))
         if self.status["answered"]:
             display_message.append(("class:answer", " %s" % self.status["result"]))

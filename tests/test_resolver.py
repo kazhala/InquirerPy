@@ -9,7 +9,7 @@ from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.resolver import prompt
 
 style = {
-    "qmark": "#e5c07b",
+    "questionmark": "#e5c07b",
     "answer": "#61afef",
     "input": "#98c379",
     "question": "",
@@ -126,7 +126,7 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_init.assert_called_once_with(
             message="Confirm?",
             style={
-                "qmark": "#000000",
+                "questionmark": "#000000",
                 "answer": "#111111",
                 "input": "#444444",
                 "question": "#222222",

@@ -88,7 +88,7 @@ class BaseSimplePrompt(ABC):
         :rtype: List[Tuple[str, str]]
         """
         display_message = []
-        display_message.append(("class:qmark", self.qmark))
+        display_message.append(("class:questionmark", self.qmark))
         display_message.append(("class:question", " %s" % self.message))
         if self.status["answered"]:
             display_message.append(post_answer)

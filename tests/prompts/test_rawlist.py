@@ -107,7 +107,7 @@ class TestRawList(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:qmark", "?"),
+                ("class:questionmark", "?"),
                 ("class:question", " hello"),
                 ("class:instruction", " bb"),
             ],
@@ -117,7 +117,7 @@ class TestRawList(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:qmark", "?"),
+                ("class:questionmark", "?"),
                 ("class:question", " hello"),
                 ("class:answer", " []"),
             ],

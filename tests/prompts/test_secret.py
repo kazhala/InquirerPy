@@ -60,7 +60,7 @@ class TestSecret(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "[?]"),
+                ("class:questionmark", "[?]"),
                 ("class:question", " fooboo"),
                 ("class:instruction", " "),
             ],
@@ -72,7 +72,7 @@ class TestSecret(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:qmark", "[?]"),
+                ("class:questionmark", "[?]"),
                 ("class:question", " fooboo"),
                 ("class:answer", " *****"),
             ],
