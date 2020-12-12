@@ -18,6 +18,7 @@ questions = [
             "Soccer",
         ],
         "default": "apple",
+        "filter": lambda x: "%s888888" % x,
     },
 ]
 

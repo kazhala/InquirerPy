@@ -73,19 +73,22 @@ def prompt(
         else:
             editing_mode = default_mode  # type: ignore
 
-    for i in range(len(questions)):
+    for index, question in enumerate(questions):
         try:
-            question_type = questions[i].pop("type")
-            question_name = questions[i].pop("name", str(i))
-            message = questions[i].pop("message")
-            if questions[i].get("when") and not questions[i]["when"](result):
+            question_type = question.pop("type")
+            question_name = question.pop("name", str(index))
+            message = question.pop("message")
+            result_filter = question.pop("filter", None)
+            if question.get("when") and not question["when"](result):
                 result[question_name] = None
                 continue
             result[question_name] = question_mapping[question_type](
-                message=message, style=style, editing_mode=editing_mode, **questions[i]
+                message=message, style=style, editing_mode=editing_mode, **question
             ).execute()
             if result[question_name] == INQUIRERPY_POINTER_SEQUENCE:
                 raise KeyboardInterrupt
+            if result_filter:
+                result[question_name] = result_filter(result[question_name])
         except KeyError:
             raise RequiredKeyNotFound
 
