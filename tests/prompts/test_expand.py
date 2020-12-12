@@ -1,0 +1,88 @@
+import unittest
+from unittest.mock import ANY, call, patch
+
+from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
+from InquirerPy.prompts.expand import ExpandHelp, ExpandPrompt, InquirerPyExpandControl
+from InquirerPy.separator import Separator
+
+
+class TestExpandPrompt(unittest.TestCase):
+    options = [
+        Separator(),
+        {"name": "hello", "value": "world", "key": "b"},
+        Separator("**********"),
+        {"name": "foo", "value": "boo", "key": "f"},
+    ]
+
+    def test_content_control(self):
+        content_control = InquirerPyExpandControl(
+            options=self.options,
+            default="f",
+            help_msg="(haha)",
+            expand_pointer=">>",
+            pointer=" ",
+            separator=")",
+        )
+        self.assertEqual(content_control.pointer, "  ")
+        self.assertEqual(content_control.separator, ")")
+        self.assertEqual(content_control.expanded, False)
+        self.assertEqual(content_control.key_maps, {"b": 1, "f": 3, "h": 4})
+        self.assertEqual(content_control.expand_pointer, ">> ")
+        self.assertEqual(
+            content_control.options,
+            [
+                {"name": "---------------", "value": ANY},
+                {"key": "b", "name": "hello", "value": "world"},
+                {"name": "**********", "value": ANY},
+                {"key": "f", "name": "foo", "value": "boo"},
+                {"key": "h", "name": "(haha)", "value": ExpandHelp(help_msg="(haha)")},
+            ],
+        )
+        self.assertIsInstance(content_control.options[0]["value"], Separator)
+
+        self.assertEqual(
+            content_control._get_formatted_options(),
+            [("class:pointer", ">> "), ("", "foo")],
+        )
+        self.assertEqual(
+            content_control._get_hover_text(content_control.options[0]),
+            [("class:pointer", "  "), ("class:pointer", "---------------")],
+        )
+        self.assertEqual(
+            content_control._get_hover_text(content_control.options[1]),
+            [
+                ("class:pointer", "  "),
+                ("class:pointer", "b) "),
+                ("class:pointer", "hello"),
+            ],
+        )
+        self.assertEqual(
+            content_control._get_normal_text(content_control.options[1]),
+            [("", "  "), ("", "b) "), ("", "hello")],
+        )
+
+    def test_content_control_exceptions(self):
+        self.assertRaises(
+            InvalidArgument,
+            InquirerPyExpandControl,
+            ["asdfasfd", {"name": "hello", "value": "hello", "key": "j"}],
+            "f",
+            "",
+            "",
+            "",
+            "",
+        )
+
+        self.assertRaises(
+            RequiredKeyNotFound,
+            InquirerPyExpandControl,
+            [
+                {"name": "foo", "value": "boo"},
+                {"name": "hello", "value": "hello", "key": "j"},
+            ],
+            "f",
+            "",
+            "",
+            "",
+            "",
+        )
