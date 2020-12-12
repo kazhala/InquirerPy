@@ -7,7 +7,7 @@ from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 
-from InquirerPy.base import INQUIRERPY_POINTER_SEQUENCE
+from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.input import InputPrompt
 
 

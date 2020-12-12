@@ -9,7 +9,8 @@ from prompt_toolkit.lexers import SimpleLexer
 from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.validation import ValidationError, Validator
 
-from InquirerPy.base import BaseSimplePrompt, INQUIRERPY_POINTER_SEQUENCE
+from InquirerPy.base import BaseSimplePrompt
+from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 
 

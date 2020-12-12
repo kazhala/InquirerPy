@@ -2,8 +2,7 @@
 import os
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from InquirerPy.base import ACCEPTED_KEYBINDINGS
-from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
+from InquirerPy.enum import ACCEPTED_KEYBINDINGS, INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
 from InquirerPy.prompts.confirm import ConfirmPrompt

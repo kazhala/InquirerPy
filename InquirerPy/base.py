@@ -15,21 +15,9 @@ from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import Validator
 
+from InquirerPy.enum import ACCEPTED_KEYBINDINGS, INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
-
-
-ACCEPTED_KEYBINDINGS: Dict[str, EditingMode] = {
-    "default": EditingMode.EMACS,
-    "emacs": EditingMode.EMACS,
-    "vim": EditingMode.VI,
-}
-
-INQUIRERPY_KEYBOARD_INTERRUPT = "INQUIRERPY_KEYBOARD_INTERRUPT"
-
-INQUIRERPY_POINTER_SEQUENCE = "\u276f"
-INQUIRERPY_FILL_HEX_SEQUENCE = "\u2b22"
-INQUIRERPY_EMPTY_HEX_SEQUENCE = "\u2b21"
 
 
 class BaseSimplePrompt(ABC):

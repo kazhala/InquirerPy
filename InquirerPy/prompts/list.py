@@ -2,11 +2,8 @@
 
 from typing import Any, Dict, List, Literal, Tuple, Union
 
-from InquirerPy.base import (
-    BaseComplexPrompt,
-    INQUIRERPY_POINTER_SEQUENCE,
-    InquirerPyUIControl,
-)
+from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
+from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 
 
 class InquirerPyListControl(InquirerPyUIControl):
