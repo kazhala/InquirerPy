@@ -6,7 +6,7 @@ from InquirerPy.validator import PathValidator
 questions = [
     {
         "type": "filepath",
-        "question": "Select file to upload",
+        "message": "Select file to upload",
         "invalid_message": "Input is not a valid filepath",
         "name": "location",
         "default": str(Path.cwd()),
@@ -15,7 +15,7 @@ questions = [
     },
     {
         "type": "filepath",
-        "question": "Select path to store",
+        "message": "Select path to store",
         "validator": None,
         "name": "destination",
         "symbol": "[?]",

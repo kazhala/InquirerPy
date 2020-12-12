@@ -4,7 +4,7 @@ from InquirerPy.separator import Separator
 questions = [
     {
         "type": "checkbox",
-        "question": "Select which applies",
+        "message": "Select which applies",
         "options": [
             "boy",
             "girl",
@@ -15,7 +15,7 @@ questions = [
     {
         "name": "nba",
         "type": "checkbox",
-        "question": "Select players you want",
+        "message": "Select players you want",
         "options": [
             {"name": "Chris Paul", "value": "pg"},
             {"name": "Kobe, Bryant", "value": "sg"},

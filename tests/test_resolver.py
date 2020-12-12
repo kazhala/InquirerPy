@@ -31,7 +31,7 @@ class TestResolver(unittest.TestCase):
         questions = [{"type": "confirm"}]
         self.assertRaises(RequiredKeyNotFound, prompt, questions)
 
-        questions = [{"type": "confirm", "question": "hello"}]
+        questions = [{"type": "confirm", "message": "hello"}]
         mocked_confirm.return_value = True
         result = prompt(questions)
         mocked_confirm.assert_called_once()
@@ -51,7 +51,7 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_init.return_value = None
         mocked_confirm_execute.return_value = False
         questions = [
-            {"type": "confirm", "question": "hello"},
+            {"type": "confirm", "message": "hello"},
         ]
         result = prompt(questions)
         mocked_confirm_init.assert_called_once_with(
@@ -67,9 +67,9 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_init.reset_mock()
         mocked_confirm_execute.reset_mock()
         questions = [
-            {"type": "confirm", "question": "hello"},
-            {"type": "confirm", "question": "world", "name": "foo"},
-            {"type": "filepath", "question": "whaat", "name": "boo", "default": "./"},
+            {"type": "confirm", "message": "hello"},
+            {"type": "confirm", "message": "world", "name": "foo"},
+            {"type": "filepath", "message": "whaat", "name": "boo", "default": "./"},
         ]
         result = prompt(questions)
         mocked_confirm_init.assert_has_calls(
@@ -119,7 +119,7 @@ class TestResolver(unittest.TestCase):
         os.environ["INQUIRERPY_STYLE_INPUT"] = "#444444"
         os.environ["INQUIRERPY_EDITING_MODE"] = "emacs"
 
-        questions = [{"type": "confirm", "question": "Confirm?", "name": "question1"}]
+        questions = [{"type": "confirm", "message": "Confirm?", "name": "question1"}]
         result = prompt(questions)
         mocked_confirm_execute.assert_called_once()
         mocked_confirm_init.assert_called_once_with(
@@ -148,9 +148,9 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_init.reset_mock()
         mocked_confirm_execute.return_value = True
         questions = [
-            {"type": "confirm", "question": "Confirm?", "name": "10"},
-            {"type": "confirm", "question": "What?"},
-            {"type": "secret", "question": "haha"},
+            {"type": "confirm", "message": "Confirm?", "name": "10"},
+            {"type": "confirm", "message": "What?"},
+            {"type": "secret", "message": "haha"},
         ]
         result = prompt(questions, style={"symbol": "#ffffff"}, editing_mode="vim")
         mocked_confirm_execute.assert_has_calls([call(), call()])
@@ -186,20 +186,20 @@ class TestResolver(unittest.TestCase):
             {
                 "type": "confirm",
                 "name": "first",
-                "question": "Confirm first?",
+                "message": "Confirm first?",
                 "default": True,
             },
             {
                 "type": "confirm",
                 "name": "second",
-                "question": "Confirm second?",
-                "condition": lambda result: result["first"] == True,
+                "message": "Confirm second?",
+                "when": lambda result: result["first"] == True,
             },
             {
                 "type": "confirm",
                 "name": "third",
-                "question": "Confirm?",
-                "condition": lambda result: result["second"] == False,
+                "message": "Confirm?",
+                "when": lambda result: result["second"] == False,
             },
         ]
         result = prompt(questions)
@@ -216,7 +216,7 @@ class TestResolver(unittest.TestCase):
                     message="Confirm second?",
                     style=style,
                     editing_mode="default",
-                    condition=ANY,
+                    when=ANY,
                 ),
             ]
         )
@@ -228,20 +228,20 @@ class TestResolver(unittest.TestCase):
             {
                 "type": "confirm",
                 "name": "first",
-                "question": "Confirm first?",
+                "message": "Confirm first?",
                 "default": True,
             },
             {
                 "type": "confirm",
                 "name": "second",
-                "question": "Confirm second?",
-                "condition": lambda result: result["first"] == False,
+                "message": "Confirm second?",
+                "when": lambda result: result["first"] == False,
             },
             {
                 "type": "confirm",
                 "name": "third",
-                "question": "Confirm?",
-                "condition": lambda result: result["second"] == None,
+                "message": "Confirm?",
+                "when": lambda result: result["second"] == None,
             },
         ]
         result = prompt(questions)
@@ -258,7 +258,7 @@ class TestResolver(unittest.TestCase):
                     message="Confirm?",
                     style=style,
                     editing_mode="default",
-                    condition=ANY,
+                    when=ANY,
                 ),
             ]
         )

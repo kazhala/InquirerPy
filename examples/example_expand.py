@@ -9,7 +9,7 @@ questions = [
             {"key": "y", "name": "Yes", "value": "No"},
             {"key": "w", "name": "Word", "value": "HAHAHA"},
         ],
-        "question": "What do you think?",
+        "message": "What do you think?",
         "default": "No",
     },
     {
@@ -20,7 +20,7 @@ questions = [
             Separator("**********"),
             {"name": "foo", "value": "boo", "key": "f"},
         ],
-        "question": "What do you think?",
+        "message": "What do you think?",
         "default": "f",
     },
 ]

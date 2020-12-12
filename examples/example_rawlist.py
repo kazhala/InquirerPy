@@ -5,7 +5,7 @@ questions = [
     {
         "type": "rawlist",
         "options": ["hello", "world", "foo", "boo"],
-        "question": "Select one of them",
+        "message": "Select one of them",
         "default": "boo",
         "symbol": "[?]",
         "pointer": "   ",
@@ -21,7 +21,7 @@ questions = [
             Separator(),
             "blah",
         ],
-        "question": "Select things apply",
+        "message": "Select things apply",
         "default": 3,
     },
 ]

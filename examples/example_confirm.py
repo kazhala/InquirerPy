@@ -4,15 +4,15 @@ questions = [
     {
         "type": "confirm",
         "name": "hello",
-        "question": "Proceed?",
+        "message": "Proceed?",
         "default": True,
         "symbol": "?",
     },
     {
         "type": "confirm",
         "name": "foo",
-        "question": "Are you sure?",
-        "condition": lambda result: result["hello"] == True,
+        "message": "Are you sure?",
+        "when": lambda result: result["hello"] == True,
     },
 ]
 

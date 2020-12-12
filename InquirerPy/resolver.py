@@ -76,15 +76,12 @@ def prompt(
         try:
             question_type = questions[i].pop("type")
             question_name = questions[i].pop("name", str(i))
-            question_content = questions[i].pop("question")
-            if questions[i].get("condition") and not questions[i]["condition"](result):
+            message = questions[i].pop("message")
+            if questions[i].get("when") and not questions[i]["when"](result):
                 result[question_name] = None
                 continue
             result[question_name] = question_mapping[question_type](
-                message=question_content,
-                style=style,
-                editing_mode=editing_mode,
-                **questions[i]
+                message=message, style=style, editing_mode=editing_mode, **questions[i]
             ).execute()
             if result[question_name] == INQUIRERPY_POINTER_SEQUENCE:
                 raise KeyboardInterrupt
