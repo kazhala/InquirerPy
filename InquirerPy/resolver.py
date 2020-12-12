@@ -3,6 +3,7 @@ import os
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from InquirerPy.base import ACCEPTED_KEYBINDINGS
+from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
 from InquirerPy.prompts.confirm import ConfirmPrompt
@@ -31,6 +32,13 @@ def prompt(
     editing_mode: Optional[Literal["default", "vim", "emacs"]] = None,
 ) -> Dict[str, Optional[Union[str, List[str], bool]]]:
     """Resolve user provided list of questions and get result.
+
+    if "name" param is not present, use the index as the name.
+
+    All param can be controlled via ENV var, if not present, resolver
+    will attempt to resolve the value from ENV var.
+
+    A default style is applied using Atom Onedark color if style is not present.
 
     :param questions: list of questions to ask
     :type questions: List[Dict[str, Any]]
@@ -79,7 +87,7 @@ def prompt(
                 editing_mode=editing_mode,
                 **questions[i]
             ).execute()
-            if result[question_name] == "INQUIRERPY_KEYBOARD_INTERRUPT":
+            if result[question_name] == INQUIRERPY_POINTER_SEQUENCE:
                 raise KeyboardInterrupt
         except KeyError:
             raise RequiredKeyNotFound

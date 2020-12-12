@@ -9,7 +9,7 @@ __all__ = ["PathValidator", "EmptyInputValidator", "PasswordValidator"]
 
 
 class PathValidator(Validator):
-    """Validator class to use for filepath type prompt.
+    """Validator class to validate if input is a valid filepath.
 
     :param message: error message to display
     :type message: str
@@ -20,7 +20,7 @@ class PathValidator(Validator):
         self.message = message
 
     def validate(self, document):
-        """Test if user input filepath exists."""
+        """Check if user input filepath exists."""
         if not Path(document.text).expanduser().exists():
             raise ValidationError(
                 message=self.message,
@@ -29,7 +29,7 @@ class PathValidator(Validator):
 
 
 class EmptyInputValidator(Validator):
-    """Validator class to detect empty input.
+    """Validator class to validate empty input.
 
     :param message: error message to display
     :type message: str
