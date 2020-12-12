@@ -44,7 +44,7 @@ class BaseSimplePrompt(ABC):
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         symbol: str = "?",
-        validator: Optional[Union[Callable[[str], bool], Validator]] = None,
+        validate: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
     ) -> None:
         """Construct the base class for simple prompts."""
@@ -60,11 +60,11 @@ class BaseSimplePrompt(ABC):
             raise InvalidArgument(
                 "editing_mode must be one of 'default' 'emacs' 'vim'."
             )
-        if isinstance(validator, Validator):
-            self.validator = validator
+        if isinstance(validate, Validator):
+            self.validator = validate
         else:
             self.validator = Validator.from_callable(
-                validator if validator else lambda _: True,
+                validate if validate else lambda _: True,
                 invalid_message,
                 move_cursor_to_end=True,
             )

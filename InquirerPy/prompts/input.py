@@ -33,8 +33,8 @@ class InputPrompt(BaseSimplePrompt):
     :type completer: Optional[Union[Dict[str, str], Completer]]
     :param multiline: enable multiline mode
     :type multiline: bool
-    :param validator: a callable or a validation class to validate user input
-    :type validator: Optional[Union[Callable[[str], bool], Validator]]
+    :param validate: a callable or a validation class to validate user input
+    :type validate: Optional[Union[Callable[[str], bool], Validator]]
     :param invalid_message: the error message to display when input is invalid
     :type invalid_message: str
     """
@@ -48,7 +48,7 @@ class InputPrompt(BaseSimplePrompt):
         symbol: str = "?",
         completer: Optional[Union[Dict[str, Optional[str]], Completer]] = None,
         multiline: bool = False,
-        validator: Optional[Union[Callable[[str], bool], Validator]] = None,
+        validate: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
         **kwargs,
     ) -> None:
@@ -58,7 +58,7 @@ class InputPrompt(BaseSimplePrompt):
             style,
             editing_mode=editing_mode,
             symbol=symbol,
-            validator=validator,
+            validate=validate,
             invalid_message=invalid_message,
         )
         self.default = default

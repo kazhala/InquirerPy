@@ -20,8 +20,8 @@ class SecretPrompt(InputPrompt):
     :type symbol: str
     :param editing_mode: the key binding mode to use
     :type editing_mode: Literal["default", "vim", "emacs"]
-    :param validator: a callable to validate the user input
-    :type validator: Optional[Union[Validator, Callable[[str], bool]]]
+    :param validate: a callable to validate the user input
+    :type validate: Optional[Union[Validator, Callable[[str], bool]]]
     :param invalid_message: the error message to display when validator failed
     :type invalid_message: str
     """
@@ -33,7 +33,7 @@ class SecretPrompt(InputPrompt):
         default: str = "",
         symbol: str = "?",
         editing_mode: Literal["default", "vim", "emacs"] = "default",
-        validator: Optional[Union[Validator, Callable[[str], bool]]] = None,
+        validate: Optional[Union[Validator, Callable[[str], bool]]] = None,
         invalid_message: str = "Invalid input",
         **kwargs
     ) -> None:
@@ -48,7 +48,7 @@ class SecretPrompt(InputPrompt):
             editing_mode=editing_mode,
             default=default,
             symbol=symbol,
-            validator=validator,
+            validate=validate,
             invalid_message=invalid_message,
             is_password=True,
             **kwargs

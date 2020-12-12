@@ -42,7 +42,7 @@ class TestSecret(unittest.TestCase):
         secret_prompt = SecretPrompt(
             message="what",
             style={},
-            validator=PasswordValidator(length=8),
+            validate=PasswordValidator(length=8),
             input=self.inp,
             output=DummyOutput(),
         )

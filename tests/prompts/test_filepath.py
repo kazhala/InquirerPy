@@ -159,7 +159,7 @@ class TestFilePath(unittest.TestCase):
             message="fooboo",
             style={"symbol": ""},
             default=".vim",
-            validator=PathValidator(),
+            validate=PathValidator(),
             input=self.inp,
             output=DummyOutput(),
         )
@@ -216,7 +216,7 @@ class TestFilePath(unittest.TestCase):
             style={"yes": ""},
             default="",
             symbol="XD",
-            validator=_validation,
+            validate=_validation,
             editing_mode="vim",
             only_directories=True,
         )

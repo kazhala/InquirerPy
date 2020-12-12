@@ -10,16 +10,16 @@ questions = [
         "invalid_message": "Input is not a valid filepath",
         "name": "location",
         "default": str(Path.cwd()),
-        "validator": PathValidator(),
+        "validate": PathValidator(),
         "only_directories": True,
     },
     {
         "type": "filepath",
         "message": "Select path to store",
-        "validator": None,
+        "validate": None,
         "name": "destination",
         "symbol": "[?]",
-        "validator": lambda x: x != "",
+        "validate": lambda x: x != "",
     },
 ]
 

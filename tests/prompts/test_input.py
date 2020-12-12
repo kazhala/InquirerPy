@@ -148,7 +148,7 @@ class TestInputPrompt(unittest.TestCase):
         mocked_validator,
     ):
         completer = mocked_completer()
-        validator = mocked_validator()
+        validate = mocked_validator()
         kb = MockedKeyBindings()
         style = MockedStyle()
         lexer = MockedLexer()
@@ -166,7 +166,7 @@ class TestInputPrompt(unittest.TestCase):
             key_bindings=kb,
             style=style,
             completer=completer,
-            validator=validator,
+            validator=validate,
             validate_while_typing=False,
             input=None,
             output=None,

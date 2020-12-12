@@ -8,13 +8,13 @@ questions = [
         "message": "Enter secret",
         "name": "secret_key",
         "symbol": "*",
-        "validator": EmptyInputValidator(),
+        "validate": EmptyInputValidator(),
     },
     {
         "type": "secret",
         "message": "New password",
         "name": "password",
-        "validator": PasswordValidator(length=8, cap=True, special=True, number=True),
+        "validate": PasswordValidator(length=8, cap=True, special=True, number=True),
     },
 ]
 result = prompt(questions, editing_mode="vim")
