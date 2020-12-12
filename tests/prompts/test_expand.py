@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import ANY, call, patch
 
+from prompt_toolkit.key_binding.key_bindings import KeyBindings
+
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.expand import ExpandHelp, ExpandPrompt, InquirerPyExpandControl
 from InquirerPy.separator import Separator
@@ -86,3 +88,84 @@ class TestExpandPrompt(unittest.TestCase):
             "",
             "",
         )
+
+    def test_prompt(self):
+        prompt = ExpandPrompt(
+            message="Choose one of the following",
+            default="boo",
+            options=self.options,
+            editing_mode="vim",
+            help_msg="What",
+        )
+        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        self.assertEqual(prompt.instruction, "(bfh)")
+        prompt._instruction = "hello"
+        self.assertEqual(prompt.instruction, "hello")
+
+    @patch.object(KeyBindings, "add")
+    def test_kb_added(self, mocked_add):
+        ExpandPrompt(
+            message="hello",
+            options=self.options,
+        )
+        mocked_add.assert_has_calls([call("b")])
+        mocked_add.assert_has_calls([call("f")])
+        mocked_add.assert_has_calls([call("h")])
+
+    def test_prompt_message(self):
+        prompt = ExpandPrompt(message="Choose one", options=self.options)
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:symbol", "?"),
+                ("class:question", " Choose one"),
+                ("class:instruction", " (bfh)"),
+                ("class:input", " b"),
+            ],
+        )
+
+        prompt = ExpandPrompt(message="Choose one", options=self.options, default="f")
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:symbol", "?"),
+                ("class:question", " Choose one"),
+                ("class:instruction", " (bfh)"),
+                ("class:input", " f"),
+            ],
+        )
+        prompt._handle_down()
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:symbol", "?"),
+                ("class:question", " Choose one"),
+                ("class:instruction", " (bfh)"),
+                ("class:input", " b"),
+            ],
+        )
+
+        prompt.status["result"] = "foo"
+        prompt.status["answered"] = True
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:symbol", "?"),
+                ("class:question", " Choose one"),
+                ("class:answer", " foo"),
+            ],
+        )
+
+    def test_bindings(self):
+        prompt = ExpandPrompt(message="Choose one", options=self.options)
+        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        prompt._handle_down()
+        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        prompt._handle_down()
+        self.assertEqual(prompt.content_control.selected_option_index, 1)
+        prompt._handle_up()
+        self.assertEqual(prompt.content_control.selected_option_index, 3)
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_enter(event)
+        self.assertEqual(prompt.status, {"result": "foo", "answered": True})
