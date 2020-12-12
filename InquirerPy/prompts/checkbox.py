@@ -77,7 +77,9 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
                     else "%s " % self.disabled_symbol,
                 )
             )
-        display_message.append(("", choice["name"]))
+            display_message.append(("", choice["name"]))
+        else:
+            display_message.append(("class:separator", choice["name"]))
         return display_message
 
 

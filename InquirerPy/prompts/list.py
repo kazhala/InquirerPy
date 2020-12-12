@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Literal, Tuple, Union
 
 from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
+from InquirerPy.separator import Separator
 
 
 class InquirerPyListControl(InquirerPyUIControl):
@@ -38,7 +39,10 @@ class InquirerPyListControl(InquirerPyUIControl):
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
         display_choices.append(("", len(self.pointer) * " "))
-        display_choices.append(("", choice["name"]))
+        if not isinstance(choice["value"], Separator):
+            display_choices.append(("", choice["name"]))
+        else:
+            display_choices.append(("class:separator", choice["name"]))
         return display_choices
 
 

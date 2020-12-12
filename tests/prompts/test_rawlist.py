@@ -55,7 +55,7 @@ class TestRawList(unittest.TestCase):
                 ("", "hello"),
                 ("", "\n"),
                 ("", "  "),
-                ("", "---------------"),
+                ("class:separator", "---------------"),
                 ("", "\n"),
                 ("class:pointer", "  "),
                 ("class:pointer", "3) "),

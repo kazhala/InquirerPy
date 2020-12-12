@@ -62,7 +62,9 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
             display_message.append(
                 ("", "%s%s " % (str(choice["display_index"]), self.separator))
             )
-        display_message.append(("", choice["name"]))
+            display_message.append(("", choice["name"]))
+        else:
+            display_message.append(("class:separator", choice["name"]))
         return display_message
 
 

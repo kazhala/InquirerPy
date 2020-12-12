@@ -104,7 +104,9 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         display_message.append(("", len(self.pointer) * " "))
         if not isinstance(choice["value"], Separator):
             display_message.append(("", "%s%s " % (choice["key"], self.separator)))
-        display_message.append(("", choice["name"]))
+            display_message.append(("", choice["name"]))
+        else:
+            display_message.append(("class:separator", choice["name"]))
         return display_message
 
 

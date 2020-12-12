@@ -43,7 +43,7 @@ class TestCheckbox(unittest.TestCase):
                 ("", "girl"),
                 ("", "\n"),
                 ("", "  "),
-                ("", "---------------"),
+                ("class:separator", "---------------"),
                 ("", "\n"),
                 ("class:pointer", "❯ "),
                 ("class:checkbox", "⬢ "),
