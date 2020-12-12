@@ -113,7 +113,7 @@ class TestResolver(unittest.TestCase):
     ):
         mocked_confirm_execute.return_value = False
         mocked_confirm_init.return_value = None
-        os.environ["INQUIRERPY_STYLE_QMARK"] = "#000000"
+        os.environ["INQUIRERPY_STYLE_QUESTIONMARK"] = "#000000"
         os.environ["INQUIRERPY_STYLE_ANSWER"] = "#111111"
         os.environ["INQUIRERPY_STYLE_QUESTION"] = "#222222"
         os.environ["INQUIRERPY_STYLE_INSTRUCTION"] = "#333333"
@@ -138,7 +138,7 @@ class TestResolver(unittest.TestCase):
             editing_mode="emacs",
         )
         self.assertEqual(result, {"question1": False})
-        del os.environ["INQUIRERPY_STYLE_QMARK"]
+        del os.environ["INQUIRERPY_STYLE_QUESTIONMARK"]
         del os.environ["INQUIRERPY_STYLE_ANSWER"]
         del os.environ["INQUIRERPY_STYLE_QUESTION"]
         del os.environ["INQUIRERPY_STYLE_INSTRUCTION"]
