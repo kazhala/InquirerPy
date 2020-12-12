@@ -1,5 +1,5 @@
 """Module contains the class to create a secret prompt."""
-from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
+from typing import Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
@@ -24,6 +24,8 @@ class SecretPrompt(InputPrompt):
     :type validate: Optional[Union[Validator, Callable[[str], bool]]]
     :param invalid_message: the error message to display when validator failed
     :type invalid_message: str
+    :param transformer: a callable to transform the result, this is visual effect only
+    :type transformer: Callable
     """
 
     def __init__(
@@ -33,8 +35,9 @@ class SecretPrompt(InputPrompt):
         default: str = "",
         qmark: str = "?",
         editing_mode: Literal["default", "vim", "emacs"] = "default",
-        validate: Optional[Union[Validator, Callable[[str], bool]]] = None,
+        validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
+        transformer: Callable = None,
         **kwargs
     ) -> None:
         """Construct the prompt session."""
@@ -51,6 +54,7 @@ class SecretPrompt(InputPrompt):
             validate=validate,
             invalid_message=invalid_message,
             is_password=True,
+            transformer=transformer,
             **kwargs
         )
 

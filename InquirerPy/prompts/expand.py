@@ -1,5 +1,5 @@
 """Module contains the expand prompt and its related helper classes."""
-from typing import Any, Dict, List, Literal, NamedTuple, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, NamedTuple, Tuple, Union
 
 from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
@@ -138,6 +138,8 @@ class ExpandPrompt(BaseComplexPrompt):
     :type expand_pointer: str
     :param instruction: override the default instruction e.g. (Yabh)
     :type instruction: str
+    :param transformer: a callable to transform the result, this is visual effect only
+    :type transformer: Callable
     """
 
     def __init__(
@@ -153,13 +155,13 @@ class ExpandPrompt(BaseComplexPrompt):
         help_msg: str = "Help, list all choices",
         expand_pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
+        transformer: Callable = None,
     ) -> None:
         """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
             choices, default, pointer, separator, help_msg, expand_pointer
         )
-        super().__init__(message, style, editing_mode, qmark)
-        self._instruction = instruction
+        super().__init__(message, style, editing_mode, qmark, instruction, transformer)
 
         def keybinding_factory(key):
             @self.kb.add(key.lower())
@@ -225,13 +227,8 @@ class ExpandPrompt(BaseComplexPrompt):
 
         Overriding this method to allow multiple formatted class to be displayed.
         """
-        display_message = []
-        display_message.append(("class:questionmark", self.qmark))
-        display_message.append(("class:question", " %s" % self.message))
-        if self.status["answered"]:
-            display_message.append(("class:answer", " %s" % self.status["result"]))
-        else:
-            display_message.append(("class:instruction", " %s" % self.instruction))
+        display_message = super()._get_prompt_message()
+        if not self.status["answered"]:
             display_message.append(
                 ("class:input", " %s" % self.content_control.selection["key"])
             )

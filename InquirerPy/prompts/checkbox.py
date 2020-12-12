@@ -1,6 +1,6 @@
 """Module contains checkbox prompt."""
 
-from typing import Any, Dict, List, Literal, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.keys import Keys
 
@@ -120,12 +120,13 @@ class CheckboxPrompt(BaseComplexPrompt):
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
         disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
         instruction: str = "",
+        transformer: Callable = None,
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyCheckboxControl(
             choices, default, pointer, enabled_symbol, disabled_symbol
         )
-        super().__init__(message, style, editing_mode, qmark, instruction)
+        super().__init__(message, style, editing_mode, qmark, instruction, transformer)
 
         @self.kb.add(" ")
         def _(event) -> None:

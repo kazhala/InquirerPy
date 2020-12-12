@@ -1,5 +1,5 @@
 """Module contains the rawlist prompt."""
-from typing import Any, Dict, List, Literal, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
 from InquirerPy.separator import Separator
@@ -92,6 +92,8 @@ class RawlistPrompt(BaseComplexPrompt):
     :type pointer: str
     :param instruction: instruction to display at the end of the prompt
     :type instruction: str
+    :param transformer: a callable to transform the result, this is visual effect only
+    :type transformer: Callable
     """
 
     def __init__(
@@ -105,13 +107,14 @@ class RawlistPrompt(BaseComplexPrompt):
         qmark: str = "?",
         pointer: str = " ",
         instruction: str = "",
+        transformer: Callable = None,
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
         self.content_control = InquirerPyRawlistControl(
             choices, default, pointer, separator
         )
         self._instruction = instruction
-        super().__init__(message, style, editing_mode, qmark, instruction)
+        super().__init__(message, style, editing_mode, qmark, instruction, transformer)
 
         def keybinding_factory(choice):
             @self.kb.add(str(choice["display_index"]))

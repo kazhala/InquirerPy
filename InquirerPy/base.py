@@ -1,7 +1,7 @@
 """Module contains base class for prompts."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -36,6 +36,12 @@ class BaseSimplePrompt(ABC):
     :param default: set default answer to true
     :param qmark: the custom qmark to display infront of the question
     :type qmark: str
+    :param validate: a callable or Validator instance to validate user input
+    :type validate: Union[Callable[[str], bool], Validator]
+    :param invalid_message: message to display when input is invalid
+    :type invalid_message: str
+    :param transformer: a callable to transform the result, this is visual effect only
+    :type transformer: Callable
     """
 
     def __init__(
@@ -44,8 +50,9 @@ class BaseSimplePrompt(ABC):
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         qmark: str = "?",
-        validate: Optional[Union[Callable[[str], bool], Validator]] = None,
+        validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
+        transformer: Callable = None,
     ) -> None:
         """Construct the base class for simple prompts."""
         self.message = message
@@ -54,6 +61,7 @@ class BaseSimplePrompt(ABC):
         self.status = {"answered": False, "result": None}
         self.kb = KeyBindings()
         self.lexer = "class:input"
+        self.transformer = transformer
         try:
             self.editing_mode = ACCEPTED_KEYBINDINGS[editing_mode]
         except KeyError:
@@ -91,7 +99,11 @@ class BaseSimplePrompt(ABC):
         display_message.append(("class:questionmark", self.qmark))
         display_message.append(("class:question", " %s" % self.message))
         if self.status["answered"]:
-            display_message.append(post_answer)
+            display_message.append(
+                post_answer
+                if not self.transformer
+                else ("class:answer", " %s" % self.transformer(post_answer[1][1:]))
+            )
         else:
             display_message.append(pre_answer)
         return display_message
@@ -251,6 +263,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
     :type qmark: str
     :param instruction: instruction to display after the question message
     :type instruction: str
+    :param transformer: a callable to transform the result, this is visual effect only
+    :type transformer: Callable
     """
 
     def __init__(
@@ -260,9 +274,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         qmark: str = "?",
         instruction: str = "",
+        transformer: Callable = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
-        super().__init__(message, style, editing_mode, qmark)
+        super().__init__(message, style, editing_mode, qmark, transformer=transformer)
         self._content_control: InquirerPyUIControl
         self._instruction = instruction
         self.layout = HSplit(

@@ -92,6 +92,8 @@ class FilePathPrompt(InputPrompt):
     :type invalid_message: str
     :param only_directories: only complete directories
     :type only_directories: bool
+    :param transformer: a callable to transform the result, this is visual effect only
+    :type transformer: Callable
     """
 
     def __init__(
@@ -104,6 +106,7 @@ class FilePathPrompt(InputPrompt):
         validate: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
         only_directories: bool = False,
+        transformer: Callable = None,
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""
@@ -122,6 +125,7 @@ class FilePathPrompt(InputPrompt):
             ),
             validate=validate,
             invalid_message=invalid_message,
+            transformer=transformer,
             **kwargs,
         )
 

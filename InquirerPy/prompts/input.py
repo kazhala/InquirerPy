@@ -30,13 +30,15 @@ class InputPrompt(BaseSimplePrompt):
     :param qmark: question qmark to display
     :type qmark: str
     :param completer: add auto completer to user input
-    :type completer: Optional[Union[Dict[str, str], Completer]]
+    :type completer: Union[Dict[str, str], Completer]
     :param multiline: enable multiline mode
     :type multiline: bool
     :param validate: a callable or a validation class to validate user input
-    :type validate: Optional[Union[Callable[[str], bool], Validator]]
+    :type validate: Union[Callable[[str], bool], Validator]
     :param invalid_message: the error message to display when input is invalid
     :type invalid_message: str
+    :param transformer: a callable to transform the result, this is visual effect only
+    :type transformer: Callable
     """
 
     def __init__(
@@ -46,10 +48,11 @@ class InputPrompt(BaseSimplePrompt):
         editing_mode: Literal["default", "emacs", "vim"] = "default",
         default: str = "",
         qmark: str = "?",
-        completer: Optional[Union[Dict[str, Optional[str]], Completer]] = None,
+        completer: Union[Dict[str, Optional[str]], Completer] = None,
         multiline: bool = False,
-        validate: Optional[Union[Callable[[str], bool], Validator]] = None,
+        validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
+        transformer: Callable = None,
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""
@@ -60,6 +63,7 @@ class InputPrompt(BaseSimplePrompt):
             qmark=qmark,
             validate=validate,
             invalid_message=invalid_message,
+            transformer=transformer,
         )
         self.default = default
         if not isinstance(self.default, str):

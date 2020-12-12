@@ -1,6 +1,6 @@
 """Module contains list prompt."""
 
-from typing import Any, Dict, List, Literal, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
@@ -65,6 +65,8 @@ class ListPrompt(BaseComplexPrompt):
     :type pointer: str
     :param instruction: instruction to display to user
     :type instruction: str
+    :param transformer: a callable to transform the result, this is visual effect only
+    :type transformer: Callable
     """
 
     def __init__(
@@ -77,8 +79,9 @@ class ListPrompt(BaseComplexPrompt):
         qmark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
+        transformer: Callable = None,
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyListControl(choices, default, pointer)
         self._instruction = instruction
-        super().__init__(message, style, editing_mode, qmark, instruction)
+        super().__init__(message, style, editing_mode, qmark, instruction, transformer)
