@@ -77,6 +77,12 @@ class BaseSimplePrompt(ABC):
                 move_cursor_to_end=True,
             )
 
+        @self.kb.add("c-c")
+        def _(event) -> None:
+            self.status["answered"] = True
+            self.status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
+            event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
+
     @abstractmethod
     def _get_prompt_message(
         self, pre_answer: Tuple[str, str], post_answer: Tuple[str, str]
@@ -96,16 +102,21 @@ class BaseSimplePrompt(ABC):
         :rtype: List[Tuple[str, str]]
         """
         display_message = []
-        display_message.append(("class:questionmark", self.qmark))
-        display_message.append(("class:question", " %s" % self.message))
-        if self.status["answered"]:
+        if self.status["result"] == INQUIRERPY_KEYBOARD_INTERRUPT:
             display_message.append(
-                post_answer
-                if not self.transformer
-                else ("class:answer", " %s" % self.transformer(post_answer[1][1:]))
+                ("class:skipped", "%s %s " % (self.qmark, self.message))
             )
         else:
-            display_message.append(pre_answer)
+            display_message.append(("class:questionmark", self.qmark))
+            display_message.append(("class:question", " %s" % self.message))
+            if self.status["answered"]:
+                display_message.append(
+                    post_answer
+                    if not self.transformer
+                    else ("class:answer", " %s" % self.transformer(post_answer[1][1:]))
+                )
+            else:
+                display_message.append(pre_answer)
         return display_message
 
     @abstractmethod
@@ -314,12 +325,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         @self.kb.add("enter")
         def _(event):
             self._handle_enter(event)
-
-        @self.kb.add("c-c")
-        def _(event) -> None:
-            self.status["answered"] = True
-            self.status["result"] = ""
-            event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
 
         self.application = Application(
             layout=Layout(self.layout),

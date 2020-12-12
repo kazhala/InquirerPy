@@ -2,7 +2,7 @@
 import os
 from typing import Any, Dict, List, Literal, Optional, Union
 
-from InquirerPy.enum import ACCEPTED_KEYBINDINGS, INQUIRERPY_POINTER_SEQUENCE
+from InquirerPy.enum import ACCEPTED_KEYBINDINGS, INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
 from InquirerPy.prompts.confirm import ConfirmPrompt
@@ -29,6 +29,7 @@ def prompt(
     questions: List[Dict[str, Any]],
     style: Optional[Dict[str, str]] = None,
     editing_mode: Optional[Literal["default", "vim", "emacs"]] = None,
+    raise_keyboard_interrupt: bool = True,
 ) -> Dict[str, Optional[Union[str, List[str], bool]]]:
     """Resolve user provided list of questions and get result.
 
@@ -45,6 +46,9 @@ def prompt(
     :type style: Optional[Dict[str, str]]
     :param editing_mode: the editing_mode to use
     :type editing_mode: Optional[str]
+    :param raise_keyboard_interrupt: raise the kbi exception when user hit c-c
+        If false, store result as None and continue
+    :type raise_keyboard_interrupt: bool
     :return: dictionary of answers
     :rtype: Dict[str, Optional[Union[str, List[str], bool]]]
     """
@@ -63,6 +67,7 @@ def prompt(
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
             "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
             "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
+            "skipped": os.getenv("INQUIRERPY_STYLE_SKIPPED", "#5c6370"),
         }
     if not editing_mode:
         default_mode = os.getenv("INQUIRERPY_EDITING_MODE", "default")
@@ -85,8 +90,11 @@ def prompt(
             result[question_name] = question_mapping[question_type](
                 message=message, style=style, editing_mode=editing_mode, **question
             ).execute()
-            if result[question_name] == INQUIRERPY_POINTER_SEQUENCE:
-                raise KeyboardInterrupt
+            if result[question_name] == INQUIRERPY_KEYBOARD_INTERRUPT:
+                if raise_keyboard_interrupt:
+                    raise KeyboardInterrupt
+                else:
+                    result[question_name] = None
             if result_filter:
                 result[question_name] = result_filter(result[question_name])
         except KeyError:

@@ -17,6 +17,7 @@ style = {
     "pointer": "#61afef",
     "checkbox": "#98c379",
     "separator": "",
+    "skipped": "#5c6370",
 }
 
 
@@ -134,6 +135,7 @@ class TestResolver(unittest.TestCase):
                 "pointer": "#61afef",
                 "checkbox": "#98c379",
                 "separator": "",
+                "skipped": "#5c6370",
             },
             editing_mode="emacs",
         )
