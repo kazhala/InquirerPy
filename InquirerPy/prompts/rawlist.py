@@ -84,9 +84,9 @@ class RawlistPrompt(BaseComplexPrompt):
     :type style: Dict[str, str]
     :param editing_mode: keybinding mode
     :type editing_mode: Literal["emacs", "vim", "default"]
-    :param symbol: question symbol to display
-    :type symbol: str
-    :param pointer: pointer symbol to display
+    :param qmark: question qmark to display
+    :type qmark: str
+    :param pointer: pointer qmark to display
     :type pointer: str
     :param instruction: instruction to display at the end of the prompt
     :type instruction: str
@@ -100,7 +100,7 @@ class RawlistPrompt(BaseComplexPrompt):
         separator: str = ")",
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "vim", "default"] = "default",
-        symbol: str = "?",
+        qmark: str = "?",
         pointer: str = " ",
         instruction: str = "",
     ) -> None:
@@ -109,7 +109,7 @@ class RawlistPrompt(BaseComplexPrompt):
             choices, default, pointer, separator
         )
         self._instruction = instruction
-        super().__init__(message, style, editing_mode, symbol, instruction)
+        super().__init__(message, style, editing_mode, qmark, instruction)
 
         def keybinding_factory(choice):
             @self.kb.add(str(choice["display_index"]))

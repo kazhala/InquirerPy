@@ -124,11 +124,11 @@ class ExpandPrompt(BaseComplexPrompt):
     :type style: Dict[str, str]
     :param editing_mode: controls the keybindings of movement
     :type editing_mode: Literal["default", "emacs", "vim"]
-    :param symbol: question symbol to display
-    :type symbol: str
-    :param pointer: pointer symbol to indicate current selected line
+    :param qmark: question qmark to display
+    :type qmark: str
+    :param pointer: pointer qmark to indicate current selected line
     :type pointer: str
-    :param separator: separator symbol to display between the shortcut key and the content
+    :param separator: separator qmark to display between the shortcut key and the content
     :type separator: str
     :param help_msg: help message to display to the user
     :type help_msg: str
@@ -145,7 +145,7 @@ class ExpandPrompt(BaseComplexPrompt):
         default: str = "",
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "emacs", "vim"] = "default",
-        symbol: str = "?",
+        qmark: str = "?",
         pointer: str = " ",
         separator: str = ")",
         help_msg: str = "Help, list all choices",
@@ -156,7 +156,7 @@ class ExpandPrompt(BaseComplexPrompt):
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
             choices, default, pointer, separator, help_msg, expand_pointer
         )
-        super().__init__(message, style, editing_mode, symbol)
+        super().__init__(message, style, editing_mode, qmark)
         self._instruction = instruction
 
         def keybinding_factory(key):
@@ -224,7 +224,7 @@ class ExpandPrompt(BaseComplexPrompt):
         Overriding this method to allow multiple formatted class to be displayed.
         """
         display_message = []
-        display_message.append(("class:symbol", self.symbol))
+        display_message.append(("class:qmark", self.qmark))
         display_message.append(("class:question", " %s" % self.message))
         if self.status["answered"]:
             display_message.append(("class:answer", " %s" % self.status["result"]))

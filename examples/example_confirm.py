@@ -6,7 +6,7 @@ questions = [
         "name": "hello",
         "message": "Proceed?",
         "default": True,
-        "symbol": "?",
+        "qmark": "?",
     },
     {
         "type": "confirm",

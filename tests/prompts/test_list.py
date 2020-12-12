@@ -69,7 +69,7 @@ class TestListPrompt(unittest.TestCase):
             default="watermelon",
             style={"pointer": "#61afef"},
             editing_mode="vim",
-            symbol="[?]",
+            qmark="[?]",
             pointer=">",
             instruction="(j/k)",
         )
@@ -78,7 +78,7 @@ class TestListPrompt(unittest.TestCase):
         self.assertIsInstance(prompt.kb, KeyBindings)
         self.assertIsInstance(prompt.question_style, Style)
         self.assertEqual(prompt.message, "Select a fruit")
-        self.assertEqual(prompt.symbol, "[?]")
+        self.assertEqual(prompt.qmark, "[?]")
         self.assertEqual(prompt.instruction, "(j/k)")
 
         window_list = list(prompt.layout.children)
@@ -91,7 +91,7 @@ class TestListPrompt(unittest.TestCase):
 
     def test_choice_combination(self):
         prompt = ListPrompt(message="Test combo", choices=["hello"])
-        self.assertEqual(prompt.symbol, "?")
+        self.assertEqual(prompt.qmark, "?")
         self.assertEqual(prompt.instruction, "")
 
         self.assertRaises(InvalidArgument, ListPrompt, "", [Separator(), Separator()])
@@ -103,14 +103,14 @@ class TestListPrompt(unittest.TestCase):
             default="watermelon",
             style={"pointer": "#61afef"},
             editing_mode="vim",
-            symbol="[?]",
+            qmark="[?]",
             pointer=">",
             instruction="(j/k)",
         )
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:symbol", "[?]"),
+                ("class:qmark", "[?]"),
                 ("class:question", " Select a fruit"),
                 ("class:instruction", " (j/k)"),
             ],
@@ -123,7 +123,7 @@ class TestListPrompt(unittest.TestCase):
             default="watermelon",
             style={"pointer": "#61afef"},
             editing_mode="vim",
-            symbol="[?]",
+            qmark="[?]",
             pointer=">",
             instruction="(j/k)",
         )

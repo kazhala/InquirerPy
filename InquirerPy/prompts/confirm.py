@@ -19,8 +19,8 @@ class ConfirmPrompt(BaseSimplePrompt):
     :type style: Dict[str, str]
     :param default: set default answer to true
     :type default: bool
-    :param symbol: the custom symbol to display infront of the question
-    :type symbol: str
+    :param qmark: the custom qmark to display infront of the question
+    :type qmark: str
     """
 
     def __init__(
@@ -28,11 +28,11 @@ class ConfirmPrompt(BaseSimplePrompt):
         message: str,
         style: Dict[str, str] = {},
         default: bool = False,
-        symbol: str = "?",
+        qmark: str = "?",
         **kwargs
     ) -> None:
         """Construct a PromptSession object and apply keybindings."""
-        super().__init__(message, style, "default", symbol)
+        super().__init__(message, style, "default", qmark)
         self.default = default
         if not isinstance(self.default, bool):
             raise InvalidArgument(

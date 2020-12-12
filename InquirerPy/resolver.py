@@ -55,7 +55,7 @@ def prompt(
 
     if not style:
         style = {
-            "symbol": os.getenv("INQUIRERPY_STYLE_SYMBOL", "#e5c07b"),
+            "qmark": os.getenv("INQUIRERPY_STYLE_SYMBOL", "#e5c07b"),
             "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", "#61afef"),
             "input": os.getenv("INQUIRERPY_STYLE_INPUT", "#98c379"),
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),

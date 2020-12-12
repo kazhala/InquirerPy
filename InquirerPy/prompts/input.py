@@ -27,8 +27,8 @@ class InputPrompt(BaseSimplePrompt):
     :type editing_mode: Literal['default', 'emacs', 'vim']
     :param default: the default result
     :type default: str
-    :param symbol: question symbol to display
-    :type symbol: str
+    :param qmark: question qmark to display
+    :type qmark: str
     :param completer: add auto completer to user input
     :type completer: Optional[Union[Dict[str, str], Completer]]
     :param multiline: enable multiline mode
@@ -45,7 +45,7 @@ class InputPrompt(BaseSimplePrompt):
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "emacs", "vim"] = "default",
         default: str = "",
-        symbol: str = "?",
+        qmark: str = "?",
         completer: Optional[Union[Dict[str, Optional[str]], Completer]] = None,
         multiline: bool = False,
         validate: Optional[Union[Callable[[str], bool], Validator]] = None,
@@ -57,7 +57,7 @@ class InputPrompt(BaseSimplePrompt):
             message,
             style,
             editing_mode=editing_mode,
-            symbol=symbol,
+            qmark=qmark,
             validate=validate,
             invalid_message=invalid_message,
         )
@@ -169,7 +169,7 @@ class InputPrompt(BaseSimplePrompt):
         formatted_message = super()._get_prompt_message(pre_answer, post_answer)
         if not self.status["answered"] and self.multiline:
             formatted_message.append(
-                ("class:symbol", "\n%s " % INQUIRERPY_POINTER_SEQUENCE)
+                ("class:qmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE)
             )
         return formatted_message
 

@@ -18,7 +18,7 @@ questions = [
         "message": "Select path to store",
         "validate": None,
         "name": "destination",
-        "symbol": "[?]",
+        "qmark": "[?]",
         "validate": lambda x: x != "",
     },
 ]

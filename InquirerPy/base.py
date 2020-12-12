@@ -34,8 +34,8 @@ class BaseSimplePrompt(ABC):
     :param style: the style dictionary to apply
     :type style: Dict[str, str]
     :param default: set default answer to true
-    :param symbol: the custom symbol to display infront of the question
-    :type symbol: str
+    :param qmark: the custom qmark to display infront of the question
+    :type qmark: str
     """
 
     def __init__(
@@ -43,14 +43,14 @@ class BaseSimplePrompt(ABC):
         message: str,
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
-        symbol: str = "?",
+        qmark: str = "?",
         validate: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
     ) -> None:
         """Construct the base class for simple prompts."""
         self.message = message
         self.question_style = Style.from_dict(style)
-        self.symbol = symbol
+        self.qmark = qmark
         self.status = {"answered": False, "result": None}
         self.kb = KeyBindings()
         self.lexer = "class:input"
@@ -88,7 +88,7 @@ class BaseSimplePrompt(ABC):
         :rtype: List[Tuple[str, str]]
         """
         display_message = []
-        display_message.append(("class:symbol", self.symbol))
+        display_message.append(("class:qmark", self.qmark))
         display_message.append(("class:question", " %s" % self.message))
         if self.status["answered"]:
             display_message.append(post_answer)
@@ -247,8 +247,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
     :type style: Dict[str, str]
     :param editing_mode: controls the key_binding
     :type editing_mode: Literal["emacs", "default", "vim"]
-    :param symbol: question mark to display
-    :type symbol: str
+    :param qmark: question mark to display
+    :type qmark: str
     :param instruction: instruction to display after the question message
     :type instruction: str
     """
@@ -258,11 +258,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
         message: str,
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
-        symbol: str = "?",
+        qmark: str = "?",
         instruction: str = "",
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
-        super().__init__(message, style, editing_mode, symbol)
+        super().__init__(message, style, editing_mode, qmark)
         self._content_control: InquirerPyUIControl
         self._instruction = instruction
         self.layout = HSplit(

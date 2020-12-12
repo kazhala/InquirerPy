@@ -24,7 +24,7 @@ questions = [
             {"name": "Yao Ming", "value": "c"},
         ],
         "pointer": ">",
-        "symbol": "[?]",
+        "qmark": "[?]",
     },
 ]
 

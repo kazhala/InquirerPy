@@ -18,9 +18,9 @@ class TestConfirmPrompt(unittest.TestCase):
         self.inp.send_text("\n")
         confirm_prompt = ConfirmPrompt(
             message="hello",
-            style={"symbol": "bold"},
+            style={"qmark": "bold"},
             default=False,
-            symbol="x",
+            qmark="x",
             output=DummyOutput(),
             input=self.inp,
         )
@@ -33,9 +33,9 @@ class TestConfirmPrompt(unittest.TestCase):
         self.inp.send_text("\n")
         confirm_prompt = ConfirmPrompt(
             message="hello",
-            style={"symbol": "bold", "answer": "#000000"},
+            style={"qmark": "bold", "answer": "#000000"},
             default=True,
-            symbol="x",
+            qmark="x",
             output=DummyOutput(),
             input=self.inp,
         )
@@ -50,7 +50,7 @@ class TestConfirmPrompt(unittest.TestCase):
             message="hello",
             style={},
             default=True,
-            symbol="?",
+            qmark="?",
             output=DummyOutput(),
             input=self.inp,
         )
@@ -64,7 +64,7 @@ class TestConfirmPrompt(unittest.TestCase):
             message="hello",
             style={},
             default=True,
-            symbol="?",
+            qmark="?",
             output=DummyOutput(),
             input=self.inp,
         )
@@ -77,7 +77,7 @@ class TestConfirmPrompt(unittest.TestCase):
             message="hello",
             style={},
             default=True,
-            symbol="?",
+            qmark="?",
             output=DummyOutput(),
             input=self.inp,
         )
@@ -91,7 +91,7 @@ class TestConfirmPrompt(unittest.TestCase):
             message="hello",
             style={},
             default=True,
-            symbol="?",
+            qmark="?",
             output=DummyOutput(),
             input=self.inp,
         )
@@ -103,13 +103,13 @@ class TestConfirmPrompt(unittest.TestCase):
             message="hello",
             style={},
             default=True,
-            symbol="?",
+            qmark="?",
         )
         message = confirm_prompt._get_prompt_message()
         self.assertEqual(
             message,
             [
-                ("class:symbol", "?"),
+                ("class:qmark", "?"),
                 ("class:question", " hello"),
                 ("class:instruction", " (Y/n)"),
             ],
@@ -121,7 +121,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:symbol", "?"),
+                ("class:qmark", "?"),
                 ("class:question", " hello"),
                 ("class:answer", " Yes"),
             ],
@@ -131,13 +131,13 @@ class TestConfirmPrompt(unittest.TestCase):
             message="Are you sure?",
             style={},
             default=False,
-            symbol="x",
+            qmark="x",
         )
         message = confirm_prompt._get_prompt_message()
         self.assertEqual(
             message,
             [
-                ("class:symbol", "x"),
+                ("class:qmark", "x"),
                 ("class:question", " Are you sure?"),
                 ("class:instruction", " (y/N)"),
             ],
@@ -149,7 +149,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:symbol", "x"),
+                ("class:qmark", "x"),
                 ("class:question", " Are you sure?"),
                 ("class:answer", " No"),
             ],
@@ -166,7 +166,7 @@ class TestConfirmPrompt(unittest.TestCase):
             message="Are you sure?",
             style={},
             default=False,
-            symbol="x",
+            qmark="x",
         )
         kb = MockedKeyBindings()
         style = MockedStyle()

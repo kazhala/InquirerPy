@@ -78,7 +78,7 @@ class TestCheckbox(unittest.TestCase):
             default="boy&girl",
             style={},
             editing_mode="emacs",
-            symbol="!",
+            qmark="!",
             pointer="<",
             instruction="TAB",
         )
@@ -87,7 +87,7 @@ class TestCheckbox(unittest.TestCase):
         self.assertIsInstance(prompt.kb, KeyBindings)
         self.assertIsInstance(prompt.question_style, Style)
         self.assertEqual(prompt.message, "Select something")
-        self.assertEqual(prompt.symbol, "!")
+        self.assertEqual(prompt.qmark, "!")
         self.assertEqual(prompt.instruction, "TAB")
 
     def test_minimum_args(self):
@@ -102,7 +102,7 @@ class TestCheckbox(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:symbol", "?"),
+                ("class:qmark", "?"),
                 ("class:question", " Select something"),
                 ("class:instruction", " TAB"),
             ],

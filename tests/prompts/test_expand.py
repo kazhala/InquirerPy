@@ -117,7 +117,7 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:symbol", "?"),
+                ("class:qmark", "?"),
                 ("class:question", " Choose one"),
                 ("class:instruction", " (bfh)"),
                 ("class:input", " b"),
@@ -128,7 +128,7 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:symbol", "?"),
+                ("class:qmark", "?"),
                 ("class:question", " Choose one"),
                 ("class:instruction", " (bfh)"),
                 ("class:input", " f"),
@@ -138,7 +138,7 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:symbol", "?"),
+                ("class:qmark", "?"),
                 ("class:question", " Choose one"),
                 ("class:instruction", " (bfh)"),
                 ("class:input", " b"),
@@ -150,7 +150,7 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:symbol", "?"),
+                ("class:qmark", "?"),
                 ("class:question", " Choose one"),
                 ("class:answer", " foo"),
             ],

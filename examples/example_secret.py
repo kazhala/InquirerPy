@@ -7,7 +7,7 @@ questions = [
         "type": "secret",
         "message": "Enter secret",
         "name": "secret_key",
-        "symbol": "*",
+        "qmark": "*",
         "validate": EmptyInputValidator(),
     },
     {

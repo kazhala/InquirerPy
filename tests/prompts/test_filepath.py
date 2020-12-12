@@ -125,7 +125,7 @@ class TestFilePath(unittest.TestCase):
         self.inp.send_text("./file1\n")
         filepath_prompt = FilePathPrompt(
             message="hello",
-            style={"symbol": "bold"},
+            style={"qmark": "bold"},
             input=self.inp,
             output=DummyOutput(),
         )
@@ -138,7 +138,7 @@ class TestFilePath(unittest.TestCase):
         self.inp.send_text("\n")
         filepath_prompt = FilePathPrompt(
             message="hello",
-            style={"symbol": "bold"},
+            style={"qmark": "bold"},
             default=".vim",
             input=self.inp,
             output=DummyOutput(),
@@ -157,7 +157,7 @@ class TestFilePath(unittest.TestCase):
         self.inp.send_text("hello\n")
         filepath_prompt = FilePathPrompt(
             message="fooboo",
-            style={"symbol": ""},
+            style={"qmark": ""},
             default=".vim",
             validate=PathValidator(),
             input=self.inp,
@@ -170,12 +170,12 @@ class TestFilePath(unittest.TestCase):
         self.assertEqual(filepath_prompt.status["result"], None)
 
     def test_get_prompt_message(self):
-        filepath_prompt = FilePathPrompt(message="brah", style={"foo": ""}, symbol="!")
+        filepath_prompt = FilePathPrompt(message="brah", style={"foo": ""}, qmark="!")
         message = filepath_prompt._get_prompt_message()
         self.assertEqual(
             message,
             [
-                ("class:symbol", "!"),
+                ("class:qmark", "!"),
                 ("class:question", " brah"),
                 ("class:instruction", " "),
             ],
@@ -187,7 +187,7 @@ class TestFilePath(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:symbol", "!"),
+                ("class:qmark", "!"),
                 ("class:question", " brah"),
                 ("class:answer", " hello"),
             ],
@@ -215,7 +215,7 @@ class TestFilePath(unittest.TestCase):
             message="yes",
             style={"yes": ""},
             default="",
-            symbol="XD",
+            qmark="XD",
             validate=_validation,
             editing_mode="vim",
             only_directories=True,

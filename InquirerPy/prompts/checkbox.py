@@ -24,9 +24,9 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
     :type default: Any
     :param pointer: the pointer to display, indicating current line, default is unicode ">"
     :type pointer: str
-    :param selected_symbol: the symbol to indicate selected choices
-    :type selected_symbol: str
-    :param disabled_symbol: the symbol to indicate not selected choices
+    :param enabled_symbol: the qmark to indicate selected choices
+    :type enabled_symbol: str
+    :param disabled_symbol: the qmark to indicate not selected choices
     :type disabled_symbol: str
     """
 
@@ -94,13 +94,13 @@ class CheckboxPrompt(BaseComplexPrompt):
     :type style: Dict[str, str]
     :param editing_mode: editing_mode of the prompt
     :type editing_mode: Literal["emacs", "default", "vim"]
-    :param symbol: question symbol to display
-    :type symbol: str
-    :param pointer: the pointer symbol to display
+    :param qmark: question qmark to display
+    :type qmark: str
+    :param pointer: the pointer qmark to display
     :type pointer: str
-    :param enabled_symbol: symbol indicating enabled box
+    :param enabled_symbol: qmark indicating enabled box
     :type enabled_symbol: str
-    :param disabled_symbol: symbol indicating not selected symbol
+    :param disabled_symbol: qmark indicating not selected qmark
     :type disabled_symbol: str
     :param instruction: instruction to display after the message
     :type instruction: str
@@ -113,7 +113,7 @@ class CheckboxPrompt(BaseComplexPrompt):
         default: Any = None,
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
-        symbol: str = "?",
+        qmark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
         disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
@@ -123,7 +123,7 @@ class CheckboxPrompt(BaseComplexPrompt):
         self.content_control = InquirerPyCheckboxControl(
             choices, default, pointer, enabled_symbol, disabled_symbol
         )
-        super().__init__(message, style, editing_mode, symbol, instruction)
+        super().__init__(message, style, editing_mode, qmark, instruction)
 
         @self.kb.add(" ")
         def _(event) -> None:

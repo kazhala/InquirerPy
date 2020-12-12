@@ -9,7 +9,7 @@ from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.resolver import prompt
 
 style = {
-    "symbol": "#e5c07b",
+    "qmark": "#e5c07b",
     "answer": "#61afef",
     "input": "#98c379",
     "question": "",
@@ -125,7 +125,7 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_init.assert_called_once_with(
             message="Confirm?",
             style={
-                "symbol": "#000000",
+                "qmark": "#000000",
                 "answer": "#111111",
                 "input": "#444444",
                 "question": "#222222",
@@ -152,28 +152,28 @@ class TestResolver(unittest.TestCase):
             {"type": "confirm", "message": "What?"},
             {"type": "secret", "message": "haha"},
         ]
-        result = prompt(questions, style={"symbol": "#ffffff"}, editing_mode="vim")
+        result = prompt(questions, style={"qmark": "#ffffff"}, editing_mode="vim")
         mocked_confirm_execute.assert_has_calls([call(), call()])
         mocked_confirm_init.assert_has_calls(
             [
                 call(
                     message="Confirm?",
                     style={
-                        "symbol": "#ffffff",
+                        "qmark": "#ffffff",
                     },
                     editing_mode="vim",
                 ),
                 call(
                     message="What?",
                     style={
-                        "symbol": "#ffffff",
+                        "qmark": "#ffffff",
                     },
                     editing_mode="vim",
                 ),
             ]
         )
         mocked_secret_init.assert_has_calls(
-            [call(message="haha", style={"symbol": "#ffffff"}, editing_mode="vim")]
+            [call(message="haha", style={"qmark": "#ffffff"}, editing_mode="vim")]
         )
         self.assertEqual(result, {"10": True, "1": True, "2": "111111"})
 

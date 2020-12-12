@@ -23,7 +23,7 @@ class TestSecret(unittest.TestCase):
             message="hello",
             style={"answer": ""},
             default="yes",
-            symbol="~",
+            qmark="~",
             editing_mode="default",
             input=self.inp,
             output=DummyOutput(),
@@ -54,13 +54,13 @@ class TestSecret(unittest.TestCase):
 
     def test_prompt_message(self):
         secret_prompt = SecretPrompt(
-            message="fooboo", style={}, symbol="[?]", editing_mode="vim"
+            message="fooboo", style={}, qmark="[?]", editing_mode="vim"
         )
         message = secret_prompt._get_prompt_message()
         self.assertEqual(
             message,
             [
-                ("class:symbol", "[?]"),
+                ("class:qmark", "[?]"),
                 ("class:question", " fooboo"),
                 ("class:instruction", " "),
             ],
@@ -72,7 +72,7 @@ class TestSecret(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:symbol", "[?]"),
+                ("class:qmark", "[?]"),
                 ("class:question", " fooboo"),
                 ("class:answer", " *****"),
             ],
@@ -98,7 +98,7 @@ class TestSecret(unittest.TestCase):
             message="what",
             style={},
             default="111",
-            symbol="[!]",
+            qmark="[!]",
             editing_mode="vim",
         )
 

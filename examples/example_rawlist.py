@@ -7,7 +7,7 @@ questions = [
         "choices": ["hello", "world", "foo", "boo"],
         "message": "Select one of them",
         "default": "boo",
-        "symbol": "[?]",
+        "qmark": "[?]",
         "pointer": "   ",
     },
     {

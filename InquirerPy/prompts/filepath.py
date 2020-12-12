@@ -84,8 +84,8 @@ class FilePathPrompt(InputPrompt):
     :type editing_mode: Literal['default', 'emacs', 'vim']
     :param default: the default result
     :type default: str
-    :param symbol: question symbol to display
-    :type symbol: str
+    :param qmark: question qmark to display
+    :type qmark: str
     :param validate: a callable or a validation class to validate user input
     :type validate: Optional[Union[Callable[[str], bool], Validator]]
     :param invalid_message: the error message to display when input is invalid
@@ -100,7 +100,7 @@ class FilePathPrompt(InputPrompt):
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "emacs", "vim"] = "default",
         default: str = "",
-        symbol: str = "?",
+        qmark: str = "?",
         validate: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
         only_directories: bool = False,
@@ -116,7 +116,7 @@ class FilePathPrompt(InputPrompt):
             style=style,
             editing_mode=editing_mode,
             default=default,
-            symbol=symbol,
+            qmark=qmark,
             completer=ThreadedCompleter(
                 FilePathCompleter(only_directories=only_directories)
             ),

@@ -24,7 +24,7 @@ class TestInputPrompt(unittest.TestCase):
             message="yes",
             style={},
             default="world",
-            symbol="!",
+            qmark="!",
             editing_mode="emacs",
             input=self.inp,
             output=DummyOutput(),
@@ -41,7 +41,7 @@ class TestInputPrompt(unittest.TestCase):
             message="yes",
             style={},
             default="",
-            symbol="!",
+            qmark="!",
             editing_mode="emacs",
             input=self.inp,
             output=DummyOutput(),
@@ -58,7 +58,7 @@ class TestInputPrompt(unittest.TestCase):
             message="yes",
             style={},
             default="",
-            symbol="!",
+            qmark="!",
             editing_mode="emacs",
             input=self.inp,
             output=DummyOutput(),
@@ -77,12 +77,12 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(sorted(completions), ["hello", "hey"])
 
     def test_prompt_message(self):
-        input_prompt = InputPrompt(message="Enter your name", style={}, symbol="[?]")
+        input_prompt = InputPrompt(message="Enter your name", style={}, qmark="[?]")
         message = input_prompt._get_prompt_message()
         self.assertEqual(
             message,
             [
-                ("class:symbol", "[?]"),
+                ("class:qmark", "[?]"),
                 ("class:question", " Enter your name"),
                 ("class:instruction", " "),
             ],
@@ -93,7 +93,7 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:symbol", "[?]"),
+                ("class:qmark", "[?]"),
                 ("class:question", " Enter your name"),
                 ("class:answer", " haha"),
             ],
@@ -103,7 +103,7 @@ class TestInputPrompt(unittest.TestCase):
             message="Enter your name",
             style={},
             default="",
-            symbol="[?]",
+            qmark="[?]",
             editing_mode="emacs",
             multiline=True,
             completer={"hello": None, "hey": None, "what": None},
@@ -112,10 +112,10 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:symbol", "[?]"),
+                ("class:qmark", "[?]"),
                 ("class:question", " Enter your name"),
                 ("class:instruction", " ESC + Enter to finish input"),
-                ("class:symbol", "\n%s " % INQUIRERPY_POINTER_SEQUENCE),
+                ("class:qmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE),
             ],
         )
         input_prompt.status["answered"] = True
@@ -124,7 +124,7 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:symbol", "[?]"),
+                ("class:qmark", "[?]"),
                 ("class:question", " Enter your name"),
                 ("class:answer", " haha...[3 chars]"),
             ],
@@ -156,7 +156,7 @@ class TestInputPrompt(unittest.TestCase):
             message="Enter your name",
             style={},
             default="",
-            symbol="[?]",
+            qmark="[?]",
             editing_mode="emacs",
             multiline=True,
             completer={"hello": None, "hey": None, "what": None},

@@ -55,9 +55,9 @@ class ListPrompt(BaseComplexPrompt):
     :type style: Dict[str, str]
     :param editing_mode: editing_mode of the prompt
     :type editing_mode: Literal["emacs", "default", "vim"]
-    :param symbol: question symbol to display
-    :type symbol: str
-    :param pointer: the pointer symbol of hovered choice
+    :param qmark: question qmark to display
+    :type qmark: str
+    :param pointer: the pointer qmark of hovered choice
     :type pointer: str
     :param instruction: instruction to display to user
     :type instruction: str
@@ -70,11 +70,11 @@ class ListPrompt(BaseComplexPrompt):
         default: Any = None,
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
-        symbol: str = "?",
+        qmark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyListControl(choices, default, pointer)
         self._instruction = instruction
-        super().__init__(message, style, editing_mode, symbol, instruction)
+        super().__init__(message, style, editing_mode, qmark, instruction)
