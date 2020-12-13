@@ -65,12 +65,15 @@ class SecretPrompt(InputPrompt):
         :rtype: List[Tuple[str, str]]
         """
         pre_answer = ("class:instruction", " ")
-        post_answer = (
-            "class:answer",
-            ""
-            if not self.status["result"]
-            else " %s" % "".join(["*" for _ in self.status["result"]]),
-        )
+        if not self.transformer:
+            post_answer = (
+                "class:answer",
+                ""
+                if not self.status["result"]
+                else " %s" % "".join(["*" for _ in self.status["result"]]),
+            )
+        else:
+            post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
 
     def execute(self) -> None:

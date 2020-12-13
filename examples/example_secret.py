@@ -2,7 +2,12 @@ from InquirerPy.resolver import prompt
 from InquirerPy.validator import EmptyInputValidator, PasswordValidator
 
 questions = [
-    {"type": "secret", "message": "Enter your password", "default": "1"},
+    {
+        "type": "secret",
+        "message": "Enter your password",
+        "default": "1",
+        "transformer": lambda x: x * 2,
+    },
     {
         "type": "secret",
         "message": "Enter secret",
