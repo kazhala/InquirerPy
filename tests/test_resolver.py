@@ -2,9 +2,13 @@ import os
 import unittest
 from unittest.mock import ANY, call, patch
 
+from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import ConfirmPrompt
+from InquirerPy.prompts.expand import ExpandPrompt
 from InquirerPy.prompts.filepath import FilePathPrompt
+from InquirerPy.prompts.input import InputPrompt
+from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.resolver import prompt
 
@@ -267,3 +271,87 @@ class TestResolver(unittest.TestCase):
             ]
         )
         self.assertEqual(result, {"first": True, "second": None, "third": True})
+
+    @patch.object(ExpandPrompt, "execute")
+    def test_resolver_filter(self, mocked_execute):
+        mocked_execute.return_value = "boo"
+        questions = [
+            {
+                "type": "expand",
+                "choices": [
+                    {"name": "foo", "value": "boo", "key": "f"},
+                    {"name": "hello", "value": "world", "key": "w"},
+                ],
+                "message": "Select one",
+                "filter": lambda x: 2 * x,
+            }
+        ]
+        result = prompt(questions)
+        self.assertEqual(result, {"0": "booboo"})
+
+    def test_resolver_transformer(self):
+        prompt = ListPrompt(
+            message="Select one", choices=["1", "2", "3"], transformer=lambda x: x * 2
+        )
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " Select one"),
+                ("class:instruction", " "),
+            ],
+        )
+        prompt.status["result"] = "1"
+        prompt.status["answered"] = True
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " Select one"),
+                ("class:answer", " 11"),
+            ],
+        )
+
+        prompt = InputPrompt(
+            message="Select one",
+            transformer=lambda x: x * 2,
+        )
+        prompt.status["result"] = "2"
+        prompt.status["answered"] = True
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " Select one"),
+                ("class:answer", " 22"),
+            ],
+        )
+
+        prompt = SecretPrompt(
+            message="Select one",
+            transformer=lambda x: x * 2,
+        )
+        prompt.status["result"] = "2"
+        prompt.status["answered"] = True
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " Select one"),
+                ("class:answer", " 22"),
+            ],
+        )
+
+    @patch.object(InputPrompt, "execute")
+    def test_optional_keyboard_interrupt(self, mocked_execute):
+        mocked_execute.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
+        questions = [{"type": "input", "message": "hello"}]
+        result = prompt(questions, raise_keyboard_interrupt=False)
+        self.assertEqual(result, {"0": None})
+
+        input_prompt = InputPrompt(message="")
+        input_prompt.status = {
+            "answered": True,
+            "result": INQUIRERPY_KEYBOARD_INTERRUPT,
+        }
+        self.assertEqual(input_prompt._get_prompt_message(), [("class:skipped", "?  ")])
