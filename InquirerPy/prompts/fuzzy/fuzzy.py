@@ -179,9 +179,11 @@ class FuzzyPrompt(BaseSimplePrompt):
         qmark: str = "?",
         transformer: Callable = None,
         instruction: str = "",
+        multiselect: bool = False,
     ) -> None:
         """Initialise the layout and create Application."""
         self._instruction = instruction
+        self._multiselect = multiselect
         super().__init__(
             message=message,
             style=style,
@@ -216,16 +218,20 @@ class FuzzyPrompt(BaseSimplePrompt):
         )
         self.layout.focus(input_window)
 
+        @Condition
+        def is_multiselect() -> bool:
+            return self._multiselect
+
         @self.kb.add(Keys.Enter)
         def _(event):
             self._handle_enter(event)
 
-        @self.kb.add(Keys.Tab)
+        @self.kb.add(Keys.Tab, filter=is_multiselect)
         def _(event):
             self._handle_tab()
             self._handle_down()
 
-        @self.kb.add(Keys.BackTab)
+        @self.kb.add(Keys.BackTab, filter=is_multiselect)
         def _(event):
             self._handle_tab()
             self._handle_up()
@@ -275,12 +281,17 @@ class FuzzyPrompt(BaseSimplePrompt):
         ] = not self.content_control.choices[current_selected_index]["selected"]
 
     def _handle_enter(self, event) -> None:
-        selected_choices = list(
-            filter(lambda choice: choice["selected"], self.content_control.choices)
-        )
-        self.status["answered"] = True
-        self.status["result"] = [choice["name"] for choice in selected_choices]
-        event.app.exit(result=[choice["value"] for choice in selected_choices])
+        if self._multiselect:
+            selected_choices = list(
+                filter(lambda choice: choice["selected"], self.content_control.choices)
+            )
+            self.status["answered"] = True
+            self.status["result"] = [choice["name"] for choice in selected_choices]
+            event.app.exit(result=[choice["value"] for choice in selected_choices])
+        else:
+            self.status["answered"] = True
+            self.status["result"] = self.content_control.selection["name"]
+            event.app.exit(result=self.content_control.selection["value"])
 
     def _get_current_text(self) -> str:
         """Get current input buffer text."""
