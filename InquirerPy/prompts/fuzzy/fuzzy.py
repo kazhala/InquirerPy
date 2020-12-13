@@ -206,7 +206,9 @@ class FuzzyPrompt(BaseSimplePrompt):
         input_window = Window(
             height=LayoutDimension.exact(1), content=BufferControl(self.buffer)
         )
-        choice_window = Window(content=self.content_control)
+        choice_window = Window(
+            content=self.content_control, height=LayoutDimension.exact(2)
+        )
         self.layout = Layout(
             HSplit(
                 [
@@ -254,7 +256,15 @@ class FuzzyPrompt(BaseSimplePrompt):
         )
 
     def _on_text_changed(self, buffer) -> None:
-        """Handle buffer text change event."""
+        """Handle buffer text change event.
+
+        1. Run a new filter on all choices.
+        2. Re-calculate current selected_choice_index
+            if it exceeds the total filtered_choice.
+        3. Avoid selected_choice_index less than zero,
+            this fix the issue of cursor lose when:
+            choice -> empty choice -> choice
+        """
         self.content_control.filter_choices()
         if (
             self.content_control.selected_choice_index
@@ -263,6 +273,8 @@ class FuzzyPrompt(BaseSimplePrompt):
             self.content_control.selected_choice_index = (
                 self.content_control.choice_count - 1
             )
+        if self.content_control.selected_choice_index == -1:
+            self.content_control.selected_choice_index = 0
 
     def _handle_down(self) -> None:
         self.content_control.selected_choice_index = (
