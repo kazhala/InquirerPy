@@ -3,7 +3,6 @@ from typing import Any, Callable, Dict, List, Literal, Tuple
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
-from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.filters.cli import IsDone
 from prompt_toolkit.keys import Keys
@@ -47,8 +46,8 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         current_text: Callable[[], str],
     ) -> None:
         """Construct UIControl and initialise choices."""
-        self.pointer = "%s " % pointer
-        self.selected_pointer = "%s " % selected_pointer
+        self.pointer = pointer
+        self.selected_pointer = selected_pointer
         super().__init__(choices, default)
         self.current_text = current_text
 
@@ -63,12 +62,22 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", self.pointer))
+        display_choices.append(
+            ("class:pointer", self.selected_pointer if choice["selected"] else " ")
+        )
+        display_choices.append(("[SetCursorPosition]", ""))
         display_choices.append(("class:pointer", choice["name"]))
         return display_choices
 
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
-        display_choices.append(("", len(self.pointer) * " "))
+        display_choices.append(("class:pointer", len(self.pointer) * " "))
+        display_choices.append(
+            (
+                "class:pointer",
+                self.selected_pointer if choice["selected"] else " ",
+            )
+        )
         display_choices.append(("", choice["name"]))
         return display_choices
 
@@ -164,7 +173,7 @@ class FuzzyPrompt(BaseSimplePrompt):
         choices: List[Any],
         default: Any = None,
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
-        selected_pointer: str = 2 * INQUIRERPY_POINTER_SEQUENCE,
+        selected_pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "vim", "emacs"] = "default",
         qmark: str = "?",
