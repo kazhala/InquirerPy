@@ -78,10 +78,6 @@ class InputPrompt(BaseSimplePrompt):
         self.multiline = multiline
 
         @Condition
-        def not_multiline():
-            return not self.multiline
-
-        @Condition
         def is_multiline():
             return self.multiline
 
@@ -97,7 +93,7 @@ class InputPrompt(BaseSimplePrompt):
             else:
                 buff.start_completion(select_first=False)
 
-        @self.kb.add(Keys.Enter, filter=not_multiline)
+        @self.kb.add(Keys.Enter, filter=~is_multiline)
         def _(event):
             try:
                 self.session.validator.validate(self.session.default_buffer)
