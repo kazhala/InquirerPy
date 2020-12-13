@@ -3,7 +3,10 @@ from typing import Any, Callable, Dict, List, Literal, Tuple
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
+from prompt_toolkit.enums import EditingMode
+from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.filters.cli import IsDone
+from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.layout.dimension import LayoutDimension
@@ -22,6 +25,17 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     This UIControl is for lisint the available choices based on filtering.
 
     The actual input filtering will be handled by a separate BufferControl.
+
+    :param choices: list of choices to display
+    :type choices: List[Any]
+    :param default: default value, move selected_choice_index
+    :type default: Any
+    :param pointer: pointer symbol
+    :type pointer: str
+    :param selected_pointer: selected_pointer symbol
+    :type selected_pointer: str
+    :param current_text: current buffer text
+    :type current_text: Callable[[], str]
     """
 
     def __init__(
@@ -30,7 +44,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         default: Any,
         pointer: str,
         selected_pointer: str,
-        current_text: Callable,
+        current_text: Callable[[], str],
     ) -> None:
         """Construct UIControl and initialise choices."""
         self.pointer = "%s " % pointer
@@ -43,6 +57,8 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
                 raise InvalidArgument("fuzzy type prompt does not accept Separator.")
             choice["selected"] = False
             choice["index"] = index
+
+        self.filtered_choice = self.choices
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
@@ -74,17 +90,42 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             else:
                 display_choices += self._get_normal_text(choice)
             display_choices.append(("", "\n"))
-        display_choices.pop()
+        if display_choices:
+            display_choices.pop()
         return display_choices
 
-    @property
-    def filtered_choice(self) -> List[Dict[str, Any]]:
-        """Leverage fzy logic to fuzzy filter the choice."""
+    def filter_choices(self) -> None:
+        """Call to filter choices using fzy fuzzy match.
+
+        Making it callable so that it can be called duing `prompt_toolkit` buffer
+        event `on_text_changed`. This allows to get the `self.selected_choice_index`
+        a more realtime and accurate adjustment.
+        """
         if not self.current_text():
-            return self.choices
+            self.filtered_choice = self.choices
         else:
             indices, choices = fuzzy_match_py(self.current_text(), self.choices)
-            return choices
+            self.filtered_choice = choices
+
+    @property
+    def selection(self) -> Dict[str, Any]:
+        """Override this value since `self.choice` does not indicate the choice displayed.
+
+        `self.filtered_choice` is the up to date choice displayed.
+
+        :return: a dictionary of name and value for the current pointed choice
+        :rtype: Dict[str, Any]
+        """
+        return self.filtered_choice[self.selected_choice_index]
+
+    @property
+    def choice_count(self) -> int:
+        """Get the filtered choice count.
+
+        :return: total count of choices
+        :rtype: int
+        """
+        return len(self.filtered_choice)
 
 
 class FuzzyPrompt(BaseSimplePrompt):
@@ -132,7 +173,6 @@ class FuzzyPrompt(BaseSimplePrompt):
     ) -> None:
         """Initialise the layout and create Application."""
         self._instruction = instruction
-        self.buffer = Buffer()
         super().__init__(
             message=message,
             style=style,
@@ -147,6 +187,7 @@ class FuzzyPrompt(BaseSimplePrompt):
             selected_pointer=selected_pointer,
             current_text=self._get_current_text,
         )
+        self.buffer = Buffer(on_text_changed=self._on_text_changed)
         message_window = Window(
             height=LayoutDimension.exact(1),
             content=FormattedTextControl(self._get_prompt_message, show_cursor=False),
@@ -165,11 +206,72 @@ class FuzzyPrompt(BaseSimplePrompt):
             )
         )
         self.layout.focus(input_window)
+
+        @self.kb.add(Keys.Enter)
+        def _(event):
+            self._handle_enter(event)
+
+        @self.kb.add(Keys.Tab)
+        def _(event):
+            self._handle_tab()
+            self._handle_down()
+
+        @self.kb.add(Keys.BackTab)
+        def _(event):
+            self._handle_tab()
+            self._handle_up()
+
+        @self.kb.add(Keys.Down)
+        @self.kb.add("c-n")
+        def _(event):
+            self._handle_down()
+
+        @self.kb.add(Keys.Up)
+        @self.kb.add("c-p")
+        def _(event):
+            self._handle_up()
+
         self.application = Application(
             layout=self.layout,
             style=self.question_style,
             key_bindings=self.kb,
+            editing_mode=self.editing_mode,
         )
+
+    def _on_text_changed(self, buffer) -> None:
+        """Handle buffer text change event."""
+        self.content_control.filter_choices()
+        if (
+            self.content_control.selected_choice_index
+            > self.content_control.choice_count - 1
+        ):
+            self.content_control.selected_choice_index = (
+                self.content_control.choice_count - 1
+            )
+
+    def _handle_down(self) -> None:
+        self.content_control.selected_choice_index = (
+            self.content_control.selected_choice_index + 1
+        ) % self.content_control.choice_count
+
+    def _handle_up(self) -> None:
+        self.content_control.selected_choice_index = (
+            self.content_control.selected_choice_index - 1
+        ) % self.content_control.choice_count
+
+    def _handle_tab(self) -> None:
+        current_selected_index = self.content_control.selection["index"]
+        self.content_control.choices[current_selected_index][
+            "selected"
+        ] = not self.content_control.choices[current_selected_index]["selected"]
+
+    def _handle_enter(self, event) -> None:
+        selected_choices = list(
+            filter(lambda choice: choice["selected"], self.content_control.choices)
+        )
+        self.status["answered"] = True
+        self.status["result"] = [choice["name"] for choice in selected_choices]
+        event.app.exit(result=[choice["value"] for choice in selected_choices])
 
     def _get_current_text(self) -> str:
         """Get current input buffer text."""
