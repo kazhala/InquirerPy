@@ -9,7 +9,7 @@ source: https://github.com/liuchengxu/vim-clap/tree/master/pythonx/clap
 """
 
 from functools import partial
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 
 
 SCORE_MIN = float("-inf")
@@ -234,14 +234,16 @@ def apply_score(scorer, query, candidates):
 
     for c in candidates:
         candidate = c
-        score, indices = scorer(query, candidate)
+        score, indices = scorer(query, candidate["name"])
         if score != float("-inf"):
-            scored.append({"score": score, "indices": indices, "text": c})
+            scored.append({"score": score, "indices": indices, "choice": c})
 
     return scored
 
 
-def fuzzy_match_py(query: str, candidates: List[str]) -> Tuple[List[int], List[str]]:
+def fuzzy_match_py(
+    query: str, candidates: List[Dict[str, Any]]
+) -> Tuple[List[int], List[Dict[str, Any]]]:
     if " " in query:
         scorer = substr_scorer
     else:
@@ -253,7 +255,7 @@ def fuzzy_match_py(query: str, candidates: List[str]) -> Tuple[List[int], List[s
     indices = []
     filtered = []
     for r in ranked:
-        filtered.append(r["text"])
+        filtered.append(r["choice"])
         indices.append(r["indices"])
 
     return (indices, filtered)
