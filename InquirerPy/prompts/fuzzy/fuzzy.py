@@ -198,6 +198,10 @@ class FuzzyPrompt(BaseSimplePrompt):
     :type prompt: str
     :param marker: marker symbol for the selected choice in the case of multiselect
     :type marker: str
+    :param border: enable border around the fuzzy prompt
+    :type border: bool
+    :param info: display info as virtual text after input
+    :type info: bool
     """
 
     def __init__(
@@ -214,13 +218,15 @@ class FuzzyPrompt(BaseSimplePrompt):
         multiselect: bool = False,
         prompt: str = INQUIRERPY_POINTER_SEQUENCE,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
-        boarder: bool = False,
+        border: bool = True,
+        info: bool = True,
     ) -> None:
         """Initialise the layout and create Application."""
         self._instruction = instruction
         self._multiselect = multiselect
         self._prompt = prompt
-        self._boarder = boarder
+        self._border = border
+        self._info = info
         super().__init__(
             message=message,
             style=style,
@@ -228,14 +234,14 @@ class FuzzyPrompt(BaseSimplePrompt):
             qmark=qmark,
             transformer=transformer,
         )
-        self.content_control = InquirerPyFuzzyControl(
+        self._content_control = InquirerPyFuzzyControl(
             choices=choices,
             default=default,
             pointer=pointer,
             marker=marker,
             current_text=self._get_current_text,
         )
-        self.buffer = Buffer(on_text_changed=self._on_text_changed)
+        self._buffer = Buffer(on_text_changed=self._on_text_changed)
         message_window = Window(
             height=LayoutDimension.exact(1),
             content=FormattedTextControl(self._get_prompt_message, show_cursor=False),
@@ -243,7 +249,7 @@ class FuzzyPrompt(BaseSimplePrompt):
         input_window = Window(
             height=LayoutDimension.exact(1),
             content=BufferControl(
-                self.buffer,
+                self._buffer,
                 [
                     AfterInput(self._generate_after_input),
                     BeforeInput(self._generate_before_input),
@@ -252,9 +258,9 @@ class FuzzyPrompt(BaseSimplePrompt):
         )
         choice_window = Window(content=self.content_control)
         main_content_window = HSplit([input_window, choice_window])
-        if self._boarder:
+        if self._border:
             main_content_window = Frame(main_content_window)
-        self.layout = Layout(
+        self._layout = Layout(
             HSplit(
                 [
                     message_window,
@@ -262,7 +268,7 @@ class FuzzyPrompt(BaseSimplePrompt):
                 ]
             )
         )
-        self.layout.focus(input_window)
+        self._layout.focus(input_window)
 
         @Condition
         def is_multiselect() -> bool:
@@ -292,8 +298,8 @@ class FuzzyPrompt(BaseSimplePrompt):
         def _(event):
             self._handle_up()
 
-        self.application = Application(
-            layout=self.layout,
+        self._application = Application(
+            layout=self._layout,
             style=self.question_style,
             key_bindings=self.kb,
             editing_mode=self.editing_mode,
@@ -302,21 +308,22 @@ class FuzzyPrompt(BaseSimplePrompt):
     def _generate_after_input(self) -> List[Tuple[str, str]]:
         """Virtual text displayed after the user input."""
         display_message = []
-        display_message.append(("", "  "))
-        display_message.append(
-            (
-                "class:fuzzy_info",
-                "%s/%s"
-                % (
-                    self.content_control.choice_count,
-                    len(self.content_control.choices),
-                ),
-            )
-        )
-        if self._multiselect:
+        if self._info:
+            display_message.append(("", "  "))
             display_message.append(
-                ("class:fuzzy_info", " (%s)" % len(self.selected_choices))
+                (
+                    "class:fuzzy_info",
+                    "%s/%s"
+                    % (
+                        self.content_control.choice_count,
+                        len(self.content_control.choices),
+                    ),
+                )
             )
+            if self._multiselect:
+                display_message.append(
+                    ("class:fuzzy_info", " (%s)" % len(self.selected_choices))
+                )
         return display_message
 
     def _generate_before_input(self) -> List[Tuple[str, str]]:
@@ -403,9 +410,14 @@ class FuzzyPrompt(BaseSimplePrompt):
             filter(lambda choice: choice["selected"], self.content_control.choices)
         )
 
+    @property
+    def content_control(self) -> InquirerPyFuzzyControl:
+        """Get the choice content_control."""
+        return self._content_control
+
     def _get_current_text(self) -> str:
         """Get current input buffer text."""
-        return self.buffer.text
+        return self._buffer.text
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message for FormattedTextControl.
@@ -421,4 +433,4 @@ class FuzzyPrompt(BaseSimplePrompt):
 
     def execute(self) -> Any:
         """Execute the application and get the result."""
-        return self.application.run()
+        return self._application.run()
