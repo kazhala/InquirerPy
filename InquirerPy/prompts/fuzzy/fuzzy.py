@@ -25,9 +25,8 @@ from InquirerPy.separator import Separator
 class InquirerPyFuzzyControl(InquirerPyUIControl):
     """A UIControl element intended to be used by `prompt_toolkit` Window class.
 
-    This UIControl is for lisint the available choices based on filtering.
-
-    The actual input filtering will be handled by a separate BufferControl.
+    This UIControl is for listing the available choices based on filtering.
+    The actual input buffer will be handled by a separate BufferControl.
 
     :param choices: list of choices to display
     :type choices: List[Any]
@@ -65,6 +64,14 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         self._filtered_indices = []
 
     def _get_hover_text(self, choice, indices) -> List[Tuple[str, str]]:
+        """Get the current highlighted line of text in `FormattedText`.
+
+        If in the middle of filtering, loop through the char and color
+        indices matched char into `class:fuzzy_match`.
+
+        :return: list of formatted text
+        :rtype: List[Tuple[str, str]]
+        """
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
         display_choices.append(
@@ -83,6 +90,16 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         return display_choices
 
     def _get_normal_text(self, choice, indices) -> List[Tuple[str, str]]:
+        """Get the line of text in `FormattedText`.
+
+        If in the middle of filtering, loop through the char and color
+        indices matched char into `class:fuzzy_match`.
+
+        Calculate spaces of pointer to make the choice equally align.
+
+        :return: list of formatted text
+        :rtype: List[Tuple[str, str]]
+        """
         display_choices = []
         display_choices.append(("class:pointer", len(self._pointer) * " "))
         display_choices.append(
