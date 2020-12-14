@@ -13,6 +13,7 @@ from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.rawlist import RawlistPrompt
 from InquirerPy.prompts.secret import SecretPrompt
+from InquirerPy.util import get_style
 
 question_mapping = {
     "confirm": ConfirmPrompt,
@@ -60,17 +61,7 @@ def prompt(
         raise InvalidArgument("questions should be type of list.")
 
     if not style:
-        style = {
-            "questionmark": os.getenv("INQUIRERPY_STYLE_QUESTIONMARK", "#e5c07b"),
-            "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", "#61afef"),
-            "input": os.getenv("INQUIRERPY_STYLE_INPUT", "#98c379"),
-            "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
-            "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
-            "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
-            "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
-            "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
-            "skipped": os.getenv("INQUIRERPY_STYLE_SKIPPED", "#5c6370"),
-        }
+        style = get_style()
     if not editing_mode:
         default_mode = os.getenv("INQUIRERPY_EDITING_MODE", "default")
         if default_mode not in ACCEPTED_KEYBINDINGS:

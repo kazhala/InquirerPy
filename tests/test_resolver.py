@@ -10,7 +10,7 @@ from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.secret import SecretPrompt
-from InquirerPy.resolver import prompt
+from InquirerPy.resolver import get_style, prompt
 
 style = {
     "questionmark": "#e5c07b",

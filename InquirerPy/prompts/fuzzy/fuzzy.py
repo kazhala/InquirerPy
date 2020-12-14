@@ -10,6 +10,8 @@ from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Windo
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.layout.dimension import LayoutDimension
 from prompt_toolkit.layout.layout import Layout
+from prompt_toolkit.layout.processors import AfterInput, BeforeInput
+from prompt_toolkit.widgets.base import Frame
 
 from InquirerPy.base import BaseSimplePrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
@@ -31,8 +33,8 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     :type default: Any
     :param pointer: pointer symbol
     :type pointer: str
-    :param selected_pointer: selected_pointer symbol
-    :type selected_pointer: str
+    :param marker: marker symbol for the selected choice in the case of multiselect
+    :type marker: str
     :param current_text: current buffer text
     :type current_text: Callable[[], str]
     """
@@ -42,12 +44,12 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         choices: List[Any],
         default: Any,
         pointer: str,
-        selected_pointer: str,
+        marker: str,
         current_text: Callable[[], str],
     ) -> None:
         """Construct UIControl and initialise choices."""
         self.pointer = pointer
-        self.selected_pointer = selected_pointer
+        self.marker = marker
         super().__init__(choices, default)
         self.current_text = current_text
 
@@ -63,7 +65,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         display_choices = []
         display_choices.append(("class:pointer", self.pointer))
         display_choices.append(
-            ("class:pointer", self.selected_pointer if choice["selected"] else " ")
+            ("class:fuzzy_marker", self.marker if choice["selected"] else " ")
         )
         display_choices.append(("[SetCursorPosition]", ""))
         display_choices.append(("class:pointer", choice["name"]))
@@ -74,8 +76,8 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         display_choices.append(("class:pointer", len(self.pointer) * " "))
         display_choices.append(
             (
-                "class:pointer",
-                self.selected_pointer if choice["selected"] else " ",
+                "class:fuzzy_marker",
+                self.marker if choice["selected"] else " ",
             )
         )
         display_choices.append(("", choice["name"]))
@@ -144,7 +146,6 @@ class FuzzyPrompt(BaseSimplePrompt):
     is contains in the file fzy.py which is copied from `vim-clap`
     python provider.
 
-
     :param message: message to display to the user
     :type message: str
     :param choices: list of choices available to select
@@ -153,8 +154,6 @@ class FuzzyPrompt(BaseSimplePrompt):
     :type default: Any
     :param pointer: pointer symbol
     :type pointer: str
-    :param selected_pointer: in multi select case, indicates selected choice
-    :type selected_pointer: str
     :param style: style dict to apply
     :type style: Dict[str, str]
     :param editing_mode: keybinding mode
@@ -165,6 +164,12 @@ class FuzzyPrompt(BaseSimplePrompt):
     :type transformer: Callable
     :param instruction: instruction to display after the message
     :type instruction: str
+    :param multiselect: enable multi selection of the choices
+    :type multiselect: bool
+    :param prompt: prompt symbol for buffer
+    :type prompt: str
+    :param marker: marker symbol for the selected choice in the case of multiselect
+    :type marker: str
     """
 
     def __init__(
@@ -173,17 +178,21 @@ class FuzzyPrompt(BaseSimplePrompt):
         choices: List[Any],
         default: Any = None,
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
-        selected_pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "vim", "emacs"] = "default",
         qmark: str = "?",
         transformer: Callable = None,
         instruction: str = "",
         multiselect: bool = False,
+        prompt: str = INQUIRERPY_POINTER_SEQUENCE,
+        marker: str = INQUIRERPY_POINTER_SEQUENCE,
+        boarder: bool = False,
     ) -> None:
         """Initialise the layout and create Application."""
         self._instruction = instruction
         self._multiselect = multiselect
+        self._prompt = prompt
+        self._boarder = boarder
         super().__init__(
             message=message,
             style=style,
@@ -195,7 +204,7 @@ class FuzzyPrompt(BaseSimplePrompt):
             choices=choices,
             default=default,
             pointer=pointer,
-            selected_pointer=selected_pointer,
+            marker=marker,
             current_text=self._get_current_text,
         )
         self.buffer = Buffer(on_text_changed=self._on_text_changed)
@@ -204,20 +213,25 @@ class FuzzyPrompt(BaseSimplePrompt):
             content=FormattedTextControl(self._get_prompt_message, show_cursor=False),
         )
         input_window = Window(
-            height=LayoutDimension.exact(1), content=BufferControl(self.buffer)
+            height=LayoutDimension.exact(1),
+            content=BufferControl(
+                self.buffer,
+                [
+                    AfterInput(self._generate_after_input),
+                    BeforeInput(self._get_before_input),
+                ],
+            ),
         )
         choice_window = Window(
             content=self.content_control, height=LayoutDimension.exact(2)
         )
-        self.layout = Layout(
-            HSplit(
-                [
-                    message_window,
-                    ConditionalContainer(input_window, filter=~IsDone()),
-                    ConditionalContainer(choice_window, filter=~IsDone()),
-                ]
-            )
+        main_content_window = ConditionalContainer(
+            HSplit([input_window, choice_window]),
+            filter=~IsDone(),
         )
+        if self._boarder:
+            main_content_window = Frame(main_content_window)
+        self.layout = Layout(HSplit([message_window, main_content_window]))
         self.layout.focus(input_window)
 
         @Condition
@@ -254,6 +268,26 @@ class FuzzyPrompt(BaseSimplePrompt):
             key_bindings=self.kb,
             editing_mode=self.editing_mode,
         )
+
+    def _generate_after_input(self) -> List[Tuple[str, str]]:
+        display_message = []
+        display_message.append(("", "  "))
+        display_message.append(
+            (
+                "class:fuzzy_info",
+                "%s/%s"
+                % (
+                    self.content_control.choice_count,
+                    len(self.content_control.choices),
+                ),
+            )
+        )
+        return display_message
+
+    def _get_before_input(self) -> List[Tuple[str, str]]:
+        display_message = []
+        display_message.append(("class:fuzzy_prompt", "%s " % self._prompt))
+        return display_message
 
     def _on_text_changed(self, buffer) -> None:
         """Handle buffer text change event.
