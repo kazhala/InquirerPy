@@ -63,9 +63,7 @@ def prompt(
     if not style:
         style = get_style()
         if style.get("fuzzy_border"):
-            style["frame"] = style.pop("fuzzy_border")
-            if style.get("fuzzy_text", "") == "":
-                style["fuzzy_text"] = "white"
+            style["frame.border"] = style.pop("fuzzy_border")
     if not editing_mode:
         default_mode = os.getenv("INQUIRERPY_EDITING_MODE", "default")
         if default_mode not in ACCEPTED_KEYBINDINGS:

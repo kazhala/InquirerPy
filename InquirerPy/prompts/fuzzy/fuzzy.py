@@ -80,7 +80,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
                 self.marker if choice["selected"] else " ",
             )
         )
-        display_choices.append(("class:fuzzy_text", choice["name"]))
+        display_choices.append(("", choice["name"]))
         return display_choices
 
     def _get_formatted_choices(self) -> List[Tuple[str, str]]:
