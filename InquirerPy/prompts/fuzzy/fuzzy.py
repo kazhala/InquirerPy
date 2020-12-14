@@ -60,7 +60,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             choice["selected"] = False
             choice["index"] = index
 
-        self._filtered_choice = self.choices
+        self._filtered_choices = self.choices
         self._filtered_indices = []
 
     def _get_hover_text(self, choice, indices) -> List[Tuple[str, str]]:
@@ -131,19 +131,19 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         """
         display_choices = []
 
-        for index, choice in enumerate(self._filtered_choice):
+        for index, choice in enumerate(self._filtered_choices):
             if index == self.selected_choice_index:
                 display_choices += self._get_hover_text(
                     choice,
                     None
-                    if len(self._filtered_choice) == len(self.choices)
+                    if len(self._filtered_choices) == len(self.choices)
                     else self._filtered_indices[index],
                 )
             else:
                 display_choices += self._get_normal_text(
                     choice,
                     None
-                    if len(self._filtered_choice) == len(self.choices)
+                    if len(self._filtered_choices) == len(self.choices)
                     else self._filtered_indices[index],
                 )
             display_choices.append(("", "\n"))
@@ -159,10 +159,10 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         a more realtime and accurate adjustment.
         """
         if not self._current_text():
-            self._filtered_choice = self.choices
+            self._filtered_choices = self.choices
         else:
             indices, choices = fuzzy_match_py(self._current_text(), self.choices)
-            self._filtered_choice = choices
+            self._filtered_choices = choices
             self._filtered_indices = indices
 
     @property
@@ -174,7 +174,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         :return: a dictionary of name and value for the current pointed choice
         :rtype: Dict[str, Any]
         """
-        return self._filtered_choice[self.selected_choice_index]
+        return self._filtered_choices[self.selected_choice_index]
 
     @property
     def choice_count(self) -> int:
@@ -183,7 +183,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         :return: total count of choices
         :rtype: int
         """
-        return len(self._filtered_choice)
+        return len(self._filtered_choices)
 
 
 class FuzzyPrompt(BaseSimplePrompt):
