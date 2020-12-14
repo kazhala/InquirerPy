@@ -80,7 +80,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
                 self.marker if choice["selected"] else " ",
             )
         )
-        display_choices.append(("", choice["name"]))
+        display_choices.append(("class:fuzzy_text", choice["name"]))
         return display_choices
 
     def _get_formatted_choices(self) -> List[Tuple[str, str]]:
@@ -222,16 +222,18 @@ class FuzzyPrompt(BaseSimplePrompt):
                 ],
             ),
         )
-        choice_window = Window(
-            content=self.content_control, height=LayoutDimension.exact(2)
-        )
-        main_content_window = ConditionalContainer(
-            HSplit([input_window, choice_window]),
-            filter=~IsDone(),
-        )
+        choice_window = Window(content=self.content_control)
+        main_content_window = HSplit([input_window, choice_window])
         if self._boarder:
             main_content_window = Frame(main_content_window)
-        self.layout = Layout(HSplit([message_window, main_content_window]))
+        self.layout = Layout(
+            HSplit(
+                [
+                    message_window,
+                    ConditionalContainer(main_content_window, filter=~IsDone()),
+                ]
+            )
+        )
         self.layout.focus(input_window)
 
         @Condition
@@ -327,17 +329,24 @@ class FuzzyPrompt(BaseSimplePrompt):
         ] = not self.content_control.choices[current_selected_index]["selected"]
 
     def _handle_enter(self, event) -> None:
-        if self._multiselect:
-            selected_choices = list(
-                filter(lambda choice: choice["selected"], self.content_control.choices)
-            )
+        try:
+            if self._multiselect:
+                selected_choices = list(
+                    filter(
+                        lambda choice: choice["selected"], self.content_control.choices
+                    )
+                )
+                self.status["answered"] = True
+                self.status["result"] = [choice["name"] for choice in selected_choices]
+                event.app.exit(result=[choice["value"] for choice in selected_choices])
+            else:
+                self.status["answered"] = True
+                self.status["result"] = self.content_control.selection["name"]
+                event.app.exit(result=self.content_control.selection["value"])
+        except IndexError:
             self.status["answered"] = True
-            self.status["result"] = [choice["name"] for choice in selected_choices]
-            event.app.exit(result=[choice["value"] for choice in selected_choices])
-        else:
-            self.status["answered"] = True
-            self.status["result"] = self.content_control.selection["name"]
-            event.app.exit(result=self.content_control.selection["value"])
+            self.status["result"] = None
+            event.app.exit(result=None)
 
     def _get_current_text(self) -> str:
         """Get current input buffer text."""

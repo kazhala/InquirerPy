@@ -22,7 +22,9 @@ def get_style() -> Dict[str, str]:
         "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
         "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
         "skipped": os.getenv("INQUIRERPY_STYLE_SKIPPED", "#5c6370"),
+        "fuzzy_text": os.getenv("INQUIRERPY_STYLE_TEXT", "#abb2bf"),
         "fuzzy_prompt": os.getenv("INQUIRERPY_STYLE_FUZZY_PROMPT", "#c678dd"),
         "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", "#98c379"),
         "fuzzy_marker": os.getenv("INQUIRERPY_STYLE_FUZZY_MARKER", "#e5c07b"),
+        "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", "#4b5263"),
     }
