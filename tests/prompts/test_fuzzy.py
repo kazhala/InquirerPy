@@ -236,3 +236,91 @@ class TestFuzzy(unittest.TestCase):
             ],
         )
         self.assertEqual(self.prompt.content_control.selected_choice_index, 2)
+        self.prompt._buffer.text = ""
+        self.prompt._on_text_changed(None)
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 2)
+        self.assertEqual(
+            self.prompt.content_control._filtered_choices,
+            [
+                {"index": 0, "name": "haah", "selected": False, "value": "haah"},
+                {"index": 1, "name": "haha", "selected": False, "value": "haha"},
+                {"index": 2, "name": "what", "selected": False, "value": "what"},
+                {"index": 3, "name": "waht", "selected": False, "value": "waht"},
+                {"index": 4, "name": "weaht", "selected": False, "value": "weaht"},
+            ],
+        )
+        self.prompt.content_control.selected_choice_index = 0
+
+    @patch.object(FuzzyPrompt, "_get_height")
+    def test_prompt_bindings(self, mocked_height):
+        mocked_height.return_value = (10, 20)
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
+        self.prompt._handle_down()
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 1)
+        self.prompt._handle_down()
+        self.prompt._handle_down()
+        self.prompt._handle_down()
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 4)
+        self.prompt._handle_down()
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
+        self.prompt._handle_up()
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 4)
+        self.prompt._handle_up()
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 3)
+        self.prompt._handle_up()
+        self.prompt._handle_up()
+        self.prompt._handle_up()
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            self.prompt._handle_enter(event)
+        self.assertEqual(self.prompt.status, {"answered": True, "result": "haah"})
+
+        prompt = FuzzyPrompt(
+            message="Select one of them",
+            choices=["haah", "haha", "what", "waht", "weaht"],
+            multiselect=True,
+        )
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_enter(event)
+        self.assertEqual(prompt.status, {"answered": True, "result": ["haah"]})
+        prompt.status = {"answered": False, "result": None}
+        prompt._handle_tab()
+        prompt._handle_down()
+        prompt._handle_tab()
+        prompt._handle_down()
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_enter(event)
+        self.assertEqual(prompt.status, {"answered": True, "result": ["haah", "haha"]})
+
+        prompt = FuzzyPrompt(
+            message="Select one of them",
+            choices=["haah", "haha", "what", "waht", "weaht"],
+            multiselect=True,
+        )
+        prompt._buffer.text = "asdfasfasfasfad"
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_enter(event)
+        self.assertEqual(prompt.status, {"answered": True, "result": []})
+
+    def test_prompt_message(self):
+        self.assertEqual(
+            self.prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " Select one of them"),
+                ("class:instruction", " "),
+            ],
+        )
+        self.prompt.status = {"answered": True, "result": ["hello"]}
+        self.assertEqual(
+            self.prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " Select one of them"),
+                ("class:answer", " ['hello']"),
+            ],
+        )

@@ -10,7 +10,7 @@ from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.secret import SecretPrompt
-from InquirerPy.resolver import get_style, prompt
+from InquirerPy.resolver import prompt
 
 style = {
     "questionmark": "#e5c07b",
@@ -22,6 +22,11 @@ style = {
     "checkbox": "#98c379",
     "separator": "",
     "skipped": "#5c6370",
+    "fuzzy_prompt": "#c678dd",
+    "fuzzy_info": "#98c379",
+    "fuzzy_marker": "#e5c07b",
+    "frame.border": "#4b5263",
+    "fuzzy_match": "#c678dd",
 }
 
 
@@ -123,6 +128,15 @@ class TestResolver(unittest.TestCase):
         os.environ["INQUIRERPY_STYLE_QUESTION"] = "#222222"
         os.environ["INQUIRERPY_STYLE_INSTRUCTION"] = "#333333"
         os.environ["INQUIRERPY_STYLE_INPUT"] = "#444444"
+        os.environ["INQUIRERPY_STYLE_POINTER"] = "#555555"
+        os.environ["INQUIRERPY_STYLE_CHECKBOX"] = "#66666"
+        os.environ["INQUIRERPY_STYLE_SEPARATOR"] = "#777777"
+        os.environ["INQUIRERPY_STYLE_SKIPPED"] = "#888888"
+        os.environ["INQUIRERPY_STYLE_FUZZY_PROMPT"] = "#999999"
+        os.environ["INQUIRERPY_STYLE_FUZZY_INFO"] = "#aaaaaa"
+        os.environ["INQUIRERPY_STYLE_FUZZY_MARKER"] = "#bbbbbb"
+        os.environ["INQUIRERPY_STYLE_FUZZY_BORDER"] = "#cccccc"
+        os.environ["INQUIRERPY_STYLE_FUZZY_MATCH"] = "#dddddd"
         os.environ["INQUIRERPY_EDITING_MODE"] = "emacs"
 
         questions = [{"type": "confirm", "message": "Confirm?", "name": "question1"}]
@@ -136,10 +150,15 @@ class TestResolver(unittest.TestCase):
                 "input": "#444444",
                 "question": "#222222",
                 "instruction": "#333333",
-                "pointer": "#61afef",
-                "checkbox": "#98c379",
-                "separator": "",
-                "skipped": "#5c6370",
+                "pointer": "#555555",
+                "checkbox": "#66666",
+                "separator": "#777777",
+                "skipped": "#888888",
+                "fuzzy_prompt": "#999999",
+                "fuzzy_info": "#aaaaaa",
+                "fuzzy_marker": "#bbbbbb",
+                "fuzzy_match": "#dddddd",
+                "frame.border": "#cccccc",
             },
             editing_mode="emacs",
         )
