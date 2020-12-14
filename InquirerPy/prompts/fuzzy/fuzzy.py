@@ -48,10 +48,10 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         current_text: Callable[[], str],
     ) -> None:
         """Construct UIControl and initialise choices."""
-        self.pointer = pointer
-        self.marker = marker
+        self._pointer = pointer
+        self._marker = marker
         super().__init__(choices, default)
-        self.current_text = current_text
+        self._current_text = current_text
 
         for index, choice in enumerate(self.choices):
             if isinstance(choice["value"], Separator):
@@ -59,14 +59,14 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             choice["selected"] = False
             choice["index"] = index
 
-        self.filtered_choice = self.choices
-        self.filtered_indices = []
+        self._filtered_choice = self.choices
+        self._filtered_indices = []
 
     def _get_hover_text(self, choice, indices) -> List[Tuple[str, str]]:
         display_choices = []
-        display_choices.append(("class:pointer", self.pointer))
+        display_choices.append(("class:pointer", self._pointer))
         display_choices.append(
-            ("class:fuzzy_marker", self.marker if choice["selected"] else " ")
+            ("class:fuzzy_marker", self._marker if choice["selected"] else " ")
         )
         display_choices.append(("[SetCursorPosition]", ""))
         if not indices:
@@ -82,11 +82,11 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
 
     def _get_normal_text(self, choice, indices) -> List[Tuple[str, str]]:
         display_choices = []
-        display_choices.append(("class:pointer", len(self.pointer) * " "))
+        display_choices.append(("class:pointer", len(self._pointer) * " "))
         display_choices.append(
             (
                 "class:fuzzy_marker",
-                self.marker if choice["selected"] else " ",
+                self._marker if choice["selected"] else " ",
             )
         )
         if not indices:
@@ -112,20 +112,20 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         """
         display_choices = []
 
-        for index, choice in enumerate(self.filtered_choice):
+        for index, choice in enumerate(self._filtered_choice):
             if index == self.selected_choice_index:
                 display_choices += self._get_hover_text(
                     choice,
                     None
-                    if len(self.filtered_choice) == len(self.choices)
-                    else self.filtered_indices[index],
+                    if len(self._filtered_choice) == len(self.choices)
+                    else self._filtered_indices[index],
                 )
             else:
                 display_choices += self._get_normal_text(
                     choice,
                     None
-                    if len(self.filtered_choice) == len(self.choices)
-                    else self.filtered_indices[index],
+                    if len(self._filtered_choice) == len(self.choices)
+                    else self._filtered_indices[index],
                 )
             display_choices.append(("", "\n"))
         if display_choices:
@@ -139,12 +139,12 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         event `on_text_changed`. This allows to get the `self.selected_choice_index`
         a more realtime and accurate adjustment.
         """
-        if not self.current_text():
-            self.filtered_choice = self.choices
+        if not self._current_text():
+            self._filtered_choice = self.choices
         else:
-            indices, choices = fuzzy_match_py(self.current_text(), self.choices)
-            self.filtered_choice = choices
-            self.filtered_indices = indices
+            indices, choices = fuzzy_match_py(self._current_text(), self.choices)
+            self._filtered_choice = choices
+            self._filtered_indices = indices
 
     @property
     def selection(self) -> Dict[str, Any]:
@@ -155,7 +155,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         :return: a dictionary of name and value for the current pointed choice
         :rtype: Dict[str, Any]
         """
-        return self.filtered_choice[self.selected_choice_index]
+        return self._filtered_choice[self.selected_choice_index]
 
     @property
     def choice_count(self) -> int:
@@ -164,7 +164,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         :return: total count of choices
         :rtype: int
         """
-        return len(self.filtered_choice)
+        return len(self._filtered_choice)
 
 
 class FuzzyPrompt(BaseSimplePrompt):
@@ -246,7 +246,7 @@ class FuzzyPrompt(BaseSimplePrompt):
                 self.buffer,
                 [
                     AfterInput(self._generate_after_input),
-                    BeforeInput(self._get_before_input),
+                    BeforeInput(self._generate_before_input),
                 ],
             ),
         )
@@ -300,6 +300,7 @@ class FuzzyPrompt(BaseSimplePrompt):
         )
 
     def _generate_after_input(self) -> List[Tuple[str, str]]:
+        """Virtual text displayed after the user input."""
         display_message = []
         display_message.append(("", "  "))
         display_message.append(
@@ -312,9 +313,14 @@ class FuzzyPrompt(BaseSimplePrompt):
                 ),
             )
         )
+        if self._multiselect:
+            display_message.append(
+                ("class:fuzzy_info", " (%s)" % len(self.selected_choices))
+            )
         return display_message
 
-    def _get_before_input(self) -> List[Tuple[str, str]]:
+    def _generate_before_input(self) -> List[Tuple[str, str]]:
+        """Display prompt symbol as virtual text before user input."""
         display_message = []
         display_message.append(("class:fuzzy_prompt", "%s " % self._prompt))
         return display_message
@@ -351,32 +357,51 @@ class FuzzyPrompt(BaseSimplePrompt):
         ) % self.content_control.choice_count
 
     def _handle_tab(self) -> None:
+        """Handle tab event, alter the `selected` state of the choice."""
         current_selected_index = self.content_control.selection["index"]
         self.content_control.choices[current_selected_index][
             "selected"
         ] = not self.content_control.choices[current_selected_index]["selected"]
 
     def _handle_enter(self, event) -> None:
+        """Handle enter event.
+
+        In multiselect scenario, if no TAB is entered, then capture the current
+        highlighted choice and return the value in a list.
+        Otherwise, return all TAB choices as a list.
+
+        In normal scenario, reutrn the current highlighted choice.
+
+        If current UI contains no choice due to filter, return None.
+        """
         try:
             if self._multiselect:
-                selected_choices = list(
-                    filter(
-                        lambda choice: choice["selected"], self.content_control.choices
-                    )
-                )
-                if not selected_choices:
-                    selected_choices = [self.content_control.selection]
                 self.status["answered"] = True
-                self.status["result"] = [choice["name"] for choice in selected_choices]
-                event.app.exit(result=[choice["value"] for choice in selected_choices])
+                if not self.selected_choices:
+                    self.status["result"] = [self.content_control.selection["name"]]
+                    event.app.exit(result=[self.content_control.selection["value"]])
+                else:
+                    self.status["result"] = [
+                        choice["name"] for choice in self.selected_choices
+                    ]
+                    event.app.exit(
+                        result=[choice["value"] for choice in self.selected_choices]
+                    )
             else:
                 self.status["answered"] = True
                 self.status["result"] = self.content_control.selection["name"]
                 event.app.exit(result=self.content_control.selection["value"])
         except IndexError:
             self.status["answered"] = True
-            self.status["result"] = None
-            event.app.exit(result=None)
+            self.status["result"] = None if not self._multiselect else []
+            event.app.exit(result=None if not self._multiselect else [])
+
+    @property
+    def selected_choices(self) -> List[Dict[str, Any]]:
+        """Get all user selected choices."""
+        return list(
+            filter(lambda choice: choice["selected"], self.content_control.choices)
+        )
 
     def _get_current_text(self) -> str:
         """Get current input buffer text."""
