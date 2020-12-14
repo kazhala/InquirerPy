@@ -1,5 +1,7 @@
 """Module contains the class to construct fuzzyfinder prompt."""
-from typing import Any, Callable, Dict, List, Literal, Tuple
+import math
+import shutil
+from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -8,7 +10,7 @@ from prompt_toolkit.filters.cli import IsDone
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
-from prompt_toolkit.layout.dimension import LayoutDimension
+from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.layout.processors import AfterInput, BeforeInput
 from prompt_toolkit.widgets.base import Frame
@@ -202,6 +204,10 @@ class FuzzyPrompt(BaseSimplePrompt):
     :type border: bool
     :param info: display info as virtual text after input
     :type info: bool
+    :param height: preferred height of the choice window
+    :type height: Union[str, int]
+    :param max_height: max height choice window should reach
+    :type max_height: Union[str, int]
     """
 
     def __init__(
@@ -220,8 +226,22 @@ class FuzzyPrompt(BaseSimplePrompt):
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         border: bool = True,
         info: bool = True,
+        height: Union[str, int] = None,
+        max_height: Union[str, int] = None,
     ) -> None:
-        """Initialise the layout and create Application."""
+        """Initialise the layout and create Application.
+
+        The Application have mainly 3 layers.
+        1. question
+        2. input
+        3. choices
+
+        The content of choices content_control is bounded by the input buffer content_control
+        on_text_changed event.
+
+        Once Enter is pressed, hide both input buffer and choices buffer as well as
+        updating the question buffer with user selection.
+        """
         self._instruction = instruction
         self._multiselect = multiselect
         self._prompt = prompt
@@ -234,6 +254,7 @@ class FuzzyPrompt(BaseSimplePrompt):
             qmark=qmark,
             transformer=transformer,
         )
+
         self._content_control = InquirerPyFuzzyControl(
             choices=choices,
             default=default,
@@ -256,7 +277,14 @@ class FuzzyPrompt(BaseSimplePrompt):
                 ],
             ),
         )
-        choice_window = Window(content=self.content_control)
+        dimmension_height, dimmension_max_height = self._get_height(height, max_height)
+        choice_height_dimmension = Dimension(
+            max=dimmension_max_height, preferred=dimmension_height
+        )
+
+        choice_window = Window(
+            content=self.content_control, height=choice_height_dimmension
+        )
         main_content_window = HSplit([input_window, choice_window])
         if self._border:
             main_content_window = Frame(main_content_window)
@@ -304,6 +332,45 @@ class FuzzyPrompt(BaseSimplePrompt):
             key_bindings=self.kb,
             editing_mode=self.editing_mode,
         )
+
+    def _get_height(
+        self, height: Optional[Union[int, str]], max_height: Optional[Union[int, str]]
+    ) -> Tuple[Optional[int], int]:
+        """Calculate the height and max_height for the choice window."""
+        try:
+            _, term_lines = shutil.get_terminal_size()
+            term_lines = term_lines
+            if not height:
+                dimmension_height = None
+            else:
+                if isinstance(height, str):
+                    height = height.replace("%", "")
+                    height = int(height)
+                    dimmension_height = math.floor(term_lines * (height / 100))
+                else:
+                    dimmension_height = height
+                dimmension_height = dimmension_height - 2
+
+            if not max_height:
+                dimmension_max_height = term_lines - 2
+            else:
+                if isinstance(max_height, str):
+                    max_height = max_height.replace("%", "")
+                    max_height = int(max_height)
+                    dimmension_max_height = math.floor(term_lines * (max_height / 100))
+                else:
+                    dimmension_max_height = max_height
+            if dimmension_height and dimmension_height > dimmension_max_height:
+                raise InvalidArgument(
+                    "fuzzy prompt height (%s) should be less than max_height (%s)."
+                    % (dimmension_height, dimmension_max_height)
+                )
+            return dimmension_height, dimmension_max_height
+
+        except ValueError:
+            raise InvalidArgument(
+                "fuzzy prompt height needs to be either an int or str representing height percentage."
+            )
 
     def _generate_after_input(self) -> List[Tuple[str, str]]:
         """Virtual text displayed after the user input."""

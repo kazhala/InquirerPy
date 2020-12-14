@@ -5,8 +5,9 @@ questions = [
         "type": "fuzzy",
         "message": "Select one of them",
         "choices": ["meat", "what", "whaaah", "weather", "haha"],
-        "boarder": True,
+        "border": True,
         "multiselect": True,
+        "max_height": "100%",
     }
 ]
 
