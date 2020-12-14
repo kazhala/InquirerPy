@@ -25,5 +25,6 @@ def get_style() -> Dict[str, str]:
         "fuzzy_prompt": os.getenv("INQUIRERPY_STYLE_FUZZY_PROMPT", "#c678dd"),
         "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", "#98c379"),
         "fuzzy_marker": os.getenv("INQUIRERPY_STYLE_FUZZY_MARKER", "#e5c07b"),
-        "frame.border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", "#4b5263"),
+        "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", "#4b5263"),
+        "fuzzy_match": os.getenv("INQUIRERPY_STYLE_FUZZY_MATCH", "#c678dd"),
     }

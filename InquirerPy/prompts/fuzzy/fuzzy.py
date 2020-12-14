@@ -60,18 +60,27 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             choice["index"] = index
 
         self.filtered_choice = self.choices
+        self.filtered_indices = []
 
-    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice, indices) -> List[Tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", self.pointer))
         display_choices.append(
             ("class:fuzzy_marker", self.marker if choice["selected"] else " ")
         )
         display_choices.append(("[SetCursorPosition]", ""))
-        display_choices.append(("class:pointer", choice["name"]))
+        if not indices:
+            display_choices.append(("class:pointer", choice["name"]))
+        else:
+            indices = set(indices)
+            for index, char in enumerate(choice["name"]):
+                if index in indices:
+                    display_choices.append(("class:fuzzy_match", char))
+                else:
+                    display_choices.append(("class:pointer", char))
         return display_choices
 
-    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice, indices) -> List[Tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", len(self.pointer) * " "))
         display_choices.append(
@@ -80,7 +89,15 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
                 self.marker if choice["selected"] else " ",
             )
         )
-        display_choices.append(("", choice["name"]))
+        if not indices:
+            display_choices.append(("", choice["name"]))
+        else:
+            indices = set(indices)
+            for index, char in enumerate(choice["name"]):
+                if index in indices:
+                    display_choices.append(("class:fuzzy_match", char))
+                else:
+                    display_choices.append(("", char))
         return display_choices
 
     def _get_formatted_choices(self) -> List[Tuple[str, str]]:
@@ -97,9 +114,19 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
 
         for index, choice in enumerate(self.filtered_choice):
             if index == self.selected_choice_index:
-                display_choices += self._get_hover_text(choice)
+                display_choices += self._get_hover_text(
+                    choice,
+                    None
+                    if len(self.filtered_choice) == len(self.choices)
+                    else self.filtered_indices[index],
+                )
             else:
-                display_choices += self._get_normal_text(choice)
+                display_choices += self._get_normal_text(
+                    choice,
+                    None
+                    if len(self.filtered_choice) == len(self.choices)
+                    else self.filtered_indices[index],
+                )
             display_choices.append(("", "\n"))
         if display_choices:
             display_choices.pop()
@@ -117,6 +144,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         else:
             indices, choices = fuzzy_match_py(self.current_text(), self.choices)
             self.filtered_choice = choices
+            self.filtered_indices = indices
 
     @property
     def selection(self) -> Dict[str, Any]:
@@ -336,6 +364,8 @@ class FuzzyPrompt(BaseSimplePrompt):
                         lambda choice: choice["selected"], self.content_control.choices
                     )
                 )
+                if not selected_choices:
+                    selected_choices = [self.content_control.selection]
                 self.status["answered"] = True
                 self.status["result"] = [choice["name"] for choice in selected_choices]
                 event.app.exit(result=[choice["value"] for choice in selected_choices])
