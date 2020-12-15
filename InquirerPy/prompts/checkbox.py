@@ -107,6 +107,10 @@ class CheckboxPrompt(BaseComplexPrompt):
     :type disabled_symbol: str
     :param instruction: instruction to display after the message
     :type instruction: str
+    :param height: preferred height of the choice window
+    :type height: Union[str, int]
+    :param max_height: max height choice window should reach
+    :type max_height: Union[str, int]
     """
 
     def __init__(
@@ -122,12 +126,23 @@ class CheckboxPrompt(BaseComplexPrompt):
         disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
         instruction: str = "",
         transformer: Callable = None,
+        height: Union[int, str] = None,
+        max_height: Union[int, str] = None,
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyCheckboxControl(
             choices, default, pointer, enabled_symbol, disabled_symbol
         )
-        super().__init__(message, style, editing_mode, qmark, instruction, transformer)
+        super().__init__(
+            message=message,
+            style=style,
+            editing_mode=editing_mode,
+            qmark=qmark,
+            instruction=instruction,
+            transformer=transformer,
+            height=height,
+            max_height=max_height,
+        )
 
         @self.kb.add(" ")
         def _(event) -> None:

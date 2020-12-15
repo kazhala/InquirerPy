@@ -68,6 +68,10 @@ class ListPrompt(BaseComplexPrompt):
     :type instruction: str
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable
+    :param height: preferred height of the choice window
+    :type height: Union[str, int]
+    :param max_height: max height choice window should reach
+    :type max_height: Union[str, int]
     """
 
     def __init__(
@@ -81,8 +85,19 @@ class ListPrompt(BaseComplexPrompt):
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
         transformer: Callable = None,
+        height: Union[int, str] = None,
+        max_height: Union[int, str] = None,
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyListControl(choices, default, pointer)
         self._instruction = instruction
-        super().__init__(message, style, editing_mode, qmark, instruction, transformer)
+        super().__init__(
+            message=message,
+            style=style,
+            editing_mode=editing_mode,
+            qmark=qmark,
+            instruction=instruction,
+            transformer=transformer,
+            height=height,
+            max_height=max_height,
+        )

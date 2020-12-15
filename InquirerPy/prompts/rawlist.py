@@ -95,6 +95,10 @@ class RawlistPrompt(BaseComplexPrompt):
     :type instruction: str
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable
+    :param height: preferred height of the choice window
+    :type height: Union[str, int]
+    :param max_height: max height choice window should reach
+    :type max_height: Union[str, int]
     """
 
     def __init__(
@@ -109,13 +113,24 @@ class RawlistPrompt(BaseComplexPrompt):
         pointer: str = " ",
         instruction: str = "",
         transformer: Callable = None,
+        height: Union[int, str] = None,
+        max_height: Union[int, str] = None,
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
         self.content_control = InquirerPyRawlistControl(
             choices, default, pointer, separator
         )
         self._instruction = instruction
-        super().__init__(message, style, editing_mode, qmark, instruction, transformer)
+        super().__init__(
+            message=message,
+            style=style,
+            editing_mode=editing_mode,
+            qmark=qmark,
+            instruction=instruction,
+            transformer=transformer,
+            height=height,
+            max_height=max_height,
+        )
 
         def keybinding_factory(choice):
             @self.kb.add(str(choice["display_index"]))

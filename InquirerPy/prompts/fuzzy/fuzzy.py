@@ -1,5 +1,5 @@
 """Module contains the class to construct fuzzyfinder prompt."""
-from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -293,7 +293,9 @@ class FuzzyPrompt(BaseSimplePrompt):
                 ],
             ),
         )
-        dimmension_height, dimmension_max_height = calculate_height(height, max_height)
+        dimmension_height, dimmension_max_height = calculate_height(
+            height, max_height, offset=2
+        )
         choice_height_dimmension = Dimension(
             max=dimmension_max_height, preferred=dimmension_height
         )

@@ -70,10 +70,7 @@ def calculate_height(
             else:
                 dimmension_max_height = max_height
         if dimmension_height and dimmension_height > dimmension_max_height:
-            raise InvalidArgument(
-                "prompt height (%s) should be less than max_height (%s)."
-                % (dimmension_height, dimmension_max_height)
-            )
+            dimmension_height = dimmension_max_height
         return dimmension_height, dimmension_max_height
 
     except ValueError:

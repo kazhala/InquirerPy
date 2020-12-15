@@ -141,6 +141,10 @@ class ExpandPrompt(BaseComplexPrompt):
     :type instruction: str
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable
+    :param height: preferred height of the choice window
+    :type height: Union[str, int]
+    :param max_height: max height choice window should reach
+    :type max_height: Union[str, int]
     """
 
     def __init__(
@@ -157,12 +161,23 @@ class ExpandPrompt(BaseComplexPrompt):
         expand_pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
         transformer: Callable = None,
+        height: Union[int, str] = None,
+        max_height: Union[int, str] = None,
     ) -> None:
         """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
             choices, default, pointer, separator, help_msg, expand_pointer
         )
-        super().__init__(message, style, editing_mode, qmark, instruction, transformer)
+        super().__init__(
+            message=message,
+            style=style,
+            editing_mode=editing_mode,
+            qmark=qmark,
+            instruction=instruction,
+            transformer=transformer,
+            height=height,
+            max_height=max_height,
+        )
 
         def keybinding_factory(key):
             @self.kb.add(key.lower())

@@ -10,7 +10,7 @@ from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
 from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
-from prompt_toolkit.layout.dimension import LayoutDimension
+from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import Validator
@@ -18,6 +18,7 @@ from prompt_toolkit.validation import Validator
 from InquirerPy.enum import ACCEPTED_KEYBINDINGS, INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
+from InquirerPy.utils import calculate_height
 
 
 class BaseSimplePrompt(ABC):
@@ -276,6 +277,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
     :type instruction: str
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable
+    :param height: preferred height of the choice window
+    :type height: Union[str, int]
+    :param max_height: max height choice window should reach
+    :type max_height: Union[str, int]
     """
 
     def __init__(
@@ -286,11 +291,14 @@ class BaseComplexPrompt(BaseSimplePrompt):
         qmark: str = "?",
         instruction: str = "",
         transformer: Callable = None,
+        height: Union[int, str] = None,
+        max_height: Union[int, str] = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
         super().__init__(message, style, editing_mode, qmark, transformer=transformer)
         self._content_control: InquirerPyUIControl
         self._instruction = instruction
+        dimmension_height, dimmension_max_height = calculate_height(height, max_height)
         self.layout = HSplit(
             [
                 Window(
@@ -300,7 +308,12 @@ class BaseComplexPrompt(BaseSimplePrompt):
                     ),
                 ),
                 ConditionalContainer(
-                    Window(content=self.content_control),
+                    Window(
+                        content=self.content_control,
+                        height=Dimension(
+                            max=dimmension_max_height, preferred=dimmension_height
+                        ),
+                    ),
                     filter=~IsDone(),
                 ),
             ]
