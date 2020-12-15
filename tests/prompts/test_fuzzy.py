@@ -8,6 +8,7 @@ from prompt_toolkit.layout.layout import Layout
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.fuzzy.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
+from InquirerPy.util import calculate_height
 
 
 class TestFuzzy(unittest.TestCase):
@@ -19,7 +20,7 @@ class TestFuzzy(unittest.TestCase):
         current_text=lambda: "yes",
     )
 
-    @patch.object(FuzzyPrompt, "_get_height")
+    @patch("InquirerPy.util.calculate_height")
     def setUp(self, mocked_height):
         mocked_height.return_value = (10, 20)
         self.prompt = FuzzyPrompt(
@@ -167,26 +168,26 @@ class TestFuzzy(unittest.TestCase):
             message="Select one of them",
             choices=["haah", "haha", "what", "waht", "weaht"],
         )
-        height, max_height = prompt._get_height(None, None)
+        height, max_height = calculate_height(None, None)
         self.assertEqual(height, None)
         self.assertEqual(max_height, 78)
 
-        height, max_height = prompt._get_height("50%", None)
+        height, max_height = calculate_height("50%", None)
         self.assertEqual(height, 38)
         self.assertEqual(max_height, 78)
 
-        prompt._get_height("50%", "80")
+        calculate_height("50%", "80")
 
-        self.assertRaises(InvalidArgument, prompt._get_height, "50%", "40%")
-        self.assertRaises(InvalidArgument, prompt._get_height, "50", "40%")
-        self.assertRaises(InvalidArgument, prompt._get_height, "adsfa", "40%")
-        self.assertRaises(InvalidArgument, prompt._get_height, "50%", "asfasdds")
+        self.assertRaises(InvalidArgument, calculate_height, "50%", "40%")
+        self.assertRaises(InvalidArgument, calculate_height, "50", "40%")
+        self.assertRaises(InvalidArgument, calculate_height, "adsfa", "40%")
+        self.assertRaises(InvalidArgument, calculate_height, "50%", "asfasdds")
 
-        height, max_height = prompt._get_height(None, "80%")
+        height, max_height = calculate_height(None, "80%")
         self.assertEqual(height, None)
         self.assertEqual(max_height, 64)
 
-    @patch.object(FuzzyPrompt, "_get_height")
+    @patch("InquirerPy.util.calculate_height")
     def test_prompt_after_input(self, mocked_height):
         mocked_height.return_value = (10, 20)
         prompt = FuzzyPrompt(
@@ -203,7 +204,7 @@ class TestFuzzy(unittest.TestCase):
         )
         self.assertEqual(prompt._generate_after_input(), [])
 
-    @patch.object(FuzzyPrompt, "_get_height")
+    @patch("InquirerPy.util.calculate_height")
     def test_prompt_before_input(self, mocked_height):
         mocked_height.return_value = (10, 20)
         prompt = FuzzyPrompt(
@@ -251,7 +252,7 @@ class TestFuzzy(unittest.TestCase):
         )
         self.prompt.content_control.selected_choice_index = 0
 
-    @patch.object(FuzzyPrompt, "_get_height")
+    @patch("InquirerPy.util.calculate_height")
     def test_prompt_bindings(self, mocked_height):
         mocked_height.return_value = (10, 20)
         self.assertEqual(self.prompt.content_control.selected_choice_index, 0)

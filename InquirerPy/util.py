@@ -1,7 +1,11 @@
 """Module contains shared utility functions."""
 
+import math
 import os
-from typing import Dict
+import shutil
+from typing import Dict, Optional, Tuple, Union
+
+from InquirerPy.exceptions import InvalidArgument
 
 
 def get_style() -> Dict[str, str]:
@@ -28,3 +32,48 @@ def get_style() -> Dict[str, str]:
         "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", "#4b5263"),
         "fuzzy_match": os.getenv("INQUIRERPY_STYLE_FUZZY_MATCH", "#c678dd"),
     }
+
+
+def calculate_height(
+    height: Optional[Union[int, str]], max_height: Optional[Union[int, str]]
+) -> Tuple[Optional[int], int]:
+    """Calculate the height and max_height for the choice window.
+
+    Allowed height values:
+    * "60%" - percentage height in str
+    * 20 - exact line height in int
+    """
+    try:
+        _, term_lines = shutil.get_terminal_size()
+        term_lines = term_lines
+        if not height:
+            dimmension_height = None
+        else:
+            if isinstance(height, str):
+                height = height.replace("%", "")
+                height = int(height)
+                dimmension_height = math.floor(term_lines * (height / 100))
+            else:
+                dimmension_height = height
+            dimmension_height = dimmension_height - 2
+
+        if not max_height:
+            dimmension_max_height = term_lines - 2
+        else:
+            if isinstance(max_height, str):
+                max_height = max_height.replace("%", "")
+                max_height = int(max_height)
+                dimmension_max_height = math.floor(term_lines * (max_height / 100))
+            else:
+                dimmension_max_height = max_height
+        if dimmension_height and dimmension_height > dimmension_max_height:
+            raise InvalidArgument(
+                "prompt height (%s) should be less than max_height (%s)."
+                % (dimmension_height, dimmension_max_height)
+            )
+        return dimmension_height, dimmension_max_height
+
+    except ValueError:
+        raise InvalidArgument(
+            "prompt height needs to be either an int or str representing height percentage."
+        )

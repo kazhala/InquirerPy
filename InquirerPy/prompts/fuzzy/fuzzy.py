@@ -1,6 +1,4 @@
 """Module contains the class to construct fuzzyfinder prompt."""
-import math
-import shutil
 from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.application.application import Application
@@ -20,6 +18,7 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py
 from InquirerPy.separator import Separator
+from InquirerPy.util import calculate_height
 
 
 class InquirerPyFuzzyControl(InquirerPyUIControl):
@@ -294,7 +293,7 @@ class FuzzyPrompt(BaseSimplePrompt):
                 ],
             ),
         )
-        dimmension_height, dimmension_max_height = self._get_height(height, max_height)
+        dimmension_height, dimmension_max_height = calculate_height(height, max_height)
         choice_height_dimmension = Dimension(
             max=dimmension_max_height, preferred=dimmension_height
         )
@@ -349,45 +348,6 @@ class FuzzyPrompt(BaseSimplePrompt):
             key_bindings=self.kb,
             editing_mode=self.editing_mode,
         )
-
-    def _get_height(
-        self, height: Optional[Union[int, str]], max_height: Optional[Union[int, str]]
-    ) -> Tuple[Optional[int], int]:
-        """Calculate the height and max_height for the choice window."""
-        try:
-            _, term_lines = shutil.get_terminal_size()
-            term_lines = term_lines
-            if not height:
-                dimmension_height = None
-            else:
-                if isinstance(height, str):
-                    height = height.replace("%", "")
-                    height = int(height)
-                    dimmension_height = math.floor(term_lines * (height / 100))
-                else:
-                    dimmension_height = height
-                dimmension_height = dimmension_height - 2
-
-            if not max_height:
-                dimmension_max_height = term_lines - 2
-            else:
-                if isinstance(max_height, str):
-                    max_height = max_height.replace("%", "")
-                    max_height = int(max_height)
-                    dimmension_max_height = math.floor(term_lines * (max_height / 100))
-                else:
-                    dimmension_max_height = max_height
-            if dimmension_height and dimmension_height > dimmension_max_height:
-                raise InvalidArgument(
-                    "fuzzy prompt height (%s) should be less than max_height (%s)."
-                    % (dimmension_height, dimmension_max_height)
-                )
-            return dimmension_height, dimmension_max_height
-
-        except ValueError:
-            raise InvalidArgument(
-                "fuzzy prompt height needs to be either an int or str representing height percentage."
-            )
 
     def _generate_after_input(self) -> List[Tuple[str, str]]:
         """Virtual text displayed after the user input."""
