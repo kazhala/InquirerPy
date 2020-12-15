@@ -47,6 +47,7 @@ class TestCheckbox(unittest.TestCase):
                 ("", "\n"),
                 ("class:pointer", "❯ "),
                 ("class:checkbox", "⬢ "),
+                ("[SetCursorPosition]", ""),
                 ("class:pointer", "mix"),
             ],
         )

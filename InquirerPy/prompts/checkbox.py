@@ -51,10 +51,10 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
                 choice["enabled"] = False
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
-        display_message = []
-        display_message.append(("class:pointer", self.pointer))
+        display_choices = []
+        display_choices.append(("class:pointer", self.pointer))
         if not isinstance(choice["value"], Separator):
-            display_message.append(
+            display_choices.append(
                 (
                     "class:checkbox",
                     "%s " % self.enabled_symbol
@@ -62,14 +62,15 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
                     else "%s " % self.disabled_symbol,
                 )
             )
-        display_message.append(("class:pointer", choice["name"]))
-        return display_message
+        display_choices.append(("[SetCursorPosition]", ""))
+        display_choices.append(("class:pointer", choice["name"]))
+        return display_choices
 
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
-        display_message = []
-        display_message.append(("", len(self.pointer) * " "))
+        display_choices = []
+        display_choices.append(("", len(self.pointer) * " "))
         if not isinstance(choice["value"], Separator):
-            display_message.append(
+            display_choices.append(
                 (
                     "class:checkbox",
                     "%s " % self.enabled_symbol
@@ -77,10 +78,10 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
                     else "%s " % self.disabled_symbol,
                 )
             )
-            display_message.append(("", choice["name"]))
+            display_choices.append(("", choice["name"]))
         else:
-            display_message.append(("class:separator", choice["name"]))
-        return display_message
+            display_choices.append(("class:separator", choice["name"]))
+        return display_choices
 
 
 class CheckboxPrompt(BaseComplexPrompt):
