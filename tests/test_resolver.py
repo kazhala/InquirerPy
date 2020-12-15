@@ -123,20 +123,6 @@ class TestResolver(unittest.TestCase):
     ):
         mocked_confirm_execute.return_value = False
         mocked_confirm_init.return_value = None
-        os.environ["INQUIRERPY_STYLE_QUESTIONMARK"] = "#000000"
-        os.environ["INQUIRERPY_STYLE_ANSWER"] = "#111111"
-        os.environ["INQUIRERPY_STYLE_QUESTION"] = "#222222"
-        os.environ["INQUIRERPY_STYLE_INSTRUCTION"] = "#333333"
-        os.environ["INQUIRERPY_STYLE_INPUT"] = "#444444"
-        os.environ["INQUIRERPY_STYLE_POINTER"] = "#555555"
-        os.environ["INQUIRERPY_STYLE_CHECKBOX"] = "#66666"
-        os.environ["INQUIRERPY_STYLE_SEPARATOR"] = "#777777"
-        os.environ["INQUIRERPY_STYLE_SKIPPED"] = "#888888"
-        os.environ["INQUIRERPY_STYLE_FUZZY_PROMPT"] = "#999999"
-        os.environ["INQUIRERPY_STYLE_FUZZY_INFO"] = "#aaaaaa"
-        os.environ["INQUIRERPY_STYLE_FUZZY_MARKER"] = "#bbbbbb"
-        os.environ["INQUIRERPY_STYLE_FUZZY_BORDER"] = "#cccccc"
-        os.environ["INQUIRERPY_STYLE_FUZZY_MATCH"] = "#dddddd"
         os.environ["INQUIRERPY_EDITING_MODE"] = "emacs"
 
         questions = [{"type": "confirm", "message": "Confirm?", "name": "question1"}]
@@ -144,29 +130,10 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_execute.assert_called_once()
         mocked_confirm_init.assert_called_once_with(
             message="Confirm?",
-            style={
-                "questionmark": "#000000",
-                "answer": "#111111",
-                "input": "#444444",
-                "question": "#222222",
-                "instruction": "#333333",
-                "pointer": "#555555",
-                "checkbox": "#66666",
-                "separator": "#777777",
-                "skipped": "#888888",
-                "fuzzy_prompt": "#999999",
-                "fuzzy_info": "#aaaaaa",
-                "fuzzy_marker": "#bbbbbb",
-                "fuzzy_match": "#dddddd",
-                "frame.border": "#cccccc",
-            },
+            style=style,
             editing_mode="emacs",
         )
         self.assertEqual(result, {"question1": False})
-        del os.environ["INQUIRERPY_STYLE_QUESTIONMARK"]
-        del os.environ["INQUIRERPY_STYLE_ANSWER"]
-        del os.environ["INQUIRERPY_STYLE_QUESTION"]
-        del os.environ["INQUIRERPY_STYLE_INSTRUCTION"]
         del os.environ["INQUIRERPY_EDITING_MODE"]
 
         mocked_secret_init.return_value = None
