@@ -71,6 +71,8 @@ def calculate_height(
                 dimmension_max_height = max_height
         if dimmension_height and dimmension_height > dimmension_max_height:
             dimmension_height = dimmension_max_height
+        if dimmension_height and dimmension_height < 0:
+            dimmension_height = 1
         return dimmension_height, dimmension_max_height
 
     except ValueError:

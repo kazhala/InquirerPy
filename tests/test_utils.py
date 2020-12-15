@@ -20,14 +20,15 @@ class TestUtils(unittest.TestCase):
 
         calculate_height("50%", "80")
 
-        self.assertRaises(InvalidArgument, calculate_height, "50%", "40%")
-        self.assertRaises(InvalidArgument, calculate_height, "50", "40%")
         self.assertRaises(InvalidArgument, calculate_height, "adsfa", "40%")
         self.assertRaises(InvalidArgument, calculate_height, "50%", "asfasdds")
 
         height, max_height = calculate_height(None, "80%")
         self.assertEqual(height, None)
         self.assertEqual(max_height, 63)
+
+        height, max_height = calculate_height("1%", None)
+        self.assertEqual(height, 1)
 
     def test_style(self):
         style = get_style()
