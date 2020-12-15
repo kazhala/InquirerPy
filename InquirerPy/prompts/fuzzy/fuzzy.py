@@ -18,7 +18,7 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py
 from InquirerPy.separator import Separator
-from InquirerPy.util import calculate_height
+from InquirerPy.utils import calculate_height
 
 
 class InquirerPyFuzzyControl(InquirerPyUIControl):

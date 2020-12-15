@@ -13,7 +13,7 @@ from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.rawlist import RawlistPrompt
 from InquirerPy.prompts.secret import SecretPrompt
-from InquirerPy.util import get_style
+from InquirerPy.utils import get_style
 
 question_mapping = {
     "confirm": ConfirmPrompt,
