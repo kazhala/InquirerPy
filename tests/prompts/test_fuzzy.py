@@ -166,11 +166,11 @@ class TestFuzzy(unittest.TestCase):
         mocked_terminal_size.return_value = (24, 80)
         height, max_height = calculate_height(None, None)
         self.assertEqual(height, None)
-        self.assertEqual(max_height, 78)
+        self.assertEqual(max_height, 79)
 
         height, max_height = calculate_height("50%", None)
-        self.assertEqual(height, 38)
-        self.assertEqual(max_height, 78)
+        self.assertEqual(height, 39)
+        self.assertEqual(max_height, 79)
 
         calculate_height("50%", "80")
 
@@ -181,7 +181,7 @@ class TestFuzzy(unittest.TestCase):
 
         height, max_height = calculate_height(None, "80%")
         self.assertEqual(height, None)
-        self.assertEqual(max_height, 64)
+        self.assertEqual(max_height, 63)
 
     @patch("InquirerPy.utils.calculate_height")
     def test_prompt_after_input(self, mocked_height):
