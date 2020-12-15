@@ -42,6 +42,7 @@ class TestListPrompt(unittest.TestCase):
                 ("", "pear"),
                 ("", "\n"),
                 ("class:pointer", "❯ "),
+                ("[SetCursorPosition]", ""),
                 ("class:pointer", "melon"),
             ],
         )

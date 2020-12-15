@@ -33,6 +33,7 @@ class InquirerPyListControl(InquirerPyUIControl):
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", self.pointer))
+        display_choices.append(("[SetCursorPosition]", ""))
         display_choices.append(("class:pointer", choice["name"]))
         return display_choices
 
