@@ -47,14 +47,11 @@ class TestExpandPrompt(unittest.TestCase):
             [("class:pointer", ">> "), ("", "foo")],
         )
         self.assertEqual(
-            content_control._get_hover_text(content_control.choices[0]),
-            [("class:pointer", "  "), ("class:pointer", "---------------")],
-        )
-        self.assertEqual(
             content_control._get_hover_text(content_control.choices[1]),
             [
                 ("class:pointer", "  "),
                 ("class:pointer", "b) "),
+                ("[SetCursorPosition]", ""),
                 ("class:pointer", "hello"),
             ],
         )

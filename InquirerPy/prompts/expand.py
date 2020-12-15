@@ -90,24 +90,25 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         return display_choices
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
-        display_message = []
-        display_message.append(("class:pointer", self.pointer))
+        display_choices = []
+        display_choices.append(("class:pointer", self.pointer))
         if not isinstance(choice["value"], Separator):
-            display_message.append(
+            display_choices.append(
                 ("class:pointer", "%s%s " % (choice["key"], self.separator))
             )
-        display_message.append(("class:pointer", choice["name"]))
-        return display_message
+        display_choices.append(("[SetCursorPosition]", ""))
+        display_choices.append(("class:pointer", choice["name"]))
+        return display_choices
 
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
-        display_message = []
-        display_message.append(("", len(self.pointer) * " "))
+        display_choices = []
+        display_choices.append(("", len(self.pointer) * " "))
         if not isinstance(choice["value"], Separator):
-            display_message.append(("", "%s%s " % (choice["key"], self.separator)))
-            display_message.append(("", choice["name"]))
+            display_choices.append(("", "%s%s " % (choice["key"], self.separator)))
+            display_choices.append(("", choice["name"]))
         else:
-            display_message.append(("class:separator", choice["name"]))
-        return display_message
+            display_choices.append(("class:separator", choice["name"]))
+        return display_choices
 
 
 class ExpandPrompt(BaseComplexPrompt):
