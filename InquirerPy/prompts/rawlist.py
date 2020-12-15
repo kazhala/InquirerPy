@@ -43,29 +43,30 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
                     break
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
-        display_message = []
-        display_message.append(("class:pointer", self.pointer))
+        display_choices = []
+        display_choices.append(("class:pointer", self.pointer))
         if not isinstance(choice["value"], Separator):
-            display_message.append(
+            display_choices.append(
                 (
                     "class:pointer",
                     "%s%s " % (str(choice["display_index"]), self.separator),
                 )
             )
-        display_message.append(("class:pointer", choice["name"]))
-        return display_message
+        display_choices.append(("[SetCursorPosition]", ""))
+        display_choices.append(("class:pointer", choice["name"]))
+        return display_choices
 
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
-        display_message = []
-        display_message.append(("", len(self.pointer) * " "))
+        display_choices = []
+        display_choices.append(("", len(self.pointer) * " "))
         if not isinstance(choice["value"], Separator):
-            display_message.append(
+            display_choices.append(
                 ("", "%s%s " % (str(choice["display_index"]), self.separator))
             )
-            display_message.append(("", choice["name"]))
+            display_choices.append(("", choice["name"]))
         else:
-            display_message.append(("class:separator", choice["name"]))
-        return display_message
+            display_choices.append(("class:separator", choice["name"]))
+        return display_choices
 
 
 class RawlistPrompt(BaseComplexPrompt):
@@ -126,3 +127,15 @@ class RawlistPrompt(BaseComplexPrompt):
         for choice in self.content_control.choices:
             if not isinstance(choice["value"], Separator):
                 keybinding_factory(choice)
+
+    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+        """Return the formatted text to display in the prompt.
+
+        Overriding this method to allow multiple formatted class to be displayed.
+        """
+        display_message = super()._get_prompt_message()
+        if not self.status["answered"]:
+            display_message.append(
+                ("class:input", " %s" % self.content_control.selection["display_index"])
+            )
+        return display_message

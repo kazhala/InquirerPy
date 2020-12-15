@@ -22,6 +22,7 @@ class TestRawList(unittest.TestCase):
             [
                 ("class:pointer", "  "),
                 ("class:pointer", "1) "),
+                ("[SetCursorPosition]", ""),
                 ("class:pointer", "foo"),
             ],
         )
@@ -59,6 +60,7 @@ class TestRawList(unittest.TestCase):
                 ("", "\n"),
                 ("class:pointer", "  "),
                 ("class:pointer", "3) "),
+                ("[SetCursorPosition]", ""),
                 ("class:pointer", "yes"),
             ],
         )
@@ -110,6 +112,7 @@ class TestRawList(unittest.TestCase):
                 ("class:questionmark", "?"),
                 ("class:question", " hello"),
                 ("class:instruction", " bb"),
+                ("class:input", " 2"),
             ],
         )
         prompt.status["answered"] = True
