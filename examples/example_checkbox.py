@@ -15,7 +15,7 @@ questions = [
     {
         "name": "nba",
         "type": "checkbox",
-        "message": "Select players you want",
+        "message": "Select players you want:",
         "choices": [
             {"name": "Chris Paul", "value": "pg"},
             {"name": "Kobe, Bryant", "value": "sg"},
@@ -25,6 +25,9 @@ questions = [
         ],
         "pointer": ">",
         "qmark": "[?]",
+        "validate": lambda x: len(x) > 1,
+        "invalid_message": "selection require to be more than 1",
+        "instruction": "(select at least 2 values)",
     },
 ]
 

@@ -1,7 +1,7 @@
 """Module contains base class for prompts."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Literal, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, NamedTuple, Tuple, Union
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -13,7 +13,7 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.styles.style import Style
-from prompt_toolkit.validation import Validator
+from prompt_toolkit.validation import ValidationError, Validator
 
 from InquirerPy.enum import ACCEPTED_KEYBINDINGS, INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
@@ -257,6 +257,16 @@ class InquirerPyUIControl(FormattedTextControl):
         return self.choices[self.selected_choice_index]
 
 
+class FakeDocument(NamedTuple):
+    """A fake `prompt_toolkit` document class.
+
+    Work around to allow non buffer type content_control to use the same
+    `Validator` class.
+    """
+
+    text: str
+
+
 class BaseComplexPrompt(BaseSimplePrompt):
     """A base class to create a complex prompt using `prompt_toolkit` Application.
 
@@ -281,6 +291,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
     :type height: Union[str, int]
     :param max_height: max height choice window should reach
     :type max_height: Union[str, int]
+    :param validate: a callable or Validator instance to validate user selection
+    :type validate: Union[Callable[[str], bool], Validator]
+    :param invalid_message: message to display when input is invalid
+    :type invalid_message: str
     """
 
     def __init__(
@@ -293,11 +307,57 @@ class BaseComplexPrompt(BaseSimplePrompt):
         transformer: Callable = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
+        validate: Union[Callable[[str], bool], Validator] = None,
+        invalid_message: str = "Invalid input",
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
-        super().__init__(message, style, editing_mode, qmark, transformer=transformer)
+        super().__init__(
+            message=message,
+            style=style,
+            editing_mode=editing_mode,
+            qmark=qmark,
+            transformer=transformer,
+            invalid_message=invalid_message,
+            validate=validate,
+        )
         self._content_control: InquirerPyUIControl
         self._instruction = instruction
+        self._invalid_message = invalid_message
+        self._invalid = False
+
+        @Condition
+        def is_vim_edit() -> bool:
+            return self.editing_mode == EditingMode.VI
+
+        @Condition
+        def is_invalid() -> bool:
+            return self._invalid
+
+        @self.kb.add("down")
+        @self.kb.add("c-n", filter=~is_vim_edit)
+        @self.kb.add("j", filter=is_vim_edit)
+        @self._register_kb
+        def _(event):
+            self._handle_down()
+
+        @self.kb.add("up")
+        @self.kb.add("c-p", filter=~is_vim_edit)
+        @self.kb.add("k", filter=is_vim_edit)
+        @self._register_kb
+        def _(event):
+            self._handle_up()
+
+        @self.kb.add("enter")
+        @self._register_kb
+        def _(event):
+            fake_document = FakeDocument(self.result_value)
+            try:
+                self.validator.validate(fake_document)  # type: ignore
+            except ValidationError:
+                self._invalid = True
+            else:
+                self._handle_enter(event)
+
         dimmension_height, dimmension_max_height = calculate_height(height, max_height)
         self.layout = HSplit(
             [
@@ -316,34 +376,36 @@ class BaseComplexPrompt(BaseSimplePrompt):
                     ),
                     filter=~IsDone(),
                 ),
+                ConditionalContainer(
+                    Window(
+                        FormattedTextControl(
+                            [("class:validation-toolbar", self._invalid_message)]
+                        ),
+                        dont_extend_height=True,
+                    ),
+                    filter=~IsDone() & is_invalid,
+                ),
             ]
         )
-
-        @Condition
-        def is_vim_edit() -> bool:
-            return self.editing_mode == EditingMode.VI
-
-        @self.kb.add("down")
-        @self.kb.add("c-n", filter=~is_vim_edit)
-        @self.kb.add("j", filter=is_vim_edit)
-        def _(event):
-            self._handle_down()
-
-        @self.kb.add("up")
-        @self.kb.add("c-p", filter=~is_vim_edit)
-        @self.kb.add("k", filter=is_vim_edit)
-        def _(event):
-            self._handle_up()
-
-        @self.kb.add("enter")
-        def _(event):
-            self._handle_enter(event)
 
         self.application = Application(
             layout=Layout(self.layout),
             style=self.question_style,
             key_bindings=self.kb,
         )
+
+    def _register_kb(self, func) -> Callable:
+        """Decorate keybinding registration function.
+
+        Ensure that invalid state is cleared on next
+        keybinding entered.
+        """
+
+        def executable(event):
+            self._invalid = False
+            func(event)
+
+        return executable
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message.
@@ -409,5 +471,21 @@ class BaseComplexPrompt(BaseSimplePrompt):
         * Let the app exit with the user selected choice's value and return the actual value back to resolver.
         """
         self.status["answered"] = True
-        self.status["result"] = self.content_control.selection["name"]
-        event.app.exit(result=self.content_control.selection["value"])
+        self.status["result"] = self.result_name
+        event.app.exit(result=self.result_value)
+
+    @property
+    def result_name(self) -> Any:
+        """Get the result name of the application.
+
+        Override this method for list type of result.
+        """
+        return self.content_control.selection["name"]
+
+    @property
+    def result_value(self) -> Any:
+        """Get the result value of the application.
+
+        Override this method for list type of result.
+        """
+        return self.content_control.selection["value"]

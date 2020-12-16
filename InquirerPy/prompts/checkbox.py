@@ -3,6 +3,7 @@
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.keys import Keys
+from prompt_toolkit.validation import Validator
 
 from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
 from InquirerPy.enum import (
@@ -111,6 +112,10 @@ class CheckboxPrompt(BaseComplexPrompt):
     :type height: Union[str, int]
     :param max_height: max height choice window should reach
     :type max_height: Union[str, int]
+    :param validate: a callable or Validator instance to validate user selection
+    :type validate: Union[Callable[[str], bool], Validator]
+    :param invalid_message: message to display when input is invalid
+    :type invalid_message: str
     """
 
     def __init__(
@@ -128,6 +133,8 @@ class CheckboxPrompt(BaseComplexPrompt):
         transformer: Callable = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
+        validate: Union[Callable[[str], bool], Validator] = None,
+        invalid_message: str = "Invalid input",
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyCheckboxControl(
@@ -142,27 +149,34 @@ class CheckboxPrompt(BaseComplexPrompt):
             transformer=transformer,
             height=height,
             max_height=max_height,
+            validate=validate,
+            invalid_message=invalid_message,
         )
 
         @self.kb.add(" ")
+        @self._register_kb
         def _(event) -> None:
             self._toggle_choice()
 
         @self.kb.add(Keys.Tab)
+        @self._register_kb
         def _(event) -> None:
             self._toggle_choice()
             self._handle_down()
 
         @self.kb.add(Keys.BackTab)
+        @self._register_kb
         def _(event) -> None:
             self._toggle_choice()
             self._handle_up()
 
         @self.kb.add("a")
+        @self._register_kb
         def _(event) -> None:
             self._toggle_all(True)
 
         @self.kb.add("i")
+        @self._register_kb
         def _(event) -> None:
             self._toggle_all()
 
@@ -177,14 +191,15 @@ class CheckboxPrompt(BaseComplexPrompt):
                 continue
             choice["enabled"] = value if value else not choice["enabled"]
 
-    def _handle_enter(self, event) -> None:
-        """Handle the event when user hit enter.
+    @property
+    def result_name(self) -> List[Any]:
+        """Get all selected choices names."""
+        return [choice["name"] for choice in self.selected_choices]
 
-        Get all current user selected choices and exit application using them as the result.
-        """
-        self.status["answered"] = True
-        self.status["result"] = [choice["name"] for choice in self.selected_choices]
-        event.app.exit(result=[choice["value"] for choice in self.selected_choices])
+    @property
+    def result_value(self) -> List[Any]:
+        """Get all selected choices values."""
+        return [choice["value"] for choice in self.selected_choices]
 
     @property
     def selected_choices(self) -> List[Any]:
