@@ -6,7 +6,13 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.filters.cli import IsDone
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
+from prompt_toolkit.layout.containers import (
+    ConditionalContainer,
+    Float,
+    FloatContainer,
+    HSplit,
+    Window,
+)
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
@@ -329,15 +335,31 @@ class FuzzyPrompt(BaseSimplePrompt):
             HSplit(
                 [
                     message_window,
-                    ConditionalContainer(main_content_window, filter=~IsDone()),
                     ConditionalContainer(
-                        Window(
-                            FormattedTextControl(
-                                [("class:validation-toolbar", self._invalid_message)]
-                            ),
-                            dont_extend_height=True,
+                        FloatContainer(
+                            content=main_content_window,
+                            floats=[
+                                Float(
+                                    ConditionalContainer(
+                                        Window(
+                                            FormattedTextControl(
+                                                [
+                                                    (
+                                                        "class:validation-toolbar",
+                                                        self._invalid_message,
+                                                    )
+                                                ]
+                                            ),
+                                            dont_extend_height=True,
+                                        ),
+                                        filter=is_invalid,
+                                    ),
+                                    bottom=1 if self._border else 0,
+                                    left=1 if self._border else 0,
+                                )
+                            ],
                         ),
-                        filter=~IsDone() & is_invalid,
+                        filter=~IsDone(),
                     ),
                 ]
             )
