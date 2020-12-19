@@ -388,13 +388,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         @self._register_kb("enter")
         def _(event):
-            fake_document = FakeDocument(self.result_value)
-            try:
-                self.validator.validate(fake_document)  # type: ignore
-            except ValidationError:
-                self._invalid = True
-            else:
-                self._handle_enter(event)
+            self._handle_enter(event)
 
         dimmension_height, dimmension_max_height = calculate_height(height, max_height)
         self.layout = HSplit(
@@ -534,13 +528,19 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         In multiselect scenario, if nothing is selected, return the current highlighted choice.
         """
-        self.status["answered"] = True
-        if self._multiselect and not self.selected_choices:
-            self.status["result"] = [self.content_control.selection["name"]]
-            event.app.exit(result=[self.content_control.selection["value"]])
+        try:
+            fake_document = FakeDocument(self.result_value)
+            self.validator.validate(fake_document)  # type: ignore
+        except ValidationError:
+            self._invalid = True
         else:
-            self.status["result"] = self.result_name
-            event.app.exit(result=self.result_value)
+            self.status["answered"] = True
+            if self._multiselect and not self.selected_choices:
+                self.status["result"] = [self.content_control.selection["name"]]
+                event.app.exit(result=[self.content_control.selection["value"]])
+            else:
+                self.status["result"] = self.result_name
+                event.app.exit(result=self.result_value)
 
     @property
     def result_name(self) -> Any:

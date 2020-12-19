@@ -2,9 +2,9 @@
 
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
-from prompt_toolkit.validation import Validator
+from prompt_toolkit.validation import ValidationError, Validator
 
-from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
+from InquirerPy.base import BaseComplexPrompt, FakeDocument, InquirerPyUIControl
 from InquirerPy.enum import (
     INQUIRERPY_EMPTY_HEX_SEQUENCE,
     INQUIRERPY_FILL_HEX_SEQUENCE,
@@ -158,6 +158,12 @@ class CheckboxPrompt(BaseComplexPrompt):
 
         When user does not select anything, exit with empty list.
         """
-        self.status["answered"] = True
-        self.status["result"] = self.result_name
-        event.app.exit(result=self.result_value)
+        try:
+            fake_document = FakeDocument(self.result_value)
+            self.validator.validate(fake_document)  # type: ignore
+        except ValidationError:
+            self._invalid = True
+        else:
+            self.status["answered"] = True
+            self.status["result"] = self.result_name
+            event.app.exit(result=self.result_value)
