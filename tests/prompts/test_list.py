@@ -54,6 +54,25 @@ class TestListPrompt(unittest.TestCase):
             list_control.selection,
             {"name": "melon", "value": "watermelon", "enabled": False},
         )
+        list_control.choices[0]["enabled"] = True
+        list_control.choices[1]["enabled"] = True
+        self.assertEqual(
+            list_control._get_formatted_choices(),
+            [
+                ("", " "),
+                ("class:marker", ">"),
+                ("", "apple"),
+                ("", "\n"),
+                ("", " "),
+                ("class:marker", ">"),
+                ("", "pear"),
+                ("", "\n"),
+                ("class:pointer", "❯"),
+                ("class:marker", " "),
+                ("[SetCursorPosition]", ""),
+                ("class:pointer", "melon"),
+            ],
+        )
 
     def test_list_control_exceptions(self):
         self.assertRaises(
@@ -169,3 +188,26 @@ class TestListPrompt(unittest.TestCase):
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_up()
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
+
+    def test_list_enter_empty(self):
+        prompt = ListPrompt(
+            message="",
+            choices=["haha", "haah", "what", "I don't know"],
+        )
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_enter(event)
+            self.assertEqual(prompt.status["result"], "haha")
+
+        prompt = ListPrompt(
+            message="",
+            choices=["haha", "haah", "what", "I don't know"],
+            multiselect=True,
+        )
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_enter(event)
+            self.assertEqual(prompt.status["result"], ["haha"])
+            prompt.content_control.choices[1]["enabled"] = True
+            prompt._handle_enter(event)
+            self.assertEqual(prompt.status["result"], ["haah"])

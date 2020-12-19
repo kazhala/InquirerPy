@@ -174,6 +174,7 @@ class TestCheckbox(unittest.TestCase):
             event = mock.return_value
             prompt._handle_enter(event)
             self.assertEqual(prompt._invalid, True)
+            self.assertEqual(prompt._invalid_message, "hello")
 
     @patch.object(CheckboxPrompt, "_register_kb")
     def test_kb_register(self, mocked_kb):
