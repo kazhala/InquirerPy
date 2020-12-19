@@ -56,7 +56,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         for index, choice in enumerate(self.choices):
             if isinstance(choice["value"], Separator):
                 raise InvalidArgument("fuzzy type prompt does not accept Separator.")
-            choice["selected"] = False
+            choice["enabled"] = False
             choice["index"] = index
 
         self._filtered_choices = self.choices
@@ -74,7 +74,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
         display_choices.append(
-            ("class:fuzzy_marker", self._marker if choice["selected"] else " ")
+            ("class:fuzzy_marker", self._marker if choice["enabled"] else " ")
         )
         display_choices.append(("[SetCursorPosition]", ""))
         if not indices:
@@ -104,7 +104,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         display_choices.append(
             (
                 "class:fuzzy_marker",
-                self._marker if choice["selected"] else " ",
+                self._marker if choice["enabled"] else " ",
             )
         )
         if not indices:
@@ -413,8 +413,8 @@ class FuzzyPrompt(BaseSimplePrompt):
         """Handle tab event, alter the `selected` state of the choice."""
         current_selected_index = self.content_control.selection["index"]
         self.content_control.choices[current_selected_index][
-            "selected"
-        ] = not self.content_control.choices[current_selected_index]["selected"]
+            "enabled"
+        ] = not self.content_control.choices[current_selected_index]["enabled"]
 
     def _handle_enter(self, event) -> None:
         """Handle enter event.
@@ -451,9 +451,9 @@ class FuzzyPrompt(BaseSimplePrompt):
 
     @property
     def selected_choices(self) -> List[Dict[str, Any]]:
-        """Get all user selected choices."""
+        """Get all user enabled choices."""
         return list(
-            filter(lambda choice: choice["selected"], self.content_control.choices)
+            filter(lambda choice: choice["enabled"], self.content_control.choices)
         )
 
     @property

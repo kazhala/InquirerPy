@@ -18,7 +18,7 @@ questions = [
         "message": "Select players you want:",
         "choices": [
             {"name": "Chris Paul", "value": "pg"},
-            {"name": "Kobe, Bryant", "value": "sg"},
+            {"name": "Kobe Bryant", "value": "sg"},
             {"name": "Lebron James", "value": "sf"},
             {"name": "Tim Duncan", "value": "pf"},
             {"name": "Yao Ming", "value": "c"},

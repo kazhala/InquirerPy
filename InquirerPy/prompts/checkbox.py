@@ -151,56 +151,14 @@ class CheckboxPrompt(BaseComplexPrompt):
             max_height=max_height,
             validate=validate,
             invalid_message=invalid_message,
+            multiselect=True,
         )
 
-        @self._register_kb(" ")
-        def _(event) -> None:
-            self._toggle_choice()
+    def _handle_enter(self, event) -> None:
+        """Override this method to force empty array result.
 
-        @self._register_kb(Keys.Tab)
-        def _(event) -> None:
-            self._toggle_choice()
-            self._handle_down()
-
-        @self._register_kb(Keys.BackTab)
-        def _(event) -> None:
-            self._toggle_choice()
-            self._handle_up()
-
-        @self._register_kb("a")
-        def _(event) -> None:
-            self._toggle_all(True)
-
-        @self._register_kb("i")
-        def _(event) -> None:
-            self._toggle_all()
-
-    def _toggle_choice(self) -> None:
-        self.content_control.selection["enabled"] = not self.content_control.selection[
-            "enabled"
-        ]
-
-    def _toggle_all(self, value: bool = None) -> None:
-        for choice in self.content_control.choices:
-            if isinstance(choice["value"], Separator):
-                continue
-            choice["enabled"] = value if value else not choice["enabled"]
-
-    @property
-    def result_name(self) -> List[Any]:
-        """Get all selected choices names."""
-        return [choice["name"] for choice in self.selected_choices]
-
-    @property
-    def result_value(self) -> List[Any]:
-        """Get all selected choices values."""
-        return [choice["value"] for choice in self.selected_choices]
-
-    @property
-    def selected_choices(self) -> List[Any]:
-        """Get all user selected choices."""
-
-        def filter_choice(choice):
-            return not isinstance(choice, Separator) and choice["enabled"]
-
-        return list(filter(filter_choice, self.content_control.choices))
+        When user does not select anything, exit with empty list.
+        """
+        self.status["answered"] = True
+        self.status["result"] = self.result_name
+        event.app.exit(result=self.result_value)

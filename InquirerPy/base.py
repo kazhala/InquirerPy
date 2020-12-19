@@ -172,18 +172,26 @@ class InquirerPyUIControl(FormattedTextControl):
                     if choice["value"] == default:
                         self.selected_choice_index = index
                     processed_choices.append(
-                        {"name": str(choice["name"]), "value": choice["value"]}
+                        {
+                            "name": str(choice["name"]),
+                            "value": choice["value"],
+                            "enabled": False,
+                        }
                     )
                 elif isinstance(choice, Separator):
                     if self.selected_choice_index == index:
                         self.selected_choice_index = (
                             self.selected_choice_index + 1
                         ) % len(choices)
-                    processed_choices.append({"name": str(choice), "value": choice})
+                    processed_choices.append(
+                        {"name": str(choice), "value": choice, "enabled": False}
+                    )
                 else:
                     if choice == default:
                         self.selected_choice_index = index
-                    processed_choices.append({"name": str(choice), "value": choice})
+                    processed_choices.append(
+                        {"name": str(choice), "value": choice, "enabled": False}
+                    )
         except KeyError:
             raise RequiredKeyNotFound(
                 "dictionary choice require a name key and a value key."
@@ -296,6 +304,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
     :type validate: Union[Callable[[str], bool], Validator]
     :param invalid_message: message to display when input is invalid
     :type invalid_message: str
+    :param multiselect: enable multiselect mode
+    :type multiselect: bool
+    :param marker: marker symbol for selected choice
+    :type marker: str
     """
 
     def __init__(
@@ -310,6 +322,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         max_height: Union[int, str] = None,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
+        multiselect: bool = False,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
         super().__init__(
@@ -325,6 +338,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._instruction = instruction
         self._invalid_message = invalid_message
         self._invalid = False
+        self._multiselect = multiselect
+
+        @Condition
+        def is_multiselect() -> bool:
+            return self._multiselect
 
         @Condition
         def is_vim_edit() -> bool:
@@ -345,6 +363,28 @@ class BaseComplexPrompt(BaseSimplePrompt):
         @self._register_kb("k", filter=is_vim_edit)
         def _(event):
             self._handle_up()
+
+        @self._register_kb(" ", filter=is_multiselect)
+        def _(event) -> None:
+            self._toggle_choice()
+
+        @self._register_kb(Keys.Tab, filter=is_multiselect)
+        def _(event) -> None:
+            self._toggle_choice()
+            self._handle_down()
+
+        @self._register_kb(Keys.BackTab, filter=is_multiselect)
+        def _(event) -> None:
+            self._toggle_choice()
+            self._handle_up()
+
+        @self._register_kb("escape", "a", filter=is_multiselect)
+        def _(event) -> None:
+            self._toggle_all(True)
+
+        @self._register_kb("escape", "i", filter=is_multiselect)
+        def _(event) -> None:
+            self._toggle_all()
 
         @self._register_kb("enter")
         def _(event):
@@ -412,6 +452,23 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         return decorator
 
+    def _toggle_choice(self) -> None:
+        """Toggle the `enabled` status of the choice."""
+        self.content_control.selection["enabled"] = not self.content_control.selection[
+            "enabled"
+        ]
+
+    def _toggle_all(self, value: bool = None) -> None:
+        """Toggle all choice `enabled` status.
+
+        :param value: sepcify a value to toggle
+        :type value: bool
+        """
+        for choice in self.content_control.choices:
+            if isinstance(choice["value"], Separator):
+                continue
+            choice["enabled"] = value if value else not choice["enabled"]
+
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message.
 
@@ -474,23 +531,48 @@ class BaseComplexPrompt(BaseSimplePrompt):
         * Set the state to answered for an update to the prompt display.
         * Set the result to user selected choice's name for display purpose.
         * Let the app exit with the user selected choice's value and return the actual value back to resolver.
+
+        In multiselect scenario, if nothing is selected, return the current highlighted choice.
         """
         self.status["answered"] = True
-        self.status["result"] = self.result_name
-        event.app.exit(result=self.result_value)
+        if self._multiselect and not self.selected_choices:
+            self.status["result"] = [self.content_control.selection["name"]]
+            event.app.exit(result=[self.content_control.selection["value"]])
+        else:
+            self.status["result"] = self.result_name
+            event.app.exit(result=self.result_value)
 
     @property
     def result_name(self) -> Any:
         """Get the result name of the application.
 
-        Override this method for list type of result.
+        In multiselect scenario, return result as a list.
         """
-        return self.content_control.selection["name"]
+        if self._multiselect:
+            return [choice["name"] for choice in self.selected_choices]
+        else:
+            return self.content_control.selection["name"]
 
     @property
     def result_value(self) -> Any:
         """Get the result value of the application.
 
-        Override this method for list type of result.
+        In multiselect scenario, return result as a list.
         """
-        return self.content_control.selection["value"]
+        if self._multiselect:
+            return [choice["value"] for choice in self.selected_choices]
+        else:
+            return self.content_control.selection["value"]
+
+    @property
+    def selected_choices(self) -> List[Any]:
+        """Get all user selected choices.
+
+        :return: list of selected/enabled choices
+        :rtype: List[Any]
+        """
+
+        def filter_choice(choice):
+            return not isinstance(choice, Separator) and choice["enabled"]
+
+        return list(filter(filter_choice, self.content_control.choices))

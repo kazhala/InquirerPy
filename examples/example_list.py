@@ -7,6 +7,7 @@ questions = [
         "message": "Select a fruit:",
         "choices": [{"name": "banana", "value": "peach"}, "apple", "orange"],
         "default": "apple",
+        "multiselect": True,
     },
     {
         "type": "list",
