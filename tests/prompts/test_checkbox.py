@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import ANY, patch
+from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
@@ -161,3 +161,44 @@ class TestCheckbox(unittest.TestCase):
                 {"enabled": True, "name": "mix", "value": "boy&girl"},
             ],
         )
+
+    def test_validator(self):
+        prompt = CheckboxPrompt(
+            message="",
+            choices=self.choices,
+            validate=lambda x: len(x) > 2,
+            invalid_message="hello",
+        )
+        with patch("prompt_toolkit.utils.Event") as mock:
+            self.assertEqual(prompt._invalid, False)
+            event = mock.return_value
+            prompt._handle_enter(event)
+            self.assertEqual(prompt._invalid, True)
+
+    @patch.object(CheckboxPrompt, "_register_kb")
+    def test_kb_register(self, mocked_kb):
+        CheckboxPrompt(
+            message="",
+            choices=self.choices,
+        )
+        mocked_kb.assert_has_calls(
+            [call("down"), call("c-n", filter=ANY), call("j", filter=ANY)]
+        )
+
+    def test_kb(self):
+        prompt = CheckboxPrompt(message="", choices=self.choices)
+        prompt._invalid = True
+
+        @prompt._register_kb("b")
+        def test(_):
+            return True
+
+        test("")
+        self.assertEqual(prompt._invalid, False)
+
+    def test_checkbox_enter_empty(self):
+        prompt = CheckboxPrompt(message="", choices=["haah", "haha", "what"])
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_enter(event)
+        self.assertEqual(prompt.status["result"], [])
