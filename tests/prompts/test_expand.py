@@ -26,7 +26,8 @@ class TestExpandPrompt(unittest.TestCase):
             separator=")",
             marker=">",
         )
-        self.assertEqual(content_control._pointer, "  ")
+        self.assertEqual(content_control._pointer, " ")
+        self.assertEqual(content_control._marker, ">")
         self.assertEqual(content_control._separator, ")")
         self.assertEqual(content_control._expanded, False)
         self.assertEqual(content_control._key_maps, {"b": 1, "f": 3, "h": 4})
@@ -34,11 +35,16 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(
             content_control.choices,
             [
-                {"name": "---------------", "value": ANY},
-                {"key": "b", "name": "hello", "value": "world"},
-                {"name": "**********", "value": ANY},
-                {"key": "f", "name": "foo", "value": "boo"},
-                {"key": "h", "name": "(haha)", "value": ExpandHelp(help_msg="(haha)")},
+                {"name": "---------------", "value": ANY, "enabled": False},
+                {"key": "b", "name": "hello", "value": "world", "enabled": False},
+                {"name": "**********", "value": ANY, "enabled": False},
+                {"key": "f", "name": "foo", "value": "boo", "enabled": False},
+                {
+                    "key": "h",
+                    "name": "(haha)",
+                    "value": ExpandHelp(help_msg="(haha)"),
+                    "enabled": False,
+                },
             ],
         )
         self.assertIsInstance(content_control.choices[0]["value"], Separator)
@@ -50,7 +56,8 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(
             content_control._get_hover_text(content_control.choices[1]),
             [
-                ("class:pointer", "  "),
+                ("class:pointer", " "),
+                ("class:marker", " "),
                 ("class:pointer", "b) "),
                 ("[SetCursorPosition]", ""),
                 ("class:pointer", "hello"),
@@ -58,7 +65,7 @@ class TestExpandPrompt(unittest.TestCase):
         )
         self.assertEqual(
             content_control._get_normal_text(content_control.choices[1]),
-            [("", "  "), ("", "b) "), ("", "hello")],
+            [("", " "), ("class:marker", " "), ("", "b) "), ("", "hello")],
         )
 
     def test_content_control_exceptions(self):
@@ -67,6 +74,7 @@ class TestExpandPrompt(unittest.TestCase):
             InquirerPyExpandControl,
             ["asdfasfd", {"name": "hello", "value": "hello", "key": "j"}],
             "f",
+            "",
             "",
             "",
             "",
@@ -81,6 +89,7 @@ class TestExpandPrompt(unittest.TestCase):
                 {"name": "hello", "value": "hello", "key": "j"},
             ],
             "f",
+            "",
             "",
             "",
             "",
@@ -132,6 +141,19 @@ class TestExpandPrompt(unittest.TestCase):
                 ("class:input", " f"),
             ],
         )
+        prompt._handle_up()
+        prompt._handle_up()
+        prompt._handle_down()
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " Choose one"),
+                ("class:instruction", " (bfh)"),
+                ("class:input", " f"),
+            ],
+        )
+        prompt.content_control._expanded = True
         prompt._handle_down()
         self.assertEqual(
             prompt._get_prompt_message(),
@@ -156,6 +178,7 @@ class TestExpandPrompt(unittest.TestCase):
 
     def test_bindings(self):
         prompt = ExpandPrompt(message="Choose one", choices=self.choices)
+        prompt.content_control._expanded = True
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
         prompt._handle_down()
         self.assertEqual(prompt.content_control.selected_choice_index, 3)

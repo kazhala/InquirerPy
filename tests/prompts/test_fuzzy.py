@@ -31,33 +31,33 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(
             self.content_control.choices,
             [
-                {"index": 0, "name": "haah", "selected": False, "value": "haah"},
-                {"index": 1, "name": "haha", "selected": False, "value": "haha"},
-                {"index": 2, "name": "what", "selected": False, "value": "what"},
-                {"index": 3, "name": "waht", "selected": False, "value": "waht"},
-                {"index": 4, "name": "weaht", "selected": False, "value": "weaht"},
+                {"index": 0, "name": "haah", "enabled": False, "value": "haah"},
+                {"index": 1, "name": "haha", "enabled": False, "value": "haha"},
+                {"index": 2, "name": "what", "enabled": False, "value": "what"},
+                {"index": 3, "name": "waht", "enabled": False, "value": "waht"},
+                {"index": 4, "name": "weaht", "enabled": False, "value": "weaht"},
             ],
         )
         self.assertEqual(
             self.content_control._filtered_choices,
             [
-                {"index": 0, "name": "haah", "selected": False, "value": "haah"},
-                {"index": 1, "name": "haha", "selected": False, "value": "haha"},
-                {"index": 2, "name": "what", "selected": False, "value": "what"},
-                {"index": 3, "name": "waht", "selected": False, "value": "waht"},
-                {"index": 4, "name": "weaht", "selected": False, "value": "weaht"},
+                {"index": 0, "name": "haah", "enabled": False, "value": "haah"},
+                {"index": 1, "name": "haha", "enabled": False, "value": "haha"},
+                {"index": 2, "name": "what", "enabled": False, "value": "what"},
+                {"index": 3, "name": "waht", "enabled": False, "value": "waht"},
+                {"index": 4, "name": "weaht", "enabled": False, "value": "weaht"},
             ],
         )
         self.assertEqual(self.content_control._filtered_indices, [])
         self.assertEqual(self.content_control.selected_choice_index, 2)
         self.assertEqual(
             self.content_control.selection,
-            {"index": 2, "name": "what", "selected": False, "value": "what"},
+            {"index": 2, "name": "what", "enabled": False, "value": "what"},
         )
         self.assertEqual(self.content_control.choice_count, 5)
 
     def test_content_control_text(self):
-        self.content_control.choices[0]["selected"] = True
+        self.content_control.choices[0]["enabled"] = True
         self.assertEqual(
             self.content_control._get_formatted_choices(),
             [
@@ -83,7 +83,7 @@ class TestFuzzy(unittest.TestCase):
                 ("", "weaht"),
             ],
         )
-        self.content_control.choices[0]["selected"] = False
+        self.content_control.choices[0]["enabled"] = False
 
     def test_content_control_filter(self):
         content_control = InquirerPyFuzzyControl(
@@ -96,11 +96,11 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(
             content_control._filtered_choices,
             [
-                {"index": 0, "name": "meat", "selected": False, "value": "meat"},
-                {"index": 1, "name": "what", "selected": False, "value": "what"},
-                {"index": 2, "name": "whaaah", "selected": False, "value": "whaaah"},
-                {"index": 3, "name": "weather", "selected": False, "value": "weather"},
-                {"index": 4, "name": "haha", "selected": False, "value": "haha"},
+                {"index": 0, "name": "meat", "enabled": False, "value": "meat"},
+                {"index": 1, "name": "what", "enabled": False, "value": "what"},
+                {"index": 2, "name": "whaaah", "enabled": False, "value": "whaaah"},
+                {"index": 3, "name": "weather", "enabled": False, "value": "weather"},
+                {"index": 4, "name": "haha", "enabled": False, "value": "haha"},
             ],
         )
         self.assertEqual(content_control._filtered_indices, [])
@@ -108,9 +108,9 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(
             content_control._filtered_choices,
             [
-                {"index": 1, "name": "what", "selected": False, "value": "what"},
-                {"index": 2, "name": "whaaah", "selected": False, "value": "whaaah"},
-                {"index": 3, "name": "weather", "selected": False, "value": "weather"},
+                {"index": 1, "name": "what", "enabled": False, "value": "what"},
+                {"index": 2, "name": "whaaah", "enabled": False, "value": "whaaah"},
+                {"index": 3, "name": "weather", "enabled": False, "value": "weather"},
             ],
         )
         self.assertEqual(content_control._filtered_indices, [[0, 1], [0, 1], [0, 4]])
@@ -197,9 +197,9 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(
             self.prompt.content_control._filtered_choices,
             [
-                {"index": 0, "name": "haah", "selected": False, "value": "haah"},
-                {"index": 1, "name": "haha", "selected": False, "value": "haha"},
-                {"index": 2, "name": "what", "selected": False, "value": "what"},
+                {"index": 0, "name": "haah", "enabled": False, "value": "haah"},
+                {"index": 1, "name": "haha", "enabled": False, "value": "haha"},
+                {"index": 2, "name": "what", "enabled": False, "value": "what"},
             ],
         )
         self.assertEqual(self.prompt.content_control.selected_choice_index, 2)
@@ -209,11 +209,11 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(
             self.prompt.content_control._filtered_choices,
             [
-                {"index": 0, "name": "haah", "selected": False, "value": "haah"},
-                {"index": 1, "name": "haha", "selected": False, "value": "haha"},
-                {"index": 2, "name": "what", "selected": False, "value": "what"},
-                {"index": 3, "name": "waht", "selected": False, "value": "waht"},
-                {"index": 4, "name": "weaht", "selected": False, "value": "weaht"},
+                {"index": 0, "name": "haah", "enabled": False, "value": "haah"},
+                {"index": 1, "name": "haha", "enabled": False, "value": "haha"},
+                {"index": 2, "name": "what", "enabled": False, "value": "what"},
+                {"index": 3, "name": "waht", "enabled": False, "value": "waht"},
+                {"index": 4, "name": "weaht", "enabled": False, "value": "weaht"},
             ],
         )
         self.prompt.content_control.selected_choice_index = 0

@@ -6,6 +6,7 @@ from prompt_toolkit.key_binding.key_bindings import KeyBindings
 from prompt_toolkit.layout.containers import ConditionalContainer, Window
 from prompt_toolkit.styles.style import Style
 
+from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.list import InquirerPyListControl, ListPrompt
 from InquirerPy.separator import Separator
@@ -20,35 +21,38 @@ class TestListPrompt(unittest.TestCase):
 
     def test_list_control(self):
         list_control = InquirerPyListControl(
-            self.choices,
-            "watermelon",
+            self.choices, "watermelon", INQUIRERPY_POINTER_SEQUENCE, ">"
         )
         self.assertEqual(
             list_control.choices,
             [
-                {"name": "apple", "value": "peach"},
-                {"name": "pear", "value": "pear"},
-                {"name": "melon", "value": "watermelon"},
+                {"name": "apple", "value": "peach", "enabled": False},
+                {"name": "pear", "value": "pear", "enabled": False},
+                {"name": "melon", "value": "watermelon", "enabled": False},
             ],
         )
         self.assertEqual(list_control.selected_choice_index, 2)
         self.assertEqual(
             list_control._get_formatted_choices(),
             [
-                ("", "  "),
+                ("", " "),
+                ("class:marker", " "),
                 ("", "apple"),
                 ("", "\n"),
-                ("", "  "),
+                ("", " "),
+                ("class:marker", " "),
                 ("", "pear"),
                 ("", "\n"),
-                ("class:pointer", "❯ "),
+                ("class:pointer", "❯"),
+                ("class:marker", " "),
                 ("[SetCursorPosition]", ""),
                 ("class:pointer", "melon"),
             ],
         )
         self.assertEqual(list_control.choice_count, 3)
         self.assertEqual(
-            list_control.selection, {"name": "melon", "value": "watermelon"}
+            list_control.selection,
+            {"name": "melon", "value": "watermelon", "enabled": False},
         )
 
     def test_list_control_exceptions(self):
@@ -60,8 +64,10 @@ class TestListPrompt(unittest.TestCase):
                 "pear",
             ],
             "watermelon",
+            "",
+            "",
         )
-        self.assertRaises(InvalidArgument, InquirerPyListControl, [])
+        self.assertRaises(InvalidArgument, InquirerPyListControl, [], "", "", "")
 
     def test_list_prompt(self):
         prompt = ListPrompt(

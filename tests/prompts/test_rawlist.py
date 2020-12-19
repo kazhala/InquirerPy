@@ -13,14 +13,15 @@ class TestRawList(unittest.TestCase):
 
     def test_content_control(self):
         content_control = InquirerPyRawlistControl(self.choices, "yes", " ", ")", ">")
-        self.assertEqual(content_control._pointer, "  ")
+        self.assertEqual(content_control._pointer, " ")
         self.assertEqual(content_control._separator, ")")
         self.assertEqual(content_control.choice_count, 4)
         self.assertEqual(content_control.selected_choice_index, 3)
         self.assertEqual(
             content_control._get_hover_text(content_control.choices[0]),
             [
-                ("class:pointer", "  "),
+                ("class:pointer", " "),
+                ("class:marker", " "),
                 ("class:pointer", "1) "),
                 ("[SetCursorPosition]", ""),
                 ("class:pointer", "foo"),
@@ -28,60 +29,77 @@ class TestRawList(unittest.TestCase):
         )
         self.assertEqual(
             content_control._get_normal_text(content_control.choices[0]),
-            [("", "  "), ("", "1) "), ("", "foo")],
+            [("", " "), ("class:marker", " "), ("", "1) "), ("", "foo")],
         )
         self.assertEqual(
             content_control.choices,
             [
-                {"actual_index": 0, "display_index": 1, "name": "foo", "value": "boo"},
+                {
+                    "actual_index": 0,
+                    "display_index": 1,
+                    "name": "foo",
+                    "value": "boo",
+                    "enabled": False,
+                },
                 {
                     "actual_index": 1,
                     "display_index": 2,
                     "name": "hello",
                     "value": "hello",
+                    "enabled": False,
                 },
-                {"name": "---------------", "value": ANY},
-                {"actual_index": 3, "display_index": 3, "name": "yes", "value": "yes"},
+                {"name": "---------------", "value": ANY, "enabled": False},
+                {
+                    "actual_index": 3,
+                    "display_index": 3,
+                    "name": "yes",
+                    "value": "yes",
+                    "enabled": False,
+                },
             ],
         )
         self.assertEqual(
             content_control._get_formatted_choices(),
             [
-                ("", "  "),
+                ("", " "),
+                ("class:marker", " "),
                 ("", "1) "),
                 ("", "foo"),
                 ("", "\n"),
-                ("", "  "),
+                ("", " "),
+                ("class:marker", " "),
                 ("", "2) "),
                 ("", "hello"),
                 ("", "\n"),
-                ("", "  "),
+                ("", " "),
+                ("class:marker", " "),
                 ("class:separator", "---------------"),
                 ("", "\n"),
-                ("class:pointer", "  "),
+                ("class:pointer", " "),
+                ("class:marker", " "),
                 ("class:pointer", "3) "),
                 ("[SetCursorPosition]", ""),
                 ("class:pointer", "yes"),
             ],
         )
 
-        content_control = InquirerPyRawlistControl(self.choices, 2, " ", ")")
+        content_control = InquirerPyRawlistControl(self.choices, 2, " ", ")", ">")
         self.assertEqual(content_control.selected_choice_index, 1)
 
     def test_content_control_exceptions(self):
         choices = [{"hello": "hello"}]
         self.assertRaises(
-            RequiredKeyNotFound, InquirerPyRawlistControl, choices, "", "", ""
+            RequiredKeyNotFound, InquirerPyRawlistControl, choices, "", "", "", ""
         )
 
         choices = [Separator(), Separator()]
         self.assertRaises(
-            InvalidArgument, InquirerPyRawlistControl, choices, "", "", ""
+            InvalidArgument, InquirerPyRawlistControl, choices, "", "", "", ""
         )
 
         choices = []
         self.assertRaises(
-            InvalidArgument, InquirerPyRawlistControl, choices, "", "", ""
+            InvalidArgument, InquirerPyRawlistControl, choices, "", "", "", ""
         )
 
     def test_prompt(self):
