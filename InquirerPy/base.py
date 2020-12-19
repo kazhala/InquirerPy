@@ -6,8 +6,9 @@ from typing import Any, Callable, Dict, List, Literal, NamedTuple, Tuple, Union
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters import IsDone
-from prompt_toolkit.filters.base import Condition
+from prompt_toolkit.filters.base import Condition, FilterOrBool
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
+from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
@@ -333,22 +334,19 @@ class BaseComplexPrompt(BaseSimplePrompt):
         def is_invalid() -> bool:
             return self._invalid
 
-        @self.kb.add("down")
-        @self.kb.add("c-n", filter=~is_vim_edit)
-        @self.kb.add("j", filter=is_vim_edit)
-        @self._register_kb
+        @self._register_kb("down")
+        @self._register_kb("c-n", filter=~is_vim_edit)
+        @self._register_kb("j", filter=is_vim_edit)
         def _(event):
             self._handle_down()
 
-        @self.kb.add("up")
-        @self.kb.add("c-p", filter=~is_vim_edit)
-        @self.kb.add("k", filter=is_vim_edit)
-        @self._register_kb
+        @self._register_kb("up")
+        @self._register_kb("c-p", filter=~is_vim_edit)
+        @self._register_kb("k", filter=is_vim_edit)
         def _(event):
             self._handle_up()
 
-        @self.kb.add("enter")
-        @self._register_kb
+        @self._register_kb("enter")
         def _(event):
             fake_document = FakeDocument(self.result_value)
             try:
@@ -394,18 +392,25 @@ class BaseComplexPrompt(BaseSimplePrompt):
             key_bindings=self.kb,
         )
 
-    def _register_kb(self, func) -> Callable:
+    def _register_kb(
+        self, *keys: Union[Keys, str], filter: FilterOrBool = True
+    ) -> Callable:
         """Decorate keybinding registration function.
 
         Ensure that invalid state is cleared on next
         keybinding entered.
         """
 
-        def executable(event):
-            self._invalid = False
-            func(event)
+        def decorator(func: Callable) -> Callable:
+            @self.kb.add(*keys, filter=filter)
+            def executable(event):
+                if self._invalid:
+                    self._invalid = False
+                return func(event)
 
-        return executable
+            return executable
+
+        return decorator
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message.

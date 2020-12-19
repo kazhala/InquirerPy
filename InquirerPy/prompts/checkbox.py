@@ -153,30 +153,25 @@ class CheckboxPrompt(BaseComplexPrompt):
             invalid_message=invalid_message,
         )
 
-        @self.kb.add(" ")
-        @self._register_kb
+        @self._register_kb(" ")
         def _(event) -> None:
             self._toggle_choice()
 
-        @self.kb.add(Keys.Tab)
-        @self._register_kb
+        @self._register_kb(Keys.Tab)
         def _(event) -> None:
             self._toggle_choice()
             self._handle_down()
 
-        @self.kb.add(Keys.BackTab)
-        @self._register_kb
+        @self._register_kb(Keys.BackTab)
         def _(event) -> None:
             self._toggle_choice()
             self._handle_up()
 
-        @self.kb.add("a")
-        @self._register_kb
+        @self._register_kb("a")
         def _(event) -> None:
             self._toggle_all(True)
 
-        @self.kb.add("i")
-        @self._register_kb
+        @self._register_kb("i")
         def _(event) -> None:
             self._toggle_all()
 
