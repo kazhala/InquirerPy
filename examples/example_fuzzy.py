@@ -8,6 +8,7 @@ questions = [
         "border": True,
         "multiselect": True,
         "max_height": "100%",
+        "validate": lambda x: len(x) > 1,
     }
 ]
 

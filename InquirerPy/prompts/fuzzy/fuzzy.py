@@ -11,9 +11,10 @@ from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.layout.processors import AfterInput, BeforeInput
+from prompt_toolkit.validation import ValidationError, Validator
 from prompt_toolkit.widgets.base import Frame
 
-from InquirerPy.base import BaseSimplePrompt, InquirerPyUIControl
+from InquirerPy.base import BaseSimplePrompt, FakeDocument, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py
@@ -224,6 +225,10 @@ class FuzzyPrompt(BaseSimplePrompt):
     :type height: Union[str, int]
     :param max_height: max height choice window should reach
     :type max_height: Union[str, int]
+    :param validate: a callable or Validator instance to validate user selection
+    :type validate: Union[Callable[[str], bool], Validator]
+    :param invalid_message: message to display when input is invalid
+    :type invalid_message: str
     """
 
     def __init__(
@@ -244,6 +249,8 @@ class FuzzyPrompt(BaseSimplePrompt):
         info: bool = True,
         height: Union[str, int] = None,
         max_height: Union[str, int] = None,
+        validate: Union[Callable[[str], bool], Validator] = None,
+        invalid_message: str = "Invalid input",
     ) -> None:
         """Initialise the layout and create Application.
 
@@ -263,14 +270,17 @@ class FuzzyPrompt(BaseSimplePrompt):
         self._prompt = prompt
         self._border = border
         self._info = info
+        self._invalid_message = invalid_message
+
         super().__init__(
             message=message,
             style=style,
             editing_mode=editing_mode,
             qmark=qmark,
             transformer=transformer,
+            validate=validate,
+            invalid_message=invalid_message,
         )
-
         self._content_control = InquirerPyFuzzyControl(
             choices=choices,
             default=default,
@@ -278,6 +288,15 @@ class FuzzyPrompt(BaseSimplePrompt):
             marker=marker,
             current_text=self._get_current_text,
         )
+
+        @Condition
+        def is_multiselect() -> bool:
+            return self._multiselect
+
+        @Condition
+        def is_invalid() -> bool:
+            return self._invalid
+
         self._buffer = Buffer(on_text_changed=self._on_text_changed)
         message_window = Window(
             height=LayoutDimension.exact(1),
@@ -311,36 +330,41 @@ class FuzzyPrompt(BaseSimplePrompt):
                 [
                     message_window,
                     ConditionalContainer(main_content_window, filter=~IsDone()),
+                    ConditionalContainer(
+                        Window(
+                            FormattedTextControl(
+                                [("class:validation-toolbar", self._invalid_message)]
+                            ),
+                            dont_extend_height=True,
+                        ),
+                        filter=~IsDone() & is_invalid,
+                    ),
                 ]
             )
         )
         self._layout.focus(input_window)
 
-        @Condition
-        def is_multiselect() -> bool:
-            return self._multiselect
-
-        @self.kb.add(Keys.Enter)
+        @self._register_kb(Keys.Enter)
         def _(event):
             self._handle_enter(event)
 
-        @self.kb.add(Keys.Tab, filter=is_multiselect)
+        @self._register_kb(Keys.Tab, filter=is_multiselect)
         def _(event):
             self._handle_tab()
             self._handle_down()
 
-        @self.kb.add(Keys.BackTab, filter=is_multiselect)
+        @self._register_kb(Keys.BackTab, filter=is_multiselect)
         def _(event):
             self._handle_tab()
             self._handle_up()
 
-        @self.kb.add(Keys.Down)
-        @self.kb.add("c-n")
+        @self._register_kb(Keys.Down)
+        @self._register_kb("c-n")
         def _(event):
             self._handle_down()
 
-        @self.kb.add(Keys.Up)
-        @self.kb.add("c-p")
+        @self._register_kb(Keys.Up)
+        @self._register_kb("c-p")
         def _(event):
             self._handle_up()
 
@@ -388,6 +412,8 @@ class FuzzyPrompt(BaseSimplePrompt):
             this fix the issue of cursor lose when:
             choice -> empty choice -> choice
         """
+        if self._invalid:
+            self._invalid = False
         self.content_control.filter_choices()
         if (
             self.content_control.selected_choice_index
@@ -419,6 +445,8 @@ class FuzzyPrompt(BaseSimplePrompt):
     def _handle_enter(self, event) -> None:
         """Handle enter event.
 
+        Validate the result first.
+
         In multiselect scenario, if no TAB is entered, then capture the current
         highlighted choice and return the value in a list.
         Otherwise, return all TAB choices as a list.
@@ -428,18 +456,20 @@ class FuzzyPrompt(BaseSimplePrompt):
         If current UI contains no choice due to filter, return None.
         """
         try:
+            fake_document = FakeDocument(self.result_value)
+            self.validator.validate(fake_document)  # type: ignore
+        except ValidationError:
+            self._invalid = True
+            return
+        try:
             if self._multiselect:
                 self.status["answered"] = True
                 if not self.selected_choices:
                     self.status["result"] = [self.content_control.selection["name"]]
                     event.app.exit(result=[self.content_control.selection["value"]])
                 else:
-                    self.status["result"] = [
-                        choice["name"] for choice in self.selected_choices
-                    ]
-                    event.app.exit(
-                        result=[choice["value"] for choice in self.selected_choices]
-                    )
+                    self.status["result"] = self.result_name
+                    event.app.exit(result=self.result_value)
             else:
                 self.status["answered"] = True
                 self.status["result"] = self.content_control.selection["name"]
@@ -455,6 +485,28 @@ class FuzzyPrompt(BaseSimplePrompt):
         return list(
             filter(lambda choice: choice["enabled"], self.content_control.choices)
         )
+
+    @property
+    def result_name(self) -> Any:
+        """Get the result name of the application.
+
+        In multiselect scenario, return result as a list.
+        """
+        if self._multiselect:
+            return [choice["name"] for choice in self.selected_choices]
+        else:
+            return self.content_control.selection["name"]
+
+    @property
+    def result_value(self) -> Any:
+        """Get the result value of the application.
+
+        In multiselect scenario, return result as a list.
+        """
+        if self._multiselect:
+            return [choice["value"] for choice in self.selected_choices]
+        else:
+            return self.content_control.selection["value"]
 
     @property
     def content_control(self) -> InquirerPyFuzzyControl:
