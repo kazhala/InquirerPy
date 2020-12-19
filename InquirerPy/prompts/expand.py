@@ -222,7 +222,7 @@ class ExpandPrompt(BaseComplexPrompt):
         )
 
         def keybinding_factory(key):
-            @self.kb.add(key.lower())
+            @self._register_kb(key.lower())
             def keybinding(_) -> None:
                 if key == "h":
                     self.content_control._expanded = not self.content_control._expanded

@@ -64,6 +64,7 @@ class BaseSimplePrompt(ABC):
         self.kb = KeyBindings()
         self.lexer = "class:input"
         self.transformer = transformer
+        self._invalid = False
         try:
             self.editing_mode = ACCEPTED_KEYBINDINGS[editing_mode]
         except KeyError:
@@ -84,6 +85,26 @@ class BaseSimplePrompt(ABC):
             self.status["answered"] = True
             self.status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
             event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
+
+    def _register_kb(
+        self, *keys: Union[Keys, str], filter: FilterOrBool = True
+    ) -> Callable:
+        """Decorate keybinding registration function.
+
+        Ensure that invalid state is cleared on next
+        keybinding entered.
+        """
+
+        def decorator(func: Callable) -> Callable:
+            @self.kb.add(*keys, filter=filter)
+            def executable(event):
+                if self._invalid:
+                    self._invalid = False
+                return func(event)
+
+            return executable
+
+        return decorator
 
     @abstractmethod
     def _get_prompt_message(
@@ -337,7 +358,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._content_control: InquirerPyUIControl
         self._instruction = instruction
         self._invalid_message = invalid_message
-        self._invalid = False
         self._multiselect = multiselect
 
         @Condition
@@ -425,26 +445,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
             style=self.question_style,
             key_bindings=self.kb,
         )
-
-    def _register_kb(
-        self, *keys: Union[Keys, str], filter: FilterOrBool = True
-    ) -> Callable:
-        """Decorate keybinding registration function.
-
-        Ensure that invalid state is cleared on next
-        keybinding entered.
-        """
-
-        def decorator(func: Callable) -> Callable:
-            @self.kb.add(*keys, filter=filter)
-            def executable(event):
-                if self._invalid:
-                    self._invalid = False
-                return func(event)
-
-            return executable
-
-        return decorator
 
     def _toggle_choice(self) -> None:
         """Toggle the `enabled` status of the choice."""
