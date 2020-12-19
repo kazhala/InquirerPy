@@ -44,9 +44,10 @@ class TestUtils(unittest.TestCase):
                 "checkbox": "#98c379",
                 "separator": "",
                 "skipped": "#5c6370",
+                "marker": "#e5c07b",
+                "validator": "",
                 "fuzzy_prompt": "#c678dd",
                 "fuzzy_info": "#98c379",
-                "fuzzy_marker": "#e5c07b",
                 "fuzzy_border": "#4b5263",
                 "fuzzy_match": "#c678dd",
             },
@@ -63,9 +64,10 @@ class TestUtils(unittest.TestCase):
         os.environ["INQUIRERPY_STYLE_SKIPPED"] = "#888888"
         os.environ["INQUIRERPY_STYLE_FUZZY_PROMPT"] = "#999999"
         os.environ["INQUIRERPY_STYLE_FUZZY_INFO"] = "#aaaaaa"
-        os.environ["INQUIRERPY_STYLE_FUZZY_MARKER"] = "#bbbbbb"
+        os.environ["INQUIRERPY_STYLE_MARKER"] = "#bbbbbb"
         os.environ["INQUIRERPY_STYLE_FUZZY_BORDER"] = "#cccccc"
         os.environ["INQUIRERPY_STYLE_FUZZY_MATCH"] = "#dddddd"
+        os.environ["INQUIRERPY_STYLE_VALIDATOR"] = "#dddddd"
         style = get_style()
         self.assertEqual(
             style,
@@ -81,7 +83,8 @@ class TestUtils(unittest.TestCase):
                 "skipped": "#888888",
                 "fuzzy_prompt": "#999999",
                 "fuzzy_info": "#aaaaaa",
-                "fuzzy_marker": "#bbbbbb",
+                "marker": "#bbbbbb",
+                "validator": "#dddddd",
                 "fuzzy_match": "#dddddd",
                 "fuzzy_border": "#cccccc",
             },

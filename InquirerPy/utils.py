@@ -27,7 +27,7 @@ def get_style() -> Dict[str, str]:
         "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
         "skipped": os.getenv("INQUIRERPY_STYLE_SKIPPED", "#5c6370"),
         "validator": os.getenv("INQUIRERPY_STYLE_VALIDATOR", ""),
-        "marker": os.getenv("INQUIRERPY_STYLE_FUZZY_MARKER", "#e5c07b"),
+        "marker": os.getenv("INQUIRERPY_STYLE_MARKER", "#e5c07b"),
         "fuzzy_prompt": os.getenv("INQUIRERPY_STYLE_FUZZY_PROMPT", "#c678dd"),
         "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", "#98c379"),
         "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", "#4b5263"),

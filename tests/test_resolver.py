@@ -24,9 +24,10 @@ style = {
     "skipped": "#5c6370",
     "fuzzy_prompt": "#c678dd",
     "fuzzy_info": "#98c379",
-    "fuzzy_marker": "#e5c07b",
+    "marker": "#e5c07b",
     "frame.border": "#4b5263",
     "fuzzy_match": "#c678dd",
+    "validator": "",
 }
 
 
