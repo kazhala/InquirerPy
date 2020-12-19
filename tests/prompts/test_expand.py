@@ -115,9 +115,9 @@ class TestExpandPrompt(unittest.TestCase):
             message="hello",
             choices=self.choices,
         )
-        mocked_add.assert_has_calls([call("b")])
-        mocked_add.assert_has_calls([call("f")])
-        mocked_add.assert_has_calls([call("h")])
+        mocked_add.assert_has_calls([call("b", filter=True)])
+        mocked_add.assert_has_calls([call("f", filter=True)])
+        mocked_add.assert_has_calls([call("h", filter=True)])
 
     def test_prompt_message(self):
         prompt = ExpandPrompt(message="Choose one", choices=self.choices)

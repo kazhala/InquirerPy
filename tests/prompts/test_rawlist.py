@@ -177,6 +177,6 @@ class TestRawList(unittest.TestCase):
             separator=".",
             instruction="bb",
         )
-        mocked_add.assert_has_calls([call("1")])
-        mocked_add.assert_has_calls([call("2")])
-        mocked_add.assert_has_calls([call("3")])
+        mocked_add.assert_has_calls([call("1", filter=True)])
+        mocked_add.assert_has_calls([call("2", filter=True)])
+        mocked_add.assert_has_calls([call("3", filter=True)])
