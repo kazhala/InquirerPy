@@ -289,3 +289,21 @@ class TestFuzzy(unittest.TestCase):
                 ("class:answer", " ['hello']"),
             ],
         )
+
+    def test_prompt_validator(self):
+        prompt = FuzzyPrompt(
+            message="Select one",
+            choices=["haha", "asa", "132132"],
+            validate=lambda x: len(x) > 1,
+            invalid_message="what",
+            multiselect=True,
+        )
+        self.assertEqual(prompt._invalid, False)
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_enter(event)
+            self.assertEqual(prompt._invalid_message, "what")
+            self.assertEqual(prompt._invalid, True)
+
+        prompt._on_text_changed("")
+        self.assertEqual(prompt._invalid, False)
