@@ -1,6 +1,8 @@
 """Module contains the expand prompt and its related helper classes."""
 from typing import Any, Callable, Dict, List, Literal, NamedTuple, Tuple, Union
 
+from prompt_toolkit.validation import Validator
+
 from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
@@ -27,13 +29,15 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         separator: str,
         help_msg: str,
         expand_pointer: str,
+        marker: str,
     ) -> None:
         """Construct content control object and initialise choices."""
-        self.pointer = "%s " % pointer
-        self.separator = separator
-        self.expanded = False
-        self.key_maps = {}
-        self.expand_pointer = "%s " % expand_pointer
+        self._pointer = pointer
+        self._separator = separator
+        self._expanded = False
+        self._key_maps = {}
+        self._expand_pointer = "%s " % expand_pointer
+        self._marker = marker
         super().__init__(choices, default)
 
         try:
@@ -50,7 +54,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
                     separator_count += 1
                 else:
                     choice["key"] = raw_choice["key"]
-                    self.key_maps[choice["key"]] = count
+                    self._key_maps[choice["key"]] = count
                 count += 1
         except KeyError:
             raise RequiredKeyNotFound(
@@ -58,9 +62,14 @@ class InquirerPyExpandControl(InquirerPyUIControl):
             )
 
         self.choices.append(
-            {"key": "h", "value": ExpandHelp(help_msg), "name": help_msg}
+            {
+                "key": "h",
+                "value": ExpandHelp(help_msg),
+                "name": help_msg,
+                "enabled": False,
+            }
         )
-        self.key_maps["h"] = len(self.choices) - 1
+        self._key_maps["h"] = len(self.choices) - 1
 
         first_valid_choice_index = 0
         while isinstance(self.choices[first_valid_choice_index]["value"], Separator):
@@ -79,11 +88,11 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         1. non expand mode
         2. expand mode
         """
-        if self.expanded:
+        if self._expanded:
             return super()._get_formatted_choices()
         else:
             display_choices = []
-            display_choices.append(("class:pointer", self.expand_pointer))
+            display_choices.append(("class:pointer", self._expand_pointer))
             display_choices.append(
                 ("", self.choices[self.selected_choice_index]["name"])
             )
@@ -91,10 +100,16 @@ class InquirerPyExpandControl(InquirerPyUIControl):
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
-        display_choices.append(("class:pointer", self.pointer))
+        display_choices.append(("class:pointer", self._pointer))
+        display_choices.append(
+            (
+                "class:marker",
+                self._marker if choice["enabled"] else " ",
+            )
+        )
         if not isinstance(choice["value"], Separator):
             display_choices.append(
-                ("class:pointer", "%s%s " % (choice["key"], self.separator))
+                ("class:pointer", "%s%s " % (choice["key"], self._separator))
             )
         display_choices.append(("[SetCursorPosition]", ""))
         display_choices.append(("class:pointer", choice["name"]))
@@ -102,9 +117,15 @@ class InquirerPyExpandControl(InquirerPyUIControl):
 
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
-        display_choices.append(("", len(self.pointer) * " "))
+        display_choices.append(("", len(self._pointer) * " "))
+        display_choices.append(
+            (
+                "class:marker",
+                self._marker if choice["enabled"] else " ",
+            )
+        )
         if not isinstance(choice["value"], Separator):
-            display_choices.append(("", "%s%s " % (choice["key"], self.separator)))
+            display_choices.append(("", "%s%s " % (choice["key"], self._separator)))
             display_choices.append(("", choice["name"]))
         else:
             display_choices.append(("class:separator", choice["name"]))
@@ -145,6 +166,14 @@ class ExpandPrompt(BaseComplexPrompt):
     :type height: Union[str, int]
     :param max_height: max height choice window should reach
     :type max_height: Union[str, int]
+    :param multiselect: enable multiselectiion
+    :type multiselect: bool
+    :param marker: marker symbol to indicate selected choice in multiselect mode
+    :type marker: str
+    :param validate: a callable or Validator instance to validate user selection
+    :type validate: Union[Callable[[str], bool], Validator]
+    :param invalid_message: message to display when input is invalid
+    :type invalid_message: str
     """
 
     def __init__(
@@ -163,10 +192,20 @@ class ExpandPrompt(BaseComplexPrompt):
         transformer: Callable = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
+        multiselect: bool = False,
+        marker: str = INQUIRERPY_POINTER_SEQUENCE,
+        validate: Union[Callable[[str], bool], Validator] = None,
+        invalid_message: str = "Invalid input",
     ) -> None:
         """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
-            choices, default, pointer, separator, help_msg, expand_pointer
+            choices=choices,
+            default=default,
+            pointer=pointer,
+            separator=separator,
+            help_msg=help_msg,
+            expand_pointer=expand_pointer,
+            marker=marker,
         )
         super().__init__(
             message=message,
@@ -177,16 +216,19 @@ class ExpandPrompt(BaseComplexPrompt):
             transformer=transformer,
             height=height,
             max_height=max_height,
+            validate=validate,
+            invalid_message=invalid_message,
+            multiselect=multiselect,
         )
 
         def keybinding_factory(key):
             @self.kb.add(key.lower())
             def keybinding(_) -> None:
                 if key == "h":
-                    self.content_control.expanded = not self.content_control.expanded
+                    self.content_control._expanded = not self.content_control._expanded
                 else:
                     self.content_control.selected_choice_index = (
-                        self.content_control.key_maps[key]
+                        self.content_control._key_maps[key]
                     )
 
             return keybinding
@@ -200,6 +242,8 @@ class ExpandPrompt(BaseComplexPrompt):
 
         Overriding this method to skip the help choice.
         """
+        if not self.content_control._expanded:
+            return
         while True:
             self.content_control.selected_choice_index = (
                 self.content_control.selected_choice_index - 1
@@ -214,6 +258,8 @@ class ExpandPrompt(BaseComplexPrompt):
 
         Overriding this method to skip the help choice.
         """
+        if not self.content_control._expanded:
+            return
         while True:
             self.content_control.selected_choice_index = (
                 self.content_control.selected_choice_index + 1
@@ -233,7 +279,7 @@ class ExpandPrompt(BaseComplexPrompt):
         :rtype: str
         """
         return (
-            "(%s)" % "".join(self.content_control.key_maps.keys())
+            "(%s)" % "".join(self.content_control._key_maps.keys())
             if not self._instruction
             else self._instruction
         )

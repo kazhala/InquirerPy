@@ -23,6 +23,7 @@ questions = [
         ],
         "message": "Select things apply",
         "default": 3,
+        "multiselect": True,
     },
 ]
 

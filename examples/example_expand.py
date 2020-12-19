@@ -11,6 +11,7 @@ questions = [
         ],
         "message": "What do you think?",
         "default": "No",
+        "multiselect": True,
     },
     {
         "type": "expand",

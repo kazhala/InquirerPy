@@ -1,7 +1,10 @@
 """Module contains the rawlist prompt."""
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
+from prompt_toolkit.validation import Validator
+
 from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
+from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
 
 
@@ -17,10 +20,12 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         default: Any,
         pointer: str,
         separator: str,
+        marker: str,
     ) -> None:
         """Construct the content control object and add the index to each choice for visual purposes."""
-        self.pointer = "%s " % pointer
-        self.separator = separator
+        self._pointer = pointer
+        self._separator = separator
+        self._marker = marker
         super().__init__(choices, default)
 
         separator_count = 0
@@ -44,12 +49,18 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
-        display_choices.append(("class:pointer", self.pointer))
+        display_choices.append(("class:pointer", self._pointer))
+        display_choices.append(
+            (
+                "class:marker",
+                self._marker if choice["enabled"] else " ",
+            )
+        )
         if not isinstance(choice["value"], Separator):
             display_choices.append(
                 (
                     "class:pointer",
-                    "%s%s " % (str(choice["display_index"]), self.separator),
+                    "%s%s " % (str(choice["display_index"]), self._separator),
                 )
             )
         display_choices.append(("[SetCursorPosition]", ""))
@@ -58,10 +69,16 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
 
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
-        display_choices.append(("", len(self.pointer) * " "))
+        display_choices.append(("", len(self._pointer) * " "))
+        display_choices.append(
+            (
+                "class:marker",
+                self._marker if choice["enabled"] else " ",
+            )
+        )
         if not isinstance(choice["value"], Separator):
             display_choices.append(
-                ("", "%s%s " % (str(choice["display_index"]), self.separator))
+                ("", "%s%s " % (str(choice["display_index"]), self._separator))
             )
             display_choices.append(("", choice["name"]))
         else:
@@ -99,6 +116,14 @@ class RawlistPrompt(BaseComplexPrompt):
     :type height: Union[str, int]
     :param max_height: max height choice window should reach
     :type max_height: Union[str, int]
+    :param multiselect: enable multiselectiion
+    :type multiselect: bool
+    :param marker: marker symbol to indicate selected choice in multiselect mode
+    :type marker: str
+    :param validate: a callable or Validator instance to validate user selection
+    :type validate: Union[Callable[[str], bool], Validator]
+    :param invalid_message: message to display when input is invalid
+    :type invalid_message: str
     """
 
     def __init__(
@@ -115,10 +140,14 @@ class RawlistPrompt(BaseComplexPrompt):
         transformer: Callable = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
+        multiselect: bool = False,
+        marker: str = INQUIRERPY_POINTER_SEQUENCE,
+        validate: Union[Callable[[str], bool], Validator] = None,
+        invalid_message: str = "Invalid input",
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
         self.content_control = InquirerPyRawlistControl(
-            choices, default, pointer, separator
+            choices, default, pointer, separator, marker
         )
         self._instruction = instruction
         super().__init__(
@@ -130,6 +159,9 @@ class RawlistPrompt(BaseComplexPrompt):
             transformer=transformer,
             height=height,
             max_height=max_height,
+            multiselect=multiselect,
+            validate=validate,
+            invalid_message=invalid_message,
         )
 
         def keybinding_factory(choice):

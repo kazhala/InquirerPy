@@ -24,12 +24,13 @@ class TestExpandPrompt(unittest.TestCase):
             expand_pointer=">>",
             pointer=" ",
             separator=")",
+            marker=">",
         )
-        self.assertEqual(content_control.pointer, "  ")
-        self.assertEqual(content_control.separator, ")")
-        self.assertEqual(content_control.expanded, False)
-        self.assertEqual(content_control.key_maps, {"b": 1, "f": 3, "h": 4})
-        self.assertEqual(content_control.expand_pointer, ">> ")
+        self.assertEqual(content_control._pointer, "  ")
+        self.assertEqual(content_control._separator, ")")
+        self.assertEqual(content_control._expanded, False)
+        self.assertEqual(content_control._key_maps, {"b": 1, "f": 3, "h": 4})
+        self.assertEqual(content_control._expand_pointer, ">> ")
         self.assertEqual(
             content_control.choices,
             [

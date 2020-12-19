@@ -22,13 +22,11 @@ class InquirerPyListControl(InquirerPyUIControl):
         choices: List[Union[Any, Dict[str, Any]]],
         default: Any,
         pointer: str,
-        multiselect: bool,
         marker: str,
     ) -> None:
         """Construct and init a custom FormattedTextControl object."""
         self._pointer: str = pointer
         self._marker: str = marker
-        self._multiselect = multiselect
         super().__init__(choices=choices, default=default)
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
@@ -118,7 +116,6 @@ class ListPrompt(BaseComplexPrompt):
             choices=choices,
             default=default,
             pointer=pointer,
-            multiselect=multiselect,
             marker=marker,
         )
         self._instruction = instruction

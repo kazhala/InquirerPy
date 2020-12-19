@@ -2,7 +2,6 @@
 
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
-from prompt_toolkit.keys import Keys
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
