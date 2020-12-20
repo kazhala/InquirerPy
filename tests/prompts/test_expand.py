@@ -190,3 +190,94 @@ class TestExpandPrompt(unittest.TestCase):
             event = mock.return_value
             prompt._handle_enter(event)
         self.assertEqual(prompt.status, {"result": "foo", "answered": True})
+
+    def test_key_not_expand(self):
+        prompt = ExpandPrompt(message="", choices=self.choices)
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "name": "---------------", "value": ANY},
+                {"enabled": False, "key": "b", "name": "hello", "value": "world"},
+                {"enabled": False, "name": "**********", "value": ANY},
+                {"enabled": False, "key": "f", "name": "foo", "value": "boo"},
+                {
+                    "enabled": False,
+                    "key": "h",
+                    "name": "Help, list all choices",
+                    "value": ExpandHelp(help_msg="Help, list all choices"),
+                },
+            ],
+        )
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
+        prompt._handle_down()
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
+        prompt._handle_up()
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
+        prompt._toggle_choice()
+        self.assertEqual(
+            prompt.content_control.selection,
+            {"enabled": False, "key": "b", "name": "hello", "value": "world"},
+        )
+        prompt._toggle_all()
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "name": "---------------", "value": ANY},
+                {"enabled": False, "key": "b", "name": "hello", "value": "world"},
+                {"enabled": False, "name": "**********", "value": ANY},
+                {"enabled": False, "key": "f", "name": "foo", "value": "boo"},
+                {
+                    "enabled": False,
+                    "key": "h",
+                    "name": "Help, list all choices",
+                    "value": ExpandHelp(help_msg="Help, list all choices"),
+                },
+            ],
+        )
+
+    def test_key_expand(self):
+        prompt = ExpandPrompt(message="", choices=self.choices)
+        prompt.content_control._expanded = True
+        prompt._toggle_choice()
+        self.assertEqual(
+            prompt.content_control.selection,
+            {"enabled": True, "key": "b", "name": "hello", "value": "world"},
+        )
+        prompt._toggle_choice()
+        self.assertEqual(
+            prompt.content_control.selection,
+            {"enabled": False, "key": "b", "name": "hello", "value": "world"},
+        )
+        prompt._toggle_all()
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "name": "---------------", "value": ANY},
+                {"enabled": True, "key": "b", "name": "hello", "value": "world"},
+                {"enabled": False, "name": "**********", "value": ANY},
+                {"enabled": True, "key": "f", "name": "foo", "value": "boo"},
+                {
+                    "enabled": False,
+                    "key": "h",
+                    "name": "Help, list all choices",
+                    "value": ExpandHelp(help_msg="Help, list all choices"),
+                },
+            ],
+        )
+        prompt._toggle_all(True)
+        prompt._toggle_all()
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "name": "---------------", "value": ANY},
+                {"enabled": False, "key": "b", "name": "hello", "value": "world"},
+                {"enabled": False, "name": "**********", "value": ANY},
+                {"enabled": False, "key": "f", "name": "foo", "value": "boo"},
+                {
+                    "enabled": False,
+                    "key": "h",
+                    "name": "Help, list all choices",
+                    "value": ExpandHelp(help_msg="Help, list all choices"),
+                },
+            ],
+        )
