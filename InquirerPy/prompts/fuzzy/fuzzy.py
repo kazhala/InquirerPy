@@ -139,19 +139,21 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
 
         for index, choice in enumerate(self._filtered_choices):
             if index == self.selected_choice_index:
-                display_choices += self._get_hover_text(
-                    choice,
-                    None
-                    if not self._filtered_indices
-                    else self._filtered_indices[index],
-                )
+                try:
+                    display_choices += self._get_hover_text(
+                        choice,
+                        self._filtered_indices[index],
+                    )
+                except IndexError:
+                    display_choices += self._get_hover_text(choice, None)
             else:
-                display_choices += self._get_normal_text(
-                    choice,
-                    None
-                    if not self._filtered_indices
-                    else self._filtered_indices[index],
-                )
+                try:
+                    display_choices += self._get_normal_text(
+                        choice,
+                        self._filtered_indices[index],
+                    )
+                except IndexError:
+                    display_choices += self._get_normal_text(choice, None)
             display_choices.append(("", "\n"))
         if display_choices:
             display_choices.pop()
