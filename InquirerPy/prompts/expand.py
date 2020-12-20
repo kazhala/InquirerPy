@@ -295,3 +295,16 @@ class ExpandPrompt(BaseComplexPrompt):
                 ("class:input", " %s" % self.content_control.selection["key"])
             )
         return display_message
+
+    def _toggle_all(self, value: bool = None) -> None:
+        """Override this method to ignore `ExpandHelp`.
+
+        :param value: sepcify a value to toggle
+        :type value: bool
+        """
+        for choice in self.content_control.choices:
+            if isinstance(choice["value"], Separator) or isinstance(
+                choice["value"], ExpandHelp
+            ):
+                continue
+            choice["enabled"] = value if value else not choice["enabled"]
