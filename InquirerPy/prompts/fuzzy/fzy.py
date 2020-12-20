@@ -1,15 +1,16 @@
-# noqa: *
 # type: ignore
 """Module contains the fuzzy matching processing functions.
 
-All functions are copied from vim-clap python provider.
-All credit and copyright goes to vim-clap
-    Copyright (c) 2019 Liu-Cheng Xu
-source: https://github.com/liuchengxu/vim-clap/tree/master/pythonx/clap
+All fuzzy logic are copied from sweep.py.
+source: https://github.com/aslpavel/sweep.py/blob/master/sweep.py
+
+All fuzzy logic credit goes to sweep.py.
+    Copyright (c) 2018 Pavel Aslanov
 """
 
+import asyncio
 from functools import partial
-from typing import Any, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 
 SCORE_MIN = float("-inf")
@@ -229,19 +230,31 @@ def substr_scorer(niddle, haystack):
     return -match_len + 2 / (positions[0] + 1) + 1 / (positions[-1] + 1), positions
 
 
-def apply_score(scorer, query, candidates):
+async def calculate_score(
+    query: str,
+    candidate: Dict[str, Any],
+    scorer: Callable,
+    scored: List[Dict[str, Any]],
+) -> None:
+    score, indices = scorer(query, candidate["name"])
+    if score != float("-inf"):
+        scored.append({"score": score, "indices": indices, "choice": candidate})
+
+
+async def apply_score(
+    scorer: Callable, query: str, candidates: List[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
     scored = []
+    jobs = []
 
     for c in candidates:
-        candidate = c
-        score, indices = scorer(query, candidate["name"])
-        if score != float("-inf"):
-            scored.append({"score": score, "indices": indices, "choice": c})
+        jobs.append(calculate_score(query, c, scorer, scored))
 
+    await asyncio.gather(*jobs)
     return scored
 
 
-def fuzzy_match_py(
+async def fuzzy_match_py(
     query: str, candidates: List[Dict[str, Any]]
 ) -> Tuple[List[int], List[Dict[str, Any]]]:
     if " " in query:
@@ -249,13 +262,13 @@ def fuzzy_match_py(
     else:
         scorer = fzy_scorer
 
-    scored = apply_score(scorer, query, candidates)
+    scored = await apply_score(scorer, query, candidates)
     ranked = sorted(scored, key=lambda x: x["score"], reverse=True)
 
     indices = []
     filtered = []
-    for r in ranked:
-        filtered.append(r["choice"])
-        indices.append(r["indices"])
+    for candidate in ranked:
+        filtered.append(candidate["choice"])
+        indices.append(candidate["indices"])
 
     return (indices, filtered)

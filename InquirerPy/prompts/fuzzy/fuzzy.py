@@ -1,4 +1,5 @@
 """Module contains the class to construct fuzzyfinder prompt."""
+import asyncio
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.application.application import Application
@@ -157,7 +158,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             display_choices.pop()
         return display_choices
 
-    def filter_choices(self) -> None:
+    async def filter_choices(self) -> None:
         """Call to filter choices using fzy fuzzy match.
 
         Making it callable so that it can be called duing `prompt_toolkit` buffer
@@ -167,7 +168,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         if not self._current_text():
             self._filtered_choices = self.choices
         else:
-            indices, choices = fuzzy_match_py(self._current_text(), self.choices)
+            indices, choices = await fuzzy_match_py(self._current_text(), self.choices)
             self._filtered_choices = choices
             self._filtered_indices = indices
 
@@ -427,6 +428,9 @@ class FuzzyPrompt(BaseSimplePrompt):
     def _on_text_changed(self, buffer) -> None:
         """Handle buffer text change event.
 
+        Run fuzzy filter in asyncio, each line process
+        concurrently via asyncio.gather.
+
         1. Run a new filter on all choices.
         2. Re-calculate current selected_choice_index
             if it exceeds the total filtered_choice.
@@ -436,7 +440,16 @@ class FuzzyPrompt(BaseSimplePrompt):
         """
         if self._invalid:
             self._invalid = False
-        self.content_control.filter_choices()
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+
+        if loop and loop.is_running():
+            loop.create_task(self.content_control.filter_choices())
+        else:
+            asyncio.run(self.content_control.filter_choices())
+
         if (
             self.content_control.selected_choice_index
             > self.content_control.choice_count - 1
