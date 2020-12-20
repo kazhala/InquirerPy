@@ -302,9 +302,17 @@ class ExpandPrompt(BaseComplexPrompt):
         :param value: sepcify a value to toggle
         :type value: bool
         """
+        if not self.content_control._expanded:
+            return
         for choice in self.content_control.choices:
             if isinstance(choice["value"], Separator) or isinstance(
                 choice["value"], ExpandHelp
             ):
                 continue
             choice["enabled"] = value if value else not choice["enabled"]
+
+    def _toggle_choice(self) -> None:
+        """Override this method to ignore keypress when not expanded."""
+        if not self.content_control._expanded:
+            return
+        super()._toggle_choice()
