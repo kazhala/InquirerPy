@@ -158,25 +158,25 @@ class InquirerPyUIControl(FormattedTextControl):
     Dynamically adapt to user input and update formatted text.
 
     :param choices: list of choices to display as the content
-    :type choices: List[Any]
+    :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value, will impact the cursor position
     :type default: Any
     """
 
     def __init__(
         self,
-        choices: List[Any],
+        choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
     ) -> None:
         """Initialise choices and construct a FormattedTextControl object."""
         self.selected_choice_index: int = 0
-        self.choices: List[Dict[str, Any]] = self._get_choices(choices, default)
+        if isinstance(choices, Callable):
+            choices = choices()  # type: ignore
+        self.choices: List[Dict[str, Any]] = self._get_choices(choices, default)  # type: ignore
         self._safety_check()
         super().__init__(self._get_formatted_choices)
 
-    def _get_choices(
-        self, choices: List[Union[Any, Dict[str, Any]]], default: Any
-    ) -> List[Dict[str, Any]]:
+    def _get_choices(self, choices: List[Any], default: Any) -> List[Dict[str, Any]]:
         """Process the raw user input choices and format it into dictionary.
 
         :param choices: list of choices to display

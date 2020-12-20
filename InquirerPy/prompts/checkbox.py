@@ -19,7 +19,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
     Used to dynamically update the content and indicate the current user selection
 
     :param choices: a list of choices to display
-    :type choices: List[Union[Any, Dict[str, Any]]]
+    :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value for selection
     :type default: Any
     :param pointer: the pointer to display, indicating current line, default is unicode ">"
@@ -32,7 +32,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: List[Union[Any, Dict[str, Any]]],
+        choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
@@ -42,9 +42,11 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         self.pointer = "%s " % pointer
         self.enabled_symbol = enabled_symbol
         self.disabled_symbol = disabled_symbol
+        if isinstance(choices, Callable):
+            choices = choices()  # type: ignore
         super().__init__(choices, default)
 
-        for raw_choice, choice in zip(choices, self.choices):
+        for raw_choice, choice in zip(choices, self.choices):  # type: ignore
             if isinstance(raw_choice, dict):
                 choice["enabled"] = raw_choice.get("enabled", False)
             else:
@@ -90,7 +92,7 @@ class CheckboxPrompt(BaseComplexPrompt):
     :param message: message to display
     :type message: str
     :param choices: list of choices to display
-    :type choices: List[Union[Any, Dict[str, Any]]]
+    :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value
     :type default: Any
     :param style: a dictionary of style
@@ -120,7 +122,7 @@ class CheckboxPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        choices: List[Union[Any, Dict[str, Any]]],
+        choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",

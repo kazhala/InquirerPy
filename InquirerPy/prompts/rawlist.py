@@ -16,7 +16,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: List[Union[Any, Dict[str, Any]]],
+        choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any,
         pointer: str,
         separator: str,
@@ -92,7 +92,7 @@ class RawlistPrompt(BaseComplexPrompt):
     :param message: message to display as question
     :type message: str
     :param choices: list of choices available for selection
-    :type choices: List[Union[Any, Dict[str, Any]]]
+    :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value
     :type default: Any
     :param separator: the separator between the index number and the choices
@@ -129,7 +129,7 @@ class RawlistPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        choices: List[Union[Any, Dict[str, Any]]],
+        choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         separator: str = ")",
         style: Dict[str, str] = {},

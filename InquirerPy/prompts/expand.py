@@ -23,7 +23,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: List[Union[Separator, Dict[str, Any]]],
+        choices: Union[Callable[[], List[Any]], List[Any]],
         default: str,
         pointer: str,
         separator: str,
@@ -38,12 +38,14 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         self._key_maps = {}
         self._expand_pointer = "%s " % expand_pointer
         self._marker = marker
+        if isinstance(choices, Callable):
+            choices = choices()  # type: ignore
         super().__init__(choices, default)
 
         try:
             count = 0
             separator_count = 0
-            for raw_choice, choice in zip(choices, self.choices):
+            for raw_choice, choice in zip(choices, self.choices):  # type: ignore
                 if not isinstance(raw_choice, dict) and not isinstance(
                     raw_choice, Separator
                 ):
@@ -141,7 +143,7 @@ class ExpandPrompt(BaseComplexPrompt):
     :param message: message to ask user
     :type message: str
     :param choices: list of choices to display
-    :type choices: List[Union[Separator, Dict[str, Any]]]
+    :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value, needs to be a key of the choices
     :type default: str
     :param style: style dict to apply to the prompt
@@ -179,7 +181,7 @@ class ExpandPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        choices: List[Union[Dict[str, Any], Separator]],
+        choices: Union[Callable[[], List[Any]], List[Any]],
         default: str = "",
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "emacs", "vim"] = "default",

@@ -19,7 +19,7 @@ class InquirerPyListControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: List[Union[Any, Dict[str, Any]]],
+        choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any,
         pointer: str,
         marker: str,
@@ -64,7 +64,7 @@ class ListPrompt(BaseComplexPrompt):
     :param message: message to display
     :type message: str
     :param choices: list of choices to display
-    :type choices: List[Union[Any, Dict[str, Any]]]
+    :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value
     :type default: Any
     :param style: a dictionary of style
@@ -96,7 +96,7 @@ class ListPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        choices: List[Union[Any, Dict[str, Any]]],
+        choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         style: Dict[str, str] = {},
         editing_mode: Literal["emacs", "default", "vim"] = "default",
