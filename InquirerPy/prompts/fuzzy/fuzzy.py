@@ -1,5 +1,4 @@
 """Module contains the class to construct fuzzyfinder prompt."""
-import asyncio
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.application.application import Application
@@ -158,7 +157,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             display_choices.pop()
         return display_choices
 
-    async def filter_choices(self) -> None:
+    def filter_choices(self) -> None:
         """Call to filter choices using fzy fuzzy match.
 
         Making it callable so that it can be called duing `prompt_toolkit` buffer
@@ -168,7 +167,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         if not self._current_text():
             self._filtered_choices = self.choices
         else:
-            indices, choices = await fuzzy_match_py(self._current_text(), self.choices)
+            indices, choices = fuzzy_match_py(self._current_text(), self.choices)
             self._filtered_choices = choices
             self._filtered_indices = indices
 
@@ -459,15 +458,7 @@ class FuzzyPrompt(BaseSimplePrompt):
         """
         if self._invalid:
             self._invalid = False
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            loop = None
-
-        if loop and loop.is_running():
-            loop.create_task(self.content_control.filter_choices())
-        else:
-            asyncio.run(self.content_control.filter_choices())
+        self.content_control.filter_choices()
 
         if (
             self.content_control.selected_choice_index

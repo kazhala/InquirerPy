@@ -1,4 +1,3 @@
-import asyncio
 import unittest
 from unittest.mock import patch
 
@@ -105,15 +104,7 @@ class TestFuzzy(unittest.TestCase):
             ],
         )
         self.assertEqual(content_control._filtered_indices, [])
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = None
-
-        if loop and loop.is_running():
-            loop.create_task(content_control.filter_choices())
-        else:
-            asyncio.run(content_control.filter_choices())
+        content_control.filter_choices()
 
         self.assertEqual(
             content_control._filtered_choices,

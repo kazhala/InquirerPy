@@ -241,7 +241,7 @@ async def calculate_score(
         scored.append({"score": score, "indices": indices, "choice": candidate})
 
 
-async def apply_score(
+async def apply_score_async(
     scorer: Callable, query: str, candidates: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
     scored = []
@@ -254,7 +254,7 @@ async def apply_score(
     return scored
 
 
-async def fuzzy_match_py(
+async def fuzzy_match_py_async(
     query: str, candidates: List[Dict[str, Any]]
 ) -> Tuple[List[int], List[Dict[str, Any]]]:
     if " " in query:
@@ -263,6 +263,39 @@ async def fuzzy_match_py(
         scorer = fzy_scorer
 
     scored = await apply_score(scorer, query, candidates)
+    ranked = sorted(scored, key=lambda x: x["score"], reverse=True)
+
+    indices = []
+    filtered = []
+    for candidate in ranked:
+        filtered.append(candidate["choice"])
+        indices.append(candidate["indices"])
+
+    return (indices, filtered)
+
+
+def apply_score(
+    scorer: Callable, query: str, candidates: List[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    scored = []
+
+    for candidate in candidates:
+        score, indices = scorer(query, candidate["name"])
+        if score != float("-inf"):
+            scored.append({"score": score, "indices": indices, "choice": candidate})
+
+    return scored
+
+
+def fuzzy_match_py(
+    query: str, candidates: List[Dict[str, Any]]
+) -> Tuple[List[int], List[Dict[str, Any]]]:
+    if " " in query:
+        scorer = substr_scorer
+    else:
+        scorer = fzy_scorer
+
+    scored = apply_score(scorer, query, candidates)
     ranked = sorted(scored, key=lambda x: x["score"], reverse=True)
 
     indices = []
