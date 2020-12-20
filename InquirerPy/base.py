@@ -402,7 +402,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         def _(event) -> None:
             self._toggle_all(True)
 
-        @self._register_kb("escape", "i", filter=is_multiselect)
+        @self._register_kb("escape", "r", filter=is_multiselect)
         def _(event) -> None:
             self._toggle_all()
 

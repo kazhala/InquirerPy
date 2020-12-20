@@ -391,12 +391,31 @@ class FuzzyPrompt(BaseSimplePrompt):
         def _(event):
             self._handle_up()
 
+        @self._register_kb("escape", "a", filter=is_multiselect)
+        def _(event) -> None:
+            self._toggle_all(True)
+
+        @self._register_kb("escape", "r", filter=is_multiselect)
+        def _(event) -> None:
+            self._toggle_all()
+
         self._application = Application(
             layout=self._layout,
             style=self.question_style,
             key_bindings=self.kb,
             editing_mode=self.editing_mode,
         )
+
+    def _toggle_all(self, value: bool = None) -> None:
+        """Toggle all choice `enabled` status.
+
+        :param value: sepcify a value to toggle
+        :type value: bool
+        """
+        for choice in self.content_control.choices:
+            if isinstance(choice["value"], Separator):
+                continue
+            choice["enabled"] = value if value else not choice["enabled"]
 
     def _generate_after_input(self) -> List[Tuple[str, str]]:
         """Virtual text displayed after the user input."""
