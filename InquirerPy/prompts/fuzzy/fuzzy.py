@@ -461,11 +461,13 @@ class FuzzyPrompt(BaseSimplePrompt):
             self.content_control.selected_choice_index = 0
 
     def _handle_down(self) -> None:
+        """Move down."""
         self.content_control.selected_choice_index = (
             self.content_control.selected_choice_index + 1
         ) % self.content_control.choice_count
 
     def _handle_up(self) -> None:
+        """Move up."""
         self.content_control.selected_choice_index = (
             self.content_control.selected_choice_index - 1
         ) % self.content_control.choice_count
