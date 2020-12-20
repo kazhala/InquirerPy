@@ -317,3 +317,41 @@ class TestFuzzy(unittest.TestCase):
 
         prompt._on_text_changed("")
         self.assertEqual(prompt._invalid, False)
+
+    def test_prompt_toggle(self):
+        prompt = FuzzyPrompt(message="", choices=["haha", "asdfa", "112321fd"])
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "index": 0, "name": "haha", "value": "haha"},
+                {"enabled": False, "index": 1, "name": "asdfa", "value": "asdfa"},
+                {"enabled": False, "index": 2, "name": "112321fd", "value": "112321fd"},
+            ],
+        )
+        prompt._toggle_all()
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": True, "index": 0, "name": "haha", "value": "haha"},
+                {"enabled": True, "index": 1, "name": "asdfa", "value": "asdfa"},
+                {"enabled": True, "index": 2, "name": "112321fd", "value": "112321fd"},
+            ],
+        )
+        prompt._toggle_all(True)
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": True, "index": 0, "name": "haha", "value": "haha"},
+                {"enabled": True, "index": 1, "name": "asdfa", "value": "asdfa"},
+                {"enabled": True, "index": 2, "name": "112321fd", "value": "112321fd"},
+            ],
+        )
+        prompt._toggle_all()
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "index": 0, "name": "haha", "value": "haha"},
+                {"enabled": False, "index": 1, "name": "asdfa", "value": "asdfa"},
+                {"enabled": False, "index": 2, "name": "112321fd", "value": "112321fd"},
+            ],
+        )
