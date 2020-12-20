@@ -143,14 +143,14 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
                 display_choices += self._get_hover_text(
                     choice,
                     None
-                    if len(self._filtered_choices) == len(self.choices)
+                    if not self._filtered_indices
                     else self._filtered_indices[index],
                 )
             else:
                 display_choices += self._get_normal_text(
                     choice,
                     None
-                    if len(self._filtered_choices) == len(self.choices)
+                    if not self._filtered_indices
                     else self._filtered_indices[index],
                 )
             display_choices.append(("", "\n"))

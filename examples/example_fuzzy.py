@@ -1,10 +1,18 @@
+from pathlib import Path
+
 from InquirerPy.resolver import prompt
+
+p = Path("~/Programming/shell/dotbare/tests").expanduser()
+paths = []
+for path in p.rglob("*"):
+    paths.append(path)
+paths = paths * 20
 
 questions = [
     {
         "type": "fuzzy",
         "message": "Select one of them",
-        "choices": ["meat", "what", "whaaah", "weather", "haha"],
+        "choices": paths,
         "border": True,
         "multiselect": True,
         "max_height": "100%",
