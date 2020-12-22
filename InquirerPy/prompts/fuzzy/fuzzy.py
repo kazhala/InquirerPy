@@ -1,4 +1,5 @@
 """Module contains the class to construct fuzzyfinder prompt."""
+import asyncio
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.application.application import Application
@@ -23,7 +24,7 @@ from prompt_toolkit.widgets.base import Frame
 from InquirerPy.base import BaseSimplePrompt, FakeDocument, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py
+from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py_async
 from InquirerPy.separator import Separator
 from InquirerPy.utils import calculate_height
 
@@ -65,11 +66,10 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
                 raise InvalidArgument("fuzzy type prompt does not accept Separator.")
             choice["enabled"] = False
             choice["index"] = index
-
+            choice["indices"] = []
         self._filtered_choices = self.choices
-        self._filtered_indices = []
 
-    def _get_hover_text(self, choice, indices) -> List[Tuple[str, str]]:
+    def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         """Get the current highlighted line of text in `FormattedText`.
 
         If in the middle of filtering, loop through the char and color
@@ -84,10 +84,10 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             ("class:fuzzy_marker", self._marker if choice["enabled"] else " ")
         )
         display_choices.append(("[SetCursorPosition]", ""))
-        if not indices:
+        if not choice["indices"]:
             display_choices.append(("class:pointer", choice["name"]))
         else:
-            indices = set(indices)
+            indices = set(choice["indices"])
             for index, char in enumerate(choice["name"]):
                 if index in indices:
                     display_choices.append(("class:fuzzy_match", char))
@@ -95,7 +95,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
                     display_choices.append(("class:pointer", char))
         return display_choices
 
-    def _get_normal_text(self, choice, indices) -> List[Tuple[str, str]]:
+    def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         """Get the line of text in `FormattedText`.
 
         If in the middle of filtering, loop through the char and color
@@ -114,10 +114,10 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
                 self._marker if choice["enabled"] else " ",
             )
         )
-        if not indices:
+        if not choice["indices"]:
             display_choices.append(("", choice["name"]))
         else:
-            indices = set(indices)
+            indices = set(choice["indices"])
             for index, char in enumerate(choice["name"]):
                 if index in indices:
                     display_choices.append(("class:fuzzy_match", char))
@@ -139,27 +139,15 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
 
         for index, choice in enumerate(self._filtered_choices):
             if index == self.selected_choice_index:
-                try:
-                    display_choices += self._get_hover_text(
-                        choice,
-                        self._filtered_indices[index],
-                    )
-                except IndexError:
-                    display_choices += self._get_hover_text(choice, None)
+                display_choices += self._get_hover_text(choice)
             else:
-                try:
-                    display_choices += self._get_normal_text(
-                        choice,
-                        self._filtered_indices[index],
-                    )
-                except IndexError:
-                    display_choices += self._get_normal_text(choice, None)
+                display_choices += self._get_normal_text(choice)
             display_choices.append(("", "\n"))
         if display_choices:
             display_choices.pop()
         return display_choices
 
-    def filter_choices(self) -> None:
+    async def filter_choices(self, loop, wait_time):
         """Call to filter choices using fzy fuzzy match.
 
         Making it callable so that it can be called duing `prompt_toolkit` buffer
@@ -167,11 +155,13 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         a more realtime and accurate adjustment.
         """
         if not self._current_text():
-            self._filtered_choices = self.choices
+            choices = self.choices
         else:
-            indices, choices = fuzzy_match_py(self._current_text(), self.choices)
-            self._filtered_choices = choices
-            self._filtered_indices = indices
+            await asyncio.sleep(wait_time)
+            choices = await fuzzy_match_py_async(
+                self._current_text(), self.choices, loop, None
+            )
+        return choices
 
     @property
     def selection(self) -> Dict[str, Any]:
@@ -279,6 +269,8 @@ class FuzzyPrompt(BaseSimplePrompt):
         self._border = border
         self._info = info
         self._invalid_message = invalid_message
+        self._loop = asyncio.get_event_loop()
+        self._task = None
 
         super().__init__(
             message=message,
@@ -445,23 +437,38 @@ class FuzzyPrompt(BaseSimplePrompt):
         display_message.append(("class:fuzzy_prompt", "%s " % self._prompt))
         return display_message
 
-    def _on_text_changed(self, buffer) -> None:
-        """Handle buffer text change event.
+    # def _on_text_changed(self, buffer) -> None:
+    #     """Handle buffer text change event.
 
-        Run fuzzy filter in asyncio, each line process
-        concurrently via asyncio.gather.
+    #     Run fuzzy filter in asyncio, each line process
+    #     concurrently via asyncio.gather.
 
-        1. Run a new filter on all choices.
-        2. Re-calculate current selected_choice_index
-            if it exceeds the total filtered_choice.
-        3. Avoid selected_choice_index less than zero,
-            this fix the issue of cursor lose when:
-            choice -> empty choice -> choice
-        """
-        if self._invalid:
-            self._invalid = False
-        self.content_control.filter_choices()
+    #     1. Run a new filter on all choices.
+    #     2. Re-calculate current selected_choice_index
+    #         if it exceeds the total filtered_choice.
+    #     3. Avoid selected_choice_index less than zero,
+    #         this fix the issue of cursor lose when:
+    #         choice -> empty choice -> choice
+    #     """
+    #     if self._invalid:
+    #         self._invalid = False
+    #     # self.content_control.filter_choices()
 
+    #     if (
+    #         self.content_control.selected_choice_index
+    #         > self.content_control.choice_count - 1
+    #     ):
+    #         self.content_control.selected_choice_index = (
+    #             self.content_control.choice_count - 1
+    #         )
+    #     if self.content_control.selected_choice_index == -1:
+    #         self.content_control.selected_choice_index = 0
+
+    def _filter_callback(self, task):
+        if task.cancelled():
+            return
+        self.content_control._filtered_choices = task.result()
+        self._application.invalidate()
         if (
             self.content_control.selected_choice_index
             > self.content_control.choice_count - 1
@@ -471,6 +478,18 @@ class FuzzyPrompt(BaseSimplePrompt):
             )
         if self.content_control.selected_choice_index == -1:
             self.content_control.selected_choice_index = 0
+
+    def _on_text_changed(self, buffer) -> None:
+        if self._invalid:
+            self._invalid = False
+        wait_time = 0.1
+        if self._task and not self._task.done():
+            self._task.cancel()
+            wait_time = 0.3
+        self._task = self._loop.create_task(
+            self.content_control.filter_choices(self._loop, wait_time)
+        )
+        self._task.add_done_callback(self._filter_callback)
 
     def _handle_down(self) -> None:
         """Move down."""

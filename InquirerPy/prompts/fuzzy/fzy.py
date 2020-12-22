@@ -1,4 +1,3 @@
-# type: ignore
 """Module contains the fuzzy matching processing functions.
 
 All fuzzy logic are copied from sweep.py.
@@ -7,10 +6,11 @@ source: https://github.com/aslpavel/sweep.py/blob/master/sweep.py
 All fuzzy logic credit goes to sweep.py.
     Copyright (c) 2018 Pavel Aslanov
 """
-
 import asyncio
 from functools import partial
-from typing import Any, Callable, Dict, List, Tuple, Union
+import heapq
+import time
+from typing import Any, Callable, Dict, List, Tuple
 
 
 SCORE_MIN = float("-inf")
@@ -254,24 +254,53 @@ async def apply_score_async(
     return scored
 
 
+def _rank_task(scorer, niddle, haystack, offset):
+    result = []
+    for index, item in enumerate(haystack):
+        score, positions = scorer(niddle, item["name"])
+        if positions is None:
+            continue
+        result.append(
+            {
+                "score": score,
+                "index": index + offset,
+                "choice": item,
+                "indices": positions,
+            }
+        )
+    result.sort(key=lambda x: x["score"], reverse=True)
+    return result
+
+
 async def fuzzy_match_py_async(
-    query: str, candidates: List[Dict[str, Any]]
-) -> Tuple[List[int], List[Dict[str, Any]]]:
-    if " " in query:
+    niddle: str, haystack: List[Dict[str, Any]], loop=None, executor=None
+) -> List[Dict[str, Any]]:
+    if " " in niddle:
         scorer = substr_scorer
     else:
         scorer = fzy_scorer
 
-    scored = await apply_score(scorer, query, candidates)
-    ranked = sorted(scored, key=lambda x: x["score"], reverse=True)
-
-    indices = []
-    filtered = []
-    for candidate in ranked:
-        filtered.append(candidate["choice"])
-        indices.append(candidate["indices"])
-
-    return (indices, filtered)
+    loop = loop or asyncio.get_event_loop()
+    batch_size = 4096
+    batches = await asyncio.gather(
+        *(
+            loop.run_in_executor(
+                executor,
+                _rank_task,
+                scorer,
+                niddle,
+                haystack[offset : offset + batch_size],
+                offset,
+            )
+            for offset in range(0, len(haystack), batch_size)
+        ),
+        loop=loop,
+    )
+    results = list(heapq.merge(*batches, key=lambda x: x["score"], reverse=True))
+    choices = []
+    for candidate in results:
+        choices.append({**candidate["choice"], "indices": candidate["indices"]})
+    return choices
 
 
 def apply_score(
@@ -305,3 +334,81 @@ def fuzzy_match_py(
         indices.append(candidate["indices"])
 
     return (indices, filtered)
+
+
+class SingletonTask:
+    __slots__ = ("loop", "task", "closed")
+
+    def __init__(self, loop=None):
+        self.loop = loop or asyncio.get_event_loop()
+        self.task = None
+        self.closed = False
+
+    def __call__(self, task):
+        """Schedule new task and cancel current one if any.
+
+        Returns boolean flag indicating if previous task has completed
+        before this one was scheduled.
+        """
+        if self.task is not None:
+            result = self.task.done()
+            self.task.cancel()
+        else:
+            result = True
+        if not self.closed and not self.loop.is_closed():
+            self.task = asyncio.ensure_future(task, loop=self.loop)
+            self.task.add_done_callback(self._done_callback)
+        else:
+            task.close()
+        return result
+
+    def _done_callback(self, task):
+        if not task.cancelled():
+            try:
+                task.result()
+            except Exception:
+                traceback.print_exc(file=sys.stderr)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, et, eo, tb):
+        self.closed = True
+        task, self.task = self.task, None
+        if task is not None:
+            task.cancel()
+
+
+def rate_limit_callback(max_frequency, loop=None):
+    """Rate limiting decorator.
+
+    If callback return not None value, current delay would be multiplied
+    by this value.
+    """
+
+    def rate_limit_callback(callback):
+        def call_at_callback():
+            nonlocal last_call, scheduled, delay
+            scheduled = False
+            last_call = event_loop.time()
+            delay *= callback() or 1.0
+
+        def rate_limited_callback():
+            nonlocal last_call, scheduled, delay
+            if scheduled:
+                return
+            now = event_loop.time()
+            if now - last_call >= delay:
+                last_call = now
+                delay *= callback() or 1.0
+            else:
+                scheduled = True
+                event_loop.call_at(last_call + delay, call_at_callback)
+
+        scheduled = False
+        last_call = 0
+        event_loop = loop or asyncio.get_event_loop()
+        return rate_limited_callback
+
+    delay = 1.0 / max_frequency
+    return rate_limit_callback
