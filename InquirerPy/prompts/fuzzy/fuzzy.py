@@ -54,8 +54,10 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         pointer: str,
         marker: str,
         current_text: Callable[[], str],
+        max_lines: int,
     ) -> None:
         """Construct UIControl and initialise choices."""
+        default = None
         self._pointer = pointer
         self._marker = marker
         super().__init__(choices, default)
@@ -68,6 +70,9 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             choice["index"] = index
             choice["indices"] = []
         self._filtered_choices = self.choices
+        self._first_line = 0
+        self._last_line = min(max_lines, self.choice_count)
+        self._height = self._last_line - self._first_line
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         """Get the current highlighted line of text in `FormattedText`.
@@ -137,11 +142,25 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         """
         display_choices = []
 
-        for index, choice in enumerate(self._filtered_choices):
-            if index == self.selected_choice_index:
-                display_choices += self._get_hover_text(choice)
-            else:
-                display_choices += self._get_normal_text(choice)
+        if self.selected_choice_index <= self._first_line:
+            self._first_line = self.selected_choice_index
+            self._last_line = self._first_line + min(self._height, self.choice_count)
+        elif self.selected_choice_index >= self._last_line:
+            self._last_line = self.selected_choice_index
+            self._first_line = self._last_line - min(self._height, self.choice_count)
+
+        for index in range(self._first_line, self._last_line + 1):
+            try:
+                if index == self.selected_choice_index:
+                    display_choices += self._get_hover_text(
+                        self._filtered_choices[index]
+                    )
+                else:
+                    display_choices += self._get_normal_text(
+                        self._filtered_choices[index]
+                    )
+            except IndexError:
+                break
             display_choices.append(("", "\n"))
         if display_choices:
             display_choices.pop()
@@ -271,7 +290,6 @@ class FuzzyPrompt(BaseSimplePrompt):
         self._invalid_message = invalid_message
         self._loop = asyncio.get_event_loop()
         self._task = None
-
         super().__init__(
             message=message,
             style=style,
@@ -281,12 +299,19 @@ class FuzzyPrompt(BaseSimplePrompt):
             validate=validate,
             invalid_message=invalid_message,
         )
+
+        dimmension_height, dimmension_max_height = calculate_height(
+            height, max_height, offset=2
+        )
         self._content_control = InquirerPyFuzzyControl(
             choices=choices,
             default=default,
             pointer=pointer,
             marker=marker,
             current_text=self._get_current_text,
+            max_lines=dimmension_max_height
+            if not self._border
+            else dimmension_max_height - 2,
         )
 
         @Condition
@@ -312,16 +337,14 @@ class FuzzyPrompt(BaseSimplePrompt):
                 ],
             ),
         )
-        dimmension_height, dimmension_max_height = calculate_height(
-            height, max_height, offset=2
-        )
+
         choice_height_dimmension = Dimension(
             max=dimmension_max_height, preferred=dimmension_height
         )
-
         choice_window = Window(
             content=self.content_control, height=choice_height_dimmension
         )
+
         main_content_window = HSplit([input_window, choice_window])
         if self._border:
             main_content_window = Frame(main_content_window)
@@ -476,8 +499,16 @@ class FuzzyPrompt(BaseSimplePrompt):
             self.content_control.selected_choice_index = (
                 self.content_control.choice_count - 1
             )
+            self.content_control._last_line = self.content_control.selected_choice_index
+            self.content_control._first_line = self.content_control._last_line - min(
+                self.content_control._height, self.content_control.choice_count
+            )
         if self.content_control.selected_choice_index == -1:
             self.content_control.selected_choice_index = 0
+            self.content_control._first_line = 0
+            self.content_control._last_line = self.content_control._first_line + min(
+                self.content_control._height, self.content_control.choice_count
+            )
 
     def _on_text_changed(self, buffer) -> None:
         if self._invalid:
