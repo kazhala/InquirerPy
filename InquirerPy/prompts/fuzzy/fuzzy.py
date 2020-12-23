@@ -1,7 +1,5 @@
 """Module contains the class to construct fuzzyfinder prompt."""
 import asyncio
-from concurrent.futures.process import ProcessPoolExecutor
-from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.application.application import Application
@@ -173,13 +171,9 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             display_choices.pop()
         return display_choices
 
-    async def _filter_choices(
-        self, loop: asyncio.AbstractEventLoop, wait_time: float
-    ) -> List[Dict[str, Any]]:
+    async def _filter_choices(self, wait_time: float) -> List[Dict[str, Any]]:
         """Call to filter choices using fzy fuzzy match.
 
-        :param loop: asyncio event loop
-        :type loop: AbstractEventLoop
         :param wait_time: delay time for this task
         :type wait_time: float
         :return: filtered result
@@ -189,9 +183,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             choices = self.choices
         else:
             await asyncio.sleep(wait_time)
-            choices = await fuzzy_match_py_async(
-                self._current_text(), self.choices, loop
-            )
+            choices = await fuzzy_match_py_async(self._current_text(), self.choices)
         return choices
 
     @property
@@ -300,10 +292,6 @@ class FuzzyPrompt(BaseSimplePrompt):
         self._border = border
         self._info = info
         self._invalid_message = invalid_message
-        try:
-            self._loop = asyncio.get_running_loop()
-        except RuntimeError:
-            self._loop = asyncio.get_event_loop()
         self._task = None
         super().__init__(
             message=message,
@@ -521,15 +509,18 @@ class FuzzyPrompt(BaseSimplePrompt):
         3. Avoid selected_choice_index less than zero,
             this fix the issue of cursor lose when:
             choice -> empty choice -> choice
+
+        Don't need to create or check asyncio event loop, `prompt_toolkit`
+        application already has a event loop running.
         """
         if self._invalid:
             self._invalid = False
-        wait_time = 0.1
+        wait_time = 0.3
         if self._task and not self._task.done():
             self._task.cancel()
-            wait_time = 0.3
-        self._task = self._loop.create_task(
-            self.content_control._filter_choices(self._loop, wait_time)
+            wait_time = 0.2
+        self._task = asyncio.create_task(
+            self.content_control._filter_choices(wait_time)
         )
         self._task.add_done_callback(self._filter_callback)
 

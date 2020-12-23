@@ -7,12 +7,9 @@ All fuzzy logic credit goes to sweep.py.
     Copyright (c) 2018 Pavel Aslanov
 """
 import asyncio
-from concurrent.futures.process import ProcessPoolExecutor
-from concurrent.futures.thread import ThreadPoolExecutor
 from functools import partial
 import heapq
-import time
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Dict, List
 
 
 SCORE_MIN = float("-inf")
@@ -232,7 +229,8 @@ def substr_scorer(niddle, haystack):
     return -match_len + 2 / (positions[0] + 1) + 1 / (positions[-1] + 1), positions
 
 
-def _rank_task(scorer, niddle, haystack, offset):
+async def _rank_task(scorer, niddle, haystack, offset):
+    """Run the fzy match against the given haystack."""
     result = []
     for index, item in enumerate(haystack):
         score, positions = scorer(niddle, item["name"])
@@ -251,28 +249,24 @@ def _rank_task(scorer, niddle, haystack, offset):
 
 
 async def fuzzy_match_py_async(
-    niddle: str, haystack: List[Dict[str, Any]], loop=None, executor=None
+    niddle: str, haystack: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
+    """Run filter of niddle against haystack.
+
+    Run the tasks in 4096 batchs in parallel using
+    `asyncio.gather`.
+    """
     if " " in niddle:
         scorer = substr_scorer
     else:
         scorer = fzy_scorer
 
-    loop = loop or asyncio.get_event_loop()
     batch_size = 4096
     batches = await asyncio.gather(
         *(
-            loop.run_in_executor(
-                executor,
-                _rank_task,
-                scorer,
-                niddle,
-                haystack[offset : offset + batch_size],
-                offset,
-            )
+            _rank_task(scorer, niddle, haystack[offset : offset + batch_size], offset)
             for offset in range(0, len(haystack), batch_size)
         ),
-        loop=loop,
     )
     results = heapq.merge(*batches, key=lambda x: x["score"], reverse=True)
     choices = []
