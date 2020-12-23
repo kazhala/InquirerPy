@@ -36,7 +36,8 @@ questions = [
     {
         "type": "fuzzy",
         "message": "Select one",
-        "choices": ["hello", "weather", "what", "whoa"],
+        "choices": ["hello", "weather", "what", "whoa", "hey", "yo"],
+        "default": "he",
     },
 ]
 

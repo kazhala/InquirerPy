@@ -37,8 +37,6 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
 
     :param choices: list of choices to display
     :type choices: Union[Callable[[], List[Any]], List[Any]],
-    :param default: default value, move selected_choice_index
-    :type default: Any
     :param pointer: pointer symbol
     :type pointer: str
     :param marker: marker symbol for the selected choice in the case of multiselect
@@ -52,17 +50,15 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     def __init__(
         self,
         choices: Union[Callable[[], List[Any]], List[Any]],
-        default: Any,
         pointer: str,
         marker: str,
         current_text: Callable[[], str],
         max_lines: int,
     ) -> None:
         """Construct UIControl and initialise choices."""
-        default = None
         self._pointer = pointer
         self._marker = marker
-        super().__init__(choices, default)
+        super().__init__(choices, None)
         self._current_text = current_text
 
         for index, choice in enumerate(self.choices):
@@ -218,7 +214,7 @@ class FuzzyPrompt(BaseSimplePrompt):
     :type message: str
     :param choices: list of choices available to select
     :type choices: Union[Callable[[], List[Any]], List[Any]],
-    :param default: default value
+    :param default: default value to insert into buffer
     :type default: Any
     :param pointer: pointer symbol
     :type pointer: str
@@ -293,6 +289,7 @@ class FuzzyPrompt(BaseSimplePrompt):
         self._info = info
         self._invalid_message = invalid_message
         self._task = None
+        self._rendered = False
         super().__init__(
             message=message,
             style=style,
@@ -308,7 +305,6 @@ class FuzzyPrompt(BaseSimplePrompt):
         )
         self._content_control = InquirerPyFuzzyControl(
             choices=choices,
-            default=default,
             pointer=pointer,
             marker=marker,
             current_text=self._get_current_text,
@@ -418,11 +414,26 @@ class FuzzyPrompt(BaseSimplePrompt):
         def _(event) -> None:
             self._toggle_all()
 
+        def after_render(_) -> None:
+            """Set the default buffer text.
+
+            Has to be after application is rendered, because `self._filter_choices`
+            will use the event loop from `Application`.
+
+            Forcing a check on `self._rendered` as this event is fired up on each
+            render, we only want this to fire up once.
+            """
+            if not self._rendered and default:
+                self._rendered = True
+                self._buffer.text = default
+                self._buffer.cursor_position = len(default)
+
         self._application = Application(
             layout=self._layout,
             style=self.question_style,
             key_bindings=self.kb,
             editing_mode=self.editing_mode,
+            after_render=after_render,
         )
 
     def _toggle_all(self, value: bool = None) -> None:
