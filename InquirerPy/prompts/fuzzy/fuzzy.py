@@ -499,6 +499,8 @@ class FuzzyPrompt(BaseSimplePrompt):
             self.content_control._first_line = self.content_control._last_line - min(
                 self.content_control._height, self.content_control.choice_count
             )
+            if self.content_control._first_line < 0:
+                self.content_control._first_line = 0
         if self.content_control.selected_choice_index == -1:
             self.content_control.selected_choice_index = 0
             self.content_control._first_line = 0
