@@ -1,5 +1,7 @@
 """Module contains the class to construct fuzzyfinder prompt."""
 import asyncio
+from concurrent.futures.process import ProcessPoolExecutor
+from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.application.application import Application
@@ -45,6 +47,8 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     :type marker: str
     :param current_text: current buffer text
     :type current_text: Callable[[], str]
+    :param max_lines: maximum height
+    :type max_lines: int
     """
 
     def __init__(
@@ -86,7 +90,10 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
         display_choices.append(
-            ("class:fuzzy_marker", self._marker if choice["enabled"] else " ")
+            (
+                "class:fuzzy_marker",
+                self._marker if self.choices[choice["index"]]["enabled"] else " ",
+            )
         )
         display_choices.append(("[SetCursorPosition]", ""))
         if not choice["indices"]:
@@ -116,7 +123,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         display_choices.append(
             (
                 "class:fuzzy_marker",
-                self._marker if choice["enabled"] else " ",
+                self._marker if self.choices[choice["index"]]["enabled"] else " ",
             )
         )
         if not choice["indices"]:
@@ -166,19 +173,24 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             display_choices.pop()
         return display_choices
 
-    async def filter_choices(self, loop, wait_time):
+    async def _filter_choices(
+        self, loop: asyncio.AbstractEventLoop, wait_time: float
+    ) -> List[Dict[str, Any]]:
         """Call to filter choices using fzy fuzzy match.
 
-        Making it callable so that it can be called duing `prompt_toolkit` buffer
-        event `on_text_changed`. This allows to get the `self.selected_choice_index`
-        a more realtime and accurate adjustment.
+        :param loop: asyncio event loop
+        :type loop: AbstractEventLoop
+        :param wait_time: delay time for this task
+        :type wait_time: float
+        :return: filtered result
+        :rtype: List[Dict[str, Any]]
         """
         if not self._current_text():
             choices = self.choices
         else:
             await asyncio.sleep(wait_time)
             choices = await fuzzy_match_py_async(
-                self._current_text(), self.choices, loop, None
+                self._current_text(), self.choices, loop
             )
         return choices
 
@@ -288,7 +300,10 @@ class FuzzyPrompt(BaseSimplePrompt):
         self._border = border
         self._info = info
         self._invalid_message = invalid_message
-        self._loop = asyncio.get_event_loop()
+        try:
+            self._loop = asyncio.get_running_loop()
+        except RuntimeError:
+            self._loop = asyncio.get_event_loop()
         self._task = None
         super().__init__(
             message=message,
@@ -460,34 +475,16 @@ class FuzzyPrompt(BaseSimplePrompt):
         display_message.append(("class:fuzzy_prompt", "%s " % self._prompt))
         return display_message
 
-    # def _on_text_changed(self, buffer) -> None:
-    #     """Handle buffer text change event.
-
-    #     Run fuzzy filter in asyncio, each line process
-    #     concurrently via asyncio.gather.
-
-    #     1. Run a new filter on all choices.
-    #     2. Re-calculate current selected_choice_index
-    #         if it exceeds the total filtered_choice.
-    #     3. Avoid selected_choice_index less than zero,
-    #         this fix the issue of cursor lose when:
-    #         choice -> empty choice -> choice
-    #     """
-    #     if self._invalid:
-    #         self._invalid = False
-    #     # self.content_control.filter_choices()
-
-    #     if (
-    #         self.content_control.selected_choice_index
-    #         > self.content_control.choice_count - 1
-    #     ):
-    #         self.content_control.selected_choice_index = (
-    #             self.content_control.choice_count - 1
-    #         )
-    #     if self.content_control.selected_choice_index == -1:
-    #         self.content_control.selected_choice_index = 0
-
     def _filter_callback(self, task):
+        """Redraw `self._application` when the filter task is finished.
+
+        1. Run a new filter on all choices.
+        2. Re-calculate current selected_choice_index
+            if it exceeds the total filtered_choice.
+        3. Avoid selected_choice_index less than zero,
+            this fix the issue of cursor lose when:
+            choice -> empty choice -> choice
+        """
         if task.cancelled():
             return
         self.content_control._filtered_choices = task.result()
@@ -511,6 +508,20 @@ class FuzzyPrompt(BaseSimplePrompt):
             )
 
     def _on_text_changed(self, buffer) -> None:
+        """Handle buffer text change event.
+
+        1. Check if there is current task running.
+        2. Cancel if already has task, increase wait_time
+        3. Create a filtered_choice task in asyncio event loop
+        4. Add callback
+
+        1. Run a new filter on all choices.
+        2. Re-calculate current selected_choice_index
+            if it exceeds the total filtered_choice.
+        3. Avoid selected_choice_index less than zero,
+            this fix the issue of cursor lose when:
+            choice -> empty choice -> choice
+        """
         if self._invalid:
             self._invalid = False
         wait_time = 0.1
@@ -518,7 +529,7 @@ class FuzzyPrompt(BaseSimplePrompt):
             self._task.cancel()
             wait_time = 0.3
         self._task = self._loop.create_task(
-            self.content_control.filter_choices(self._loop, wait_time)
+            self.content_control._filter_choices(self._loop, wait_time)
         )
         self._task.add_done_callback(self._filter_callback)
 
