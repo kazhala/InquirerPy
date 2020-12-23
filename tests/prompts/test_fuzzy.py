@@ -1,3 +1,5 @@
+import asyncio
+from typing import Callable, NamedTuple
 import unittest
 from unittest.mock import patch
 
@@ -12,10 +14,10 @@ from InquirerPy.prompts.fuzzy.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
 class TestFuzzy(unittest.TestCase):
     content_control = InquirerPyFuzzyControl(
         choices=["haah", "haha", "what", "waht", "weaht"],
-        default="what",
         pointer=INQUIRERPY_POINTER_SEQUENCE,
         marker=INQUIRERPY_POINTER_SEQUENCE,
         current_text=lambda: "yes",
+        max_lines=80,
     )
 
     def setUp(self):
@@ -31,28 +33,93 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(
             self.content_control.choices,
             [
-                {"index": 0, "name": "haah", "enabled": False, "value": "haah"},
-                {"index": 1, "name": "haha", "enabled": False, "value": "haha"},
-                {"index": 2, "name": "what", "enabled": False, "value": "what"},
-                {"index": 3, "name": "waht", "enabled": False, "value": "waht"},
-                {"index": 4, "name": "weaht", "enabled": False, "value": "weaht"},
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "haah",
+                    "value": "haah",
+                },
+                {
+                    "enabled": False,
+                    "index": 1,
+                    "indices": [],
+                    "name": "haha",
+                    "value": "haha",
+                },
+                {
+                    "enabled": False,
+                    "index": 2,
+                    "indices": [],
+                    "name": "what",
+                    "value": "what",
+                },
+                {
+                    "enabled": False,
+                    "index": 3,
+                    "indices": [],
+                    "name": "waht",
+                    "value": "waht",
+                },
+                {
+                    "enabled": False,
+                    "index": 4,
+                    "indices": [],
+                    "name": "weaht",
+                    "value": "weaht",
+                },
             ],
         )
         self.assertEqual(
             self.content_control._filtered_choices,
             [
-                {"index": 0, "name": "haah", "enabled": False, "value": "haah"},
-                {"index": 1, "name": "haha", "enabled": False, "value": "haha"},
-                {"index": 2, "name": "what", "enabled": False, "value": "what"},
-                {"index": 3, "name": "waht", "enabled": False, "value": "waht"},
-                {"index": 4, "name": "weaht", "enabled": False, "value": "weaht"},
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "haah",
+                    "value": "haah",
+                },
+                {
+                    "enabled": False,
+                    "index": 1,
+                    "indices": [],
+                    "name": "haha",
+                    "value": "haha",
+                },
+                {
+                    "enabled": False,
+                    "index": 2,
+                    "indices": [],
+                    "name": "what",
+                    "value": "what",
+                },
+                {
+                    "enabled": False,
+                    "index": 3,
+                    "indices": [],
+                    "name": "waht",
+                    "value": "waht",
+                },
+                {
+                    "enabled": False,
+                    "index": 4,
+                    "indices": [],
+                    "name": "weaht",
+                    "value": "weaht",
+                },
             ],
         )
-        self.assertEqual(self.content_control._filtered_indices, [])
-        self.assertEqual(self.content_control.selected_choice_index, 2)
+        self.assertEqual(self.content_control.selected_choice_index, 0)
         self.assertEqual(
             self.content_control.selection,
-            {"index": 2, "name": "what", "enabled": False, "value": "what"},
+            {
+                "index": 0,
+                "name": "haah",
+                "enabled": False,
+                "value": "haah",
+                "indices": [],
+            },
         )
         self.assertEqual(self.content_control.choice_count, 5)
 
@@ -61,18 +128,18 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(
             self.content_control._get_formatted_choices(),
             [
-                ("class:pointer", " "),
+                ("class:pointer", "❯"),
                 ("class:fuzzy_marker", "❯"),
-                ("", "haah"),
+                ("[SetCursorPosition]", ""),
+                ("class:pointer", "haah"),
                 ("", "\n"),
                 ("class:pointer", " "),
                 ("class:fuzzy_marker", " "),
                 ("", "haha"),
                 ("", "\n"),
-                ("class:pointer", "❯"),
+                ("class:pointer", " "),
                 ("class:fuzzy_marker", " "),
-                ("[SetCursorPosition]", ""),
-                ("class:pointer", "what"),
+                ("", "what"),
                 ("", "\n"),
                 ("class:pointer", " "),
                 ("class:fuzzy_marker", " "),
@@ -85,55 +152,102 @@ class TestFuzzy(unittest.TestCase):
         )
         self.content_control.choices[0]["enabled"] = False
 
-    def test_content_control_filter(self):
+    def test_prompt_filter(self):
         content_control = InquirerPyFuzzyControl(
             choices=["meat", "what", "whaaah", "weather", "haha"],
-            default="what",
             pointer=INQUIRERPY_POINTER_SEQUENCE,
             marker=INQUIRERPY_POINTER_SEQUENCE,
             current_text=lambda: "wh",
+            max_lines=80,
         )
         self.assertEqual(
             content_control._filtered_choices,
             [
-                {"index": 0, "name": "meat", "enabled": False, "value": "meat"},
-                {"index": 1, "name": "what", "enabled": False, "value": "what"},
-                {"index": 2, "name": "whaaah", "enabled": False, "value": "whaaah"},
-                {"index": 3, "name": "weather", "enabled": False, "value": "weather"},
-                {"index": 4, "name": "haha", "enabled": False, "value": "haha"},
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "meat",
+                    "value": "meat",
+                },
+                {
+                    "enabled": False,
+                    "index": 1,
+                    "indices": [],
+                    "name": "what",
+                    "value": "what",
+                },
+                {
+                    "enabled": False,
+                    "index": 2,
+                    "indices": [],
+                    "name": "whaaah",
+                    "value": "whaaah",
+                },
+                {
+                    "enabled": False,
+                    "index": 3,
+                    "indices": [],
+                    "name": "weather",
+                    "value": "weather",
+                },
+                {
+                    "enabled": False,
+                    "index": 4,
+                    "indices": [],
+                    "name": "haha",
+                    "value": "haha",
+                },
             ],
         )
-        self.assertEqual(content_control._filtered_indices, [])
-        content_control.filter_choices()
-
+        loop = asyncio.get_event_loop()
+        result = loop.run_until_complete(content_control._filter_choices(0.0))
         self.assertEqual(
-            content_control._filtered_choices,
+            result,
             [
-                {"index": 1, "name": "what", "enabled": False, "value": "what"},
-                {"index": 2, "name": "whaaah", "enabled": False, "value": "whaaah"},
-                {"index": 3, "name": "weather", "enabled": False, "value": "weather"},
+                {
+                    "enabled": False,
+                    "index": 1,
+                    "indices": [0, 1],
+                    "name": "what",
+                    "value": "what",
+                },
+                {
+                    "enabled": False,
+                    "index": 2,
+                    "indices": [0, 1],
+                    "name": "whaaah",
+                    "value": "whaaah",
+                },
+                {
+                    "enabled": False,
+                    "index": 3,
+                    "indices": [0, 4],
+                    "name": "weather",
+                    "value": "weather",
+                },
             ],
         )
-        self.assertEqual(content_control._filtered_indices, [[0, 1], [0, 1], [0, 4]])
+        content_control._filtered_choices = result
         self.assertEqual(
             content_control._get_formatted_choices(),
             [
-                ("class:pointer", " "),
-                ("class:fuzzy_marker", " "),
-                ("class:fuzzy_match", "w"),
-                ("class:fuzzy_match", "h"),
-                ("", "a"),
-                ("", "t"),
-                ("", "\n"),
                 ("class:pointer", "❯"),
                 ("class:fuzzy_marker", " "),
                 ("[SetCursorPosition]", ""),
                 ("class:fuzzy_match", "w"),
                 ("class:fuzzy_match", "h"),
                 ("class:pointer", "a"),
-                ("class:pointer", "a"),
-                ("class:pointer", "a"),
-                ("class:pointer", "h"),
+                ("class:pointer", "t"),
+                ("", "\n"),
+                ("class:pointer", " "),
+                ("class:fuzzy_marker", " "),
+                ("class:fuzzy_match", "w"),
+                ("class:fuzzy_match", "h"),
+                ("", "a"),
+                ("", "a"),
+                ("", "a"),
+                ("", "h"),
                 ("", "\n"),
                 ("class:pointer", " "),
                 ("class:fuzzy_marker", " "),
@@ -147,6 +261,7 @@ class TestFuzzy(unittest.TestCase):
             ],
         )
         self.assertEqual(content_control.choice_count, 3)
+        self.assertEqual(content_control.selected_choice_index, 0)
 
     def test_prompt_init(self):
         self.assertEqual(self.prompt._instruction, "")
@@ -190,34 +305,84 @@ class TestFuzzy(unittest.TestCase):
             prompt._generate_before_input(), [("class:fuzzy_prompt", "> ")]
         )
 
-    def test_prompt_on_text_changed(self):
+    @patch("asyncio.create_task")
+    def test_prompt_on_text_changed(self, mocked):
         self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
         self.prompt.content_control.selected_choice_index = 4
         self.prompt._buffer.text = "ha"
-        self.prompt._on_text_changed(None)
+        mocked.assert_called()
+
+    def test_prompt_filter_callback(self):
+        class Hello(NamedTuple):
+            cancelled: Callable
+            result: Callable
+
+        hello = Hello(cancelled=lambda: True, result=lambda: [])
+        self.prompt._filter_callback(hello)
         self.assertEqual(
             self.prompt.content_control._filtered_choices,
             [
-                {"index": 0, "name": "haah", "enabled": False, "value": "haah"},
-                {"index": 1, "name": "haha", "enabled": False, "value": "haha"},
-                {"index": 2, "name": "what", "enabled": False, "value": "what"},
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "haah",
+                    "value": "haah",
+                },
+                {
+                    "enabled": False,
+                    "index": 1,
+                    "indices": [],
+                    "name": "haha",
+                    "value": "haha",
+                },
+                {
+                    "enabled": False,
+                    "index": 2,
+                    "indices": [],
+                    "name": "what",
+                    "value": "what",
+                },
+                {
+                    "enabled": False,
+                    "index": 3,
+                    "indices": [],
+                    "name": "waht",
+                    "value": "waht",
+                },
+                {
+                    "enabled": False,
+                    "index": 4,
+                    "indices": [],
+                    "name": "weaht",
+                    "value": "weaht",
+                },
             ],
         )
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
+        self.prompt.content_control.selected_choice_index = 4
+        hello = Hello(cancelled=lambda: False, result=lambda: [])
+        self.prompt._filter_callback(hello)
+        self.assertEqual(self.prompt.content_control._filtered_choices, [])
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
+        self.assertEqual(self.prompt.content_control._first_line, 0)
+        self.assertEqual(self.prompt.content_control._last_line, 0)
+
+        self.prompt.content_control.selected_choice_index = -1
+        hello = Hello(cancelled=lambda: False, result=lambda: [i for i in range(3)])
+        self.prompt._filter_callback(hello)
+        self.assertEqual(self.prompt.content_control._filtered_choices, [0, 1, 2])
+        self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
+        self.assertEqual(self.prompt.content_control._first_line, 0)
+        self.assertEqual(self.prompt.content_control._last_line, 3)
+
+        self.prompt.content_control.selected_choice_index = 5
+        hello = Hello(cancelled=lambda: False, result=lambda: [i for i in range(3)])
+        self.prompt._filter_callback(hello)
+        self.assertEqual(self.prompt.content_control._filtered_choices, [0, 1, 2])
         self.assertEqual(self.prompt.content_control.selected_choice_index, 2)
-        self.prompt._buffer.text = ""
-        self.prompt._on_text_changed(None)
-        self.assertEqual(self.prompt.content_control.selected_choice_index, 2)
-        self.assertEqual(
-            self.prompt.content_control._filtered_choices,
-            [
-                {"index": 0, "name": "haah", "enabled": False, "value": "haah"},
-                {"index": 1, "name": "haha", "enabled": False, "value": "haha"},
-                {"index": 2, "name": "what", "enabled": False, "value": "what"},
-                {"index": 3, "name": "waht", "enabled": False, "value": "waht"},
-                {"index": 4, "name": "weaht", "enabled": False, "value": "weaht"},
-            ],
-        )
-        self.prompt.content_control.selected_choice_index = 0
+        self.assertEqual(self.prompt.content_control._first_line, 0)
+        self.assertEqual(self.prompt.content_control._last_line, 2)
 
     def test_prompt_bindings(self):
         self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
@@ -266,7 +431,7 @@ class TestFuzzy(unittest.TestCase):
             choices=["haah", "haha", "what", "waht", "weaht"],
             multiselect=True,
         )
-        prompt._buffer.text = "asdfasfasfasfad"
+        prompt.content_control._filtered_choices = []
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
@@ -291,7 +456,8 @@ class TestFuzzy(unittest.TestCase):
             ],
         )
 
-    def test_prompt_validator(self):
+    @patch("asyncio.create_task")
+    def test_prompt_validator(self, mocked):
         prompt = FuzzyPrompt(
             message="Select one",
             choices=["haha", "asa", "132132"],
@@ -314,35 +480,107 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(
             prompt.content_control.choices,
             [
-                {"enabled": False, "index": 0, "name": "haha", "value": "haha"},
-                {"enabled": False, "index": 1, "name": "asdfa", "value": "asdfa"},
-                {"enabled": False, "index": 2, "name": "112321fd", "value": "112321fd"},
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "haha",
+                    "value": "haha",
+                },
+                {
+                    "enabled": False,
+                    "index": 1,
+                    "indices": [],
+                    "name": "asdfa",
+                    "value": "asdfa",
+                },
+                {
+                    "enabled": False,
+                    "index": 2,
+                    "indices": [],
+                    "name": "112321fd",
+                    "value": "112321fd",
+                },
             ],
         )
         prompt._toggle_all()
         self.assertEqual(
             prompt.content_control.choices,
             [
-                {"enabled": True, "index": 0, "name": "haha", "value": "haha"},
-                {"enabled": True, "index": 1, "name": "asdfa", "value": "asdfa"},
-                {"enabled": True, "index": 2, "name": "112321fd", "value": "112321fd"},
+                {
+                    "enabled": True,
+                    "index": 0,
+                    "indices": [],
+                    "name": "haha",
+                    "value": "haha",
+                },
+                {
+                    "enabled": True,
+                    "index": 1,
+                    "indices": [],
+                    "name": "asdfa",
+                    "value": "asdfa",
+                },
+                {
+                    "enabled": True,
+                    "index": 2,
+                    "indices": [],
+                    "name": "112321fd",
+                    "value": "112321fd",
+                },
             ],
         )
         prompt._toggle_all(True)
         self.assertEqual(
             prompt.content_control.choices,
             [
-                {"enabled": True, "index": 0, "name": "haha", "value": "haha"},
-                {"enabled": True, "index": 1, "name": "asdfa", "value": "asdfa"},
-                {"enabled": True, "index": 2, "name": "112321fd", "value": "112321fd"},
+                {
+                    "enabled": True,
+                    "index": 0,
+                    "indices": [],
+                    "name": "haha",
+                    "value": "haha",
+                },
+                {
+                    "enabled": True,
+                    "index": 1,
+                    "indices": [],
+                    "name": "asdfa",
+                    "value": "asdfa",
+                },
+                {
+                    "enabled": True,
+                    "index": 2,
+                    "indices": [],
+                    "name": "112321fd",
+                    "value": "112321fd",
+                },
             ],
         )
         prompt._toggle_all()
         self.assertEqual(
             prompt.content_control.choices,
             [
-                {"enabled": False, "index": 0, "name": "haha", "value": "haha"},
-                {"enabled": False, "index": 1, "name": "asdfa", "value": "asdfa"},
-                {"enabled": False, "index": 2, "name": "112321fd", "value": "112321fd"},
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "haha",
+                    "value": "haha",
+                },
+                {
+                    "enabled": False,
+                    "index": 1,
+                    "indices": [],
+                    "name": "asdfa",
+                    "value": "asdfa",
+                },
+                {
+                    "enabled": False,
+                    "index": 2,
+                    "indices": [],
+                    "name": "112321fd",
+                    "value": "112321fd",
+                },
             ],
         )
