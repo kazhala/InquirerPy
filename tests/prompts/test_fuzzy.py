@@ -584,3 +584,21 @@ class TestFuzzy(unittest.TestCase):
                 },
             ],
         )
+
+    def test_wait_time(self):
+        self.prompt.content_control.choices = []
+        self.assertEqual(self.prompt._calculate_wait_time(), 0.0)
+        self.prompt.content_control.choices = [{} for _ in range(9)]
+        self.assertEqual(self.prompt._calculate_wait_time(), 0.0)
+        self.prompt.content_control.choices = [{} for _ in range(50)]
+        self.assertEqual(self.prompt._calculate_wait_time(), 0.05)
+        self.prompt.content_control.choices = [{} for _ in range(100)]
+        self.assertEqual(self.prompt._calculate_wait_time(), 0.1)
+        self.prompt.content_control.choices = [{} for _ in range(1000)]
+        self.assertEqual(self.prompt._calculate_wait_time(), 0.2)
+        self.prompt.content_control.choices = [{} for _ in range(10000)]
+        self.assertEqual(self.prompt._calculate_wait_time(), 0.3)
+        self.prompt.content_control.choices = [{} for _ in range(100000)]
+        self.assertEqual(self.prompt._calculate_wait_time(), 0.6)
+        self.prompt.content_control.choices = [{} for _ in range(1000000)]
+        self.assertEqual(self.prompt._calculate_wait_time(), 1.2)
