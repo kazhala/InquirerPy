@@ -1,5 +1,6 @@
 """Module contains the class to construct fuzzyfinder prompt."""
 import asyncio
+import math
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.application.application import Application
@@ -477,12 +478,7 @@ class FuzzyPrompt(BaseSimplePrompt):
     def _filter_callback(self, task):
         """Redraw `self._application` when the filter task is finished.
 
-        1. Run a new filter on all choices.
-        2. Re-calculate current selected_choice_index
-            if it exceeds the total filtered_choice.
-        3. Avoid selected_choice_index less than zero,
-            this fix the issue of cursor lose when:
-            choice -> empty choice -> choice
+        Re-calculate the first line and last line to render.
         """
         if task.cancelled():
             return
@@ -497,16 +493,38 @@ class FuzzyPrompt(BaseSimplePrompt):
             )
             self.content_control._last_line = self.content_control.selected_choice_index
             self.content_control._first_line = self.content_control._last_line - min(
-                self.content_control._height, self.content_control.choice_count
+                self.content_control._height, self.content_control.choice_count - 1
             )
-            if self.content_control._first_line < 0:
-                self.content_control._first_line = 0
         if self.content_control.selected_choice_index == -1:
             self.content_control.selected_choice_index = 0
             self.content_control._first_line = 0
             self.content_control._last_line = self.content_control._first_line + min(
                 self.content_control._height, self.content_control.choice_count
             )
+
+    def _calculate_wait_time(self) -> float:
+        """Calculate wait time to smoother the application on big data set.
+
+        Using digit of the choices lengeth to get wait time.
+        For digit greater than 6, using formula 2^(digit - 5) * 0.3 to increase the wait_time.
+
+        Still experimenting, require improvement.
+        """
+        wait_table = {
+            2: 0.05,
+            3: 0.1,
+            4: 0.2,
+            5: 0.3,
+        }
+        digit = 1
+        if len(self.content_control.choices) > 0:
+            digit = int(math.log10(len(self.content_control.choices))) + 1
+
+        if digit < 2:
+            return 0.0
+        if digit in wait_table:
+            return wait_table[digit]
+        return wait_table[5] * (2 ** (digit - 5))
 
     def _on_text_changed(self, buffer) -> None:
         """Handle buffer text change event.
@@ -528,10 +546,9 @@ class FuzzyPrompt(BaseSimplePrompt):
         """
         if self._invalid:
             self._invalid = False
-        wait_time = 0.3
+        wait_time = self._calculate_wait_time()
         if self._task and not self._task.done():
             self._task.cancel()
-            wait_time = 0.2
         self._task = asyncio.create_task(
             self.content_control._filter_choices(wait_time)
         )
