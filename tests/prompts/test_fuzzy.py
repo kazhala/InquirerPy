@@ -602,3 +602,22 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(self.prompt._calculate_wait_time(), 0.6)
         self.prompt.content_control.choices = [{} for _ in range(1000000)]
         self.assertEqual(self.prompt._calculate_wait_time(), 1.2)
+
+    @patch("asyncio.create_task")
+    def test_after_render(self, mocked):
+        prompt = FuzzyPrompt(message="", choices=lambda: [1, 2, 3])
+        self.assertEqual(prompt.content_control.choices, [])
+        prompt._after_render()
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "index": 0, "indices": [], "name": "1", "value": 1},
+                {"enabled": False, "index": 1, "indices": [], "name": "2", "value": 2},
+                {"enabled": False, "index": 2, "indices": [], "name": "3", "value": 3},
+            ],
+        )
+
+        prompt = FuzzyPrompt(message="", choices=lambda: [1, 2, 3], default=1)
+        self.assertEqual(prompt.content_control.choices, [])
+        prompt._after_render()
+        mocked.assert_called()
