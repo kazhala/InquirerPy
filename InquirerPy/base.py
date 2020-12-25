@@ -170,11 +170,23 @@ class InquirerPyUIControl(FormattedTextControl):
     ) -> None:
         """Initialise choices and construct a FormattedTextControl object."""
         self.selected_choice_index: int = 0
+        self._choice_func = None
+        self._default = default
+        self._loading = False
         if isinstance(choices, Callable):
-            choices = choices()  # type: ignore
-        self.choices: List[Dict[str, Any]] = self._get_choices(choices, default)  # type: ignore
-        self._safety_check()
+            self._loading = True
+            self.choices = []
+            self._choice_func = choices
+            self._loading = True
+        else:
+            self.choices = self._get_choices(choices, self._default)  # type: ignore
+            self._safety_check()
         super().__init__(self._get_formatted_choices)
+
+    def _retrieve_choices(self, callback) -> None:
+        self.choices = self._get_choices(self._choice_func(), self._default)  # type: ignore
+        self._loading = False
+        callback()
 
     def _get_choices(self, choices: List[Any], default: Any) -> List[Dict[str, Any]]:
         """Process the raw user input choices and format it into dictionary.

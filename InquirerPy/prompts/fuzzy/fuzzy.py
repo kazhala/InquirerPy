@@ -61,7 +61,11 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         self._marker = marker
         super().__init__(choices, None)
         self._current_text = current_text
+        self._max_lines = max_lines
 
+        self._format_choices()
+
+    def _format_choices(self) -> None:
         for index, choice in enumerate(self.choices):
             if isinstance(choice["value"], Separator):
                 raise InvalidArgument("fuzzy type prompt does not accept Separator.")
@@ -70,7 +74,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             choice["indices"] = []
         self._filtered_choices = self.choices
         self._first_line = 0
-        self._last_line = min(max_lines, self.choice_count)
+        self._last_line = min(self._max_lines, self.choice_count)
         self._height = self._last_line - self._first_line
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
@@ -291,6 +295,7 @@ class FuzzyPrompt(BaseSimplePrompt):
         self._invalid_message = invalid_message
         self._task = None
         self._rendered = False
+        self._default = str(default)
         super().__init__(
             message=message,
             style=style,
@@ -415,27 +420,32 @@ class FuzzyPrompt(BaseSimplePrompt):
         def _(event) -> None:
             self._toggle_all()
 
-        def after_render(_) -> None:
-            """Set the default buffer text.
-
-            Has to be after application is rendered, because `self._filter_choices`
-            will use the event loop from `Application`.
-
-            Forcing a check on `self._rendered` as this event is fired up on each
-            render, we only want this to fire up once.
-            """
-            if not self._rendered and default:
-                self._rendered = True
-                self._buffer.text = default
-                self._buffer.cursor_position = len(default)
-
         self._application = Application(
             layout=self._layout,
             style=self.question_style,
             key_bindings=self.kb,
             editing_mode=self.editing_mode,
-            after_render=after_render,
+            after_render=self._after_render,
         )
+
+    def _after_render(self, _) -> None:
+        """Render callable choices and set the buffer default text.
+
+        Setting buffer default text has to be after application is rendered,
+        because `self._filter_choices` will use the event loop from `Application`.
+
+        Forcing a check on `self._rendered` as this event is fired up on each
+        render, we only want this to fire up once.
+        """
+        if not self._rendered:
+            self._rendered = True
+            if self.content_control._choice_func:
+                self.content_control._retrieve_choices(
+                    self.content_control._format_choices
+                )
+            if self._default:
+                self._buffer.text = self._default
+                self._buffer.cursor_position = len(self._default)
 
     def _toggle_all(self, value: bool = None) -> None:
         """Toggle all choice `enabled` status.
