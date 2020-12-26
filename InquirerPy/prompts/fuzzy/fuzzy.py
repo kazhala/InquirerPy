@@ -22,12 +22,11 @@ from prompt_toolkit.layout.processors import AfterInput, BeforeInput
 from prompt_toolkit.validation import ValidationError, Validator
 from prompt_toolkit.widgets.base import Frame
 
-from InquirerPy.base import BaseSimplePrompt, FakeDocument, InquirerPyUIControl
+from InquirerPy.base import BaseComplexPrompt, FakeDocument, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py_async
 from InquirerPy.separator import Separator
-from InquirerPy.utils import calculate_height
 
 
 class InquirerPyFuzzyControl(InquirerPyUIControl):
@@ -206,7 +205,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         return len(self._filtered_choices)
 
 
-class FuzzyPrompt(BaseSimplePrompt):
+class FuzzyPrompt(BaseComplexPrompt):
     """A filter prompt that allows user to input value.
 
     Filters the result using fuzzy finding. The fuzzy finding logic
@@ -285,15 +284,13 @@ class FuzzyPrompt(BaseSimplePrompt):
         Once Enter is pressed, hide both input buffer and choices buffer as well as
         updating the question buffer with user selection.
         """
-        self._instruction = instruction
-        self._multiselect = multiselect
         self._prompt = prompt
         self._border = border
         self._info = info
-        self._invalid_message = invalid_message
         self._task = None
         self._rendered = False
         self._default = str(default)
+        self._content_control: InquirerPyFuzzyControl
         super().__init__(
             message=message,
             style=style,
@@ -302,19 +299,20 @@ class FuzzyPrompt(BaseSimplePrompt):
             transformer=transformer,
             validate=validate,
             invalid_message=invalid_message,
+            height=height,
+            max_height=max_height,
+            multiselect=multiselect,
+            instruction=instruction,
         )
 
-        dimmension_height, dimmension_max_height = calculate_height(
-            height, max_height, offset=2
-        )
         self._content_control = InquirerPyFuzzyControl(
             choices=choices,
             pointer=pointer,
             marker=marker,
             current_text=self._get_current_text,
-            max_lines=dimmension_max_height
+            max_lines=self._dimmension_max_height
             if not self._border
-            else dimmension_max_height - 2,
+            else self._dimmension_max_height - 2,
         )
 
         @Condition
@@ -346,7 +344,7 @@ class FuzzyPrompt(BaseSimplePrompt):
         )
 
         choice_height_dimmension = Dimension(
-            max=dimmension_max_height, preferred=dimmension_height
+            max=self._dimmension_max_height, preferred=self._dimmension_height
         )
         choice_window = Window(
             content=self.content_control, height=choice_height_dimmension
@@ -430,7 +428,7 @@ class FuzzyPrompt(BaseSimplePrompt):
             after_render=self._after_render,
         )
 
-    def _after_render(self, _) -> None:
+    def _after_render(self, application) -> None:
         """Render callable choices and set the buffer default text.
 
         Setting buffer default text has to be after application is rendered,
@@ -440,9 +438,7 @@ class FuzzyPrompt(BaseSimplePrompt):
         render, we only want this to fire up once.
         """
         if not self._rendered:
-            self._rendered = True
-            if self.content_control._choice_func:
-                self.content_control._retrieve_choices()
+            super()._after_render(application)
             if self._default:
                 self._buffer.text = self._default
                 self._buffer.cursor_position = len(self._default)
@@ -621,55 +617,10 @@ class FuzzyPrompt(BaseSimplePrompt):
             event.app.exit(result=None if not self._multiselect else [])
 
     @property
-    def selected_choices(self) -> List[Dict[str, Any]]:
-        """Get all user enabled choices."""
-        return list(
-            filter(lambda choice: choice["enabled"], self.content_control.choices)
-        )
-
-    @property
-    def result_name(self) -> Any:
-        """Get the result name of the application.
-
-        In multiselect scenario, return result as a list.
-        """
-        if self._multiselect:
-            return [choice["name"] for choice in self.selected_choices]
-        else:
-            return self.content_control.selection["name"]
-
-    @property
-    def result_value(self) -> Any:
-        """Get the result value of the application.
-
-        In multiselect scenario, return result as a list.
-        """
-        if self._multiselect:
-            return [choice["value"] for choice in self.selected_choices]
-        else:
-            return self.content_control.selection["value"]
-
-    @property
     def content_control(self) -> InquirerPyFuzzyControl:
-        """Get the choice content_control."""
+        """Override for type-hinting."""
         return self._content_control
 
     def _get_current_text(self) -> str:
         """Get current input buffer text."""
         return self._buffer.text
-
-    def _get_prompt_message(self) -> List[Tuple[str, str]]:
-        """Get the prompt message for FormattedTextControl.
-
-        To be used by the first window in layout.
-
-        :return: list of formatted text
-        :rtype: List[Tuple[str, str]]
-        """
-        pre_answer = ("class:instruction", " %s" % self._instruction)
-        post_answer = ("class:answer", " %s" % self.status["result"])
-        return super()._get_prompt_message(pre_answer, post_answer)
-
-    def execute(self) -> Any:
-        """Execute the application and get the result."""
-        return self._application.run()
