@@ -108,10 +108,9 @@ class TestListPrompt(unittest.TestCase):
         self.assertEqual(prompt.instruction, "(j/k)")
 
         window_list = list(prompt.layout.children)
-        self.assertEqual(len(window_list), 3)
+        self.assertEqual(len(window_list), 2)
         self.assertIsInstance(window_list[0], Window)
         self.assertIsInstance(window_list[1], ConditionalContainer)
-        self.assertIsInstance(window_list[2], ConditionalContainer)
 
     def test_minimum_args(self):
         ListPrompt(message="Select a fruit", choices=self.choices, style={})
