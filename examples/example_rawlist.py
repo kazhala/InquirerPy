@@ -9,6 +9,7 @@ questions = [
         "default": "boo",
         "qmark": "[?]",
         "pointer": "   ",
+        "instruction": "(hh)",
     },
     {
         "type": "rawlist",
@@ -26,6 +27,7 @@ questions = [
         "multiselect": True,
         "validate": lambda x: len(x) > 1,
     },
+    {"type": "rawlist", "choices": lambda: [1, 2, 3], "message": "hello"},
 ]
 
 result = prompt(questions, editing_mode="vim")

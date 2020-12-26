@@ -11,7 +11,6 @@ def get_choices():
 
     with ExitStack() as stack:
         if not p.exists():
-            print("hello")
             file = stack.enter_context(p.open("w+"))
             sample = stack.enter_context(
                 urllib.request.urlopen(
@@ -34,7 +33,7 @@ questions = [
         "choices": get_choices,
         "border": True,
         "multiselect": True,
-        "max_height": "100%",
+        "max_height": "70%",
         "validate": lambda x: len(x) > 1,
     },
     {

@@ -1,6 +1,15 @@
 from InquirerPy.resolver import prompt
 from InquirerPy.separator import Separator
 
+
+def hello():
+    return [
+        {"key": "1", "name": "1", "value": 1},
+        {"key": "2", "name": "2", "value": 2},
+        {"key": "3", "name": "3", "value": 3},
+    ]
+
+
 questions = [
     {
         "type": "expand",
@@ -24,6 +33,7 @@ questions = [
         "message": "What do you think?",
         "default": "f",
     },
+    {"type": "expand", "choices": hello, "message": "What"},
 ]
 
 result = prompt(questions)
