@@ -31,7 +31,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(height, 1)
 
     def test_style(self):
-        style = get_style()
+        style = get_style(None)
         self.assertEqual(
             style,
             {
@@ -48,7 +48,7 @@ class TestUtils(unittest.TestCase):
                 "validator": "",
                 "fuzzy_prompt": "#c678dd",
                 "fuzzy_info": "#98c379",
-                "fuzzy_border": "#4b5263",
+                "frame.border": "#4b5263",
                 "fuzzy_match": "#c678dd",
             },
         )
@@ -68,9 +68,30 @@ class TestUtils(unittest.TestCase):
         os.environ["INQUIRERPY_STYLE_FUZZY_BORDER"] = "#cccccc"
         os.environ["INQUIRERPY_STYLE_FUZZY_MATCH"] = "#dddddd"
         os.environ["INQUIRERPY_STYLE_VALIDATOR"] = "#dddddd"
-        style = get_style()
+        style = get_style(None)
         self.assertEqual(
             style,
+            {
+                "questionmark": "#000000",
+                "answer": "#111111",
+                "input": "#444444",
+                "question": "#222222",
+                "instruction": "#333333",
+                "pointer": "#555555",
+                "checkbox": "#66666",
+                "separator": "#777777",
+                "skipped": "#888888",
+                "fuzzy_prompt": "#999999",
+                "fuzzy_info": "#aaaaaa",
+                "marker": "#bbbbbb",
+                "validation-toolbar": "#dddddd",
+                "fuzzy_match": "#dddddd",
+                "frame.border": "#cccccc",
+            },
+        )
+
+    def test_format_style(self):
+        style = get_style(
             {
                 "questionmark": "#000000",
                 "answer": "#111111",
@@ -87,5 +108,25 @@ class TestUtils(unittest.TestCase):
                 "validator": "#dddddd",
                 "fuzzy_match": "#dddddd",
                 "fuzzy_border": "#cccccc",
+            }
+        )
+        self.assertEqual(
+            style,
+            {
+                "questionmark": "#000000",
+                "answer": "#111111",
+                "input": "#444444",
+                "question": "#222222",
+                "instruction": "#333333",
+                "pointer": "#555555",
+                "checkbox": "#66666",
+                "separator": "#777777",
+                "skipped": "#888888",
+                "fuzzy_prompt": "#999999",
+                "fuzzy_info": "#aaaaaa",
+                "marker": "#bbbbbb",
+                "validation-toolbar": "#dddddd",
+                "fuzzy_match": "#dddddd",
+                "frame.border": "#cccccc",
             },
         )
