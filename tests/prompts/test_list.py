@@ -211,3 +211,16 @@ class TestListPrompt(unittest.TestCase):
             prompt.content_control.choices[1]["enabled"] = True
             prompt._handle_enter(event)
             self.assertEqual(prompt.status["result"], ["haah"])
+
+    def test_after_render(self):
+        prompt = ListPrompt(message="", choices=lambda: [1, 2, 3])
+        self.assertEqual(prompt.content_control.choices, [])
+        prompt._after_render("")
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "name": "1", "value": 1},
+                {"enabled": False, "name": "2", "value": 2},
+                {"enabled": False, "name": "3", "value": 3},
+            ],
+        )
