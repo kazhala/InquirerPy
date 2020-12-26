@@ -3,12 +3,30 @@
 import math
 import os
 import shutil
-from typing import Dict, Optional, Tuple, Union
+from typing import Callable, Dict, Optional, Tuple, Union
 
 from InquirerPy.exceptions import InvalidArgument
 
 
-def get_style() -> Dict[str, str]:
+def format_style(func) -> Callable:
+    """Format the style into `prompt_toolkit` readable style.
+
+    In particular the fuzzy_border and validator require re-format.
+    """
+
+    def wrapper(style):
+        style = func(style)
+        if style.get("fuzzy_border"):
+            style["frame.border"] = style.pop("fuzzy_border")
+        if style.get("validator"):
+            style["validation-toolbar"] = style.pop("validator")
+        return style
+
+    return wrapper
+
+
+@format_style
+def get_style(style: Optional[Dict[str, str]]) -> Dict[str, str]:
     """Get default style if style parameter is missing.
 
     Reads the ENV variable first before apply default one dark theme.
@@ -16,23 +34,26 @@ def get_style() -> Dict[str, str]:
     :return: style dictionary ready to be consumed by `Style.from_dict`
     :rtype: Dict[str, str]
     """
-    return {
-        "questionmark": os.getenv("INQUIRERPY_STYLE_QUESTIONMARK", "#e5c07b"),
-        "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", "#61afef"),
-        "input": os.getenv("INQUIRERPY_STYLE_INPUT", "#98c379"),
-        "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
-        "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
-        "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
-        "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
-        "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
-        "skipped": os.getenv("INQUIRERPY_STYLE_SKIPPED", "#5c6370"),
-        "validator": os.getenv("INQUIRERPY_STYLE_VALIDATOR", ""),
-        "marker": os.getenv("INQUIRERPY_STYLE_MARKER", "#e5c07b"),
-        "fuzzy_prompt": os.getenv("INQUIRERPY_STYLE_FUZZY_PROMPT", "#c678dd"),
-        "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", "#98c379"),
-        "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", "#4b5263"),
-        "fuzzy_match": os.getenv("INQUIRERPY_STYLE_FUZZY_MATCH", "#c678dd"),
-    }
+    if not style:
+        return {
+            "questionmark": os.getenv("INQUIRERPY_STYLE_QUESTIONMARK", "#e5c07b"),
+            "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", "#61afef"),
+            "input": os.getenv("INQUIRERPY_STYLE_INPUT", "#98c379"),
+            "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
+            "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
+            "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
+            "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
+            "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
+            "skipped": os.getenv("INQUIRERPY_STYLE_SKIPPED", "#5c6370"),
+            "validator": os.getenv("INQUIRERPY_STYLE_VALIDATOR", ""),
+            "marker": os.getenv("INQUIRERPY_STYLE_MARKER", "#e5c07b"),
+            "fuzzy_prompt": os.getenv("INQUIRERPY_STYLE_FUZZY_PROMPT", "#c678dd"),
+            "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", "#98c379"),
+            "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", "#4b5263"),
+            "fuzzy_match": os.getenv("INQUIRERPY_STYLE_FUZZY_MATCH", "#c678dd"),
+        }
+    else:
+        return style
 
 
 def calculate_height(

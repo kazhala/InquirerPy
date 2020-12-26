@@ -60,12 +60,7 @@ def prompt(
     if not isinstance(questions, list):
         raise InvalidArgument("questions should be type of list.")
 
-    if not style:
-        style = get_style()
-        if style.get("fuzzy_border"):
-            style["frame.border"] = style.pop("fuzzy_border")
-        if style.get("validator"):
-            style["validation-toolbar"] = style.pop("validator")
+    style = get_style(style)
     if not editing_mode:
         default_mode = os.getenv("INQUIRERPY_EDITING_MODE", "default")
         if default_mode not in ACCEPTED_KEYBINDINGS:
