@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
+from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
 
@@ -61,7 +61,7 @@ class InquirerPyListControl(InquirerPyUIControl):
         return display_choices
 
 
-class ListPrompt(BaseComplexPrompt):
+class ListPrompt(BaseListPrompt):
     """A wrapper class around prompt_toolkit Application to create a list prompt.
 
     :param message: message to display

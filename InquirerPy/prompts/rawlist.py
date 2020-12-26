@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
+from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
 
@@ -87,7 +87,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         return display_choices
 
 
-class RawlistPrompt(BaseComplexPrompt):
+class RawlistPrompt(BaseListPrompt):
     """Used to create a rawlist prompt where user can use number to jump to items.
 
     :param message: message to display as question

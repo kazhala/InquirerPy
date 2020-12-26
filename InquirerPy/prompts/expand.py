@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List, Literal, NamedTuple, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
+from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
@@ -135,7 +135,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         return display_choices
 
 
-class ExpandPrompt(BaseComplexPrompt):
+class ExpandPrompt(BaseListPrompt):
     """Create a `prompt_toolkit` application and responsible to render the expand prompt.
 
     Prompt contains 2 state, expanded and not expanded. The visual effect are

@@ -330,35 +330,12 @@ class FakeDocument(NamedTuple):
 class BaseComplexPrompt(BaseSimplePrompt):
     """A base class to create a complex prompt using `prompt_toolkit` Application.
 
-    Consists of 2 horizontally splitted Window with one being the question and the second
-    window responsible to dynamically generate the content.
+    This class does not create `Layout` nor `Application`, it just contains helper
+    functions to create a more complex prompt than the `BaseSimplePrompt`.
 
-    Upon entering the answer, update the first window's formatted text.
+    Use `BaseListPrompt` to create a complex list prompt.
 
-    :param message: question to display to the user
-    :type message: str
-    :param style: style to apply to the prompt
-    :type style: Dict[str, str]
-    :param editing_mode: controls the key_binding
-    :type editing_mode: Literal["emacs", "default", "vim"]
-    :param qmark: question mark to display
-    :type qmark: str
-    :param instruction: instruction to display after the question message
-    :type instruction: str
-    :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable
-    :param height: preferred height of the choice window
-    :type height: Union[str, int]
-    :param max_height: max height choice window should reach
-    :type max_height: Union[str, int]
-    :param validate: a callable or Validator instance to validate user selection
-    :type validate: Union[Callable[[str], bool], Validator]
-    :param invalid_message: message to display when input is invalid
-    :type invalid_message: str
-    :param multiselect: enable multiselect mode
-    :type multiselect: bool
-    :param marker: marker symbol for selected choice
-    :type marker: str
+    Reference parameters through `BaseListPrompt` or `FuzzyPrompt`.
     """
 
     def __init__(
@@ -390,6 +367,172 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._invalid_message = invalid_message
         self._multiselect = multiselect
         self._rendered = False
+        self._dimmension_height, self._dimmension_max_height = calculate_height(
+            height, max_height
+        )
+        self._application: Application
+
+    def _after_render(self, _) -> None:
+        """Render callable choices.
+
+        Forcing a check on `self._rendered` as this event is fired up on each
+        render, we only want this to fire up once.
+        """
+        if not self._rendered:
+            self._rendered = True
+            if self.content_control._choice_func:
+                self.content_control._retrieve_choices()
+
+    def _get_prompt_message(self) -> List[Tuple[str, str]]:
+        """Get the prompt message.
+
+        :return: list of formatted text
+        :rtype: List[Tuple[str, str]]
+        """
+        pre_answer = ("class:instruction", " %s" % self.instruction)
+        post_answer = ("class:answer", " %s" % self.status["result"])
+        return super()._get_prompt_message(pre_answer, post_answer)
+
+    def execute(self) -> Any:
+        """Execute the application and get the result."""
+        return self.application.run()
+
+    @property
+    def instruction(self) -> str:
+        """Instruction to display next to question.
+
+        :return: instruction text
+        :rtype: str
+        """
+        return self._instruction
+
+    @property
+    def content_control(self) -> InquirerPyUIControl:
+        """Get the content controller object.
+
+        Needs to be an instance of InquirerPyUIControl.
+        """
+        if not self._content_control:
+            raise NotImplementedError
+        return self._content_control
+
+    @content_control.setter
+    def content_control(self, value: InquirerPyUIControl) -> None:
+        """Setter of content_control."""
+        self._content_control = value
+
+    @property
+    def result_name(self) -> Any:
+        """Get the result name of the application.
+
+        In multiselect scenario, return result as a list.
+        """
+        if self._multiselect:
+            return [choice["name"] for choice in self.selected_choices]
+        else:
+            return self.content_control.selection["name"]
+
+    @property
+    def result_value(self) -> Any:
+        """Get the result value of the application.
+
+        In multiselect scenario, return result as a list.
+        """
+        if self._multiselect:
+            return [choice["value"] for choice in self.selected_choices]
+        else:
+            return self.content_control.selection["value"]
+
+    @property
+    def selected_choices(self) -> List[Any]:
+        """Get all user selected choices.
+
+        :return: list of selected/enabled choices
+        :rtype: List[Any]
+        """
+
+        def filter_choice(choice):
+            return not isinstance(choice, Separator) and choice["enabled"]
+
+        return list(filter(filter_choice, self.content_control.choices))
+
+    @property
+    def application(self) -> Application:
+        """Get application.
+
+        Require `self._application` to be defined since this class
+        doesn't implement `Layout` and `Application`.
+        """
+        if not self._application:
+            raise NotImplementedError
+        return self._application
+
+    @application.setter
+    def application(self, value: Application) -> None:
+        """Setter for `self._application`."""
+        self._application = value
+
+
+class BaseListPrompt(BaseComplexPrompt):
+    """A base class to create a complex prompt using `prompt_toolkit` Application.
+
+    Consists of 2 horizontally splitted Window with one being the question and the second
+    window responsible to dynamically generate the content.
+
+    Upon entering the answer, update the first window's formatted text.
+
+    :param message: question to display to the user
+    :type message: str
+    :param style: style to apply to the prompt
+    :type style: Dict[str, str]
+    :param editing_mode: controls the key_binding
+    :type editing_mode: Literal["emacs", "default", "vim"]
+    :param qmark: question mark to display
+    :type qmark: str
+    :param instruction: instruction to display after the question message
+    :type instruction: str
+    :param transformer: a callable to transform the result, this is visual effect only
+    :type transformer: Callable
+    :param height: preferred height of the choice window
+    :type height: Union[str, int]
+    :param max_height: max height choice window should reach
+    :type max_height: Union[str, int]
+    :param validate: a callable or Validator instance to validate user selection
+    :type validate: Union[Callable[[str], bool], Validator]
+    :param invalid_message: message to display when input is invalid
+    :type invalid_message: str
+    :param multiselect: enable multiselect mode
+    :type multiselect: bool
+    """
+
+    def __init__(
+        self,
+        message: str,
+        style: Dict[str, str] = {},
+        editing_mode: Literal["emacs", "default", "vim"] = "default",
+        qmark: str = "?",
+        instruction: str = "",
+        transformer: Callable = None,
+        height: Union[int, str] = None,
+        max_height: Union[int, str] = None,
+        validate: Union[Callable[[str], bool], Validator] = None,
+        invalid_message: str = "Invalid input",
+        multiselect: bool = False,
+    ) -> None:
+        """Initialise the Application with Layout and keybindings."""
+        super().__init__(
+            message=message,
+            style=style,
+            editing_mode=editing_mode,
+            qmark=qmark,
+            transformer=transformer,
+            invalid_message=invalid_message,
+            validate=validate,
+            multiselect=multiselect,
+            instruction=instruction,
+            height=height,
+            max_height=max_height,
+        )
 
         @Condition
         def is_multiselect() -> bool:
@@ -445,7 +588,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         def _(event):
             self._handle_enter(event)
 
-        dimmension_height, dimmension_max_height = calculate_height(height, max_height)
         self.layout = HSplit(
             [
                 Window(
@@ -458,7 +600,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
                     Window(
                         content=self.content_control,
                         height=Dimension(
-                            max=dimmension_max_height, preferred=dimmension_height
+                            max=self._dimmension_max_height,
+                            preferred=self._dimmension_height,
                         ),
                     ),
                     filter=~IsDone() & ~is_loading,
@@ -482,17 +625,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
             after_render=self._after_render,
         )
 
-    def _after_render(self, _) -> None:
-        """Render callable choices.
-
-        Forcing a check on `self._rendered` as this event is fired up on each
-        render, we only want this to fire up once.
-        """
-        if not self._rendered:
-            self._rendered = True
-            if self.content_control._choice_func:
-                self.content_control._retrieve_choices()
-
     def _toggle_choice(self) -> None:
         """Toggle the `enabled` status of the choice."""
         self.content_control.selection["enabled"] = not self.content_control.selection[
@@ -509,44 +641,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
             if isinstance(choice["value"], Separator):
                 continue
             choice["enabled"] = value if value else not choice["enabled"]
-
-    def _get_prompt_message(self) -> List[Tuple[str, str]]:
-        """Get the prompt message.
-
-        :return: list of formatted text
-        :rtype: List[Tuple[str, str]]
-        """
-        pre_answer = ("class:instruction", " %s" % self.instruction)
-        post_answer = ("class:answer", " %s" % self.status["result"])
-        return super()._get_prompt_message(pre_answer, post_answer)
-
-    def execute(self) -> Any:
-        """Execute the application and get the result."""
-        return self.application.run()
-
-    @property
-    def instruction(self) -> str:
-        """Instruction to display next to question.
-
-        :return: instruction text
-        :rtype: str
-        """
-        return self._instruction
-
-    @property
-    def content_control(self) -> InquirerPyUIControl:
-        """Get the content controller object.
-
-        Needs to be an instance of InquirerPyUIControl.
-        """
-        if not self._content_control:
-            raise NotImplementedError
-        return self._content_control
-
-    @content_control.setter
-    def content_control(self, value: InquirerPyUIControl) -> None:
-        """Setter of content_control."""
-        self._content_control = value
 
     def _handle_up(self) -> None:
         """Handle the event when user attempt to move up."""
@@ -588,38 +682,3 @@ class BaseComplexPrompt(BaseSimplePrompt):
             else:
                 self.status["result"] = self.result_name
                 event.app.exit(result=self.result_value)
-
-    @property
-    def result_name(self) -> Any:
-        """Get the result name of the application.
-
-        In multiselect scenario, return result as a list.
-        """
-        if self._multiselect:
-            return [choice["name"] for choice in self.selected_choices]
-        else:
-            return self.content_control.selection["name"]
-
-    @property
-    def result_value(self) -> Any:
-        """Get the result value of the application.
-
-        In multiselect scenario, return result as a list.
-        """
-        if self._multiselect:
-            return [choice["value"] for choice in self.selected_choices]
-        else:
-            return self.content_control.selection["value"]
-
-    @property
-    def selected_choices(self) -> List[Any]:
-        """Get all user selected choices.
-
-        :return: list of selected/enabled choices
-        :rtype: List[Any]
-        """
-
-        def filter_choice(choice):
-            return not isinstance(choice, Separator) and choice["enabled"]
-
-        return list(filter(filter_choice, self.content_control.choices))
