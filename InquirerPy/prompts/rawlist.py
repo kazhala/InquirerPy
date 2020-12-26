@@ -37,16 +37,19 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
             choice["display_index"] = index + 1 - separator_count
             choice["actual_index"] = index
 
-        first_valid_choice_index = 0
-        while isinstance(self.choices[first_valid_choice_index]["value"], Separator):
-            first_valid_choice_index += 1
-        if self.selected_choice_index == first_valid_choice_index:
-            for choice in self.choices:
-                if isinstance(choice["value"], Separator):
-                    continue
-                if choice["display_index"] == self._default:
-                    self.selected_choice_index = choice["actual_index"]
-                    break
+        if self.choices:
+            first_valid_choice_index = 0
+            while isinstance(
+                self.choices[first_valid_choice_index]["value"], Separator
+            ):
+                first_valid_choice_index += 1
+            if self.selected_choice_index == first_valid_choice_index:
+                for choice in self.choices:
+                    if isinstance(choice["value"], Separator):
+                        continue
+                    if choice["display_index"] == self._default:
+                        self.selected_choice_index = choice["actual_index"]
+                        break
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
@@ -165,16 +168,28 @@ class RawlistPrompt(BaseListPrompt):
             invalid_message=invalid_message,
         )
 
-        def keybinding_factory(choice):
-            @self._register_kb(str(choice["display_index"]))
-            def keybinding(_) -> None:
-                self.content_control.selected_choice_index = int(choice["actual_index"])
+    def _after_render(self, application) -> None:
+        """Override this method to apply custom keybindings.
 
-            return keybinding
+        Since `self.content_control.choices` may not exists before
+        `Application` is created if its a callable, create these
+        chocies based keybindings in the after_render call.
+        """
+        if not self._rendered:
+            super()._after_render(application)
 
-        for choice in self.content_control.choices:
-            if not isinstance(choice["value"], Separator):
-                keybinding_factory(choice)
+            def keybinding_factory(choice):
+                @self._register_kb(str(choice["display_index"]))
+                def keybinding(_) -> None:
+                    self.content_control.selected_choice_index = int(
+                        choice["actual_index"]
+                    )
+
+                return keybinding
+
+            for choice in self.content_control.choices:
+                if not isinstance(choice["value"], Separator):
+                    keybinding_factory(choice)
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Return the formatted text to display in the prompt.
@@ -182,8 +197,8 @@ class RawlistPrompt(BaseListPrompt):
         Overriding this method to allow multiple formatted class to be displayed.
         """
         display_message = super()._get_prompt_message()
-        if not self.status["answered"]:
+        if not self.status["answered"] and self.content_control.choices:
             display_message.append(
-                ("class:input", " %s" % self.content_control.selection["display_index"])
+                ("class:input", str(self.content_control.selection["display_index"]))
             )
         return display_message
