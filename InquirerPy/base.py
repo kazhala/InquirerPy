@@ -9,7 +9,13 @@ from prompt_toolkit.filters import IsDone
 from prompt_toolkit.filters.base import Condition, FilterOrBool
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
+from prompt_toolkit.layout.containers import (
+    ConditionalContainer,
+    Float,
+    FloatContainer,
+    HSplit,
+    Window,
+)
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
@@ -597,23 +603,36 @@ class BaseListPrompt(BaseComplexPrompt):
                     ),
                 ),
                 ConditionalContainer(
-                    Window(
-                        content=self.content_control,
-                        height=Dimension(
-                            max=self._dimmension_max_height,
-                            preferred=self._dimmension_height,
+                    FloatContainer(
+                        content=Window(
+                            content=self.content_control,
+                            height=Dimension(
+                                max=self._dimmension_max_height,
+                                preferred=self._dimmension_height,
+                            ),
                         ),
+                        floats=[
+                            Float(
+                                ConditionalContainer(
+                                    Window(
+                                        FormattedTextControl(
+                                            [
+                                                (
+                                                    "class:validation-toolbar",
+                                                    self._invalid_message,
+                                                )
+                                            ]
+                                        ),
+                                        dont_extend_height=True,
+                                    ),
+                                    filter=is_invalid,
+                                ),
+                                bottom=0,
+                                left=0,
+                            )
+                        ],
                     ),
                     filter=~IsDone() & ~is_loading,
-                ),
-                ConditionalContainer(
-                    Window(
-                        FormattedTextControl(
-                            [("class:validation-toolbar", self._invalid_message)]
-                        ),
-                        dont_extend_height=True,
-                    ),
-                    filter=~IsDone() & is_invalid,
                 ),
             ]
         )
