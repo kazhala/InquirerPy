@@ -268,7 +268,8 @@ class InquirerPyUIControl(FormattedTextControl):
             else:
                 display_choices += self._get_normal_text(choice)
             display_choices.append(("", "\n"))
-        display_choices.pop()
+        if display_choices:
+            display_choices.pop()
         return display_choices
 
     @abstractmethod
@@ -388,6 +389,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._instruction = instruction
         self._invalid_message = invalid_message
         self._multiselect = multiselect
+        self._rendered = False
 
         @Condition
         def is_multiselect() -> bool:
@@ -473,7 +475,22 @@ class BaseComplexPrompt(BaseSimplePrompt):
             layout=Layout(self.layout),
             style=self.question_style,
             key_bindings=self.kb,
+            after_render=self._after_render,
         )
+
+    def _after_render(self, _) -> None:
+        """Render callable choices and set the buffer default text.
+
+        Setting buffer default text has to be after application is rendered,
+        because `self._filter_choices` will use the event loop from `Application`.
+
+        Forcing a check on `self._rendered` as this event is fired up on each
+        render, we only want this to fire up once.
+        """
+        if not self._rendered:
+            self._rendered = True
+            if self.content_control._choice_func:
+                self.content_control._retrieve_choices()
 
     def _toggle_choice(self) -> None:
         """Toggle the `enabled` status of the choice."""
