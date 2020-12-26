@@ -3,6 +3,7 @@ from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
 
+from InquirerPy.base import BaseComplexPrompt
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.rawlist import InquirerPyRawlistControl, RawlistPrompt
 from InquirerPy.separator import Separator
@@ -168,15 +169,23 @@ class TestRawList(unittest.TestCase):
             prompt._handle_enter(event)
         self.assertEqual(prompt.status, {"result": "hello", "answered": True})
 
-    @patch.object(KeyBindings, "add")
+    @patch.object(BaseComplexPrompt, "_register_kb")
     def test_kb_added(self, mocked_add):
-        RawlistPrompt(
+        prompt = RawlistPrompt(
             message="hello",
             choices=self.choices,
             default="hello",
             separator=".",
             instruction="bb",
         )
-        mocked_add.assert_has_calls([call("1", filter=True)])
-        mocked_add.assert_has_calls([call("2", filter=True)])
-        mocked_add.assert_has_calls([call("3", filter=True)])
+        mocked_add.assert_has_calls([call("c-n", filter=ANY)])
+        mocked_add.assert_has_calls([call("c-p", filter=ANY)])
+        try:
+            mocked_add.assert_has_calls([call("1", filter=True)])
+            self.fail("choices kb should be after_render")
+        except:
+            pass
+        prompt._after_render("")
+        mocked_add.assert_has_calls([call("1")])
+        mocked_add.assert_has_calls([call("2")])
+        mocked_add.assert_has_calls([call("3")])

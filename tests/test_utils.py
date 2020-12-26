@@ -12,11 +12,11 @@ class TestUtils(unittest.TestCase):
         mocked_terminal_size.return_value = (24, 80)
         height, max_height = calculate_height(None, None)
         self.assertEqual(height, None)
-        self.assertEqual(max_height, 79)
+        self.assertEqual(max_height, 39)
 
         height, max_height = calculate_height("50%", None)
         self.assertEqual(height, 39)
-        self.assertEqual(max_height, 79)
+        self.assertEqual(max_height, 39)
 
         calculate_height("50%", "80")
 

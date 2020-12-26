@@ -3,6 +3,7 @@ from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
 
+from InquirerPy.base import BaseComplexPrompt
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.expand import ExpandHelp, ExpandPrompt, InquirerPyExpandControl
 from InquirerPy.separator import Separator
@@ -109,15 +110,20 @@ class TestExpandPrompt(unittest.TestCase):
         prompt._instruction = "hello"
         self.assertEqual(prompt.instruction, "hello")
 
-    @patch.object(KeyBindings, "add")
+    @patch.object(BaseComplexPrompt, "_register_kb")
     def test_kb_added(self, mocked_add):
-        ExpandPrompt(
+        prompt = ExpandPrompt(
             message="hello",
             choices=self.choices,
         )
-        mocked_add.assert_has_calls([call("b", filter=True)])
-        mocked_add.assert_has_calls([call("f", filter=True)])
-        mocked_add.assert_has_calls([call("h", filter=True)])
+        try:
+            mocked_add.assert_has_calls([call("b", filter=True)])
+            self.fail("kb should be added in after_render")
+        except:
+            pass
+        prompt._after_render("")
+        mocked_add.assert_has_calls([call("f")])
+        mocked_add.assert_has_calls([call("h")])
 
     def test_prompt_message(self):
         prompt = ExpandPrompt(message="Choose one", choices=self.choices)
