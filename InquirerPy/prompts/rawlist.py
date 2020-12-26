@@ -199,6 +199,11 @@ class RawlistPrompt(BaseListPrompt):
         display_message = super()._get_prompt_message()
         if not self.status["answered"] and self.content_control.choices:
             display_message.append(
-                ("class:input", str(self.content_control.selection["display_index"]))
+                (
+                    "class:input",
+                    " %s" % self.content_control.selection["display_index"]
+                    if self.instruction
+                    else str(self.content_control.selection["display_index"]),
+                )
             )
         return display_message
