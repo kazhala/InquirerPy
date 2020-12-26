@@ -203,3 +203,16 @@ class TestCheckbox(unittest.TestCase):
             event = mock.return_value
             prompt._handle_enter(event)
         self.assertEqual(prompt.status["result"], [])
+
+    def test_after_render(self):
+        prompt = CheckboxPrompt(message="", choices=lambda: [1, 2, 3])
+        self.assertEqual(prompt.content_control.choices, [])
+        prompt._after_render("")
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "name": "1", "value": 1},
+                {"enabled": False, "name": "2", "value": 2},
+                {"enabled": False, "name": "3", "value": 3},
+            ],
+        )
