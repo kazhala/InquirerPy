@@ -42,6 +42,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         super().__init__(choices, default)
 
     def _format_choices(self) -> None:
+        self._key_maps = {}
         try:
             count = 0
             separator_count = 0
