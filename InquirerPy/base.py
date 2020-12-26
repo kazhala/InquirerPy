@@ -403,6 +403,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
         def is_invalid() -> bool:
             return self._invalid
 
+        @Condition
+        def is_loading() -> bool:
+            return self.content_control._loading
+
         @self._register_kb("down")
         @self._register_kb("c-n", filter=~is_vim_edit)
         @self._register_kb("j", filter=is_vim_edit)
@@ -457,7 +461,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
                             max=dimmension_max_height, preferred=dimmension_height
                         ),
                     ),
-                    filter=~IsDone(),
+                    filter=~IsDone() & ~is_loading,
                 ),
                 ConditionalContainer(
                     Window(
@@ -479,10 +483,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         )
 
     def _after_render(self, _) -> None:
-        """Render callable choices and set the buffer default text.
-
-        Setting buffer default text has to be after application is rendered,
-        because `self._filter_choices` will use the event loop from `Application`.
+        """Render callable choices.
 
         Forcing a check on `self._rendered` as this event is fired up on each
         render, we only want this to fire up once.

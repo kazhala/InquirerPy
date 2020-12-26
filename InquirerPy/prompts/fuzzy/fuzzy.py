@@ -325,6 +325,10 @@ class FuzzyPrompt(BaseSimplePrompt):
         def is_invalid() -> bool:
             return self._invalid
 
+        @Condition
+        def is_loading() -> bool:
+            return self.content_control._loading
+
         self._buffer = Buffer(on_text_changed=self._on_text_changed)
         message_window = Window(
             height=LayoutDimension.exact(1),
@@ -379,7 +383,7 @@ class FuzzyPrompt(BaseSimplePrompt):
                                 )
                             ],
                         ),
-                        filter=~IsDone(),
+                        filter=~IsDone() & ~is_loading,
                     ),
                 ]
             )
