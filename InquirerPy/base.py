@@ -1,4 +1,11 @@
-"""Module contains base class for prompts."""
+"""Module contains base class for prompts.
+
+BaseSimplePrompt → InputPrompt, SecretPrompt ...
+        ↑
+BaseComplexPrompt → FuzzyPrompt
+        ↑
+BaseListPrompt → ListPrompt, ExpandPrompt ...
+"""
 
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Literal, NamedTuple, Tuple, Union
