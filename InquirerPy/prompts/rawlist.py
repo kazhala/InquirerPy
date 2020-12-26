@@ -28,6 +28,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         self._marker = marker
         super().__init__(choices, default)
 
+    def _format_choices(self) -> None:
         separator_count = 0
         for index, choice in enumerate(self.choices):
             if isinstance(choice["value"], Separator):
@@ -43,7 +44,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
             for choice in self.choices:
                 if isinstance(choice["value"], Separator):
                     continue
-                if choice["display_index"] == default:
+                if choice["display_index"] == self._default:
                     self.selected_choice_index = choice["actual_index"]
                     break
 

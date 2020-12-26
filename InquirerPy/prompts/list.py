@@ -29,6 +29,9 @@ class InquirerPyListControl(InquirerPyUIControl):
         self._marker: str = marker
         super().__init__(choices=choices, default=default)
 
+    def _format_choices(self) -> None:
+        pass
+
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))

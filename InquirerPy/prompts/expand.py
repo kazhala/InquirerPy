@@ -38,14 +38,14 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         self._key_maps = {}
         self._expand_pointer = "%s " % expand_pointer
         self._marker = marker
-        if isinstance(choices, Callable):
-            choices = choices()  # type: ignore
+        self._help_msg = help_msg
         super().__init__(choices, default)
 
+    def _format_choices(self) -> None:
         try:
             count = 0
             separator_count = 0
-            for raw_choice, choice in zip(choices, self.choices):  # type: ignore
+            for raw_choice, choice in zip(self._raw_choices, self.choices):  # type: ignore
                 if not isinstance(raw_choice, dict) and not isinstance(
                     raw_choice, Separator
                 ):
@@ -66,8 +66,8 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         self.choices.append(
             {
                 "key": "h",
-                "value": ExpandHelp(help_msg),
-                "name": help_msg,
+                "value": ExpandHelp(self._help_msg),
+                "name": self._help_msg,
                 "enabled": False,
             }
         )
@@ -80,7 +80,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
             for index, choice in enumerate(self.choices):
                 if isinstance(choice["value"], Separator):
                     continue
-                if choice["key"] == default:
+                if choice["key"] == self._default:
                     self.selected_choice_index = index
                     break
 

@@ -59,11 +59,9 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         """Construct UIControl and initialise choices."""
         self._pointer = pointer
         self._marker = marker
-        super().__init__(choices, None)
         self._current_text = current_text
         self._max_lines = max_lines
-
-        self._format_choices()
+        super().__init__(choices, None)
 
     def _format_choices(self) -> None:
         for index, choice in enumerate(self.choices):
@@ -220,7 +218,7 @@ class FuzzyPrompt(BaseSimplePrompt):
     :param choices: list of choices available to select
     :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value to insert into buffer
-    :type default: Any
+    :type default: str
     :param pointer: pointer symbol
     :type pointer: str
     :param style: style dict to apply
@@ -257,7 +255,7 @@ class FuzzyPrompt(BaseSimplePrompt):
         self,
         message: str,
         choices: Union[Callable[[], List[Any]], List[Any]],
-        default: Any = None,
+        default: str = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: Dict[str, str] = {},
         editing_mode: Literal["default", "vim", "emacs"] = "default",
@@ -440,9 +438,7 @@ class FuzzyPrompt(BaseSimplePrompt):
         if not self._rendered:
             self._rendered = True
             if self.content_control._choice_func:
-                self.content_control._retrieve_choices(
-                    self.content_control._format_choices
-                )
+                self.content_control._retrieve_choices()
             if self._default:
                 self._buffer.text = self._default
                 self._buffer.cursor_position = len(self._default)

@@ -173,20 +173,29 @@ class InquirerPyUIControl(FormattedTextControl):
         self._choice_func = None
         self._default = default
         self._loading = False
+        self._raw_choices = []
         if isinstance(choices, Callable):
             self._loading = True
             self.choices = []
             self._choice_func = choices
             self._loading = True
         else:
+            self._raw_choices = choices
             self.choices = self._get_choices(choices, self._default)  # type: ignore
             self._safety_check()
+        self._format_choices()
         super().__init__(self._get_formatted_choices)
 
-    def _retrieve_choices(self, callback) -> None:
-        self.choices = self._get_choices(self._choice_func(), self._default)  # type: ignore
+    def _retrieve_choices(self) -> None:
+        """Retrieve the callable choices and format them.
+
+        Should be called in the `after_render` call in `Application`.
+        """
+        self._raw_choices = self._choice_func()  # type: ignore
+        self.choices = self._get_choices(self._raw_choices, self._default)
         self._loading = False
-        callback()
+        self._safety_check()
+        self._format_choices()
 
     def _get_choices(self, choices: List[Any], default: Any) -> List[Dict[str, Any]]:
         """Process the raw user input choices and format it into dictionary.
@@ -261,6 +270,14 @@ class InquirerPyUIControl(FormattedTextControl):
             display_choices.append(("", "\n"))
         display_choices.pop()
         return display_choices
+
+    @abstractmethod
+    def _format_choices(self) -> None:
+        """Perform post processing on the choices.
+
+        Customise the choices after `self._get_choices` call.
+        """
+        pass
 
     @abstractmethod
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:

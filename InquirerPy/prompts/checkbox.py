@@ -39,14 +39,13 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
     ) -> None:
         """Initialise required attributes and call base class."""
-        self.pointer = "%s " % pointer
-        self.enabled_symbol = enabled_symbol
-        self.disabled_symbol = disabled_symbol
-        if isinstance(choices, Callable):
-            choices = choices()  # type: ignore
+        self._pointer = "%s " % pointer
+        self._enabled_symbol = enabled_symbol
+        self._disabled_symbol = disabled_symbol
         super().__init__(choices, default)
 
-        for raw_choice, choice in zip(choices, self.choices):  # type: ignore
+    def _format_choices(self) -> None:
+        for raw_choice, choice in zip(self._raw_choices, self.choices):  # type: ignore
             if isinstance(raw_choice, dict):
                 choice["enabled"] = raw_choice.get("enabled", False)
             else:
@@ -54,14 +53,14 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
-        display_choices.append(("class:pointer", self.pointer))
+        display_choices.append(("class:pointer", self._pointer))
         if not isinstance(choice["value"], Separator):
             display_choices.append(
                 (
                     "class:checkbox",
-                    "%s " % self.enabled_symbol
+                    "%s " % self._enabled_symbol
                     if choice["enabled"]
-                    else "%s " % self.disabled_symbol,
+                    else "%s " % self._disabled_symbol,
                 )
             )
         display_choices.append(("[SetCursorPosition]", ""))
@@ -70,14 +69,14 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
 
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
-        display_choices.append(("", len(self.pointer) * " "))
+        display_choices.append(("", len(self._pointer) * " "))
         if not isinstance(choice["value"], Separator):
             display_choices.append(
                 (
                     "class:checkbox",
-                    "%s " % self.enabled_symbol
+                    "%s " % self._enabled_symbol
                     if choice["enabled"]
-                    else "%s " % self.disabled_symbol,
+                    else "%s " % self._disabled_symbol,
                 )
             )
             display_choices.append(("", choice["name"]))
