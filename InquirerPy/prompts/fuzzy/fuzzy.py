@@ -286,7 +286,8 @@ class FuzzyPrompt(BaseComplexPrompt):
         Once Enter is pressed, hide both input buffer and choices buffer as well as
         updating the question buffer with user selection.
 
-        Override the default keybindings as j/k cannot be bind even if editing_mode is vim.
+        Override the default keybindings as j/k cannot be bind even if editing_mode is vim
+        due to the input buffer.
         """
         self._prompt = prompt
         self._border = border
