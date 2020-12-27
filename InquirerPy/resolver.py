@@ -2,6 +2,8 @@
 import os
 from typing import Any, Dict, List, Literal, Optional, Union
 
+from prompt_toolkit.filters.base import FilterOrBool
+
 from InquirerPy.enum import ACCEPTED_KEYBINDINGS, INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
@@ -15,6 +17,8 @@ from InquirerPy.prompts.rawlist import RawlistPrompt
 from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.utils import get_style
 
+__all__ = ["prompt"]
+
 question_mapping = {
     "confirm": ConfirmPrompt,
     "filepath": FilePathPrompt,
@@ -27,12 +31,15 @@ question_mapping = {
     "fuzzy": FuzzyPrompt,
 }
 
+list_prompts = {"list", "checkbox", "rawlist", "expand", "fuzzy"}
+
 
 def prompt(
     questions: List[Dict[str, Any]],
     style: Optional[Dict[str, str]] = None,
     editing_mode: Optional[Literal["default", "vim", "emacs"]] = None,
     raise_keyboard_interrupt: bool = True,
+    keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
 ) -> Dict[str, Optional[Union[str, List[str], bool]]]:
     """Resolve user provided list of questions and get result.
 
@@ -52,6 +59,8 @@ def prompt(
     :param raise_keyboard_interrupt: raise the kbi exception when user hit c-c
         If false, store result as None and continue
     :type raise_keyboard_interrupt: bool
+    :param keybindings: custom keybindings to apply
+    :type keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
     :return: dictionary of answers
     :rtype: Dict[str, Optional[Union[str, List[str], bool]]]
     """
@@ -79,8 +88,11 @@ def prompt(
             if question.get("when") and not question["when"](result):
                 result[question_name] = None
                 continue
+            args = {"message": message, "style": style, "editing_mode": editing_mode}
+            if question_type in list_prompts:
+                args["keybindings"] = {**keybindings, **question.pop("keybindings", {})}
             result[question_name] = question_mapping[question_type](
-                message=message, style=style, editing_mode=editing_mode, **question
+                **args, **question
             ).execute()
             if result[question_name] == INQUIRERPY_KEYBOARD_INTERRUPT:
                 if raise_keyboard_interrupt:

@@ -2,6 +2,7 @@
 
 from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
+from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
@@ -94,6 +95,8 @@ class ListPrompt(BaseListPrompt):
     :type validate: Union[Callable[[str], bool], Validator]
     :param invalid_message: message to display when input is invalid
     :type invalid_message: str
+    :param keybindings: custom keybindings to apply
+    :type keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
     """
 
     def __init__(
@@ -113,6 +116,7 @@ class ListPrompt(BaseListPrompt):
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
+        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyListControl(
@@ -134,4 +138,5 @@ class ListPrompt(BaseListPrompt):
             validate=validate,
             invalid_message=invalid_message,
             multiselect=multiselect,
+            keybindings=keybindings,
         )

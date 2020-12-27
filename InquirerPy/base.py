@@ -35,6 +35,8 @@ from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
 from InquirerPy.utils import calculate_height
 
+__all__ = ["BaseSimplePrompt", "BaseComplexPrompt", "BaseListPrompt"]
+
 
 class BaseSimplePrompt(ABC):
     """The base class for simple prompts.

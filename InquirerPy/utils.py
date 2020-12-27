@@ -6,6 +6,8 @@ from typing import Callable, Dict, Optional, Tuple, Union
 
 from InquirerPy.exceptions import InvalidArgument
 
+__all__ = ["get_style", "calculate_height"]
+
 
 def format_style(func) -> Callable:
     """Format the style into `prompt_toolkit` readable style.

@@ -21,6 +21,7 @@ questions = [
         "message": "What do you think?",
         "default": "No",
         "multiselect": True,
+        "keybindings": {"up": [{"key": "c-p"}], "down": [{"key": "c-n"}]},
     },
     {
         "type": "expand",
@@ -36,5 +37,8 @@ questions = [
     {"type": "expand", "choices": hello, "message": "What"},
 ]
 
-result = prompt(questions)
+result = prompt(
+    questions,
+    editing_mode="vim",
+)
 print(result)
