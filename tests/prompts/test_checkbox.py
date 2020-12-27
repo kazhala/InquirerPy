@@ -182,9 +182,9 @@ class TestCheckbox(unittest.TestCase):
             message="",
             choices=self.choices,
         )
-        mocked_kb.assert_has_calls(
-            [call("down"), call("c-n", filter=ANY), call("j", filter=ANY)]
-        )
+        mocked_kb.assert_has_calls([call("down", filter=True)])
+        mocked_kb.assert_has_calls([call("c-n", filter=ANY)])
+        mocked_kb.assert_has_calls([call("j", filter=ANY)])
 
     def test_kb(self):
         prompt = CheckboxPrompt(message="", choices=self.choices)
