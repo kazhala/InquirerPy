@@ -417,9 +417,9 @@ class TestFuzzy(unittest.TestCase):
             prompt._handle_enter(event)
         self.assertEqual(prompt.status, {"answered": True, "result": ["haah"]})
         prompt.status = {"answered": False, "result": None}
-        prompt._handle_tab()
+        prompt._toggle_choice()
         prompt._handle_down()
-        prompt._handle_tab()
+        prompt._toggle_choice()
         prompt._handle_down()
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value

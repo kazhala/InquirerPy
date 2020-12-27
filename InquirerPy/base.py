@@ -8,6 +8,7 @@ BaseListPrompt → ListPrompt, ExpandPrompt ...
 """
 
 from abc import ABC, abstractmethod
+import re
 from typing import Any, Callable, Dict, List, Literal, NamedTuple, Tuple, Union
 
 from prompt_toolkit.application import Application
@@ -364,6 +365,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
+        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
         super().__init__(
@@ -384,6 +386,83 @@ class BaseComplexPrompt(BaseSimplePrompt):
             height, max_height
         )
         self._application: Application
+
+        @Condition
+        def is_multiselect() -> bool:
+            return self._multiselect
+
+        @Condition
+        def is_vim_edit() -> bool:
+            return self.editing_mode == EditingMode.VI
+
+        @Condition
+        def is_invalid() -> bool:
+            return self._invalid
+
+        @Condition
+        def is_loading() -> bool:
+            return self.content_control._loading
+
+        self._is_multiselect = is_multiselect
+        self._is_vim_edit = is_vim_edit
+        self._is_invalid = is_invalid
+        self._is_loading = is_loading
+
+        self._kb_maps = {
+            "down": [
+                {"key": "down"},
+                {"key": "c-n", "filter": ~self._is_vim_edit},
+                {"key": "j", "filter": self._is_vim_edit},
+            ],
+            "up": [
+                {"key": "up"},
+                {"key": "c-p", "filter": ~self._is_vim_edit},
+                {"key": "k", "filter": self._is_vim_edit},
+            ],
+            "toggle": [
+                {"key": "space"},
+            ],
+            "toggle-down": [
+                {"key": Keys.Tab},
+            ],
+            "toggle-up": [
+                {"key": Keys.BackTab},
+            ],
+            "toggle-all": [
+                {"key": "alt-r"},
+            ],
+            "toggle-all-true": [
+                {"key": "alt-a"},
+            ],
+            "toggle-all-false": [],
+            **keybindings,
+        }
+
+        self._kb_func_lookup = {
+            "down": [{"func": self._handle_down}],
+            "up": [{"func": self._handle_up}],
+            "toggle": [{"func": self._toggle_choice}],
+            "toggle-down": [{"func": self._toggle_choice}, {"func": self._handle_down}],
+            "toggle-up": [{"func": self._toggle_choice}, {"func": self._handle_up}],
+            "toggle-all": [{"func": self._toggle_all}],
+            "toggle-all-true": [{"func": self._toggle_all, "args": [True]}],
+            "toggle-all-false": [{"func": self._toggle_all, "args": [False]}],
+        }
+
+        @self.format_keys
+        def keybinding_factory(keys, filter, action):
+            @self._register_kb(*keys, filter=filter)
+            def _(event):
+                for method in self._kb_func_lookup[action]:
+                    method["func"](*method.get("args", []))
+
+        for key, item in self._kb_maps.items():
+            for kb in item:
+                keybinding_factory(kb["key"], kb.get("filter", True), key)
+
+        @self._register_kb("enter")
+        def _(event):
+            self._handle_enter(event)
 
     def _after_render(self, _) -> None:
         """Render callable choices.
@@ -485,6 +564,62 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """Setter for `self._application`."""
         self._application = value
 
+    def format_keys(self, func) -> Callable:
+        """Format all alt related keybindings.
+
+        Due to `prompt_toolkit` doesn't process alt related keybindings,
+        it requires alt-ANY to "escape" + "ANY".
+
+        Check a list of keys argument if they are alt related, change
+        them to escape.
+
+        Apply multiselect filter if action is related to multiselect action.
+        """
+        alt_pattern = re.compile(r"^alt-(.*)")
+        non_multiselect_action = {"down", "up"}
+
+        def wrapper(keys, filter, action):
+            formatted_keys = []
+            if not isinstance(keys, list):
+                keys = [keys]
+            for key in keys:
+                match = alt_pattern.match(key)
+                if match:
+                    formatted_keys.append("escape")
+                    formatted_keys.append(match.group(1))
+                else:
+                    formatted_keys.append(key)
+            if action not in non_multiselect_action:
+                filter = filter & self._multiselect
+            func(formatted_keys, filter, action)
+
+        return wrapper
+
+    @abstractmethod
+    def _handle_enter(self, event) -> None:
+        """Handle event when user input enter key."""
+        pass
+
+    @abstractmethod
+    def _handle_down(self) -> None:
+        """Handle event when user attempting to move down."""
+        pass
+
+    @abstractmethod
+    def _handle_up(self) -> None:
+        """Handle event when user attempting to move down."""
+        pass
+
+    @abstractmethod
+    def _toggle_choice(self) -> None:
+        """Handle event when user attempting to toggle the state of the chocie."""
+        pass
+
+    @abstractmethod
+    def _toggle_all(self, value: bool) -> None:
+        """Handle event when user attempting to alter the state of all choices."""
+        pass
+
 
 class BaseListPrompt(BaseComplexPrompt):
     """A base class to create a complex prompt using `prompt_toolkit` Application.
@@ -516,6 +651,8 @@ class BaseListPrompt(BaseComplexPrompt):
     :type invalid_message: str
     :param multiselect: enable multiselect mode
     :type multiselect: bool
+    :param keybindings: custom keybindings to apply
+    :type keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
     """
 
     def __init__(
@@ -531,6 +668,7 @@ class BaseListPrompt(BaseComplexPrompt):
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
+        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
         super().__init__(
@@ -545,61 +683,8 @@ class BaseListPrompt(BaseComplexPrompt):
             instruction=instruction,
             height=height,
             max_height=max_height,
+            keybindings=keybindings,
         )
-
-        @Condition
-        def is_multiselect() -> bool:
-            return self._multiselect
-
-        @Condition
-        def is_vim_edit() -> bool:
-            return self.editing_mode == EditingMode.VI
-
-        @Condition
-        def is_invalid() -> bool:
-            return self._invalid
-
-        @Condition
-        def is_loading() -> bool:
-            return self.content_control._loading
-
-        @self._register_kb("down")
-        @self._register_kb("c-n", filter=~is_vim_edit)
-        @self._register_kb("j", filter=is_vim_edit)
-        def _(event):
-            self._handle_down()
-
-        @self._register_kb("up")
-        @self._register_kb("c-p", filter=~is_vim_edit)
-        @self._register_kb("k", filter=is_vim_edit)
-        def _(event):
-            self._handle_up()
-
-        @self._register_kb(" ", filter=is_multiselect)
-        def _(event) -> None:
-            self._toggle_choice()
-
-        @self._register_kb(Keys.Tab, filter=is_multiselect)
-        def _(event) -> None:
-            self._toggle_choice()
-            self._handle_down()
-
-        @self._register_kb(Keys.BackTab, filter=is_multiselect)
-        def _(event) -> None:
-            self._toggle_choice()
-            self._handle_up()
-
-        @self._register_kb("escape", "a", filter=is_multiselect)
-        def _(event) -> None:
-            self._toggle_all(True)
-
-        @self._register_kb("escape", "r", filter=is_multiselect)
-        def _(event) -> None:
-            self._toggle_all()
-
-        @self._register_kb("enter")
-        def _(event):
-            self._handle_enter(event)
 
         self.layout = HSplit(
             [
@@ -632,14 +717,14 @@ class BaseListPrompt(BaseComplexPrompt):
                                         ),
                                         dont_extend_height=True,
                                     ),
-                                    filter=is_invalid,
+                                    filter=self._is_invalid,
                                 ),
                                 bottom=0,
                                 left=0,
                             )
                         ],
                     ),
-                    filter=~IsDone() & ~is_loading,
+                    filter=~IsDone() & ~self._is_loading,
                 ),
             ]
         )

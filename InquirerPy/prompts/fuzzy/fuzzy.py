@@ -5,9 +5,8 @@ from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
-from prompt_toolkit.filters.base import Condition
+from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.filters.cli import IsDone
-from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import (
     ConditionalContainer,
     Float,
@@ -248,6 +247,8 @@ class FuzzyPrompt(BaseComplexPrompt):
     :type validate: Union[Callable[[str], bool], Validator]
     :param invalid_message: message to display when input is invalid
     :type invalid_message: str
+    :param keybindings: custom keybindings to apply
+    :type keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
     """
 
     def __init__(
@@ -270,6 +271,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         max_height: Union[str, int] = None,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
+        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
     ) -> None:
         """Initialise the layout and create Application.
 
@@ -283,6 +285,8 @@ class FuzzyPrompt(BaseComplexPrompt):
 
         Once Enter is pressed, hide both input buffer and choices buffer as well as
         updating the question buffer with user selection.
+
+        Override the default keybindings as j/k cannot be bind even if editing_mode is vim.
         """
         self._prompt = prompt
         self._border = border
@@ -291,6 +295,12 @@ class FuzzyPrompt(BaseComplexPrompt):
         self._rendered = False
         self._default = str(default)
         self._content_control: InquirerPyFuzzyControl
+
+        keybindings = {
+            "up": [{"key": "up"}, {"key": "c-p"}],
+            "down": [{"key": "down"}, {"key": "c-n"}],
+            **keybindings,
+        }
         super().__init__(
             message=message,
             style=style,
@@ -303,6 +313,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             max_height=max_height,
             multiselect=multiselect,
             instruction=instruction,
+            keybindings=keybindings,
         )
 
         self._content_control = InquirerPyFuzzyControl(
@@ -314,18 +325,6 @@ class FuzzyPrompt(BaseComplexPrompt):
             if not self._border
             else self._dimmension_max_height - 2,
         )
-
-        @Condition
-        def is_multiselect() -> bool:
-            return self._multiselect
-
-        @Condition
-        def is_invalid() -> bool:
-            return self._invalid
-
-        @Condition
-        def is_loading() -> bool:
-            return self.content_control._loading
 
         self._buffer = Buffer(on_text_changed=self._on_text_changed)
         message_window = Window(
@@ -374,51 +373,19 @@ class FuzzyPrompt(BaseComplexPrompt):
                                             ),
                                             dont_extend_height=True,
                                         ),
-                                        filter=is_invalid,
+                                        filter=self._is_invalid,
                                     ),
                                     bottom=1 if self._border else 0,
                                     left=1 if self._border else 0,
                                 )
                             ],
                         ),
-                        filter=~IsDone() & ~is_loading,
+                        filter=~IsDone() & ~self._is_loading,
                     ),
                 ]
             )
         )
         self._layout.focus(input_window)
-
-        @self._register_kb(Keys.Enter)
-        def _(event):
-            self._handle_enter(event)
-
-        @self._register_kb(Keys.Tab, filter=is_multiselect)
-        def _(event):
-            self._handle_tab()
-            self._handle_down()
-
-        @self._register_kb(Keys.BackTab, filter=is_multiselect)
-        def _(event):
-            self._handle_tab()
-            self._handle_up()
-
-        @self._register_kb(Keys.Down)
-        @self._register_kb("c-n")
-        def _(event):
-            self._handle_down()
-
-        @self._register_kb(Keys.Up)
-        @self._register_kb("c-p")
-        def _(event):
-            self._handle_up()
-
-        @self._register_kb("escape", "a", filter=is_multiselect)
-        def _(event) -> None:
-            self._toggle_all(True)
-
-        @self._register_kb("escape", "r", filter=is_multiselect)
-        def _(event) -> None:
-            self._toggle_all()
 
         self._application = Application(
             layout=self._layout,
@@ -572,7 +539,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             self.content_control.selected_choice_index - 1
         ) % self.content_control.choice_count
 
-    def _handle_tab(self) -> None:
+    def _toggle_choice(self) -> None:
         """Handle tab event, alter the `selected` state of the choice."""
         current_selected_index = self.content_control.selection["index"]
         self.content_control.choices[current_selected_index][
