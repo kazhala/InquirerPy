@@ -2,6 +2,7 @@ import os
 import unittest
 from unittest.mock import ANY, call, patch
 
+from InquirerPy.base import BaseComplexPrompt
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.confirm import ConfirmPrompt
@@ -342,3 +343,36 @@ class TestResolver(unittest.TestCase):
             "result": INQUIRERPY_KEYBOARD_INTERRUPT,
         }
         self.assertEqual(input_prompt._get_prompt_message(), [("class:skipped", "?  ")])
+
+    @patch.object(ListPrompt, "execute")
+    @patch.object(InputPrompt, "execute")
+    @patch.object(BaseComplexPrompt, "_register_kb")
+    def test_custom_kb(self, mocked_kb, mocked_execute1, mocked_execute2):
+        questions = [{"type": "input", "message": "hello"}]
+        prompt(questions, keybindings={"up": [{"key": "up"}]})
+        mocked_kb.assert_not_called()
+        questions = [{"type": "list", "message": "aasdf", "choices": [1, 2, 3]}]
+        prompt(questions, keybindings={"up": [{"key": "c-p"}]}, editing_mode="vim")
+        mocked_kb.assert_has_calls([call("c-p", filter=True)])
+        try:
+            mocked_kb.assert_has_calls([call("k", filter=ANY)])
+            self.fail("should not have called")
+        except:
+            pass
+
+        mocked_kb.reset_mock()
+        questions = [
+            {
+                "type": "list",
+                "message": "aasdf",
+                "choices": [1, 2, 3],
+                "keybindings": {"up": [{"key": "c-w"}]},
+            }
+        ]
+        prompt(questions, keybindings={"up": [{"key": "c-p"}]}, editing_mode="vim")
+        mocked_kb.assert_has_calls([call("c-w", filter=True)])
+        try:
+            mocked_kb.assert_has_calls([call("c-p", filter=ANY)])
+            self.fail("should not have called")
+        except:
+            pass
