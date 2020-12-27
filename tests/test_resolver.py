@@ -155,18 +155,60 @@ class TestResolver(unittest.TestCase):
                 call(
                     message="Confirm?",
                     style={
+                        "questionmark": "#e5c07b",
+                        "answer": "#61afef",
+                        "input": "#98c379",
+                        "question": "",
+                        "instruction": "",
+                        "pointer": "#61afef",
+                        "checkbox": "#98c379",
+                        "separator": "",
+                        "skipped": "#5c6370",
+                        "validator": "",
+                        "marker": "#e5c07b",
+                        "fuzzy_prompt": "#c678dd",
+                        "fuzzy_info": "#98c379",
+                        "fuzzy_match": "#c678dd",
                         "qmark": "#ffffff",
+                        "frame.border": "#4b5263",
                     },
                     editing_mode="vim",
                 ),
                 call(
                     message="What?",
                     style={
+                        "questionmark": "#e5c07b",
+                        "answer": "#61afef",
+                        "input": "#98c379",
+                        "question": "",
+                        "instruction": "",
+                        "pointer": "#61afef",
+                        "checkbox": "#98c379",
+                        "separator": "",
+                        "skipped": "#5c6370",
+                        "validator": "",
+                        "marker": "#e5c07b",
+                        "fuzzy_prompt": "#c678dd",
+                        "fuzzy_info": "#98c379",
+                        "fuzzy_match": "#c678dd",
                         "qmark": "#ffffff",
+                        "frame.border": "#4b5263",
                     },
                     editing_mode="vim",
                 ),
             ]
+        )
+        mocked_secret_init.reset_mock()
+        questions = [
+            {"type": "confirm", "message": "Confirm?", "name": "10"},
+            {"type": "confirm", "message": "What?"},
+            {"type": "secret", "message": "haha"},
+        ]
+        result = prompt(
+            questions,
+            style={"qmark": "#ffffff"},
+            editing_mode="vim",
+            style_override=True,
         )
         mocked_secret_init.assert_has_calls(
             [call(message="haha", style={"qmark": "#ffffff"}, editing_mode="vim")]

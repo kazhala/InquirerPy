@@ -36,10 +36,11 @@ list_prompts = {"list", "checkbox", "rawlist", "expand", "fuzzy"}
 
 def prompt(
     questions: List[Dict[str, Any]],
-    style: Optional[Dict[str, str]] = None,
+    style: Dict[str, str] = {},
     editing_mode: Optional[Literal["default", "vim", "emacs"]] = None,
     raise_keyboard_interrupt: bool = True,
     keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
+    style_override: bool = False,
 ) -> Dict[str, Optional[Union[str, List[str], bool]]]:
     """Resolve user provided list of questions and get result.
 
@@ -61,6 +62,8 @@ def prompt(
     :type raise_keyboard_interrupt: bool
     :param keybindings: custom keybindings to apply
     :type keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
+    :param style_override: override all default styles
+    :type style_override: bool
     :return: dictionary of answers
     :rtype: Dict[str, Optional[Union[str, List[str], bool]]]
     """
@@ -69,7 +72,7 @@ def prompt(
     if not isinstance(questions, list):
         raise InvalidArgument("questions should be type of list.")
 
-    style = get_style(style)
+    style = get_style(style, style_override)
     if not editing_mode:
         default_mode = os.getenv("INQUIRERPY_EDITING_MODE", "default")
         if default_mode not in ACCEPTED_KEYBINDINGS:

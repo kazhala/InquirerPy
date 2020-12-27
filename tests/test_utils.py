@@ -31,7 +31,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(height, 1)
 
     def test_style(self):
-        style = get_style(None)
+        style = get_style()
         self.assertEqual(
             style,
             {
@@ -68,7 +68,7 @@ class TestUtils(unittest.TestCase):
         os.environ["INQUIRERPY_STYLE_FUZZY_BORDER"] = "#cccccc"
         os.environ["INQUIRERPY_STYLE_FUZZY_MATCH"] = "#dddddd"
         os.environ["INQUIRERPY_STYLE_VALIDATOR"] = "#dddddd"
-        style = get_style(None)
+        style = get_style()
         self.assertEqual(
             style,
             {

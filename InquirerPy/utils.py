@@ -2,41 +2,29 @@
 import math
 import os
 import shutil
-from typing import Callable, Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 from InquirerPy.exceptions import InvalidArgument
 
 __all__ = ["get_style", "calculate_height"]
 
 
-def format_style(func) -> Callable:
-    """Format the style into `prompt_toolkit` readable style.
-
-    In particular the fuzzy_border and validator require re-format.
-    """
-
-    def wrapper(style):
-        style = func(style)
-        if style.get("fuzzy_border"):
-            style["frame.border"] = style.pop("fuzzy_border")
-        if style.get("validator"):
-            style["validation-toolbar"] = style.pop("validator")
-        return style
-
-    return wrapper
-
-
-@format_style
-def get_style(style: Optional[Dict[str, str]]) -> Dict[str, str]:
+def get_style(
+    style: Dict[str, str] = {}, style_override: bool = False
+) -> Dict[str, str]:
     """Get default style if style parameter is missing.
 
     Reads the ENV variable first before apply default one dark theme.
 
+    :param style: style to apply to prompt
+    :type style: Dict[str, str]
+    :param style_override: override all default styles
+    :type style_override: bool
     :return: style dictionary ready to be consumed by `Style.from_dict`
     :rtype: Dict[str, str]
     """
-    if not style:
-        return {
+    if not style_override:
+        result = {
             "questionmark": os.getenv("INQUIRERPY_STYLE_QUESTIONMARK", "#e5c07b"),
             "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", "#61afef"),
             "input": os.getenv("INQUIRERPY_STYLE_INPUT", "#98c379"),
@@ -52,9 +40,16 @@ def get_style(style: Optional[Dict[str, str]]) -> Dict[str, str]:
             "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", "#98c379"),
             "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", "#4b5263"),
             "fuzzy_match": os.getenv("INQUIRERPY_STYLE_FUZZY_MATCH", "#c678dd"),
+            **style,
         }
     else:
-        return style
+        result = style
+
+    if result.get("fuzzy_border"):
+        result["frame.border"] = result.pop("fuzzy_border")
+    if result.get("validator"):
+        result["validation-toolbar"] = result.pop("validator")
+    return result
 
 
 def calculate_height(
