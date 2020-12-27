@@ -116,5 +116,28 @@ class TestSecret(unittest.TestCase):
             is_password=True,
             multiline=False,
         )
-        MockedStyle.assert_has_calls([call({})])
+        MockedStyle.assert_has_calls(
+            [
+                call(),
+                call(
+                    {
+                        "questionmark": "#e5c07b",
+                        "answer": "#61afef",
+                        "input": "#98c379",
+                        "question": "",
+                        "instruction": "",
+                        "pointer": "#61afef",
+                        "checkbox": "#98c379",
+                        "separator": "",
+                        "skipped": "#5c6370",
+                        "validator": "",
+                        "marker": "#e5c07b",
+                        "fuzzy_prompt": "#c678dd",
+                        "fuzzy_info": "#98c379",
+                        "fuzzy_match": "#c678dd",
+                        "frame.border": "#4b5263",
+                    }
+                ),
+            ]
+        )
         MockedLexer.assert_has_calls([call("class:input")])

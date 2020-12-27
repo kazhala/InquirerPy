@@ -33,7 +33,7 @@ from prompt_toolkit.validation import ValidationError, Validator
 from InquirerPy.enum import ACCEPTED_KEYBINDINGS, INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
-from InquirerPy.utils import calculate_height
+from InquirerPy.utils import calculate_height, get_style
 
 __all__ = ["BaseSimplePrompt", "BaseComplexPrompt", "BaseListPrompt"]
 
@@ -73,33 +73,43 @@ class BaseSimplePrompt(ABC):
         transformer: Callable = None,
     ) -> None:
         """Construct the base class for simple prompts."""
-        self.message = message
-        self.question_style = Style.from_dict(style)
-        self.qmark = qmark
-        self.status = {"answered": False, "result": None}
-        self.kb = KeyBindings()
-        self.lexer = "class:input"
-        self.transformer = transformer
+        self._message = message
+        self._style = Style.from_dict(style or get_style())
+        self._qmark = qmark
+        self._status = {"answered": False, "result": None}
+        self._kb = KeyBindings()
+        self._lexer = "class:input"
+        self._transformer = transformer
         try:
-            self.editing_mode = ACCEPTED_KEYBINDINGS[editing_mode]
+            self._editing_mode = ACCEPTED_KEYBINDINGS[editing_mode]
         except KeyError:
             raise InvalidArgument(
                 "editing_mode must be one of 'default' 'emacs' 'vim'."
             )
         if isinstance(validate, Validator):
-            self.validator = validate
+            self._validator = validate
         else:
-            self.validator = Validator.from_callable(
+            self._validator = Validator.from_callable(
                 validate if validate else lambda _: True,
                 invalid_message,
                 move_cursor_to_end=True,
             )
 
-        @self.kb.add("c-c")
+        @self._kb.add("c-c")
         def _(event) -> None:
             self.status["answered"] = True
             self.status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
             event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
+
+    @property
+    def status(self) -> Dict[str, Any]:
+        """Get status value of the prompt."""
+        return self._status
+
+    @status.setter
+    def status(self, value) -> None:
+        """Set status value of the prompt."""
+        self._status = value
 
     @abstractmethod
     def _get_prompt_message(
@@ -122,16 +132,16 @@ class BaseSimplePrompt(ABC):
         display_message = []
         if self.status["result"] == INQUIRERPY_KEYBOARD_INTERRUPT:
             display_message.append(
-                ("class:skipped", "%s %s " % (self.qmark, self.message))
+                ("class:skipped", "%s %s " % (self._qmark, self._message))
             )
         else:
-            display_message.append(("class:questionmark", self.qmark))
-            display_message.append(("class:question", " %s" % self.message))
+            display_message.append(("class:questionmark", self._qmark))
+            display_message.append(("class:question", " %s" % self._message))
             if self.status["answered"]:
                 display_message.append(
                     post_answer
-                    if not self.transformer
-                    else ("class:answer", " %s" % self.transformer(post_answer[1][1:]))
+                    if not self._transformer
+                    else ("class:answer", " %s" % self._transformer(post_answer[1][1:]))
                 )
             else:
                 display_message.append(pre_answer)
@@ -164,19 +174,19 @@ class InquirerPyUIControl(FormattedTextControl):
         default: Any = None,
     ) -> None:
         """Initialise choices and construct a FormattedTextControl object."""
-        self.selected_choice_index: int = 0
+        self._selected_choice_index: int = 0
         self._choice_func = None
         self._default = default
         self._loading = False
         self._raw_choices = []
         if isinstance(choices, Callable):
             self._loading = True
-            self.choices = []
+            self._choices = []
             self._choice_func = choices
             self._loading = True
         else:
             self._raw_choices = choices
-            self.choices = self._get_choices(choices, self._default)  # type: ignore
+            self._choices = self._get_choices(choices, self._default)  # type: ignore
             self._safety_check()
         self._format_choices()
         super().__init__(self._get_formatted_choices)
@@ -234,6 +244,26 @@ class InquirerPyUIControl(FormattedTextControl):
                 "dictionary choice require a name key and a value key."
             )
         return processed_choices
+
+    @property
+    def selected_choice_index(self) -> int:
+        """Get current highlighted index."""
+        return self._selected_choice_index
+
+    @selected_choice_index.setter
+    def selected_choice_index(self, value) -> None:
+        """Set index to highlight."""
+        self._selected_choice_index = value
+
+    @property
+    def choices(self) -> List[Dict[str, Any]]:
+        """Get all processed choices."""
+        return self._choices
+
+    @choices.setter
+    def choices(self, value) -> None:
+        """Set processed choices."""
+        self._choices = value
 
     def _safety_check(self) -> None:
         """Validate choices, check empty or all Separator."""
@@ -375,7 +405,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         @Condition
         def is_vim_edit() -> bool:
-            return self.editing_mode == EditingMode.VI
+            return self._editing_mode == EditingMode.VI
 
         @Condition
         def is_invalid() -> bool:
@@ -456,7 +486,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """
 
         def decorator(func: Callable) -> Callable:
-            @self.kb.add(*keys, filter=filter)
+            @self._kb.add(*keys, filter=filter)
             def executable(event):
                 if self._invalid:
                     self._invalid = False
@@ -733,8 +763,8 @@ class BaseListPrompt(BaseComplexPrompt):
 
         self.application = Application(
             layout=Layout(self.layout),
-            style=self.question_style,
-            key_bindings=self.kb,
+            style=self._style,
+            key_bindings=self._kb,
             after_render=self._after_render,
         )
 
@@ -784,7 +814,7 @@ class BaseListPrompt(BaseComplexPrompt):
         """
         try:
             fake_document = FakeDocument(self.result_value)
-            self.validator.validate(fake_document)  # type: ignore
+            self._validator.validate(fake_document)  # type: ignore
         except ValidationError:
             self._invalid = True
         else:

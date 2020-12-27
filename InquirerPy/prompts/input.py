@@ -85,7 +85,7 @@ class InputPrompt(BaseSimplePrompt):
         def has_completion():
             return self.completer is not None
 
-        @self.kb.add("c-space", filter=has_completion)
+        @self._kb.add("c-space", filter=has_completion)
         def _(event):
             buff = event.app.current_buffer
             if buff.complete_state:
@@ -93,7 +93,7 @@ class InputPrompt(BaseSimplePrompt):
             else:
                 buff.start_completion(select_first=False)
 
-        @self.kb.add(Keys.Enter, filter=~is_multiline)
+        @self._kb.add(Keys.Enter, filter=~is_multiline)
         def _(event):
             try:
                 self.session.validator.validate(self.session.default_buffer)
@@ -105,7 +105,7 @@ class InputPrompt(BaseSimplePrompt):
                 self.session.default_buffer.text = ""
                 event.app.exit(result=self.status["result"])
 
-        @self.kb.add(Keys.Escape, Keys.Enter, filter=is_multiline)
+        @self._kb.add(Keys.Escape, Keys.Enter, filter=is_multiline)
         def _(event):
             try:
                 self.session.validator.validate(self.session.default_buffer)
@@ -119,15 +119,15 @@ class InputPrompt(BaseSimplePrompt):
 
         self.session = PromptSession(
             message=self._get_prompt_message,
-            key_bindings=self.kb,
-            style=self.question_style,
+            key_bindings=self._kb,
+            style=self._style,
             completer=self.completer,
-            validator=self.validator,
+            validator=self._validator,
             validate_while_typing=False,
             input=kwargs.pop("input", None),
             output=kwargs.pop("output", None),
-            editing_mode=self.editing_mode,
-            lexer=SimpleLexer(self.lexer),
+            editing_mode=self._editing_mode,
+            lexer=SimpleLexer(self._lexer),
             is_password=kwargs.pop("is_password", False),
             multiline=self.multiline,
         )

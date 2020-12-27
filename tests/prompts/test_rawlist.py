@@ -112,7 +112,7 @@ class TestRawList(unittest.TestCase):
             instruction="bb",
         )
         self.assertEqual(rawlist_prompt.instruction, "bb")
-        self.assertEqual(rawlist_prompt.message, "hello")
+        self.assertEqual(rawlist_prompt._message, "hello")
 
     def test_minimum_args(self):
         RawlistPrompt(message="what", choices=self.choices)

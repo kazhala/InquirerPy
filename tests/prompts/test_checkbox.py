@@ -83,12 +83,12 @@ class TestCheckbox(unittest.TestCase):
             pointer="<",
             instruction="TAB",
         )
-        self.assertEqual(prompt.editing_mode, EditingMode.EMACS)
+        self.assertEqual(prompt._editing_mode, EditingMode.EMACS)
         self.assertIsInstance(prompt.content_control, InquirerPyCheckboxControl)
-        self.assertIsInstance(prompt.kb, KeyBindings)
-        self.assertIsInstance(prompt.question_style, Style)
-        self.assertEqual(prompt.message, "Select something")
-        self.assertEqual(prompt.qmark, "!")
+        self.assertIsInstance(prompt._kb, KeyBindings)
+        self.assertIsInstance(prompt._style, Style)
+        self.assertEqual(prompt._message, "Select something")
+        self.assertEqual(prompt._qmark, "!")
         self.assertEqual(prompt.instruction, "TAB")
 
     def test_minimum_args(self):

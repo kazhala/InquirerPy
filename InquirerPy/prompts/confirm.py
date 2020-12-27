@@ -42,8 +42,8 @@ class ConfirmPrompt(BaseSimplePrompt):
                 "default for confirm type question should be type of bool."
             )
 
-        @self.kb.add("y")
-        @self.kb.add("Y")
+        @self._kb.add("y")
+        @self._kb.add("Y")
         def _(event) -> None:
             """Bind y and Y to accept confirmation."""
             self.session.default_buffer.text = ""
@@ -51,8 +51,8 @@ class ConfirmPrompt(BaseSimplePrompt):
             self.status["result"] = True
             event.app.exit(result=True)
 
-        @self.kb.add("n")
-        @self.kb.add("N")
+        @self._kb.add("n")
+        @self._kb.add("N")
         def _(event) -> None:
             """Bind n and N to reject confirmation."""
             self.session.default_buffer.text = ""
@@ -60,12 +60,12 @@ class ConfirmPrompt(BaseSimplePrompt):
             self.status["result"] = False
             event.app.exit(result=False)
 
-        @self.kb.add(Keys.Any)
+        @self._kb.add(Keys.Any)
         def _(event) -> None:
             """Disable all other key presses."""
             pass
 
-        @self.kb.add(Keys.Enter)
+        @self._kb.add(Keys.Enter)
         def _(event) -> None:
             """Bind enter to use the default answer."""
             self.status["answered"] = True
@@ -74,8 +74,8 @@ class ConfirmPrompt(BaseSimplePrompt):
 
         self.session = PromptSession(
             message=self._get_prompt_message,
-            key_bindings=self.kb,
-            style=self.question_style,
+            key_bindings=self._kb,
+            style=self._style,
             input=kwargs.pop("input", None),
             output=kwargs.pop("output", None),
         )

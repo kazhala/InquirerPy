@@ -390,9 +390,9 @@ class FuzzyPrompt(BaseComplexPrompt):
 
         self._application = Application(
             layout=self._layout,
-            style=self.question_style,
-            key_bindings=self.kb,
-            editing_mode=self.editing_mode,
+            style=self._style,
+            key_bindings=self._kb,
+            editing_mode=self._editing_mode,
             after_render=self._after_render,
         )
 
@@ -562,7 +562,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         """
         try:
             fake_document = FakeDocument(self.result_value)
-            self.validator.validate(fake_document)  # type: ignore
+            self._validator.validate(fake_document)  # type: ignore
         except ValidationError:
             self._invalid = True
             return

@@ -5,6 +5,7 @@ from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
+from InquirerPy.utils import get_style
 
 
 class SecretPrompt(InputPrompt):
@@ -65,7 +66,7 @@ class SecretPrompt(InputPrompt):
         :rtype: List[Tuple[str, str]]
         """
         pre_answer = ("class:instruction", " ")
-        if not self.transformer:
+        if not self._transformer:
             post_answer = (
                 "class:answer",
                 ""
@@ -76,6 +77,6 @@ class SecretPrompt(InputPrompt):
             post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
 
-    def execute(self) -> None:
+    def execute(self) -> str:
         """Execute the prompt."""
         return self.session.prompt(default=self.default)

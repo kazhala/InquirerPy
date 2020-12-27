@@ -99,12 +99,12 @@ class TestListPrompt(unittest.TestCase):
             pointer=">",
             instruction="(j/k)",
         )
-        self.assertEqual(prompt.editing_mode, EditingMode.VI)
+        self.assertEqual(prompt._editing_mode, EditingMode.VI)
         self.assertIsInstance(prompt.content_control, InquirerPyListControl)
-        self.assertIsInstance(prompt.kb, KeyBindings)
-        self.assertIsInstance(prompt.question_style, Style)
-        self.assertEqual(prompt.message, "Select a fruit")
-        self.assertEqual(prompt.qmark, "[?]")
+        self.assertIsInstance(prompt._kb, KeyBindings)
+        self.assertIsInstance(prompt._style, Style)
+        self.assertEqual(prompt._message, "Select a fruit")
+        self.assertEqual(prompt._qmark, "[?]")
         self.assertEqual(prompt.instruction, "(j/k)")
 
         window_list = list(prompt.layout.children)
@@ -117,7 +117,7 @@ class TestListPrompt(unittest.TestCase):
 
     def test_choice_combination(self):
         prompt = ListPrompt(message="Test combo", choices=["hello"])
-        self.assertEqual(prompt.qmark, "?")
+        self.assertEqual(prompt._qmark, "?")
         self.assertEqual(prompt.instruction, "")
 
         self.assertRaises(InvalidArgument, ListPrompt, "", [Separator(), Separator()])

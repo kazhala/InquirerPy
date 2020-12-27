@@ -166,7 +166,7 @@ class CheckboxPrompt(BaseListPrompt):
         """
         try:
             fake_document = FakeDocument(self.result_value)
-            self.validator.validate(fake_document)  # type: ignore
+            self._validator.validate(fake_document)  # type: ignore
         except ValidationError:
             self._invalid = True
         else:
