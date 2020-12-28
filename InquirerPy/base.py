@@ -461,7 +461,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             "toggle-all-false": [{"func": self._toggle_all, "args": [False]}],
         }
 
-        @self.format_keys
+        @self._format_keys
         def keybinding_factory(keys, filter, action):
             @self._register_kb(*keys, filter=filter)
             def _(event):
@@ -596,7 +596,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """Setter for `self._application`."""
         self._application = value
 
-    def format_keys(self, func) -> Callable:
+    def _format_keys(self, func) -> Callable:
         """Format all alt related keybindings.
 
         Due to `prompt_toolkit` doesn't process alt related keybindings,
