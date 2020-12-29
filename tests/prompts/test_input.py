@@ -35,6 +35,33 @@ class TestInputPrompt(unittest.TestCase):
             input_prompt.status, {"answered": True, "result": "worldhello"}
         )
 
+    def test_prompt_filter(self):
+        self.inp.send_text("hello\n")
+        input_prompt = InputPrompt(
+            message="yes",
+            style={},
+            default="world",
+            qmark="!",
+            editing_mode="emacs",
+            input=self.inp,
+            output=DummyOutput(),
+            filter=lambda x: x * 2,
+            transformer=lambda x: "what",
+        )
+        result = input_prompt.execute()
+        self.assertEqual(result, "worldhelloworldhello")
+        self.assertEqual(
+            input_prompt.status, {"answered": True, "result": "worldhello"}
+        )
+        self.assertEqual(
+            input_prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "!"),
+                ("class:question", " yes"),
+                ("class:answer", " what"),
+            ],
+        )
+
     def test_prompt_result_multiline(self):
         self.inp.send_text("hello\nworld\nfoo\nboo\x1b\r")
         input_prompt = InputPrompt(
