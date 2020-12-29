@@ -65,7 +65,7 @@ class BaseSimplePrompt(ABC):
     def __init__(
         self,
         message: str,
-        style: Dict[str, str] = {},
+        style: Dict[str, str] = None,
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         qmark: str = "?",
         validate: Union[Callable[[str], bool], Validator] = None,
@@ -366,7 +366,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: str,
-        style: Dict[str, str] = {},
+        style: Dict[str, str] = None,
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         qmark: str = "?",
         instruction: str = "",
@@ -376,9 +376,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
-        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
+        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
+        if not keybindings:
+            keybindings = {}
         super().__init__(
             message=message,
             style=style,
@@ -690,7 +692,7 @@ class BaseListPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: str,
-        style: Dict[str, str] = {},
+        style: Dict[str, str] = None,
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         qmark: str = "?",
         instruction: str = "",
@@ -700,7 +702,7 @@ class BaseListPrompt(BaseComplexPrompt):
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
-        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
+        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
         super().__init__(

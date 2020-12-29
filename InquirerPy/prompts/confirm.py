@@ -28,7 +28,7 @@ class ConfirmPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: str,
-        style: Dict[str, str] = {},
+        style: Dict[str, str] = None,
         default: bool = False,
         qmark: str = "?",
         transformer: Callable = None,

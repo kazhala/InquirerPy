@@ -1,3 +1,4 @@
+# type: ignore
 """Module contains the fuzzy matching processing functions.
 
 All fuzzy logic are copied from sweep.py.

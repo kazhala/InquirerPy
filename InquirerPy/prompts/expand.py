@@ -187,7 +187,7 @@ class ExpandPrompt(BaseListPrompt):
         message: str,
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: str = "",
-        style: Dict[str, str] = {},
+        style: Dict[str, str] = None,
         editing_mode: Literal["default", "emacs", "vim"] = "default",
         qmark: str = "?",
         pointer: str = " ",
@@ -202,7 +202,7 @@ class ExpandPrompt(BaseListPrompt):
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
-        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
+        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
     ) -> None:
         """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(

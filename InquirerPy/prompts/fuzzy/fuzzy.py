@@ -257,7 +257,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: str = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
-        style: Dict[str, str] = {},
+        style: Dict[str, str] = None,
         editing_mode: Literal["default", "vim", "emacs"] = "default",
         qmark: str = "?",
         transformer: Callable = None,
@@ -271,7 +271,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         max_height: Union[str, int] = None,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
-        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
+        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
     ) -> None:
         """Initialise the layout and create Application.
 
@@ -289,6 +289,8 @@ class FuzzyPrompt(BaseComplexPrompt):
         Override the default keybindings as j/k cannot be bind even if editing_mode is vim
         due to the input buffer.
         """
+        if not keybindings:
+            keybindings = {}
         self._prompt = prompt
         self._border = border
         self._info = info

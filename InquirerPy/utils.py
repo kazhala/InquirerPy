@@ -10,7 +10,7 @@ __all__ = ["get_style", "calculate_height"]
 
 
 def get_style(
-    style: Dict[str, str] = {}, style_override: bool = False
+    style: Dict[str, str] = None, style_override: bool = False
 ) -> Dict[str, str]:
     """Get default style if style parameter is missing.
 
@@ -23,6 +23,9 @@ def get_style(
     :return: style dictionary ready to be consumed by `Style.from_dict`
     :rtype: Dict[str, str]
     """
+    if not style:
+        style = {}
+
     if not style_override:
         result = {
             "questionmark": os.getenv("INQUIRERPY_STYLE_QUESTIONMARK", "#e5c07b"),

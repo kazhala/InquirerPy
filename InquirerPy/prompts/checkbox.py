@@ -126,7 +126,7 @@ class CheckboxPrompt(BaseListPrompt):
         message: str,
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
-        style: Dict[str, str] = {},
+        style: Dict[str, str] = None,
         editing_mode: Literal["emacs", "default", "vim"] = "default",
         qmark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
@@ -138,7 +138,7 @@ class CheckboxPrompt(BaseListPrompt):
         max_height: Union[int, str] = None,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
-        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
+        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyCheckboxControl(

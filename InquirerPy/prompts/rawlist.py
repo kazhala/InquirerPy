@@ -139,7 +139,7 @@ class RawlistPrompt(BaseListPrompt):
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         separator: str = ")",
-        style: Dict[str, str] = {},
+        style: Dict[str, str] = None,
         editing_mode: Literal["emacs", "vim", "default"] = "default",
         qmark: str = "?",
         pointer: str = " ",
@@ -151,7 +151,7 @@ class RawlistPrompt(BaseListPrompt):
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
-        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
+        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
         self.content_control = InquirerPyRawlistControl(

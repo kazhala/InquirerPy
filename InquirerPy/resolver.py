@@ -36,10 +36,10 @@ list_prompts = {"list", "checkbox", "rawlist", "expand", "fuzzy"}
 
 def prompt(
     questions: List[Dict[str, Any]],
-    style: Dict[str, str] = {},
+    style: Dict[str, str] = None,
     editing_mode: Optional[Literal["default", "vim", "emacs"]] = None,
     raise_keyboard_interrupt: bool = True,
-    keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = {},
+    keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
     style_override: bool = False,
 ) -> Dict[str, Optional[Union[str, List[str], bool]]]:
     """Resolve user provided list of questions and get result.
@@ -68,6 +68,8 @@ def prompt(
     :rtype: Dict[str, Optional[Union[str, List[str], bool]]]
     """
     result: Dict[str, Optional[Union[str, List[str], bool]]] = {}
+    if not keybindings:
+        keybindings = {}
 
     if not isinstance(questions, list):
         raise InvalidArgument("questions should be type of list.")
