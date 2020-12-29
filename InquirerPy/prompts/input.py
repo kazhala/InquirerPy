@@ -100,28 +100,28 @@ class InputPrompt(BaseSimplePrompt):
         @self._kb.add(Keys.Enter, filter=~is_multiline)
         def _(event):
             try:
-                self.session.validator.validate(self.session.default_buffer)
+                self._session.validator.validate(self._session.default_buffer)
             except ValidationError:
-                self.session.default_buffer.validate_and_handle()
+                self._session.default_buffer.validate_and_handle()
             else:
                 self.status["answered"] = True
-                self.status["result"] = self.session.default_buffer.text
-                self.session.default_buffer.text = ""
+                self.status["result"] = self._session.default_buffer.text
+                self._session.default_buffer.text = ""
                 event.app.exit(result=self.status["result"])
 
         @self._kb.add(Keys.Escape, Keys.Enter, filter=is_multiline)
         def _(event):
             try:
-                self.session.validator.validate(self.session.default_buffer)
+                self._session.validator.validate(self._session.default_buffer)
             except ValidationError:
-                self.session.default_buffer.validate_and_handle()
+                self._session.default_buffer.validate_and_handle()
             else:
                 self.status["answered"] = True
-                self.status["result"] = self.session.default_buffer.text
-                self.session.default_buffer.text = ""
+                self.status["result"] = self._session.default_buffer.text
+                self._session.default_buffer.text = ""
                 event.app.exit(result=self.status["result"])
 
-        self.session = PromptSession(
+        self._session = PromptSession(
             message=self._get_prompt_message,
             key_bindings=self._kb,
             style=self._style,
@@ -183,7 +183,7 @@ class InputPrompt(BaseSimplePrompt):
         :return: user entered filepath
         :rtype: str
         """
-        result = self.session.prompt(default=self._default)
+        result = self._session.prompt(default=self._default)
         if not self._filter:
             return result
         return self._filter(result)

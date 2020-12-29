@@ -54,7 +54,7 @@ class TestConfirmPrompt(unittest.TestCase):
             output=DummyOutput(),
             input=self.inp,
         )
-        result = confirm_prompt.session.prompt()
+        result = confirm_prompt._session.prompt()
         self.assertEqual(result, True)
         self.assertEqual(confirm_prompt.status["answered"], True)
         self.assertEqual(confirm_prompt.status["result"], True)

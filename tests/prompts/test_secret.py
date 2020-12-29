@@ -35,7 +35,7 @@ class TestSecret(unittest.TestCase):
     @patch.object(Buffer, "validate_and_handle")
     def test_prompt_validation(self, mocked_validate):
         def _hello():
-            secret_prompt.session.app.exit(result="yes")
+            secret_prompt._session.app.exit(result="yes")
 
         mocked_validate.side_effect = _hello
         self.inp.send_text("afas\n")

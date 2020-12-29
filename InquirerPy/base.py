@@ -377,6 +377,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         qmark: str = "?",
         instruction: str = "",
         transformer: Callable = None,
+        filter: Callable = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
         validate: Union[Callable[[str], bool], Validator] = None,
@@ -393,6 +394,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             editing_mode=editing_mode,
             qmark=qmark,
             transformer=transformer,
+            filter=filter,
             invalid_message=invalid_message,
             validate=validate,
         )
@@ -527,7 +529,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     def execute(self) -> Any:
         """Execute the application and get the result."""
-        return self.application.run()
+        result = self.application.run()
+        if not self._filter:
+            return result
+        return self._filter(result)
 
     @property
     def instruction(self) -> str:
@@ -681,6 +686,8 @@ class BaseListPrompt(BaseComplexPrompt):
     :type instruction: str
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable
+    :param filter: a callable to filter the result, updating the user input before returning the result
+    :type filter: Callable
     :param height: preferred height of the choice window
     :type height: Union[str, int]
     :param max_height: max height choice window should reach
@@ -703,6 +710,7 @@ class BaseListPrompt(BaseComplexPrompt):
         qmark: str = "?",
         instruction: str = "",
         transformer: Callable = None,
+        filter: Callable = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
         validate: Union[Callable[[str], bool], Validator] = None,
@@ -717,6 +725,7 @@ class BaseListPrompt(BaseComplexPrompt):
             editing_mode=editing_mode,
             qmark=qmark,
             transformer=transformer,
+            filter=filter,
             invalid_message=invalid_message,
             validate=validate,
             multiselect=multiselect,

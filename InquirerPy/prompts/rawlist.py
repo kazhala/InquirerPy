@@ -117,6 +117,8 @@ class RawlistPrompt(BaseListPrompt):
     :type instruction: str
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable
+    :param filter: a callable to filter the result, updating the user input before returning the result
+    :type filter: Callable
     :param height: preferred height of the choice window
     :type height: Union[str, int]
     :param max_height: max height choice window should reach
@@ -145,6 +147,7 @@ class RawlistPrompt(BaseListPrompt):
         pointer: str = " ",
         instruction: str = "",
         transformer: Callable = None,
+        filter: Callable = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
         multiselect: bool = False,
@@ -165,6 +168,7 @@ class RawlistPrompt(BaseListPrompt):
             qmark=qmark,
             instruction=instruction,
             transformer=transformer,
+            filter=filter,
             height=height,
             max_height=max_height,
             multiselect=multiselect,

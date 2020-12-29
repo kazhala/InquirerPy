@@ -305,19 +305,16 @@ class TestResolver(unittest.TestCase):
     @patch.object(ExpandPrompt, "execute")
     def test_resolver_filter(self, mocked_execute):
         mocked_execute.return_value = "boo"
-        questions = [
-            {
-                "type": "expand",
-                "choices": [
-                    {"name": "foo", "value": "boo", "key": "f"},
-                    {"name": "hello", "value": "world", "key": "w"},
-                ],
-                "message": "Select one",
-                "filter": lambda x: 2 * x,
-            }
-        ]
-        result = prompt(questions)
-        self.assertEqual(result, {"0": "booboo"})
+        prompt = ExpandPrompt(
+            message="Select one",
+            choices=[
+                {"name": "foo", "value": "boo", "key": "f"},
+                {"name": "hello", "value": "world", "key": "w"},
+            ],
+            filter=lambda x: 2 * x,
+        )
+        result = prompt._filter(prompt.execute())
+        self.assertEqual(result, "booboo")
 
     def test_resolver_transformer(self):
         prompt = ListPrompt(

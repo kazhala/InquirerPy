@@ -151,7 +151,7 @@ class TestFilePath(unittest.TestCase):
     @patch.object(Buffer, "validate_and_handle")
     def test_validation(self, mocked_validate):
         def _hello():
-            filepath_prompt.session.app.exit(result="hello")
+            filepath_prompt._session.app.exit(result="hello")
 
         mocked_validate.side_effect = _hello
         self.inp.send_text("hello\n")

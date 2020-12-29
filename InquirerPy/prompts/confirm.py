@@ -23,6 +23,8 @@ class ConfirmPrompt(BaseSimplePrompt):
     :type qmark: str
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable
+    :param filter: a callable to filter the result, updating the user input before returning the result
+    :type filter: Callable
     """
 
     def __init__(
@@ -32,12 +34,20 @@ class ConfirmPrompt(BaseSimplePrompt):
         default: bool = False,
         qmark: str = "?",
         transformer: Callable = None,
+        filter: Callable = None,
         **kwargs
     ) -> None:
         """Construct a PromptSession object and apply keybindings."""
-        super().__init__(message, style, "default", qmark, transformer=transformer)
-        self.default = default
-        if not isinstance(self.default, bool):
+        super().__init__(
+            message=message,
+            style=style,
+            editing_mode="default",
+            qmark=qmark,
+            transformer=transformer,
+            filter=filter,
+        )
+        self._default = default
+        if not isinstance(self._default, bool):
             raise InvalidArgument(
                 "default for confirm type question should be type of bool."
             )
@@ -46,7 +56,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         @self._kb.add("Y")
         def _(event) -> None:
             """Bind y and Y to accept confirmation."""
-            self.session.default_buffer.text = ""
+            self._session.default_buffer.text = ""
             self.status["answered"] = True
             self.status["result"] = True
             event.app.exit(result=True)
@@ -55,7 +65,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         @self._kb.add("N")
         def _(event) -> None:
             """Bind n and N to reject confirmation."""
-            self.session.default_buffer.text = ""
+            self._session.default_buffer.text = ""
             self.status["answered"] = True
             self.status["result"] = False
             event.app.exit(result=False)
@@ -69,10 +79,10 @@ class ConfirmPrompt(BaseSimplePrompt):
         def _(event) -> None:
             """Bind enter to use the default answer."""
             self.status["answered"] = True
-            self.status["result"] = self.default
-            event.app.exit(result=self.default)
+            self.status["result"] = self._default
+            event.app.exit(result=self._default)
 
-        self.session = PromptSession(
+        self._session = PromptSession(
             message=self._get_prompt_message,
             key_bindings=self._kb,
             style=self._style,
@@ -91,7 +101,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         """
         pre_answer = (
             "class:instruction",
-            "%s" % " (Y/n)" if self.default else " (y/N)",
+            "%s" % " (Y/n)" if self._default else " (y/N)",
         )
         post_answer = ("class:answer", " Yes" if self.status["result"] else " No")
         return super()._get_prompt_message(pre_answer, post_answer)
@@ -102,4 +112,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         :return: user selected answer, either True or False
         :rtype: bool
         """
-        return self.session.prompt()
+        result = self._session.prompt()
+        if not self._filter:
+            return result
+        return self._filter(result)
