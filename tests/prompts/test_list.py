@@ -223,3 +223,21 @@ class TestListPrompt(unittest.TestCase):
                 {"enabled": False, "name": "3", "value": 3},
             ],
         )
+
+    def test_prompt_filter(self):
+        prompt = ListPrompt(
+            message="",
+            choices=[1, 2, 3],
+            filter=lambda x: x * 2,
+            transformer=lambda x: x * 3,
+        )
+        prompt.status = {"answered": True, "result": 1}
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " "),
+                ("class:answer", " 111"),
+            ],
+        )
+        self.assertEqual(prompt._filter(1), 2)

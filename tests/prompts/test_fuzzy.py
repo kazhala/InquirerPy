@@ -621,3 +621,21 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(prompt.content_control.choices, [])
         prompt._after_render("")
         mocked.assert_called()
+
+    def test_prompt_filter(self):
+        prompt = FuzzyPrompt(
+            message="",
+            choices=[1, 2, 3],
+            filter=lambda x: x * 2,
+            transformer=lambda x: x * 3,
+        )
+        prompt.status = {"answered": True, "result": 1}
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " "),
+                ("class:answer", " 111"),
+            ],
+        )
+        self.assertEqual(prompt._filter(1), 2)
