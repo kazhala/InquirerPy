@@ -89,7 +89,6 @@ def prompt(
             question_type = question.pop("type")
             question_name = question.pop("name", str(index))
             message = question.pop("message")
-            result_filter = question.pop("filter", None)
             if question.get("when") and not question["when"](result):
                 result[question_name] = None
                 continue
@@ -104,8 +103,6 @@ def prompt(
                     raise KeyboardInterrupt
                 else:
                     result[question_name] = None
-            if result_filter:
-                result[question_name] = result_filter(result[question_name])
         except KeyError:
             raise RequiredKeyNotFound
 

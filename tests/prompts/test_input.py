@@ -66,7 +66,7 @@ class TestInputPrompt(unittest.TestCase):
             completer={"hello": None, "hey": None, "what": None},
         )
 
-        completer = input_prompt.completer
+        completer = input_prompt._completer
         doc_text = "he"
         doc = Document(doc_text, len(doc_text))
         event = CompleteEvent()

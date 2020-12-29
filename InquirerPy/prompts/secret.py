@@ -27,6 +27,8 @@ class SecretPrompt(InputPrompt):
     :type invalid_message: str
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable
+    :param filter: a callable to filter the result, updating the user input before returning the result
+    :type filter: Callable
     """
 
     def __init__(
@@ -39,6 +41,7 @@ class SecretPrompt(InputPrompt):
         validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable = None,
+        filter: Callable = None,
         **kwargs
     ) -> None:
         """Construct the prompt session."""
@@ -56,6 +59,7 @@ class SecretPrompt(InputPrompt):
             invalid_message=invalid_message,
             is_password=True,
             transformer=transformer,
+            filter=filter,
             **kwargs
         )
 
@@ -76,7 +80,3 @@ class SecretPrompt(InputPrompt):
         else:
             post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
-
-    def execute(self) -> str:
-        """Execute the prompt."""
-        return self.session.prompt(default=self.default)

@@ -1,10 +1,12 @@
 """Module contains base class for prompts.
 
-BaseSimplePrompt → InputPrompt, SecretPrompt ...
+BaseSimplePrompt ← InputPrompt, 
+        ↑               ↑
+        ↑          SecretPrompt ...
         ↑
-BaseComplexPrompt → FuzzyPrompt
+BaseComplexPrompt ← FuzzyPrompt
         ↑
-BaseListPrompt → ListPrompt, ExpandPrompt ...
+BaseListPrompt ← ListPrompt, ExpandPrompt ...
 """
 
 from abc import ABC, abstractmethod
@@ -60,6 +62,8 @@ class BaseSimplePrompt(ABC):
     :type invalid_message: str
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable
+    :param filter: a callable to filter the result, updating the user input before returning the result
+    :type filter: Callable
     """
 
     def __init__(
@@ -71,6 +75,7 @@ class BaseSimplePrompt(ABC):
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable = None,
+        filter: Callable = None,
     ) -> None:
         """Construct the base class for simple prompts."""
         self._message = message
@@ -80,6 +85,7 @@ class BaseSimplePrompt(ABC):
         self._kb = KeyBindings()
         self._lexer = "class:input"
         self._transformer = transformer
+        self._filter = filter
         try:
             self._editing_mode = ACCEPTED_KEYBINDINGS[editing_mode]
         except KeyError:

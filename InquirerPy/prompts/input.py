@@ -39,6 +39,8 @@ class InputPrompt(BaseSimplePrompt):
     :type invalid_message: str
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable
+    :param filter: a callable to filter the result, updating the user input before returning the result
+    :type filter: Callable
     """
 
     def __init__(
@@ -53,6 +55,7 @@ class InputPrompt(BaseSimplePrompt):
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable = None,
+        filter: Callable = None,
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""
@@ -64,26 +67,27 @@ class InputPrompt(BaseSimplePrompt):
             validate=validate,
             invalid_message=invalid_message,
             transformer=transformer,
+            filter=filter,
         )
-        self.default = default
-        if not isinstance(self.default, str):
+        self._default = default
+        if not isinstance(self._default, str):
             raise InvalidArgument(
                 "default for input type question should be type of str."
             )
-        self.completer = None
+        self._completer = None
         if isinstance(completer, dict):
-            self.completer = NestedCompleter.from_nested_dict(completer)
+            self._completer = NestedCompleter.from_nested_dict(completer)
         elif isinstance(completer, Completer):
-            self.completer = completer
-        self.multiline = multiline
+            self._completer = completer
+        self._multiline = multiline
 
         @Condition
         def is_multiline():
-            return self.multiline
+            return self._multiline
 
         @Condition
         def has_completion():
-            return self.completer is not None
+            return self._completer is not None
 
         @self._kb.add("c-space", filter=has_completion)
         def _(event):
@@ -121,7 +125,7 @@ class InputPrompt(BaseSimplePrompt):
             message=self._get_prompt_message,
             key_bindings=self._kb,
             style=self._style,
-            completer=self.completer,
+            completer=self._completer,
             validator=self._validator,
             validate_while_typing=False,
             input=kwargs.pop("input", None),
@@ -129,7 +133,7 @@ class InputPrompt(BaseSimplePrompt):
             editing_mode=self._editing_mode,
             lexer=SimpleLexer(self._lexer),
             is_password=kwargs.pop("is_password", False),
-            multiline=self.multiline,
+            multiline=self._multiline,
         )
 
     def _get_prompt_message(
@@ -149,12 +153,12 @@ class InputPrompt(BaseSimplePrompt):
         :rtype: List[Tuple[str, str]]
         """
         if not pre_answer:
-            if self.multiline:
+            if self._multiline:
                 pre_answer = ("class:instruction", " ESC + Enter to finish input")
             else:
                 pre_answer = ("class:instruction", " ")
         if not post_answer:
-            if self.multiline and self.status["result"]:
+            if self._multiline and self.status["result"]:
                 lines = self.status["result"].split("\n")
                 if len(lines) > 1:
                     number_of_chars = len("".join(lines[1:]))
@@ -167,7 +171,7 @@ class InputPrompt(BaseSimplePrompt):
                 post_answer = ("class:answer", " %s" % self.status["result"])
 
         formatted_message = super()._get_prompt_message(pre_answer, post_answer)
-        if not self.status["answered"] and self.multiline:
+        if not self.status["answered"] and self._multiline:
             formatted_message.append(
                 ("class:questionmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE)
             )
@@ -179,4 +183,7 @@ class InputPrompt(BaseSimplePrompt):
         :return: user entered filepath
         :rtype: str
         """
-        return self.session.prompt(default=self.default)
+        result = self.session.prompt(default=self._default)
+        if not self._filter:
+            return result
+        return self._filter(result)

@@ -7,7 +7,12 @@ questions = [
         "message": "What do you want",
         "completer": {"hello": None, "what": None, "hey": None},
     },
-    {"type": "input", "message": "What do you want", "multiline": True},
+    {
+        "type": "input",
+        "message": "What do you want",
+        "multiline": True,
+        "filter": lambda x: x * 2,
+    },
 ]
 
 result = prompt(questions, editing_mode="vim")
