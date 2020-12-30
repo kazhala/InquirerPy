@@ -1,5 +1,5 @@
 """Module contains the expand prompt and its related helper classes."""
-from typing import Any, Callable, Dict, List, Literal, NamedTuple, Tuple, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union
 
 from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import Validator
@@ -151,7 +151,7 @@ class ExpandPrompt(BaseListPrompt):
     :param style: style dict to apply to the prompt
     :type style: Dict[str, str]
     :param editing_mode: controls the keybindings of movement
-    :type editing_mode: Literal["default", "emacs", "vim"]
+    :type editing_mode: str
     :param qmark: question qmark to display
     :type qmark: str
     :param pointer: pointer qmark to indicate current selected line
@@ -190,7 +190,7 @@ class ExpandPrompt(BaseListPrompt):
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: str = "",
         style: Dict[str, str] = None,
-        editing_mode: Literal["default", "emacs", "vim"] = "default",
+        editing_mode: str = "default",
         qmark: str = "?",
         pointer: str = " ",
         separator: str = ")",

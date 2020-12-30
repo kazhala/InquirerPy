@@ -1,5 +1,5 @@
 """Module contains the class to create a secret prompt."""
-from typing import Any, Callable, Dict, List, Literal, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
@@ -19,7 +19,7 @@ class SecretPrompt(InputPrompt):
     :param qmark: qmark to display infront of the question
     :type qmark: str
     :param editing_mode: the key binding mode to use
-    :type editing_mode: Literal["default", "vim", "emacs"]
+    :type editing_mode: str
     :param validate: a callable to validate the user input
     :type validate: Optional[Union[Validator, Callable[[str], bool]]]
     :param invalid_message: the error message to display when validator failed
@@ -36,7 +36,7 @@ class SecretPrompt(InputPrompt):
         style: Dict[str, str] = None,
         default: str = "",
         qmark: str = "?",
-        editing_mode: Literal["default", "vim", "emacs"] = "default",
+        editing_mode: str = "default",
         validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,

@@ -1,6 +1,6 @@
 """Module contains list prompt."""
 
-from typing import Any, Callable, Dict, List, Literal, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import Validator
@@ -74,7 +74,7 @@ class ListPrompt(BaseListPrompt):
     :param style: a dictionary of style
     :type style: Dict[str, str]
     :param editing_mode: editing_mode of the prompt
-    :type editing_mode: Literal["emacs", "default", "vim"]
+    :type editing_mode: str
     :param qmark: question qmark to display
     :type qmark: str
     :param pointer: the pointer qmark of hovered choice
@@ -107,7 +107,7 @@ class ListPrompt(BaseListPrompt):
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         style: Dict[str, str] = None,
-        editing_mode: Literal["emacs", "default", "vim"] = "default",
+        editing_mode: str = "default",
         qmark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",

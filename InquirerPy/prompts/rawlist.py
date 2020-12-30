@@ -1,5 +1,5 @@
 """Module contains the rawlist prompt."""
-from typing import Any, Callable, Dict, List, Literal, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import Validator
@@ -108,7 +108,7 @@ class RawlistPrompt(BaseListPrompt):
     :param style: style for the prompt
     :type style: Dict[str, str]
     :param editing_mode: keybinding mode
-    :type editing_mode: Literal["emacs", "vim", "default"]
+    :type editing_mode: str
     :param qmark: question qmark to display
     :type qmark: str
     :param pointer: pointer qmark to display
@@ -142,7 +142,7 @@ class RawlistPrompt(BaseListPrompt):
         default: Any = None,
         separator: str = ")",
         style: Dict[str, str] = None,
-        editing_mode: Literal["emacs", "vim", "default"] = "default",
+        editing_mode: str = "default",
         qmark: str = "?",
         pointer: str = " ",
         instruction: str = "",

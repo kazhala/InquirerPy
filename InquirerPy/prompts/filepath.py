@@ -1,7 +1,7 @@
 """Module contains the filepath prompt and its completer class."""
 import os
 from pathlib import Path
-from typing import Any, Callable, Dict, Generator, Literal, Optional, Union
+from typing import Any, Callable, Dict, Generator, Optional, Union
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
@@ -81,7 +81,7 @@ class FilePathPrompt(InputPrompt):
     :param style: a dictionary of style to apply
     :type style: Dict[str, str]
     :param editing_mode: the mode of editing
-    :type editing_mode: Literal['default', 'emacs', 'vim']
+    :type editing_mode: str
     :param default: the default result
     :type default: str
     :param qmark: question qmark to display
@@ -102,7 +102,7 @@ class FilePathPrompt(InputPrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: Literal["default", "emacs", "vim"] = "default",
+        editing_mode: str = "default",
         default: str = "",
         qmark: str = "?",
         validate: Optional[Union[Callable[[str], bool], Validator]] = None,

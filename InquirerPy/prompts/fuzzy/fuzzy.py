@@ -1,7 +1,7 @@
 """Module contains the class to construct fuzzyfinder prompt."""
 import asyncio
 import math
-from typing import Any, Callable, Dict, List, Literal, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -222,7 +222,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param style: style dict to apply
     :type style: Dict[str, str]
     :param editing_mode: keybinding mode
-    :type editing_mode: Literal["default", "vim", "emacs"]
+    :type editing_mode: str
     :param qmark: question mark symbol
     :type qmark: str
     :param transformer: transform the result to output, this is only visual effect
@@ -260,7 +260,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         default: str = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: Dict[str, str] = None,
-        editing_mode: Literal["default", "vim", "emacs"] = "default",
+        editing_mode: str = "default",
         qmark: str = "?",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,

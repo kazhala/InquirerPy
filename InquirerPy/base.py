@@ -11,7 +11,7 @@ BaseListPrompt ← ListPrompt, ExpandPrompt ...
 
 from abc import ABC, abstractmethod
 import re
-from typing import Any, Callable, Dict, List, Literal, NamedTuple, Tuple, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -53,7 +53,8 @@ class BaseSimplePrompt(ABC):
     :type message: str
     :param style: the style dictionary to apply
     :type style: Dict[str, str]
-    :param default: set default answer to true
+    :param editing_mode: default keybinding mode
+    :type editing_mode: str
     :param qmark: the custom qmark to display infront of the question
     :type qmark: str
     :param validate: a callable or Validator instance to validate user input
@@ -70,7 +71,7 @@ class BaseSimplePrompt(ABC):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: Literal["emacs", "default", "vim"] = "default",
+        editing_mode: str = "default",
         qmark: str = "?",
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
@@ -373,7 +374,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: Literal["emacs", "default", "vim"] = "default",
+        editing_mode: str = "default",
         qmark: str = "?",
         instruction: str = "",
         transformer: Callable[[str], Any] = None,
@@ -679,7 +680,7 @@ class BaseListPrompt(BaseComplexPrompt):
     :param style: style to apply to the prompt
     :type style: Dict[str, str]
     :param editing_mode: controls the key_binding
-    :type editing_mode: Literal["emacs", "default", "vim"]
+    :type editing_mode: str
     :param qmark: question mark to display
     :type qmark: str
     :param instruction: instruction to display after the question message
@@ -706,7 +707,7 @@ class BaseListPrompt(BaseComplexPrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: Literal["emacs", "default", "vim"] = "default",
+        editing_mode: str = "default",
         qmark: str = "?",
         instruction: str = "",
         transformer: Callable[[str], Any] = None,
