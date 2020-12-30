@@ -165,9 +165,9 @@ class ExpandPrompt(BaseListPrompt):
     :param instruction: override the default instruction e.g. (Yabh)
     :type instruction: str
     :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable
+    :type transformer: Callable[[str], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable
+    :type filter: Callable[[Any], Any]
     :param height: preferred height of the choice window
     :type height: Union[str, int]
     :param max_height: max height choice window should reach
@@ -197,8 +197,8 @@ class ExpandPrompt(BaseListPrompt):
         help_msg: str = "Help, list all choices",
         expand_pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
-        transformer: Callable = None,
-        filter: Callable = None,
+        transformer: Callable[[str], Any] = None,
+        filter: Callable[[Any], Any] = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
         multiselect: bool = False,

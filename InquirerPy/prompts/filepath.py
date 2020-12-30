@@ -1,7 +1,7 @@
 """Module contains the filepath prompt and its completer class."""
 import os
 from pathlib import Path
-from typing import Callable, Dict, Generator, Literal, Optional, Union
+from typing import Any, Callable, Dict, Generator, Literal, Optional, Union
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
@@ -93,9 +93,9 @@ class FilePathPrompt(InputPrompt):
     :param only_directories: only complete directories
     :type only_directories: bool
     :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable
+    :type transformer: Callable[[str], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable
+    :type filter: Callable[[Any], Any]
     """
 
     def __init__(
@@ -108,8 +108,8 @@ class FilePathPrompt(InputPrompt):
         validate: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
         only_directories: bool = False,
-        transformer: Callable = None,
-        filter: Callable = None,
+        transformer: Callable[[str], Any] = None,
+        filter: Callable[[Any], Any] = None,
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""

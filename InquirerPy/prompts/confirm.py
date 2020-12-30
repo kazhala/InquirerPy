@@ -1,5 +1,5 @@
 """Module contains the main question function to create a confirm prompt."""
-from typing import Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
@@ -22,9 +22,9 @@ class ConfirmPrompt(BaseSimplePrompt):
     :param qmark: the custom qmark to display infront of the question
     :type qmark: str
     :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable
+    :type transformer: Callable[[str], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable
+    :type filter: Callable[[Any], Any]
     """
 
     def __init__(
@@ -33,8 +33,8 @@ class ConfirmPrompt(BaseSimplePrompt):
         style: Dict[str, str] = None,
         default: bool = False,
         qmark: str = "?",
-        transformer: Callable = None,
-        filter: Callable = None,
+        transformer: Callable[[str], Any] = None,
+        filter: Callable[[Any], Any] = None,
         **kwargs
     ) -> None:
         """Construct a PromptSession object and apply keybindings."""

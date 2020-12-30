@@ -1,11 +1,10 @@
 """Module contains the class to create a secret prompt."""
-from typing import Callable, Dict, List, Literal, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
-from InquirerPy.utils import get_style
 
 
 class SecretPrompt(InputPrompt):
@@ -26,9 +25,9 @@ class SecretPrompt(InputPrompt):
     :param invalid_message: the error message to display when validator failed
     :type invalid_message: str
     :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable
+    :type transformer: Callable[[str], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable
+    :type filter: Callable[[Any], Any]
     """
 
     def __init__(
@@ -40,8 +39,8 @@ class SecretPrompt(InputPrompt):
         editing_mode: Literal["default", "vim", "emacs"] = "default",
         validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
-        transformer: Callable = None,
-        filter: Callable = None,
+        transformer: Callable[[str], Any] = None,
+        filter: Callable[[Any], Any] = None,
         **kwargs
     ) -> None:
         """Construct the prompt session."""

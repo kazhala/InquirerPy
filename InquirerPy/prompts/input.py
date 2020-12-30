@@ -1,5 +1,5 @@
 """Module contains the class to create an input prompt."""
-from typing import Callable, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.completion.base import Completer
@@ -38,9 +38,9 @@ class InputPrompt(BaseSimplePrompt):
     :param invalid_message: the error message to display when input is invalid
     :type invalid_message: str
     :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable
+    :type transformer: Callable[[str], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable
+    :type filter: Callable[[Any], Any]
     """
 
     def __init__(
@@ -54,8 +54,8 @@ class InputPrompt(BaseSimplePrompt):
         multiline: bool = False,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
-        transformer: Callable = None,
-        filter: Callable = None,
+        transformer: Callable[[str], Any] = None,
+        filter: Callable[[Any], Any] = None,
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""

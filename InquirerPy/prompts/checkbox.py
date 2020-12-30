@@ -110,9 +110,9 @@ class CheckboxPrompt(BaseListPrompt):
     :param instruction: instruction to display after the message
     :type instruction: str
     :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable
+    :type transformer: Callable[[str], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable
+    :type filter: Callable[[Any], Any]
     :param height: preferred height of the choice window
     :type height: Union[str, int]
     :param max_height: max height choice window should reach
@@ -137,8 +137,8 @@ class CheckboxPrompt(BaseListPrompt):
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
         disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
         instruction: str = "",
-        transformer: Callable = None,
-        filter: Callable = None,
+        transformer: Callable[[str], Any] = None,
+        filter: Callable[[Any], Any] = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
         validate: Union[Callable[[str], bool], Validator] = None,

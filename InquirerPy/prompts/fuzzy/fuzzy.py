@@ -226,9 +226,9 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param qmark: question mark symbol
     :type qmark: str
     :param transformer: transform the result to output, this is only visual effect
-    :type transformer: Callable
+    :type transformer: Callable[[str], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable
+    :type filter: Callable[[Any], Any]
     :param instruction: instruction to display after the message
     :type instruction: str
     :param multiselect: enable multi selection of the choices
@@ -262,8 +262,8 @@ class FuzzyPrompt(BaseComplexPrompt):
         style: Dict[str, str] = None,
         editing_mode: Literal["default", "vim", "emacs"] = "default",
         qmark: str = "?",
-        transformer: Callable = None,
-        filter: Callable = None,
+        transformer: Callable[[str], Any] = None,
+        filter: Callable[[Any], Any] = None,
         instruction: str = "",
         multiselect: bool = False,
         prompt: str = INQUIRERPY_POINTER_SEQUENCE,
