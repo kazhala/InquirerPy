@@ -1,0 +1,26 @@
+version: 0.2
+
+env:
+  parameter-store:
+    PYPI_USERNAME: /pypi/username
+    PYPI_PASSWORD: /pypi/password
+
+phases:
+  install:
+    runtime-versions:
+      python: latest
+    commands:
+      - echo Installing build tools ...
+      - pip install --upgrade setuptools wheel
+      - echo Installing upload tools ...
+      - pip install --upgrade twine
+
+  build:
+    commands:
+      - echo Building InquirerPy ...
+      - python setup.py sdist bdist_wheel
+
+  post_build:
+    commands:
+      - echo Uploading InquirerPy to PyPI ...
+      - twine upload --username $PYPI_USERNAME --password $PYPI_PASSWORD dist/*
