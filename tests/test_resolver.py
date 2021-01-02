@@ -71,7 +71,7 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_init.assert_called_once_with(
             message="hello",
             style=style,
-            editing_mode="default",
+            editing_mode=None,
         )
         mocked_confirm_execute.assert_called_once()
         self.assertEqual(result, {"0": False})
@@ -91,12 +91,12 @@ class TestResolver(unittest.TestCase):
                 call(
                     message="hello",
                     style=style,
-                    editing_mode="default",
+                    editing_mode=None,
                 ),
                 call(
                     message="world",
                     style=style,
-                    editing_mode="default",
+                    editing_mode=None,
                 ),
             ]
         )
@@ -106,11 +106,13 @@ class TestResolver(unittest.TestCase):
                     message="whaat",
                     style=style,
                     default="./",
-                    editing_mode="default",
+                    editing_mode=None,
                 )
             ]
         )
-        mocked_confirm_execute.assert_has_calls([call(), call()])
+        mocked_confirm_execute.assert_has_calls(
+            [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
+        )
         self.assertEqual(result, {"0": False, "foo": False, "boo": "hello.py"})
 
     @patch.object(SecretPrompt, "__init__")
@@ -134,7 +136,7 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_init.assert_called_once_with(
             message="Confirm?",
             style=style,
-            editing_mode="emacs",
+            editing_mode=None,
         )
         self.assertEqual(result, {"question1": False})
         del os.environ["INQUIRERPY_EDITING_MODE"]
@@ -150,7 +152,9 @@ class TestResolver(unittest.TestCase):
             {"type": "secret", "message": "haha"},
         ]
         result = prompt(questions, style={"qmark": "#ffffff"}, editing_mode="vim")
-        mocked_confirm_execute.assert_has_calls([call(), call()])
+        mocked_confirm_execute.assert_has_calls(
+            [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
+        )
         mocked_confirm_init.assert_has_calls(
             [
                 call(
@@ -242,19 +246,21 @@ class TestResolver(unittest.TestCase):
             },
         ]
         result = prompt(questions)
-        mocked_execute.assert_has_calls([call(), call()])
+        mocked_execute.assert_has_calls(
+            [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
+        )
         mocked_init.assert_has_calls(
             [
                 call(
                     message="Confirm first?",
                     style=style,
-                    editing_mode="default",
+                    editing_mode=None,
                     default=True,
                 ),
                 call(
                     message="Confirm second?",
                     style=style,
-                    editing_mode="default",
+                    editing_mode=None,
                 ),
             ]
         )
@@ -283,19 +289,21 @@ class TestResolver(unittest.TestCase):
             },
         ]
         result = prompt(questions)
-        mocked_execute.assert_has_calls([call(), call()])
+        mocked_execute.assert_has_calls(
+            [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
+        )
         mocked_init.assert_has_calls(
             [
                 call(
                     message="Confirm first?",
                     style=style,
-                    editing_mode="default",
+                    editing_mode=None,
                     default=True,
                 ),
                 call(
                     message="Confirm?",
                     style=style,
-                    editing_mode="default",
+                    editing_mode=None,
                 ),
             ]
         )
@@ -373,7 +381,7 @@ class TestResolver(unittest.TestCase):
         mocked_execute.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
         questions = [{"type": "input", "message": "hello"}]
         result = prompt(questions, raise_keyboard_interrupt=False)
-        self.assertEqual(result, {"0": None})
+        self.assertEqual(result, {"0": INQUIRERPY_KEYBOARD_INTERRUPT})
 
         input_prompt = InputPrompt(message="")
         input_prompt.status = {
