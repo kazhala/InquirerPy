@@ -121,6 +121,18 @@ class TestFilePath(unittest.TestCase):
             ]
             self.assertEqual(sorted(completions), sorted(self.dirs_to_create))
 
+    def test_completer_dir_only(self):
+        with self.chdir(self.test_dir):
+            completer = FilePathCompleter(only_files=True)
+            doc_text = "./"
+            doc = Document(doc_text, len(doc_text))
+            event = CompleteEvent()
+            completions = [
+                completion.text
+                for completion in list(completer.get_completions(doc, event))
+            ]
+            self.assertEqual(sorted(completions), sorted(self.files_to_create))
+
     def test_input(self):
         self.inp.send_text("./file1\n")
         filepath_prompt = FilePathPrompt(
