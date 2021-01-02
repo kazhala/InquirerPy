@@ -5,6 +5,7 @@ from unittest.mock import ANY, call, patch
 from InquirerPy.base import BaseComplexPrompt
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
+from InquirerPy.prompts import FuzzyPrompt
 from InquirerPy.prompts.confirm import ConfirmPrompt
 from InquirerPy.prompts.expand import ExpandPrompt
 from InquirerPy.prompts.filepath import FilePathPrompt
@@ -254,7 +255,6 @@ class TestResolver(unittest.TestCase):
                     message="Confirm second?",
                     style=style,
                     editing_mode="default",
-                    when=ANY,
                 ),
             ]
         )
@@ -296,7 +296,6 @@ class TestResolver(unittest.TestCase):
                     message="Confirm?",
                     style=style,
                     editing_mode="default",
-                    when=ANY,
                 ),
             ]
         )
@@ -415,3 +414,19 @@ class TestResolver(unittest.TestCase):
             self.fail("should not have called")
         except:
             pass
+
+    @patch.object(FuzzyPrompt, "__init__")
+    @patch.object(FuzzyPrompt, "execute")
+    def test_resolver_when_not_poped(self, mocked_execute, mocked_init):
+        mocked_init.return_value = None
+        mocked_execute.return_value = 1
+        questions = [
+            {"message": "", "choices": [1, 2, 3], "type": "fuzzy"},
+            {
+                "message": "",
+                "type": "fuzzy",
+                "choices": [4, 5, 6],
+                "when": lambda result: result == 1,
+            },
+        ]
+        prompt(questions)
