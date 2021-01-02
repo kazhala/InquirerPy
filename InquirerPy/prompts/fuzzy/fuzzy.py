@@ -86,7 +86,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         display_choices.append(("class:pointer", self._pointer))
         display_choices.append(
             (
-                "class:fuzzy_marker",
+                "class:marker",
                 self._marker if self.choices[choice["index"]]["enabled"] else " ",
             )
         )
@@ -117,7 +117,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         display_choices.append(("class:pointer", len(self._pointer) * " "))
         display_choices.append(
             (
-                "class:fuzzy_marker",
+                "class:marker",
                 self._marker if self.choices[choice["index"]]["enabled"] else " ",
             )
         )
