@@ -10,6 +10,141 @@
 This project is a re-implementation of the [PyInquirer](https://github.com/CITGuru/PyInquirer) project, with bug fixes of known issues, new prompts, backward compatible APIs
 as well as more customization options.
 
+↓↓↓ Simple AWS S3 uploader/downloader prompt.
+
+![Demo](https://github.com/kazhala/gif/blob/master/InquirerPy-demo.gif)
+
+<details>
+  <summary>Classic Syntax (PyInquirer)</summary>
+
+```python
+import boto3
+from InquirerPy import prompt
+from InquirerPy.validator import PathValidator
+
+client = boto3.client("s3")
+
+class S3:
+    def __init__(self):
+        self.bucket = None
+
+    def get_bucket(self):
+        return [bucket["Name"] for bucket in client.list_buckets()["Buckets"]]
+
+    def walk_s3_bucket(self):
+        response = []
+        paginator = client.get_paginator("list_objects")
+        for result in paginator.paginate(Bucket=self.bucket):
+            for file in result["Contents"]:
+                response.append(file["Key"])
+        return response
+
+    def set_bucket(self, bucket):
+        self.bucket = bucket
+        return self.bucket
+
+def is_upload(result):
+    return result["0"] == "Upload"
+
+s3 = S3()
+
+questions = [
+    {
+        "message": "Select an S3 action:",
+        "type": "list",
+        "choices": ["Upload", "Download"],
+    },
+    {
+        "message": "Enter the filepath to upload:",
+        "type": "filepath",
+        "when": is_upload,
+        "validate": PathValidator(),
+        "only_files": True,
+    },
+    {
+        "message": "Select a bucket:",
+        "type": "fuzzy",
+        "choices": s3.get_bucket,
+        "filter": s3.set_bucket,
+    },
+    {
+        "message": "Select files to download:",
+        "type": "fuzzy",
+        "when": lambda _: not is_upload(_),
+        "choices": s3.walk_s3_bucket,
+        "multiselect": True,
+    },
+    {
+        "message": "Enter destination folder:",
+        "type": "filepath",
+        "when": lambda _: not is_upload(_),
+        "only_directories": True,
+        "validate": PathValidator(),
+    },
+    {"message": "Confirm?", "type": "confirm", "default": False},
+]
+
+result = prompt(questions, editing_mode="vim")
+
+# Download or Upload the file based on result ...
+```
+
+</details>
+
+<details>
+  <summary>Alternative Syntax</summary>
+
+```python
+import os
+import boto3
+from InquirerPy import inquirer
+from InquirerPy.validator import PathValidator
+
+client = boto3.client("s3")
+os.environ["INQUIRERPY_EDITING_MODE"] = "vim"
+
+def get_bucket():
+    return [bucket["Name"] for bucket in client.list_buckets()["Buckets"]]
+
+def walk_s3_bucket(bucket):
+    response = []
+    paginator = client.get_paginator("list_objects")
+    for result in paginator.paginate(Bucket=bucket):
+        for file in result["Contents"]:
+            response.append(file["Key"])
+    return response
+
+action = inquirer.select(
+    message="Select an S3 action:", choices=["Upload", "Download"]
+).execute()
+
+if action == "Upload":
+    file_to_upload = inquirer.filepath(
+        message="Enter the filepath to upload:",
+        validate=PathValidator(),
+        only_files=True,
+    ).execute()
+    bucket = inquirer.fuzzy(message="Select a bucket:", choices=get_bucket).execute()
+else:
+    bucket = inquirer.fuzzy(message="Select a bucket:", choices=get_bucket).execute()
+    file_to_download = inquirer.fuzzy(
+        message="Select files to download:",
+        choices=lambda: walk_s3_bucket(bucket),
+        multiselect=True,
+    ).execute()
+    destination = inquirer.filepath(
+        message="Enter destination folder:",
+        only_directories=True,
+        validate=PathValidator(),
+    ).execute()
+
+confirm = inquirer.confirm(message="Confirm?").execute()
+
+# Download or Upload the file based on result ...
+```
+
+</details>
+
 ## Motivation
 
 [PyInquirer](https://github.com/CITGuru/PyInquirer) is a great Python port of [Inquirer.js](https://github.com/SBoudrias/Inquirer.js/), however the project is slowly reaching
