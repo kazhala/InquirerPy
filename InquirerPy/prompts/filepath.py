@@ -20,9 +20,10 @@ class FilePathCompleter(Completer):
     :type only_directories: bool
     """
 
-    def __init__(self, only_directories: bool = False):
+    def __init__(self, only_directories: bool = False, only_files: bool = False):
         """Set base params."""
-        self.only_directories = only_directories
+        self._only_directories = only_directories
+        self._only_files = only_files
 
     def get_completions(
         self, document, complete_event
@@ -57,7 +58,9 @@ class FilePathCompleter(Completer):
         if not path.is_dir():
             return
         for file in path.iterdir():
-            if self.only_directories and not file.is_dir():
+            if self._only_directories and not file.is_dir():
+                continue
+            if self._only_files and not file.is_file():
                 continue
             if validation(file, document.text):
                 file_name = file.name
@@ -92,6 +95,8 @@ class FilePathPrompt(InputPrompt):
     :type invalid_message: str
     :param only_directories: only complete directories
     :type only_directories: bool
+    :param only_files: only complete files
+    :type only_files: bool
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable[[str], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
@@ -108,6 +113,7 @@ class FilePathPrompt(InputPrompt):
         validate: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
         only_directories: bool = False,
+        only_files: bool = False,
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
         **kwargs,
@@ -124,7 +130,9 @@ class FilePathPrompt(InputPrompt):
             default=default,
             qmark=qmark,
             completer=ThreadedCompleter(
-                FilePathCompleter(only_directories=only_directories)
+                FilePathCompleter(
+                    only_directories=only_directories, only_files=only_files
+                )
             ),
             validate=validate,
             invalid_message=invalid_message,
