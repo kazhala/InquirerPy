@@ -260,7 +260,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         default: str = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: Dict[str, str] = None,
-        editing_mode: str = "default",
+        editing_mode: str = None,
         qmark: str = "?",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,

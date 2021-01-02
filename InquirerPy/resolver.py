@@ -1,10 +1,8 @@
 """This module contains the main prompt entrypoint."""
-import os
 from typing import Any, Dict, List, Optional, Union
 
 from prompt_toolkit.filters.base import FilterOrBool
 
-from InquirerPy.enum import ACCEPTED_KEYBINDINGS, INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
 from InquirerPy.prompts.confirm import ConfirmPrompt
@@ -75,14 +73,6 @@ def prompt(
         raise InvalidArgument("questions should be type of list.")
 
     style = get_style(style, style_override)
-    if not editing_mode:
-        default_mode = os.getenv("INQUIRERPY_EDITING_MODE", "default")
-        if default_mode not in ACCEPTED_KEYBINDINGS:
-            raise InvalidArgument(
-                "INQUIRERPY_EDITING_MODE must be one of 'default' 'emacs' 'vim'."
-            )
-        else:
-            editing_mode = default_mode
 
     for index, question in enumerate(questions):
         try:
@@ -98,12 +88,7 @@ def prompt(
                 args["keybindings"] = {**keybindings, **question.pop("keybindings", {})}
             result[question_name] = question_mapping[question_type](
                 **args, **question
-            ).execute()
-            if result[question_name] == INQUIRERPY_KEYBOARD_INTERRUPT:
-                if raise_keyboard_interrupt:
-                    raise KeyboardInterrupt
-                else:
-                    result[question_name] = None
+            ).execute(raise_keyboard_interrupt=raise_keyboard_interrupt)
         except KeyError:
             raise RequiredKeyNotFound
 

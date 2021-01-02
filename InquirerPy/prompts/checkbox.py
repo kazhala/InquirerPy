@@ -131,7 +131,7 @@ class CheckboxPrompt(BaseListPrompt):
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         style: Dict[str, str] = None,
-        editing_mode: str = "default",
+        editing_mode: str = None,
         qmark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,

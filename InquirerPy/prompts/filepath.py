@@ -107,7 +107,7 @@ class FilePathPrompt(InputPrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: str = "default",
+        editing_mode: str = None,
         default: str = "",
         qmark: str = "?",
         validate: Optional[Union[Callable[[str], bool], Validator]] = None,

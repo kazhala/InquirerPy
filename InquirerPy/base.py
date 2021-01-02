@@ -10,6 +10,7 @@ BaseListPrompt ← ListPrompt, ExpandPrompt ...
 """
 
 from abc import ABC, abstractmethod
+import os
 import re
 from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union
 
@@ -71,7 +72,7 @@ class BaseSimplePrompt(ABC):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: str = "default",
+        editing_mode: str = None,
         qmark: str = "?",
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
@@ -88,7 +89,9 @@ class BaseSimplePrompt(ABC):
         self._transformer = transformer
         self._filter = filter
         try:
-            self._editing_mode = ACCEPTED_KEYBINDINGS[editing_mode]
+            self._editing_mode = ACCEPTED_KEYBINDINGS[
+                os.getenv("INQUIRERPY_EDITING_MODE", editing_mode or "default")
+            ]
         except KeyError:
             raise InvalidArgument(
                 "editing_mode must be one of 'default' 'emacs' 'vim'."
@@ -374,7 +377,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: str = "default",
+        editing_mode: str = None,
         qmark: str = "?",
         instruction: str = "",
         transformer: Callable[[str], Any] = None,
@@ -528,9 +531,14 @@ class BaseComplexPrompt(BaseSimplePrompt):
         post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
 
-    def execute(self) -> Any:
+    def execute(self, raise_keyboard_interrupt=True) -> Any:
         """Execute the application and get the result."""
         result = self.application.run()
+        if result == INQUIRERPY_KEYBOARD_INTERRUPT:
+            if raise_keyboard_interrupt:
+                raise KeyboardInterrupt
+            else:
+                result = None
         if not self._filter:
             return result
         return self._filter(result)
@@ -707,7 +715,7 @@ class BaseListPrompt(BaseComplexPrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: str = "default",
+        editing_mode: str = None,
         qmark: str = "?",
         instruction: str = "",
         transformer: Callable[[str], Any] = None,

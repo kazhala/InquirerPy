@@ -10,7 +10,7 @@ from prompt_toolkit.shortcuts.prompt import PromptSession
 from prompt_toolkit.validation import ValidationError, Validator
 
 from InquirerPy.base import BaseSimplePrompt
-from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
+from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT, INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 
 
@@ -47,7 +47,7 @@ class InputPrompt(BaseSimplePrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: str = "default",
+        editing_mode: str = None,
         default: str = "",
         qmark: str = "?",
         completer: Union[Dict[str, Optional[str]], Completer] = None,
@@ -177,13 +177,18 @@ class InputPrompt(BaseSimplePrompt):
             )
         return formatted_message
 
-    def execute(self) -> str:
+    def execute(self, raise_keyboard_interrupt=True) -> Optional[str]:
         """Display the filepath prompt and returns the result.
 
         :return: user entered filepath
         :rtype: str
         """
         result = self._session.prompt(default=self._default)
+        if result == INQUIRERPY_KEYBOARD_INTERRUPT:
+            if raise_keyboard_interrupt:
+                raise KeyboardInterrupt
+            else:
+                result = None
         if not self._filter:
             return result
         return self._filter(result)

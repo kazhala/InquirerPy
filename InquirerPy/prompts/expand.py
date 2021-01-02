@@ -190,7 +190,7 @@ class ExpandPrompt(BaseListPrompt):
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: str = "",
         style: Dict[str, str] = None,
-        editing_mode: str = "default",
+        editing_mode: str = None,
         qmark: str = "?",
         pointer: str = " ",
         separator: str = ")",

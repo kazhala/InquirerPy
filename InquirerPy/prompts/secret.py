@@ -36,7 +36,7 @@ class SecretPrompt(InputPrompt):
         style: Dict[str, str] = None,
         default: str = "",
         qmark: str = "?",
-        editing_mode: str = "default",
+        editing_mode: str = None,
         validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,

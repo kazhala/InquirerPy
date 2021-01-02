@@ -142,7 +142,7 @@ class RawlistPrompt(BaseListPrompt):
         default: Any = None,
         separator: str = ")",
         style: Dict[str, str] = None,
-        editing_mode: str = "default",
+        editing_mode: str = None,
         qmark: str = "?",
         pointer: str = " ",
         instruction: str = "",
