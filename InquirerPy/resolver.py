@@ -89,7 +89,8 @@ def prompt(
             question_type = question.pop("type")
             question_name = question.pop("name", str(index))
             message = question.pop("message")
-            if question.get("when") and not question["when"](result):
+            question_when = question.pop("when", None)
+            if question_when and not question_when(result):
                 result[question_name] = None
                 continue
             args = {"message": message, "style": style, "editing_mode": editing_mode}
