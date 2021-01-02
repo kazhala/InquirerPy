@@ -2,6 +2,8 @@ import os
 import unittest
 from unittest.mock import ANY, call, patch
 
+from prompt_toolkit.shortcuts.prompt import PromptSession
+
 from InquirerPy.base import BaseComplexPrompt
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
@@ -376,12 +378,18 @@ class TestResolver(unittest.TestCase):
             ],
         )
 
-    @patch.object(InputPrompt, "execute")
+    @patch.object(PromptSession, "prompt")
     def test_optional_keyboard_interrupt(self, mocked_execute):
         mocked_execute.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
         questions = [{"type": "input", "message": "hello"}]
         result = prompt(questions, raise_keyboard_interrupt=False)
-        self.assertEqual(result, {"0": INQUIRERPY_KEYBOARD_INTERRUPT})
+        self.assertEqual(result, {"0": None})
+
+        mocked_execute.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
+        questions = [{"type": "input", "message": "hello"}]
+        self.assertRaises(
+            KeyboardInterrupt, prompt, questions, raise_keyboard_interrupt=True
+        )
 
         input_prompt = InputPrompt(message="")
         input_prompt.status = {
