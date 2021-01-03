@@ -1,8 +1,6 @@
 import unittest
 from unittest.mock import ANY, call, patch
 
-from prompt_toolkit.key_binding.key_bindings import KeyBindings
-
 from InquirerPy.base import BaseComplexPrompt
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.rawlist import InquirerPyRawlistControl, RawlistPrompt
@@ -189,3 +187,9 @@ class TestRawList(unittest.TestCase):
         mocked_add.assert_has_calls([call("1")])
         mocked_add.assert_has_calls([call("2")])
         mocked_add.assert_has_calls([call("3")])
+
+    def test_rawlist_10(self):
+        prompt = RawlistPrompt(message="", choices=[i for i in range(10)])
+        self.assertRaises(InvalidArgument, prompt._after_render, "")
+        prompt = RawlistPrompt(message="", choices=[i for i in range(9)])
+        prompt._after_render("")
