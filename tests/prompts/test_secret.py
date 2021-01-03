@@ -25,7 +25,7 @@ class TestSecret(unittest.TestCase):
             style={"answer": ""},
             default="yes",
             qmark="~",
-            editing_mode="default",
+            vi_mode=False,
             input=self.inp,
             output=DummyOutput(),
         )
@@ -55,7 +55,7 @@ class TestSecret(unittest.TestCase):
 
     def test_prompt_message(self):
         secret_prompt = SecretPrompt(
-            message="fooboo", style={}, qmark="[?]", editing_mode="vim"
+            message="fooboo", style={}, qmark="[?]", vi_mode=True
         )
         message = secret_prompt._get_prompt_message()
         self.assertEqual(
@@ -100,7 +100,7 @@ class TestSecret(unittest.TestCase):
             style={},
             default="111",
             qmark="[!]",
-            editing_mode="vim",
+            vi_mode=True,
         )
 
         MockedSession.assert_called_once_with(

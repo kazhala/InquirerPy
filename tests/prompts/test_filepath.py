@@ -231,7 +231,7 @@ class TestFilePath(unittest.TestCase):
             qmark="XD",
             multicolumn_complete=True,
             validate=_validation,
-            editing_mode="vim",
+            vi_mode=True,
             only_directories=True,
         )
         kb = MockedKeyBindings()

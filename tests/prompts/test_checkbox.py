@@ -78,7 +78,7 @@ class TestCheckbox(unittest.TestCase):
             choices=self.choices,
             default="boy&girl",
             style={},
-            editing_mode="emacs",
+            vi_mode=False,
             qmark="!",
             pointer="<",
             instruction="TAB",

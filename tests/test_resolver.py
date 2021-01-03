@@ -73,7 +73,7 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_init.assert_called_once_with(
             message="hello",
             style=style,
-            editing_mode=None,
+            vi_mode=False,
         )
         mocked_confirm_execute.assert_called_once()
         self.assertEqual(result, {"0": False})
@@ -93,12 +93,12 @@ class TestResolver(unittest.TestCase):
                 call(
                     message="hello",
                     style=style,
-                    editing_mode=None,
+                    vi_mode=False,
                 ),
                 call(
                     message="world",
                     style=style,
-                    editing_mode=None,
+                    vi_mode=False,
                 ),
             ]
         )
@@ -108,7 +108,7 @@ class TestResolver(unittest.TestCase):
                     message="whaat",
                     style=style,
                     default="./",
-                    editing_mode=None,
+                    vi_mode=False,
                 )
             ]
         )
@@ -130,7 +130,7 @@ class TestResolver(unittest.TestCase):
     ):
         mocked_confirm_execute.return_value = False
         mocked_confirm_init.return_value = None
-        os.environ["INQUIRERPY_EDITING_MODE"] = "emacs"
+        os.environ["INQUIRERPY_VI_MODE"] = "true"
 
         questions = [{"type": "confirm", "message": "Confirm?", "name": "question1"}]
         result = prompt(questions)
@@ -138,10 +138,10 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_init.assert_called_once_with(
             message="Confirm?",
             style=style,
-            editing_mode=None,
+            vi_mode=False,
         )
         self.assertEqual(result, {"question1": False})
-        del os.environ["INQUIRERPY_EDITING_MODE"]
+        del os.environ["INQUIRERPY_VI_MODE"]
 
         mocked_secret_init.return_value = None
         mocked_secret_execute.return_value = "111111"
@@ -153,7 +153,7 @@ class TestResolver(unittest.TestCase):
             {"type": "confirm", "message": "What?"},
             {"type": "secret", "message": "haha"},
         ]
-        result = prompt(questions, style={"qmark": "#ffffff"}, editing_mode="vim")
+        result = prompt(questions, style={"qmark": "#ffffff"}, vi_mode=True)
         mocked_confirm_execute.assert_has_calls(
             [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
         )
@@ -179,7 +179,7 @@ class TestResolver(unittest.TestCase):
                         "qmark": "#ffffff",
                         "frame.border": "#4b5263",
                     },
-                    editing_mode="vim",
+                    vi_mode=True,
                 ),
                 call(
                     message="What?",
@@ -201,7 +201,7 @@ class TestResolver(unittest.TestCase):
                         "qmark": "#ffffff",
                         "frame.border": "#4b5263",
                     },
-                    editing_mode="vim",
+                    vi_mode=True,
                 ),
             ]
         )
@@ -214,11 +214,11 @@ class TestResolver(unittest.TestCase):
         result = prompt(
             questions,
             style={"qmark": "#ffffff"},
-            editing_mode="vim",
+            vi_mode=True,
             style_override=True,
         )
         mocked_secret_init.assert_has_calls(
-            [call(message="haha", style={"qmark": "#ffffff"}, editing_mode="vim")]
+            [call(message="haha", style={"qmark": "#ffffff"}, vi_mode=True)]
         )
         self.assertEqual(result, {"10": True, "1": True, "2": "111111"})
 
@@ -256,13 +256,13 @@ class TestResolver(unittest.TestCase):
                 call(
                     message="Confirm first?",
                     style=style,
-                    editing_mode=None,
+                    vi_mode=False,
                     default=True,
                 ),
                 call(
                     message="Confirm second?",
                     style=style,
-                    editing_mode=None,
+                    vi_mode=False,
                 ),
             ]
         )
@@ -299,13 +299,13 @@ class TestResolver(unittest.TestCase):
                 call(
                     message="Confirm first?",
                     style=style,
-                    editing_mode=None,
+                    vi_mode=False,
                     default=True,
                 ),
                 call(
                     message="Confirm?",
                     style=style,
-                    editing_mode=None,
+                    vi_mode=False,
                 ),
             ]
         )
@@ -406,7 +406,7 @@ class TestResolver(unittest.TestCase):
         prompt(questions, keybindings={"up": [{"key": "up"}]})
         mocked_kb.assert_not_called()
         questions = [{"type": "list", "message": "aasdf", "choices": [1, 2, 3]}]
-        prompt(questions, keybindings={"up": [{"key": "c-p"}]}, editing_mode="vim")
+        prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
         mocked_kb.assert_has_calls([call("c-p", filter=True)])
         try:
             mocked_kb.assert_has_calls([call("k", filter=ANY)])
@@ -423,7 +423,7 @@ class TestResolver(unittest.TestCase):
                 "keybindings": {"up": [{"key": "c-w"}]},
             }
         ]
-        prompt(questions, keybindings={"up": [{"key": "c-p"}]}, editing_mode="vim")
+        prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
         mocked_kb.assert_has_calls([call("c-w", filter=True)])
         try:
             mocked_kb.assert_has_calls([call("c-p", filter=ANY)])

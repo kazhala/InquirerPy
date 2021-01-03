@@ -102,7 +102,7 @@ class TestExpandPrompt(unittest.TestCase):
             message="Choose one of the following",
             default="boo",
             choices=self.choices,
-            editing_mode="vim",
+            vi_mode=True,
             help_msg="What",
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 3)

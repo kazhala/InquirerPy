@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest.mock import ANY, call, patch
 
@@ -26,7 +27,7 @@ class TestInputPrompt(unittest.TestCase):
             style={},
             default="world",
             qmark="!",
-            editing_mode="emacs",
+            vi_mode=False,
             input=self.inp,
             output=DummyOutput(),
         )
@@ -43,7 +44,7 @@ class TestInputPrompt(unittest.TestCase):
             style={},
             default="world",
             qmark="!",
-            editing_mode="emacs",
+            vi_mode=False,
             input=self.inp,
             output=DummyOutput(),
             filter=lambda x: x * 2,
@@ -70,7 +71,7 @@ class TestInputPrompt(unittest.TestCase):
             style={},
             default="",
             qmark="!",
-            editing_mode="emacs",
+            vi_mode=False,
             input=self.inp,
             output=DummyOutput(),
             multiline=True,
@@ -87,7 +88,7 @@ class TestInputPrompt(unittest.TestCase):
             style={},
             default="",
             qmark="!",
-            editing_mode="emacs",
+            vi_mode=False,
             input=self.inp,
             output=DummyOutput(),
             multiline=True,
@@ -132,7 +133,7 @@ class TestInputPrompt(unittest.TestCase):
             style={},
             default="",
             qmark="[?]",
-            editing_mode="emacs",
+            vi_mode=False,
             multiline=True,
             completer={"hello": None, "hey": None, "what": None},
         )
@@ -185,7 +186,7 @@ class TestInputPrompt(unittest.TestCase):
             style={},
             default="",
             qmark="[?]",
-            editing_mode="emacs",
+            vi_mode=False,
             multiline=True,
             completer={"hello": None, "hey": None, "what": None},
         )
@@ -235,3 +236,14 @@ class TestInputPrompt(unittest.TestCase):
             ]
         )
         MockedLexer.assert_has_calls([call("class:input")])
+
+    def test_vi_kb(self):
+        prompt = InputPrompt(message="")
+        self.assertEqual(prompt._editing_mode, EditingMode.EMACS)
+        prompt = InputPrompt(message="", vi_mode=True)
+        self.assertEqual(prompt._editing_mode, EditingMode.VI)
+        os.environ["INQUIRERPY_VI_MODE"] = "true"
+        prompt = InputPrompt(message="")
+        self.assertEqual(prompt._editing_mode, EditingMode.VI)
+        prompt = InputPrompt(message="", vi_mode=False)
+        self.assertEqual(prompt._editing_mode, EditingMode.VI)
