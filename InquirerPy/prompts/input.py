@@ -23,8 +23,8 @@ class InputPrompt(BaseSimplePrompt):
     :type message: str
     :param style: a dictionary of style to apply
     :type style: Dict[str, str]
-    :param editing_mode: the mode of editing
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: bool
     :param default: the default result
     :type default: str
     :param qmark: question qmark to display
@@ -49,7 +49,7 @@ class InputPrompt(BaseSimplePrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: str = None,
+        vi_mode: bool = False,
         default: str = "",
         qmark: str = "?",
         completer: Union[Dict[str, Optional[str]], Completer] = None,
@@ -65,7 +65,7 @@ class InputPrompt(BaseSimplePrompt):
         super().__init__(
             message,
             style,
-            editing_mode=editing_mode,
+            vi_mode=vi_mode,
             qmark=qmark,
             validate=validate,
             invalid_message=invalid_message,

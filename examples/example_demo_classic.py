@@ -68,6 +68,6 @@ questions = [
     {"message": "Confirm?", "type": "confirm", "default": False},
 ]
 
-result = prompt(questions, editing_mode="vim")
+result = prompt(questions, vi_mode=True)
 
 # Download or Upload the file based on result ...

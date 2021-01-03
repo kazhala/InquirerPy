@@ -39,6 +39,6 @@ questions = [
 
 result = prompt(
     questions,
-    editing_mode="vim",
+    vi_mode=True,
 )
 print(result)

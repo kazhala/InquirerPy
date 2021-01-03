@@ -73,8 +73,8 @@ class ListPrompt(BaseListPrompt):
     :type default: Any
     :param style: a dictionary of style
     :type style: Dict[str, str]
-    :param editing_mode: editing_mode of the prompt
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: bool
     :param qmark: question qmark to display
     :type qmark: str
     :param pointer: the pointer qmark of hovered choice
@@ -107,7 +107,7 @@ class ListPrompt(BaseListPrompt):
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         style: Dict[str, str] = None,
-        editing_mode: str = None,
+        vi_mode: bool = False,
         qmark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
@@ -132,7 +132,7 @@ class ListPrompt(BaseListPrompt):
         super().__init__(
             message=message,
             style=style,
-            editing_mode=editing_mode,
+            vi_mode=vi_mode,
             qmark=qmark,
             instruction=instruction,
             transformer=transformer,

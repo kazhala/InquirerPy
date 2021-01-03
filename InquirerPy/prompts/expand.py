@@ -150,8 +150,8 @@ class ExpandPrompt(BaseListPrompt):
     :type default: str
     :param style: style dict to apply to the prompt
     :type style: Dict[str, str]
-    :param editing_mode: controls the keybindings of movement
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: bool
     :param qmark: question qmark to display
     :type qmark: str
     :param pointer: pointer qmark to indicate current selected line
@@ -190,7 +190,7 @@ class ExpandPrompt(BaseListPrompt):
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: str = "",
         style: Dict[str, str] = None,
-        editing_mode: str = None,
+        vi_mode: bool = False,
         qmark: str = "?",
         pointer: str = " ",
         separator: str = ")",
@@ -220,7 +220,7 @@ class ExpandPrompt(BaseListPrompt):
         super().__init__(
             message=message,
             style=style,
-            editing_mode=editing_mode,
+            vi_mode=vi_mode,
             qmark=qmark,
             instruction=instruction,
             transformer=transformer,

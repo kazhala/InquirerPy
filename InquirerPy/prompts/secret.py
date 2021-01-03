@@ -18,8 +18,8 @@ class SecretPrompt(InputPrompt):
     :type default: str
     :param qmark: qmark to display infront of the question
     :type qmark: str
-    :param editing_mode: the key binding mode to use
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: bool
     :param validate: a callable to validate the user input
     :type validate: Optional[Union[Validator, Callable[[str], bool]]]
     :param invalid_message: the error message to display when validator failed
@@ -36,7 +36,7 @@ class SecretPrompt(InputPrompt):
         style: Dict[str, str] = None,
         default: str = "",
         qmark: str = "?",
-        editing_mode: str = None,
+        vi_mode: bool = True,
         validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
@@ -51,7 +51,7 @@ class SecretPrompt(InputPrompt):
         super().__init__(
             message=message,
             style=style,
-            editing_mode=editing_mode,
+            vi_mode=vi_mode,
             default=default,
             qmark=qmark,
             validate=validate,

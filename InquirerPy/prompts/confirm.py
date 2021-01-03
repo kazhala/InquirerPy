@@ -41,7 +41,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         super().__init__(
             message=message,
             style=style,
-            editing_mode="default",
+            vi_mode=False,
             qmark=qmark,
             transformer=transformer,
             filter=filter,

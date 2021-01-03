@@ -97,8 +97,8 @@ class CheckboxPrompt(BaseListPrompt):
     :type default: Any
     :param style: a dictionary of style
     :type style: Dict[str, str]
-    :param editing_mode: editing_mode of the prompt
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: bool
     :param qmark: question qmark to display
     :type qmark: str
     :param pointer: the pointer qmark to display
@@ -131,7 +131,7 @@ class CheckboxPrompt(BaseListPrompt):
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         style: Dict[str, str] = None,
-        editing_mode: str = None,
+        vi_mode: bool = False,
         qmark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
@@ -152,7 +152,7 @@ class CheckboxPrompt(BaseListPrompt):
         super().__init__(
             message=message,
             style=style,
-            editing_mode=editing_mode,
+            vi_mode=vi_mode,
             qmark=qmark,
             instruction=instruction,
             transformer=transformer,

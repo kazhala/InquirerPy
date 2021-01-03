@@ -107,8 +107,8 @@ class RawlistPrompt(BaseListPrompt):
     :type separator: str
     :param style: style for the prompt
     :type style: Dict[str, str]
-    :param editing_mode: keybinding mode
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: bool
     :param qmark: question qmark to display
     :type qmark: str
     :param pointer: pointer qmark to display
@@ -142,7 +142,7 @@ class RawlistPrompt(BaseListPrompt):
         default: Any = None,
         separator: str = ")",
         style: Dict[str, str] = None,
-        editing_mode: str = None,
+        vi_mode: bool = False,
         qmark: str = "?",
         pointer: str = " ",
         instruction: str = "",
@@ -164,7 +164,7 @@ class RawlistPrompt(BaseListPrompt):
         super().__init__(
             message=message,
             style=style,
-            editing_mode=editing_mode,
+            vi_mode=vi_mode,
             qmark=qmark,
             instruction=instruction,
             transformer=transformer,

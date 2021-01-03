@@ -23,5 +23,5 @@ questions = [
     },
 ]
 
-result = prompt(questions, editing_mode="vim")
+result = prompt(questions, vi_mode=True)
 print(result)

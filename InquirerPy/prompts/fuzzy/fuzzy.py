@@ -221,8 +221,8 @@ class FuzzyPrompt(BaseComplexPrompt):
     :type pointer: str
     :param style: style dict to apply
     :type style: Dict[str, str]
-    :param editing_mode: keybinding mode
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: bool
     :param qmark: question mark symbol
     :type qmark: str
     :param transformer: transform the result to output, this is only visual effect
@@ -260,7 +260,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         default: str = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: Dict[str, str] = None,
-        editing_mode: str = None,
+        vi_mode: bool = False,
         qmark: str = "?",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
@@ -310,7 +310,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         super().__init__(
             message=message,
             style=style,
-            editing_mode=editing_mode,
+            vi_mode=vi_mode,
             qmark=qmark,
             transformer=transformer,
             filter=filter,

@@ -84,7 +84,7 @@ questions = [
     {"message": "Confirm?", "type": "confirm", "default": False},
 ]
 
-result = prompt(questions, editing_mode="vim")
+result = prompt(questions, vi_mode=True)
 
 # Download or Upload the file based on result ...
 ```
@@ -101,7 +101,7 @@ from InquirerPy import inquirer
 from InquirerPy.validator import PathValidator
 
 client = boto3.client("s3")
-os.environ["INQUIRERPY_EDITING_MODE"] = "vim"
+os.environ["INQUIRERPY_VI_MODE"] = 'true'
 
 def get_bucket():
     return [bucket["Name"] for bucket in client.list_buckets()["Buckets"]]

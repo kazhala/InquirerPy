@@ -33,7 +33,7 @@ from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import ValidationError, Validator
 
-from InquirerPy.enum import ACCEPTED_KEYBINDINGS, INQUIRERPY_KEYBOARD_INTERRUPT
+from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
 from InquirerPy.utils import calculate_height, get_style
@@ -54,8 +54,8 @@ class BaseSimplePrompt(ABC):
     :type message: str
     :param style: the style dictionary to apply
     :type style: Dict[str, str]
-    :param editing_mode: default keybinding mode
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: str
     :param qmark: the custom qmark to display infront of the question
     :type qmark: str
     :param validate: a callable or Validator instance to validate user input
@@ -72,7 +72,7 @@ class BaseSimplePrompt(ABC):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: str = None,
+        vi_mode: bool = False,
         qmark: str = "?",
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
@@ -88,14 +88,11 @@ class BaseSimplePrompt(ABC):
         self._lexer = "class:input"
         self._transformer = transformer
         self._filter = filter
-        try:
-            self._editing_mode = ACCEPTED_KEYBINDINGS[
-                os.getenv("INQUIRERPY_EDITING_MODE", editing_mode or "default")
-            ]
-        except KeyError:
-            raise InvalidArgument(
-                "editing_mode must be one of 'default' 'emacs' 'vim'."
-            )
+        self._editing_mode = (
+            EditingMode.VI
+            if vi_mode or bool(os.getenv("INQUIRERPY_VI_MODE", False))
+            else EditingMode.EMACS
+        )
         if isinstance(validate, Validator):
             self._validator = validate
         else:
@@ -377,7 +374,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: str = None,
+        vi_mode: bool = False,
         qmark: str = "?",
         instruction: str = "",
         transformer: Callable[[str], Any] = None,
@@ -395,7 +392,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         super().__init__(
             message=message,
             style=style,
-            editing_mode=editing_mode,
+            vi_mode=vi_mode,
             qmark=qmark,
             transformer=transformer,
             filter=filter,
@@ -687,8 +684,8 @@ class BaseListPrompt(BaseComplexPrompt):
     :type message: str
     :param style: style to apply to the prompt
     :type style: Dict[str, str]
-    :param editing_mode: controls the key_binding
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: bool
     :param qmark: question mark to display
     :type qmark: str
     :param instruction: instruction to display after the question message
@@ -715,7 +712,7 @@ class BaseListPrompt(BaseComplexPrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: str = None,
+        vi_mode: bool = False,
         qmark: str = "?",
         instruction: str = "",
         transformer: Callable[[str], Any] = None,
@@ -731,7 +728,7 @@ class BaseListPrompt(BaseComplexPrompt):
         super().__init__(
             message=message,
             style=style,
-            editing_mode=editing_mode,
+            vi_mode=vi_mode,
             qmark=qmark,
             transformer=transformer,
             filter=filter,

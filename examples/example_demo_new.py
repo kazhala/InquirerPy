@@ -6,7 +6,7 @@ from InquirerPy import inquirer
 from InquirerPy.validator import PathValidator
 
 client = boto3.client("s3")
-os.environ["INQUIRERPY_EDITING_MODE"] = "vim"
+os.environ["INQUIRERPY_VI_MODE"] = "true"
 
 
 def get_bucket():

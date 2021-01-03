@@ -83,8 +83,8 @@ class FilePathPrompt(InputPrompt):
     :type message: str
     :param style: a dictionary of style to apply
     :type style: Dict[str, str]
-    :param editing_mode: the mode of editing
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: bool
     :param default: the default result
     :type default: str
     :param qmark: question qmark to display
@@ -109,7 +109,7 @@ class FilePathPrompt(InputPrompt):
         self,
         message: str,
         style: Dict[str, str] = None,
-        editing_mode: str = None,
+        vi_mode: bool = False,
         default: str = "",
         qmark: str = "?",
         multicolumn_complete: bool = False,
@@ -129,7 +129,7 @@ class FilePathPrompt(InputPrompt):
         super().__init__(
             message=message,
             style=style,
-            editing_mode=editing_mode,
+            vi_mode=vi_mode,
             default=default,
             qmark=qmark,
             completer=ThreadedCompleter(

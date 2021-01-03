@@ -55,4 +55,4 @@ questions = [
     },
     {"message": "Confirm order?", "type": "confirm", "default": False},
 ]
-result = prompt(questions, style={"questionmark": "#ff9d00 bold"}, editing_mode="vim")
+result = prompt(questions, style={"questionmark": "#ff9d00 bold"}, vi_mode=True)

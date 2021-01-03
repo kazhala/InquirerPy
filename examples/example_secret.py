@@ -22,6 +22,6 @@ questions = [
         "validate": PasswordValidator(length=8, cap=True, special=True, number=True),
     },
 ]
-result = prompt(questions, editing_mode="vim")
+result = prompt(questions, vi_mode=True)
 
 print(result)

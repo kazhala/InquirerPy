@@ -35,7 +35,7 @@ list_prompts = {"list", "checkbox", "rawlist", "expand", "fuzzy"}
 def prompt(
     questions: List[Dict[str, Any]],
     style: Dict[str, str] = None,
-    editing_mode: str = None,
+    vi_mode: bool = False,
     raise_keyboard_interrupt: bool = True,
     keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
     style_override: bool = False,
@@ -53,8 +53,8 @@ def prompt(
     :type questions: List[Dict[str, Any]]
     :param style: the style to apply to the prompt
     :type style: Optional[Dict[str, str]]
-    :param editing_mode: the editing_mode to use
-    :type editing_mode: str
+    :param vi_mode: use vi kb for the prompt
+    :type vi_mode: bool
     :param raise_keyboard_interrupt: raise the kbi exception when user hit c-c
         If false, store result as None and continue
     :type raise_keyboard_interrupt: bool
@@ -83,7 +83,7 @@ def prompt(
             if question_when and not question_when(result):
                 result[question_name] = None
                 continue
-            args = {"message": message, "style": style, "editing_mode": editing_mode}
+            args = {"message": message, "style": style, "vi_mode": vi_mode}
             if question_type in list_prompts:
                 args["keybindings"] = {**keybindings, **question.pop("keybindings", {})}
             result[question_name] = question_mapping[question_type](

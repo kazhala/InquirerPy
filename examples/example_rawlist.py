@@ -30,5 +30,5 @@ questions = [
     {"type": "rawlist", "choices": lambda: [1, 2, 3], "message": "hello"},
 ]
 
-result = prompt(questions, editing_mode="vim")
+result = prompt(questions, vi_mode=True)
 print(result)
