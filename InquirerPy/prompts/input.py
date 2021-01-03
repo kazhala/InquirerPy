@@ -6,7 +6,7 @@ from prompt_toolkit.completion.base import Completer
 from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.lexers import SimpleLexer
-from prompt_toolkit.shortcuts.prompt import PromptSession
+from prompt_toolkit.shortcuts.prompt import CompleteStyle, PromptSession
 from prompt_toolkit.validation import ValidationError, Validator
 
 from InquirerPy.base import BaseSimplePrompt
@@ -31,6 +31,8 @@ class InputPrompt(BaseSimplePrompt):
     :type qmark: str
     :param completer: add auto completer to user input
     :type completer: Union[Dict[str, str], Completer]
+    :param multicolumn_complete: complete in multi column
+    :type multicolumn_complete: bool
     :param multiline: enable multiline mode
     :type multiline: bool
     :param validate: a callable or a validation class to validate user input
@@ -51,6 +53,7 @@ class InputPrompt(BaseSimplePrompt):
         default: str = "",
         qmark: str = "?",
         completer: Union[Dict[str, Optional[str]], Completer] = None,
+        multicolumn_complete: bool = False,
         multiline: bool = False,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
@@ -80,6 +83,11 @@ class InputPrompt(BaseSimplePrompt):
         elif isinstance(completer, Completer):
             self._completer = completer
         self._multiline = multiline
+        self._complete_style = (
+            CompleteStyle.COLUMN
+            if not multicolumn_complete
+            else CompleteStyle.MULTI_COLUMN
+        )
 
         @Condition
         def is_multiline():
@@ -134,6 +142,7 @@ class InputPrompt(BaseSimplePrompt):
             lexer=SimpleLexer(self._lexer),
             is_password=kwargs.pop("is_password", False),
             multiline=self._multiline,
+            complete_style=self._complete_style,
         )
 
     def _get_prompt_message(

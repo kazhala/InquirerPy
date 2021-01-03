@@ -89,6 +89,8 @@ class FilePathPrompt(InputPrompt):
     :type default: str
     :param qmark: question qmark to display
     :type qmark: str
+    :param multicolumn_complete: complete in multi column
+    :type multicolumn_complete: bool
     :param validate: a callable or a validation class to validate user input
     :type validate: Optional[Union[Callable[[str], bool], Validator]]
     :param invalid_message: the error message to display when input is invalid
@@ -110,6 +112,7 @@ class FilePathPrompt(InputPrompt):
         editing_mode: str = None,
         default: str = "",
         qmark: str = "?",
+        multicolumn_complete: bool = False,
         validate: Optional[Union[Callable[[str], bool], Validator]] = None,
         invalid_message: str = "Invalid input",
         only_directories: bool = False,
@@ -134,6 +137,7 @@ class FilePathPrompt(InputPrompt):
                     only_directories=only_directories, only_files=only_files
                 )
             ),
+            multicolumn_complete=multicolumn_complete,
             validate=validate,
             invalid_message=invalid_message,
             transformer=transformer,

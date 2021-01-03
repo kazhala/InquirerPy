@@ -5,7 +5,15 @@ questions = [
     {
         "type": "input",
         "message": "What do you want",
-        "completer": {"hello": None, "what": None, "hey": None},
+        "completer": {
+            "hello": None,
+            "what": None,
+            "hey": None,
+            "whaa": None,
+            "whaaa": None,
+            "wheee": None,
+        },
+        "multicolumn_complete": True,
     },
     {
         "type": "input",
