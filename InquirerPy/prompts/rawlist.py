@@ -6,6 +6,7 @@ from prompt_toolkit.validation import Validator
 
 from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
+from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.separator import Separator
 
 
@@ -183,9 +184,14 @@ class RawlistPrompt(BaseListPrompt):
         Since `self.content_control.choices` may not exists before
         `Application` is created if its a callable, create these
         chocies based keybindings in the after_render call.
+
+        Check if fetched choices exceed the limit of 9, raise
+        InvalidArgument exception.
         """
         if not self._rendered:
             super()._after_render(application)
+            if self.content_control.choice_count >= 10:
+                raise InvalidArgument("rawlist choices cannot exceed 9.")
 
             def keybinding_factory(choice):
                 @self._register_kb(str(choice["display_index"]))

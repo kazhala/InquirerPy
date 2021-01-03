@@ -27,7 +27,7 @@ questions = [
         "multiselect": True,
         "validate": lambda x: len(x) > 1,
     },
-    {"type": "rawlist", "choices": lambda: [1, 2, 3], "message": "hello"},
+    {"type": "rawlist", "choices": lambda: [i for i in range(9)], "message": "hello"},
 ]
 
 result = prompt(questions, vi_mode=True)
