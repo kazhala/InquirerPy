@@ -5,6 +5,7 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.output import DummyOutput
+from prompt_toolkit.shortcuts.prompt import CompleteStyle
 
 from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.validator import PasswordValidator
@@ -115,6 +116,7 @@ class TestSecret(unittest.TestCase):
             lexer=lexer,
             is_password=True,
             multiline=False,
+            complete_style=CompleteStyle.COLUMN,
         )
         MockedStyle.assert_has_calls(
             [

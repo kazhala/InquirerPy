@@ -6,6 +6,7 @@ from prompt_toolkit.document import Document
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.output import DummyOutput
+from prompt_toolkit.shortcuts.prompt import CompleteStyle
 
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.input import InputPrompt
@@ -201,6 +202,7 @@ class TestInputPrompt(unittest.TestCase):
             lexer=lexer,
             is_password=False,
             multiline=True,
+            complete_style=CompleteStyle.COLUMN,
         )
         mocked_validator.assert_has_calls(
             [call(ANY, "Invalid input", move_cursor_to_end=True)]

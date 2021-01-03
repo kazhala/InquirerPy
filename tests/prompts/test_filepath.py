@@ -12,6 +12,7 @@ from prompt_toolkit.document import Document
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input.defaults import create_pipe_input
 from prompt_toolkit.output import DummyOutput
+from prompt_toolkit.shortcuts.prompt import CompleteStyle
 
 from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.filepath import FilePathCompleter
@@ -228,6 +229,7 @@ class TestFilePath(unittest.TestCase):
             style={"yes": ""},
             default="",
             qmark="XD",
+            multicolumn_complete=True,
             validate=_validation,
             editing_mode="vim",
             only_directories=True,
@@ -248,6 +250,7 @@ class TestFilePath(unittest.TestCase):
             lexer=lexer,
             is_password=False,
             multiline=False,
+            complete_style=CompleteStyle.MULTI_COLUMN,
         )
 
         MockedStyle.assert_has_calls([call({"yes": ""})])
