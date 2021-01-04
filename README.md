@@ -4,6 +4,8 @@
 [![Lint](https://github.com/kazhala/InquirerPy/workflows/Lint/badge.svg)](https://github.com/kazhala/InquirerPy/actions?query=workflow%3ALint)
 [![Build](https://codebuild.ap-southeast-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiUUYyRUIxOXBWZ0hKcUhrbXplQklMemRsTVBxbUk3bFlTdldnRGpxeEpQSXJidEtmVEVzbVNCTE1UR3VoRSt2N0NQV0VaUXlCUzNackFBNzRVUFBBS1FnPSIsIml2UGFyYW1ldGVyU3BlYyI6IloxREtFeWY4WkhxV0NFWU0iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://ap-southeast-2.console.aws.amazon.com/codesuite/codebuild/378756445655/projects/InquirerPy/history?region=ap-southeast-2&builds-meta=eyJmIjp7InRleHQiOiIifSwicyI6e30sIm4iOjIwLCJpIjowfQ)
 
+Documentation: https://github.com/kazhala/InquirerPy/wiki
+
 ## Introduction
 
 `InquirerPy` is a Python port of the infamous [Inquirer.js](https://github.com/SBoudrias/Inquirer.js/) (A collection of common interactive command line user interfaces).
@@ -160,6 +162,49 @@ Some noticeable ones that bothers me the most:
 - Pagination options doesn't work
 
 This project uses python3.7+ type hinting with focus on resolving above issues while providing greater customization options.
+
+## Getting Started
+
+### Install
+
+```sh
+pip3 install InquirerPy
+```
+
+### Quick Start
+
+Checkout full documentation **[here]()**.
+
+#### Classic Syntax (PyInquirer)
+
+```python
+from InquirerPy import prompt
+
+questions = [
+    {
+        "type": "input",
+        "message": "What's your name:",
+        "name": "name"
+    },
+    {
+        "type": "confirm",
+        "message": "Confirm?"
+        "name": "confirm"
+    }
+]
+result = prompt(questions)
+name = result["name"]
+confirm = result["confirm"]
+```
+
+#### Alternate Syntax
+
+```python
+from InquirerPy import inquirer
+
+name = inquirer.text(message="What's your name:")
+confirm = inquirer.confirm(message="Confirm?")
+```
 
 ## Similar projects
 
