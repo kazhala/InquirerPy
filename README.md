@@ -163,7 +163,21 @@ Some noticeable ones that bothers me the most:
 
 This project uses python3.7+ type hinting with focus on resolving above issues while providing greater customization options.
 
+## Requirements
+
+### OS
+
+Leveraging `prompt_toolkit`, `InquirerPy` works cross platform for all OS. Although Unix platform may have a better experience than Windows.
+
+### Python
+
+`InquirerPy` requires Python3.7+.
+
+### Terminal
+
 ## Getting Started
+
+Checkout full documentation **[here](https://github.com/kazhala/InquirerPy/wiki)**.
 
 ### Install
 
@@ -172,8 +186,6 @@ pip3 install InquirerPy
 ```
 
 ### Quick Start
-
-Checkout full documentation **[here]()**.
 
 #### Classic Syntax (PyInquirer)
 
