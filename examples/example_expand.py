@@ -2,7 +2,7 @@ from InquirerPy.resolver import prompt
 from InquirerPy.separator import Separator
 
 
-def hello():
+def hello(_):
     return [
         {"key": "1", "name": "1", "value": 1},
         {"key": "2", "name": "2", "value": 2},

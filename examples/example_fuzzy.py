@@ -5,7 +5,7 @@ import urllib.request
 from InquirerPy.resolver import prompt
 
 
-def get_choices():
+def get_choices(_):
     p = Path(__file__).resolve().parent.joinpath("sample.txt")
     choices = []
 
