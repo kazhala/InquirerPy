@@ -151,7 +151,7 @@ class TestResolver(unittest.TestCase):
         questions = [
             {"type": "confirm", "message": "Confirm?", "name": "10"},
             {"type": "confirm", "message": "What?"},
-            {"type": "secret", "message": "haha"},
+            {"type": "password", "message": "haha"},
         ]
         result = prompt(questions, style={"qmark": "#ffffff"}, vi_mode=True)
         mocked_confirm_execute.assert_has_calls(
@@ -209,7 +209,7 @@ class TestResolver(unittest.TestCase):
         questions = [
             {"type": "confirm", "message": "Confirm?", "name": "10"},
             {"type": "confirm", "message": "What?"},
-            {"type": "secret", "message": "haha"},
+            {"type": "password", "message": "haha"},
         ]
         result = prompt(
             questions,
