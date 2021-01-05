@@ -20,7 +20,7 @@ __all__ = ["prompt"]
 question_mapping = {
     "confirm": ConfirmPrompt,
     "filepath": FilePathPrompt,
-    "secret": SecretPrompt,
+    "password": SecretPrompt,
     "input": InputPrompt,
     "list": ListPrompt,
     "checkbox": CheckboxPrompt,
@@ -39,7 +39,7 @@ def prompt(
     raise_keyboard_interrupt: bool = True,
     keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
     style_override: bool = False,
-) -> Dict[str, Optional[Union[str, List[str], bool]]]:
+) -> Dict[str, Optional[Union[str, List[Any], bool]]]:
     """Resolve user provided list of questions and get result.
 
     if "name" param is not present, use the index as the name.
@@ -65,7 +65,7 @@ def prompt(
     :return: dictionary of answers
     :rtype: Dict[str, Optional[Union[str, List[str], bool]]]
     """
-    result: Dict[str, Optional[Union[str, List[str], bool]]] = {}
+    result: Dict[str, Optional[Union[str, List[Any], bool]]] = {}
     if not keybindings:
         keybindings = {}
 
