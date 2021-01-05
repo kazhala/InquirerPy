@@ -35,7 +35,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     The actual input buffer will be handled by a separate BufferControl.
 
     :param choices: list of choices to display
-    :type choices: Union[Callable[[], List[Any]], List[Any]],
+    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
     :param pointer: pointer symbol
     :type pointer: str
     :param marker: marker symbol for the selected choice in the case of multiselect
@@ -48,7 +48,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[], List[Any]], List[Any]],
+        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         pointer: str,
         marker: str,
         current_text: Callable[[], str],
@@ -214,7 +214,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param message: message to display to the user
     :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param choices: list of choices available to select
-    :type choices: Union[Callable[[], List[Any]], List[Any]],
+    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
     :param default: default value to insert into buffer
     :type default: str
     :param pointer: pointer symbol
@@ -256,7 +256,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
-        choices: Union[Callable[[], List[Any]], List[Any]],
+        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         default: str = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: Dict[str, str] = None,

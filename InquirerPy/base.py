@@ -38,7 +38,12 @@ from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
 from InquirerPy.utils import calculate_height, get_style
 
-__all__ = ["BaseSimplePrompt", "BaseComplexPrompt", "BaseListPrompt"]
+__all__ = [
+    "BaseSimplePrompt",
+    "BaseComplexPrompt",
+    "BaseListPrompt",
+    "InquirerPyUIControl",
+]
 
 
 class BaseSimplePrompt(ABC):
@@ -177,14 +182,14 @@ class InquirerPyUIControl(FormattedTextControl):
     Dynamically adapt to user input and update formatted text.
 
     :param choices: list of choices to display as the content
-    :type choices: Union[Callable[[], List[Any]], List[Any]],
+    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
     :param default: default value, will impact the cursor position
     :type default: Any
     """
 
     def __init__(
         self,
-        choices: Union[Callable[[], List[Any]], List[Any]],
+        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         default: Any = None,
     ) -> None:
         """Initialise choices and construct a FormattedTextControl object."""
@@ -205,12 +210,18 @@ class InquirerPyUIControl(FormattedTextControl):
         self._format_choices()
         super().__init__(self._get_formatted_choices)
 
-    def _retrieve_choices(self) -> None:
+    def _retrieve_choices(self, session_result: Dict[str, Any] = None) -> None:
         """Retrieve the callable choices and format them.
 
         Should be called in the `after_render` call in `Application`.
+
+        :param session_result: the current result of the prompt session,
+            if using alternate syntax, skip this value
+        :type session_result: Dict[str, Any]
         """
-        self._raw_choices = self._choice_func()  # type: ignore
+        if not session_result:
+            session_result = {}
+        self._raw_choices = self._choice_func(session_result)  # type: ignore
         self.choices = self._get_choices(self._raw_choices, self._default)
         self._loading = False
         self._safety_check()
@@ -525,7 +536,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         if not self._rendered:
             self._rendered = True
             if self.content_control._choice_func:
-                self.content_control._retrieve_choices()
+                self.content_control._retrieve_choices(self._result)
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message.

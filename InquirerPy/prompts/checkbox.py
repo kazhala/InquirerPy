@@ -20,7 +20,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
     Used to dynamically update the content and indicate the current user selection
 
     :param choices: a list of choices to display
-    :type choices: Union[Callable[[], List[Any]], List[Any]],
+    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
     :param default: default value for selection
     :type default: Any
     :param pointer: the pointer to display, indicating current line, default is unicode ">"
@@ -33,7 +33,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[], List[Any]], List[Any]],
+        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         default: Any = None,
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
@@ -92,7 +92,7 @@ class CheckboxPrompt(BaseListPrompt):
     :param message: message to display
     :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param choices: list of choices to display
-    :type choices: Union[Callable[[], List[Any]], List[Any]],
+    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
     :param default: default value
     :type default: Any
     :param style: a dictionary of style
@@ -128,7 +128,7 @@ class CheckboxPrompt(BaseListPrompt):
     def __init__(
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
-        choices: Union[Callable[[], List[Any]], List[Any]],
+        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         default: Any = None,
         style: Dict[str, str] = None,
         vi_mode: bool = False,

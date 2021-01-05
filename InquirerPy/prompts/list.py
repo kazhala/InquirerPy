@@ -20,7 +20,7 @@ class InquirerPyListControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[], List[Any]], List[Any]],
+        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         default: Any,
         pointer: str,
         marker: str,
@@ -68,7 +68,7 @@ class ListPrompt(BaseListPrompt):
     :param message: message to display
     :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param choices: list of choices to display
-    :type choices: Union[Callable[[], List[Any]], List[Any]],
+    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
     :param default: default value
     :type default: Any
     :param style: a dictionary of style
@@ -104,7 +104,7 @@ class ListPrompt(BaseListPrompt):
     def __init__(
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
-        choices: Union[Callable[[], List[Any]], List[Any]],
+        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         default: Any = None,
         style: Dict[str, str] = None,
         vi_mode: bool = False,
