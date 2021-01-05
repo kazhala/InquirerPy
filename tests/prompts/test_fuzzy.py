@@ -619,7 +619,7 @@ class TestFuzzy(unittest.TestCase):
 
     @patch("asyncio.create_task")
     def test_after_render(self, mocked):
-        prompt = FuzzyPrompt(message="", choices=lambda: [1, 2, 3])
+        prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
         self.assertEqual(prompt.content_control.choices, [])
         prompt._after_render("")
         self.assertEqual(
@@ -631,7 +631,7 @@ class TestFuzzy(unittest.TestCase):
             ],
         )
 
-        prompt = FuzzyPrompt(message="", choices=lambda: [1, 2, 3], default="1")
+        prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3], default="1")
         self.assertEqual(prompt.content_control.choices, [])
         prompt._after_render("")
         mocked.assert_called()

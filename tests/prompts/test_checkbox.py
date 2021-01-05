@@ -211,7 +211,7 @@ class TestCheckbox(unittest.TestCase):
         self.assertEqual(prompt.status["result"], [])
 
     def test_after_render(self):
-        prompt = CheckboxPrompt(message="", choices=lambda: [1, 2, 3])
+        prompt = CheckboxPrompt(message="", choices=lambda _: [1, 2, 3])
         self.assertEqual(prompt.content_control.choices, [])
         prompt._after_render("")
         self.assertEqual(
