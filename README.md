@@ -193,16 +193,8 @@ pip3 install InquirerPy
 from InquirerPy import prompt
 
 questions = [
-    {
-        "type": "input",
-        "message": "What's your name:",
-        "name": "name"
-    },
-    {
-        "type": "confirm",
-        "message": "Confirm?"
-        "name": "confirm"
-    }
+    {"type": "input", "message": "What's your name:", "name": "name"},
+    {"type": "confirm", "message": "Confirm?", "name": "confirm"},
 ]
 result = prompt(questions)
 name = result["name"]
