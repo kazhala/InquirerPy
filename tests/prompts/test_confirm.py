@@ -3,7 +3,9 @@ from unittest.mock import patch
 
 from prompt_toolkit.input.defaults import create_pipe_input
 from prompt_toolkit.output import DummyOutput
+from prompt_toolkit.shortcuts.prompt import PromptSession
 
+from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.prompts.confirm import ConfirmPrompt
 
 
@@ -177,3 +179,11 @@ class TestConfirmPrompt(unittest.TestCase):
             input=None,
             output=None,
         )
+
+    @patch.object(PromptSession, "prompt")
+    def test_confirm_kbi(self, mocked_session):
+        mocked_session.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
+        prompt = ConfirmPrompt(message="")
+        self.assertRaises(KeyboardInterrupt, prompt.execute)
+        mocked_session.return_value = False
+        prompt.execute()
