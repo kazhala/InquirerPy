@@ -51,7 +51,7 @@ class BaseSimplePrompt(ABC):
     a call of `self.session = PromptSession(...)`.
 
     :param message: the question message to display
-    :type message: str
+    :type message: Union[str, Callable[[], str]]
     :param style: the style dictionary to apply
     :type style: Dict[str, str]
     :param vi_mode: use vi kb for the prompt
@@ -70,7 +70,7 @@ class BaseSimplePrompt(ABC):
 
     def __init__(
         self,
-        message: str,
+        message: Union[str, Callable[[], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -80,7 +80,7 @@ class BaseSimplePrompt(ABC):
         filter: Callable[[Any], Any] = None,
     ) -> None:
         """Construct the base class for simple prompts."""
-        self._message = message
+        self._message = message if not isinstance(message, Callable) else message()  # type: ignore
         self._style = Style.from_dict(style or get_style())
         self._qmark = qmark
         self._status = {"answered": False, "result": None}
@@ -372,7 +372,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: str,
+        message: Union[str, Callable[[], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -681,7 +681,7 @@ class BaseListPrompt(BaseComplexPrompt):
     Upon entering the answer, update the first window's formatted text.
 
     :param message: question to display to the user
-    :type message: str
+    :type message: Union[str, Callable[[], str]]
     :param style: style to apply to the prompt
     :type style: Dict[str, str]
     :param vi_mode: use vi kb for the prompt
@@ -710,7 +710,7 @@ class BaseListPrompt(BaseComplexPrompt):
 
     def __init__(
         self,
-        message: str,
+        message: Union[str, Callable[[], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         qmark: str = "?",

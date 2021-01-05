@@ -212,7 +212,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     python provider.
 
     :param message: message to display to the user
-    :type message: str
+    :type message: Union[str, Callable[[], str]]
     :param choices: list of choices available to select
     :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value to insert into buffer
@@ -255,7 +255,7 @@ class FuzzyPrompt(BaseComplexPrompt):
 
     def __init__(
         self,
-        message: str,
+        message: Union[str, Callable[[], str]],
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: str = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,

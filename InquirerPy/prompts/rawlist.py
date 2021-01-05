@@ -96,7 +96,7 @@ class RawlistPrompt(BaseListPrompt):
     """Used to create a rawlist prompt where user can use number to jump to items.
 
     :param message: message to display as question
-    :type message: str
+    :type message: Union[str, Callable[[], str]]
     :param choices: list of choices available for selection
     :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value
@@ -138,7 +138,7 @@ class RawlistPrompt(BaseListPrompt):
 
     def __init__(
         self,
-        message: str,
+        message: Union[str, Callable[[], str]],
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         separator: str = ")",

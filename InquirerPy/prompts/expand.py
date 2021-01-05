@@ -143,7 +143,7 @@ class ExpandPrompt(BaseListPrompt):
     all controled via InquirerPyExpandControl under one window.
 
     :param message: message to ask user
-    :type message: str
+    :type message: Union[str, Callable[[], str]]
     :param choices: list of choices to display
     :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value, needs to be a key of the choices
@@ -186,7 +186,7 @@ class ExpandPrompt(BaseListPrompt):
 
     def __init__(
         self,
-        message: str,
+        message: Union[str, Callable[[], str]],
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: str = "",
         style: Dict[str, str] = None,

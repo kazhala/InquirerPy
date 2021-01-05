@@ -456,6 +456,16 @@ class TestFuzzy(unittest.TestCase):
             ],
         )
 
+        prompt = FuzzyPrompt(message=lambda: "hello", choices=[1, 2, 3])
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " hello"),
+                ("class:instruction", " "),
+            ],
+        )
+
     @patch("asyncio.create_task")
     def test_prompt_validator(self, mocked):
         prompt = FuzzyPrompt(

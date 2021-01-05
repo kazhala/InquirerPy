@@ -11,7 +11,7 @@ class SecretPrompt(InputPrompt):
     """A wrapper class around PromptSession to create a secret prompt.
 
     :param message: the message to display in the prompt
-    :type message: str
+    :type message: Union[str, Callable[[], str]]
     :param style: style to apply to the prompt
     :type style: Dict[str, str]
     :param default: the default value
@@ -32,7 +32,7 @@ class SecretPrompt(InputPrompt):
 
     def __init__(
         self,
-        message: str,
+        message: Union[str, Callable[[], str]],
         style: Dict[str, str] = None,
         default: str = "",
         qmark: str = "?",

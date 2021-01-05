@@ -66,7 +66,7 @@ class ListPrompt(BaseListPrompt):
     """A wrapper class around prompt_toolkit Application to create a list prompt.
 
     :param message: message to display
-    :type message: str
+    :type message: Union[str, Callable[[], str]]
     :param choices: list of choices to display
     :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value
@@ -103,7 +103,7 @@ class ListPrompt(BaseListPrompt):
 
     def __init__(
         self,
-        message: str,
+        message: Union[str, Callable[[], str]],
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         style: Dict[str, str] = None,

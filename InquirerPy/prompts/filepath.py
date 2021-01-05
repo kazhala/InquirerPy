@@ -80,7 +80,7 @@ class FilePathPrompt(InputPrompt):
     This class is used for filepath prompt.
 
     :param message: the question to ask
-    :type message: str
+    :type message: Union[str, Callable[[], str]]
     :param style: a dictionary of style to apply
     :type style: Dict[str, str]
     :param vi_mode: use vi kb for the prompt
@@ -107,7 +107,7 @@ class FilePathPrompt(InputPrompt):
 
     def __init__(
         self,
-        message: str,
+        message: Union[str, Callable[[], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         default: str = "",

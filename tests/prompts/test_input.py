@@ -247,3 +247,14 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(prompt._editing_mode, EditingMode.VI)
         prompt = InputPrompt(message="", vi_mode=False)
         self.assertEqual(prompt._editing_mode, EditingMode.VI)
+
+    def test_message_call(self):
+        prompt = InputPrompt(message=lambda: "Hello")
+        self.assertEqual(
+            prompt._get_prompt_message(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " Hello"),
+                ("class:instruction", " "),
+            ],
+        )

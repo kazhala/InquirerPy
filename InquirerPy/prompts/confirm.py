@@ -1,5 +1,5 @@
 """Module contains the main question function to create a confirm prompt."""
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
@@ -14,7 +14,7 @@ class ConfirmPrompt(BaseSimplePrompt):
     This class is used for confirm prompt.
 
     :param message: the question message to display
-    :type message: str
+    :type message: Union[str, Callable[[], str]]
     :param style: the style dictionary to apply
     :type style: Dict[str, str]
     :param default: set default answer to true
@@ -29,7 +29,7 @@ class ConfirmPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: str,
+        message: Union[str, Callable[[], str]],
         style: Dict[str, str] = None,
         default: bool = False,
         qmark: str = "?",
