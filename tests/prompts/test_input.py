@@ -249,7 +249,7 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(prompt._editing_mode, EditingMode.VI)
 
     def test_message_call(self):
-        prompt = InputPrompt(message=lambda: "Hello")
+        prompt = InputPrompt(message=lambda result: "Hello" if not result else "yes")
         self.assertEqual(
             prompt._get_prompt_message(),
             [

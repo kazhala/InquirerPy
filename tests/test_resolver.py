@@ -71,9 +71,7 @@ class TestResolver(unittest.TestCase):
         ]
         result = prompt(questions)
         mocked_confirm_init.assert_called_once_with(
-            message="hello",
-            style=style,
-            vi_mode=False,
+            message="hello", style=style, vi_mode=False, session_result=ANY
         )
         mocked_confirm_execute.assert_called_once()
         self.assertEqual(result, {"0": False})
@@ -90,16 +88,8 @@ class TestResolver(unittest.TestCase):
         result = prompt(questions)
         mocked_confirm_init.assert_has_calls(
             [
-                call(
-                    message="hello",
-                    style=style,
-                    vi_mode=False,
-                ),
-                call(
-                    message="world",
-                    style=style,
-                    vi_mode=False,
-                ),
+                call(message="hello", style=style, vi_mode=False, session_result=ANY),
+                call(message="world", style=style, vi_mode=False, session_result=ANY),
             ]
         )
         mocked_filepath_init.assert_has_calls(
@@ -109,6 +99,7 @@ class TestResolver(unittest.TestCase):
                     style=style,
                     default="./",
                     vi_mode=False,
+                    session_result=ANY,
                 )
             ]
         )
@@ -139,6 +130,7 @@ class TestResolver(unittest.TestCase):
             message="Confirm?",
             style=style,
             vi_mode=False,
+            session_result={"question1": False},
         )
         self.assertEqual(result, {"question1": False})
         del os.environ["INQUIRERPY_VI_MODE"]
@@ -180,6 +172,7 @@ class TestResolver(unittest.TestCase):
                         "frame.border": "#4b5263",
                     },
                     vi_mode=True,
+                    session_result=ANY,
                 ),
                 call(
                     message="What?",
@@ -202,6 +195,7 @@ class TestResolver(unittest.TestCase):
                         "frame.border": "#4b5263",
                     },
                     vi_mode=True,
+                    session_result=ANY,
                 ),
             ]
         )
@@ -218,7 +212,14 @@ class TestResolver(unittest.TestCase):
             style_override=True,
         )
         mocked_secret_init.assert_has_calls(
-            [call(message="haha", style={"qmark": "#ffffff"}, vi_mode=True)]
+            [
+                call(
+                    message="haha",
+                    style={"qmark": "#ffffff"},
+                    vi_mode=True,
+                    session_result=ANY,
+                )
+            ]
         )
         self.assertEqual(result, {"10": True, "1": True, "2": "111111"})
 
@@ -258,11 +259,13 @@ class TestResolver(unittest.TestCase):
                     style=style,
                     vi_mode=False,
                     default=True,
+                    session_result=ANY,
                 ),
                 call(
                     message="Confirm second?",
                     style=style,
                     vi_mode=False,
+                    session_result=ANY,
                 ),
             ]
         )
@@ -301,11 +304,10 @@ class TestResolver(unittest.TestCase):
                     style=style,
                     vi_mode=False,
                     default=True,
+                    session_result=ANY,
                 ),
                 call(
-                    message="Confirm?",
-                    style=style,
-                    vi_mode=False,
+                    message="Confirm?", style=style, vi_mode=False, session_result=ANY
                 ),
             ]
         )

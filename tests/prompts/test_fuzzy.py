@@ -456,7 +456,11 @@ class TestFuzzy(unittest.TestCase):
             ],
         )
 
-        prompt = FuzzyPrompt(message=lambda: "hello", choices=[1, 2, 3])
+        prompt = FuzzyPrompt(
+            message=lambda result: "no" if not result else "hello",
+            choices=[1, 2, 3],
+            session_result={"1": True},
+        )
         self.assertEqual(
             prompt._get_prompt_message(),
             [
