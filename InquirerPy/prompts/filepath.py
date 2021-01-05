@@ -1,7 +1,7 @@
 """Module contains the filepath prompt and its completer class."""
 import os
 from pathlib import Path
-from typing import Any, Callable, Dict, Generator, Optional, Union
+from typing import Any, Callable, Dict, Generator, List, Optional, Union
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
@@ -80,7 +80,7 @@ class FilePathPrompt(InputPrompt):
     This class is used for filepath prompt.
 
     :param message: the question to ask
-    :type message: Union[str, Callable[[], str]]
+    :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: a dictionary of style to apply
     :type style: Dict[str, str]
     :param vi_mode: use vi kb for the prompt
@@ -107,7 +107,7 @@ class FilePathPrompt(InputPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         default: str = "",
@@ -119,6 +119,7 @@ class FilePathPrompt(InputPrompt):
         only_files: bool = False,
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""
@@ -142,5 +143,6 @@ class FilePathPrompt(InputPrompt):
             invalid_message=invalid_message,
             transformer=transformer,
             filter=filter,
+            session_result=session_result,
             **kwargs,
         )

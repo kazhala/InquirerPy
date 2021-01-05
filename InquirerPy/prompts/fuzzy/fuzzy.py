@@ -212,7 +212,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     python provider.
 
     :param message: message to display to the user
-    :type message: Union[str, Callable[[], str]]
+    :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param choices: list of choices available to select
     :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value to insert into buffer
@@ -255,7 +255,7 @@ class FuzzyPrompt(BaseComplexPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: str = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
@@ -275,6 +275,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
     ) -> None:
         """Initialise the layout and create Application.
 
@@ -321,6 +322,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             multiselect=multiselect,
             instruction=instruction,
             keybindings=keybindings,
+            session_result=session_result,
         )
 
         self._content_control = InquirerPyFuzzyControl(

@@ -14,7 +14,7 @@ class ConfirmPrompt(BaseSimplePrompt):
     This class is used for confirm prompt.
 
     :param message: the question message to display
-    :type message: Union[str, Callable[[], str]]
+    :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: the style dictionary to apply
     :type style: Dict[str, str]
     :param default: set default answer to true
@@ -29,12 +29,13 @@ class ConfirmPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
         default: bool = False,
         qmark: str = "?",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
         **kwargs
     ) -> None:
         """Construct a PromptSession object and apply keybindings."""
@@ -45,6 +46,7 @@ class ConfirmPrompt(BaseSimplePrompt):
             qmark=qmark,
             transformer=transformer,
             filter=filter,
+            session_result=session_result,
         )
         self._default = default
         if not isinstance(self._default, bool):

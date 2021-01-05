@@ -20,7 +20,7 @@ class InputPrompt(BaseSimplePrompt):
     This class is used for input prompt.
 
     :param message: the question to ask
-    :type message: Union[str, Callable[[], str]]
+    :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: a dictionary of style to apply
     :type style: Dict[str, str]
     :param vi_mode: use vi kb for the prompt
@@ -47,7 +47,7 @@ class InputPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         default: str = "",
@@ -59,6 +59,7 @@ class InputPrompt(BaseSimplePrompt):
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""
@@ -71,6 +72,7 @@ class InputPrompt(BaseSimplePrompt):
             invalid_message=invalid_message,
             transformer=transformer,
             filter=filter,
+            session_result=session_result,
         )
         self._default = default
         if not isinstance(self._default, str):

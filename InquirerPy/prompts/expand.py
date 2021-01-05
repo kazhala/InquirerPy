@@ -143,7 +143,7 @@ class ExpandPrompt(BaseListPrompt):
     all controled via InquirerPyExpandControl under one window.
 
     :param message: message to ask user
-    :type message: Union[str, Callable[[], str]]
+    :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param choices: list of choices to display
     :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value, needs to be a key of the choices
@@ -186,7 +186,7 @@ class ExpandPrompt(BaseListPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: str = "",
         style: Dict[str, str] = None,
@@ -206,6 +206,7 @@ class ExpandPrompt(BaseListPrompt):
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
     ) -> None:
         """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
@@ -231,6 +232,7 @@ class ExpandPrompt(BaseListPrompt):
             invalid_message=invalid_message,
             multiselect=multiselect,
             keybindings=keybindings,
+            session_result=session_result,
         )
 
     def _after_render(self, application) -> None:

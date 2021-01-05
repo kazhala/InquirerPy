@@ -11,7 +11,7 @@ class SecretPrompt(InputPrompt):
     """A wrapper class around PromptSession to create a secret prompt.
 
     :param message: the message to display in the prompt
-    :type message: Union[str, Callable[[], str]]
+    :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: style to apply to the prompt
     :type style: Dict[str, str]
     :param default: the default value
@@ -32,7 +32,7 @@ class SecretPrompt(InputPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
         default: str = "",
         qmark: str = "?",
@@ -41,6 +41,7 @@ class SecretPrompt(InputPrompt):
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
         **kwargs
     ) -> None:
         """Construct the prompt session."""
@@ -59,6 +60,7 @@ class SecretPrompt(InputPrompt):
             is_password=True,
             transformer=transformer,
             filter=filter,
+            session_result=session_result,
             **kwargs
         )
 

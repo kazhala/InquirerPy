@@ -96,7 +96,7 @@ class RawlistPrompt(BaseListPrompt):
     """Used to create a rawlist prompt where user can use number to jump to items.
 
     :param message: message to display as question
-    :type message: Union[str, Callable[[], str]]
+    :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param choices: list of choices available for selection
     :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value
@@ -138,7 +138,7 @@ class RawlistPrompt(BaseListPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         separator: str = ")",
@@ -156,6 +156,7 @@ class RawlistPrompt(BaseListPrompt):
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
         self.content_control = InquirerPyRawlistControl(
@@ -176,6 +177,7 @@ class RawlistPrompt(BaseListPrompt):
             validate=validate,
             invalid_message=invalid_message,
             keybindings=keybindings,
+            session_result=session_result,
         )
 
     def _after_render(self, application) -> None:

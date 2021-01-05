@@ -51,7 +51,7 @@ class BaseSimplePrompt(ABC):
     a call of `self.session = PromptSession(...)`.
 
     :param message: the question message to display
-    :type message: Union[str, Callable[[], str]]
+    :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: the style dictionary to apply
     :type style: Dict[str, str]
     :param vi_mode: use vi kb for the prompt
@@ -66,11 +66,14 @@ class BaseSimplePrompt(ABC):
     :type transformer: Callable[[str], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
     :type filter: Callable[[Any], Any]
+    :param session_result: the current session result, this is used by callable message and choices
+        to generate dynamic values. If using alternate syntax, skip this value.
+    :type session_result: Dict[str, Union[str, bool, List[Any]]]
     """
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -78,9 +81,13 @@ class BaseSimplePrompt(ABC):
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
     ) -> None:
         """Construct the base class for simple prompts."""
-        self._message = message if not isinstance(message, Callable) else message()  # type: ignore
+        if session_result is None:
+            session_result = {}
+        self._result = session_result
+        self._message = message if not isinstance(message, Callable) else message(self._result)  # type: ignore
         self._style = Style.from_dict(style or get_style())
         self._qmark = qmark
         self._status = {"answered": False, "result": None}
@@ -372,7 +379,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -385,6 +392,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
         if not keybindings:
@@ -398,6 +406,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             filter=filter,
             invalid_message=invalid_message,
             validate=validate,
+            session_result=session_result,
         )
         self._content_control: InquirerPyUIControl
         self._instruction = instruction
@@ -681,7 +690,7 @@ class BaseListPrompt(BaseComplexPrompt):
     Upon entering the answer, update the first window's formatted text.
 
     :param message: question to display to the user
-    :type message: Union[str, Callable[[], str]]
+    :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: style to apply to the prompt
     :type style: Dict[str, str]
     :param vi_mode: use vi kb for the prompt
@@ -710,7 +719,7 @@ class BaseListPrompt(BaseComplexPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -723,6 +732,7 @@ class BaseListPrompt(BaseComplexPrompt):
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
         super().__init__(
@@ -739,6 +749,7 @@ class BaseListPrompt(BaseComplexPrompt):
             height=height,
             max_height=max_height,
             keybindings=keybindings,
+            session_result=session_result,
         )
 
         self.layout = HSplit(

@@ -90,7 +90,7 @@ class CheckboxPrompt(BaseListPrompt):
     """A wrapper class around `prompt_toolkit` Application to create a checkbox prompt.
 
     :param message: message to display
-    :type message: Union[str, Callable[[], str]]
+    :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param choices: list of choices to display
     :type choices: Union[Callable[[], List[Any]], List[Any]],
     :param default: default value
@@ -127,7 +127,7 @@ class CheckboxPrompt(BaseListPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[], str]],
+        message: Union[str, Callable[[Dict[str, Any]], str]],
         choices: Union[Callable[[], List[Any]], List[Any]],
         default: Any = None,
         style: Dict[str, str] = None,
@@ -144,6 +144,7 @@ class CheckboxPrompt(BaseListPrompt):
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyCheckboxControl(
@@ -163,6 +164,7 @@ class CheckboxPrompt(BaseListPrompt):
             invalid_message=invalid_message,
             multiselect=True,
             keybindings=keybindings,
+            session_result=session_result,
         )
 
     def _handle_enter(self, event) -> None:

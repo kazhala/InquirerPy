@@ -83,7 +83,12 @@ def prompt(
             if question_when and not question_when(result):
                 result[question_name] = None
                 continue
-            args = {"message": message, "style": style, "vi_mode": vi_mode}
+            args = {
+                "message": message,
+                "style": style,
+                "vi_mode": vi_mode,
+                "session_result": result,
+            }
             if question_type in list_prompts:
                 args["keybindings"] = {**keybindings, **question.pop("keybindings", {})}
             result[question_name] = question_mapping[question_type](
