@@ -1,10 +1,11 @@
 """Module contains the main question function to create a confirm prompt."""
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
 
 from InquirerPy.base import BaseSimplePrompt
+from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument
 
 
@@ -108,13 +109,18 @@ class ConfirmPrompt(BaseSimplePrompt):
         post_answer = ("class:answer", " Yes" if self.status["result"] else " No")
         return super()._get_prompt_message(pre_answer, post_answer)
 
-    def execute(self) -> bool:
+    def execute(self, raise_keyboard_interrupt: bool = True) -> Optional[bool]:
         """Display a confirm prompt and get user input for confirmation.
 
         :return: user selected answer, either True or False
         :rtype: bool
         """
         result = self._session.prompt()
+        if result == INQUIRERPY_KEYBOARD_INTERRUPT:
+            if raise_keyboard_interrupt:
+                raise KeyboardInterrupt
+            else:
+                result = None
         if not self._filter:
             return result
         return self._filter(result)
