@@ -1,7 +1,7 @@
 """Module contains the class to construct fuzzyfinder prompt."""
 import asyncio
 import math
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -53,13 +53,14 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         marker: str,
         current_text: Callable[[], str],
         max_lines: int,
+        session_result: Optional[Dict[str, Any]],
     ) -> None:
         """Construct UIControl and initialise choices."""
         self._pointer = pointer
         self._marker = marker
         self._current_text = current_text
         self._max_lines = max_lines
-        super().__init__(choices, None)
+        super().__init__(choices=choices, default=None, session_result=session_result)
 
     def _format_choices(self) -> None:
         for index, choice in enumerate(self.choices):
@@ -333,6 +334,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             max_lines=self._dimmension_max_height
             if not self._border
             else self._dimmension_max_height - 2,
+            session_result=session_result,
         )
 
         self._buffer = Buffer(on_text_changed=self._on_text_changed)

@@ -1,6 +1,6 @@
 """Module contains checkbox prompt."""
 
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import ValidationError, Validator
@@ -38,12 +38,15 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
         disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
+        session_result: Optional[Dict[str, Any]] = None,
     ) -> None:
         """Initialise required attributes and call base class."""
         self._pointer = "%s " % pointer
         self._enabled_symbol = enabled_symbol
         self._disabled_symbol = disabled_symbol
-        super().__init__(choices, default)
+        super().__init__(
+            choices=choices, default=default, session_result=session_result
+        )
 
     def _format_choices(self) -> None:
         for raw_choice, choice in zip(self._raw_choices, self.choices):  # type: ignore
@@ -148,7 +151,12 @@ class CheckboxPrompt(BaseListPrompt):
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyCheckboxControl(
-            choices, default, pointer, enabled_symbol, disabled_symbol
+            choices=choices,
+            default=default,
+            pointer=pointer,
+            enabled_symbol=enabled_symbol,
+            disabled_symbol=disabled_symbol,
+            session_result=session_result,
         )
         super().__init__(
             message=message,

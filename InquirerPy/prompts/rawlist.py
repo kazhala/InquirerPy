@@ -1,5 +1,5 @@
 """Module contains the rawlist prompt."""
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import Validator
@@ -23,12 +23,15 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         pointer: str,
         separator: str,
         marker: str,
+        session_result: Optional[Dict[str, Any]],
     ) -> None:
         """Construct the content control object and add the index to each choice for visual purposes."""
         self._pointer = pointer
         self._separator = separator
         self._marker = marker
-        super().__init__(choices, default)
+        super().__init__(
+            choices=choices, default=default, session_result=session_result
+        )
 
     def _format_choices(self) -> None:
         separator_count = 0
@@ -160,7 +163,12 @@ class RawlistPrompt(BaseListPrompt):
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
         self.content_control = InquirerPyRawlistControl(
-            choices, default, pointer, separator, marker
+            choices=choices,
+            default=default,
+            pointer=pointer,
+            separator=separator,
+            marker=marker,
+            session_result=session_result,
         )
         self._instruction = instruction
         super().__init__(

@@ -89,9 +89,7 @@ class BaseSimplePrompt(ABC):
         session_result: Dict[str, Union[str, bool, List[Any]]] = None,
     ) -> None:
         """Construct the base class for simple prompts."""
-        if session_result is None:
-            session_result = {}
-        self._result = session_result
+        self._result = session_result or {}
         self._message = message if not isinstance(message, Callable) else message(self._result)  # type: ignore
         self._style = Style.from_dict(style or get_style())
         self._qmark = qmark
@@ -191,13 +189,19 @@ class InquirerPyUIControl(FormattedTextControl):
         self,
         choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         default: Any = None,
+        session_result: Dict[str, Any] = None,
     ) -> None:
         """Initialise choices and construct a FormattedTextControl object."""
+        self._session_result = session_result or {}
         self._selected_choice_index: int = 0
         self._choice_func = None
-        self._default = default
         self._loading = False
         self._raw_choices = []
+        self._default = (
+            default
+            if not isinstance(default, Callable)
+            else default(self._session_result)
+        )
         if isinstance(choices, Callable):
             self._loading = True
             self._choices = []
@@ -210,7 +214,7 @@ class InquirerPyUIControl(FormattedTextControl):
         self._format_choices()
         super().__init__(self._get_formatted_choices)
 
-    def _retrieve_choices(self, session_result: Dict[str, Any] = None) -> None:
+    def _retrieve_choices(self) -> None:
         """Retrieve the callable choices and format them.
 
         Should be called in the `after_render` call in `Application`.
@@ -219,9 +223,7 @@ class InquirerPyUIControl(FormattedTextControl):
             if using alternate syntax, skip this value
         :type session_result: Dict[str, Any]
         """
-        if not session_result:
-            session_result = {}
-        self._raw_choices = self._choice_func(session_result)  # type: ignore
+        self._raw_choices = self._choice_func(self._session_result)  # type: ignore
         self.choices = self._get_choices(self._raw_choices, self._default)
         self._loading = False
         self._safety_check()
@@ -536,7 +538,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         if not self._rendered:
             self._rendered = True
             if self.content_control._choice_func:
-                self.content_control._retrieve_choices(self._result)
+                self.content_control._retrieve_choices()
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message.

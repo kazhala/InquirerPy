@@ -1,5 +1,5 @@
 """Module contains the expand prompt and its related helper classes."""
-from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import Validator
@@ -31,6 +31,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         help_msg: str,
         expand_pointer: str,
         marker: str,
+        session_result: Optional[Dict[str, Any]],
     ) -> None:
         """Construct content control object and initialise choices."""
         self._pointer = pointer
@@ -40,7 +41,9 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         self._expand_pointer = "%s " % expand_pointer
         self._marker = marker
         self._help_msg = help_msg
-        super().__init__(choices, default)
+        super().__init__(
+            choices=choices, default=default, session_result=session_result
+        )
 
     def _format_choices(self) -> None:
         self._key_maps = {}
@@ -217,6 +220,7 @@ class ExpandPrompt(BaseListPrompt):
             help_msg=help_msg,
             expand_pointer=expand_pointer,
             marker=marker,
+            session_result=session_result,
         )
         super().__init__(
             message=message,

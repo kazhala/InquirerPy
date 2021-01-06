@@ -1,6 +1,6 @@
 """Module contains list prompt."""
 
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import Validator
@@ -24,11 +24,14 @@ class InquirerPyListControl(InquirerPyUIControl):
         default: Any,
         pointer: str,
         marker: str,
+        session_result: Optional[Dict[str, Any]],
     ) -> None:
         """Construct and init a custom FormattedTextControl object."""
         self._pointer: str = pointer
         self._marker: str = marker
-        super().__init__(choices=choices, default=default)
+        super().__init__(
+            choices=choices, default=default, session_result=session_result
+        )
 
     def _format_choices(self) -> None:
         pass
@@ -128,6 +131,7 @@ class ListPrompt(BaseListPrompt):
             default=default,
             pointer=pointer,
             marker=marker,
+            session_result=session_result,
         )
         self._instruction = instruction
         super().__init__(
