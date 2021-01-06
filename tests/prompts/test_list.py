@@ -21,7 +21,7 @@ class TestListPrompt(unittest.TestCase):
 
     def test_list_control(self):
         list_control = InquirerPyListControl(
-            self.choices, "watermelon", INQUIRERPY_POINTER_SEQUENCE, ">"
+            self.choices, "watermelon", INQUIRERPY_POINTER_SEQUENCE, ">", None
         )
         self.assertEqual(
             list_control.choices,
@@ -85,8 +85,9 @@ class TestListPrompt(unittest.TestCase):
             "watermelon",
             "",
             "",
+            None,
         )
-        self.assertRaises(InvalidArgument, InquirerPyListControl, [], "", "", "")
+        self.assertRaises(InvalidArgument, InquirerPyListControl, [], "", "", "", None)
 
     def test_list_prompt(self):
         prompt = ListPrompt(

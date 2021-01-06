@@ -26,6 +26,7 @@ class TestExpandPrompt(unittest.TestCase):
             pointer=" ",
             separator=")",
             marker=">",
+            session_result=None,
         )
         self.assertEqual(content_control._pointer, " ")
         self.assertEqual(content_control._marker, ">")
@@ -80,6 +81,7 @@ class TestExpandPrompt(unittest.TestCase):
             "",
             "",
             "",
+            None,
         )
 
         self.assertRaises(
@@ -95,6 +97,7 @@ class TestExpandPrompt(unittest.TestCase):
             "",
             "",
             "",
+            None,
         )
 
     def test_prompt(self):

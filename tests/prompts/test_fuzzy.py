@@ -18,6 +18,7 @@ class TestFuzzy(unittest.TestCase):
         marker=INQUIRERPY_POINTER_SEQUENCE,
         current_text=lambda: "yes",
         max_lines=80,
+        session_result=None,
     )
 
     def setUp(self):
