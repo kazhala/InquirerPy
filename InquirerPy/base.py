@@ -64,7 +64,7 @@ class BaseSimplePrompt(ABC):
     :param qmark: the custom qmark to display infront of the question
     :type qmark: str
     :param validate: a callable or Validator instance to validate user input
-    :type validate: Union[Callable[[str], bool], Validator]
+    :type validate: Union[Callable[[Any], bool], Validator]
     :param invalid_message: message to display when input is invalid
     :type invalid_message: str
     :param transformer: a callable to transform the result, this is visual effect only
@@ -82,7 +82,7 @@ class BaseSimplePrompt(ABC):
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         qmark: str = "?",
-        validate: Union[Callable[[str], bool], Validator] = None,
+        validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
@@ -405,7 +405,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         filter: Callable[[Any], Any] = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
-        validate: Union[Callable[[str], bool], Validator] = None,
+        validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
@@ -725,7 +725,7 @@ class BaseListPrompt(BaseComplexPrompt):
     :param max_height: max height choice window should reach
     :type max_height: Union[str, int]
     :param validate: a callable or Validator instance to validate user selection
-    :type validate: Union[Callable[[str], bool], Validator]
+    :type validate: Union[Callable[[Any], bool], Validator]
     :param invalid_message: message to display when input is invalid
     :type invalid_message: str
     :param multiselect: enable multiselect mode
@@ -745,7 +745,7 @@ class BaseListPrompt(BaseComplexPrompt):
         filter: Callable[[Any], Any] = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
-        validate: Union[Callable[[str], bool], Validator] = None,
+        validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,

@@ -247,7 +247,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param max_height: max height choice window should reach
     :type max_height: Union[str, int]
     :param validate: a callable or Validator instance to validate user selection
-    :type validate: Union[Callable[[str], bool], Validator]
+    :type validate: Union[Callable[[Any], bool], Validator]
     :param invalid_message: message to display when input is invalid
     :type invalid_message: str
     :param keybindings: custom keybindings to apply
@@ -273,7 +273,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         info: bool = True,
         height: Union[str, int] = None,
         max_height: Union[str, int] = None,
-        validate: Union[Callable[[str], bool], Validator] = None,
+        validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
         session_result: Dict[str, Union[str, bool, List[Any]]] = None,

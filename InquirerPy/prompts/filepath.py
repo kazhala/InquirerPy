@@ -1,7 +1,7 @@
 """Module contains the filepath prompt and its completer class."""
 import os
 from pathlib import Path
-from typing import Any, Callable, Dict, Generator, List, Optional, Union
+from typing import Any, Callable, Dict, Generator, List, Union
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
@@ -92,7 +92,7 @@ class FilePathPrompt(InputPrompt):
     :param multicolumn_complete: complete in multi column
     :type multicolumn_complete: bool
     :param validate: a callable or a validation class to validate user input
-    :type validate: Optional[Union[Callable[[str], bool], Validator]]
+    :type validate: Union[Callable[[str], bool], Validator]
     :param invalid_message: the error message to display when input is invalid
     :type invalid_message: str
     :param only_directories: only complete directories
@@ -113,7 +113,7 @@ class FilePathPrompt(InputPrompt):
         default: Union[str, Callable[[Dict[str, Any]], str]] = "",
         qmark: str = "?",
         multicolumn_complete: bool = False,
-        validate: Optional[Union[Callable[[str], bool], Validator]] = None,
+        validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         only_directories: bool = False,
         only_files: bool = False,

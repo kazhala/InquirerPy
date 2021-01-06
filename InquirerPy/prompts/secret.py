@@ -21,7 +21,7 @@ class SecretPrompt(InputPrompt):
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param validate: a callable to validate the user input
-    :type validate: Optional[Union[Validator, Callable[[str], bool]]]
+    :type validate: Union[Validator, Callable[[str], bool]]
     :param invalid_message: the error message to display when validator failed
     :type invalid_message: str
     :param transformer: a callable to transform the result, this is visual effect only
