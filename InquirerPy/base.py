@@ -87,10 +87,14 @@ class BaseSimplePrompt(ABC):
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
         session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        default: Any = "",
     ) -> None:
         """Construct the base class for simple prompts."""
         self._result = session_result or {}
         self._message = message if not isinstance(message, Callable) else message(self._result)  # type: ignore
+        self._default = (
+            default if not isinstance(default, Callable) else default(self._result)
+        )
         self._style = Style.from_dict(style or get_style())
         self._qmark = qmark
         self._status = {"answered": False, "result": None}

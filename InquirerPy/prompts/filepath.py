@@ -86,7 +86,7 @@ class FilePathPrompt(InputPrompt):
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param default: the default result
-    :type default: str
+    :type default: Union[str, Callable[[Dict[str, Any]], str]]
     :param qmark: question qmark to display
     :type qmark: str
     :param multicolumn_complete: complete in multi column
@@ -110,7 +110,7 @@ class FilePathPrompt(InputPrompt):
         message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
-        default: str = "",
+        default: Union[str, Callable[[Dict[str, Any]], str]] = "",
         qmark: str = "?",
         multicolumn_complete: bool = False,
         validate: Optional[Union[Callable[[str], bool], Validator]] = None,

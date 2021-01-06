@@ -15,11 +15,11 @@ questions = [
         "type": "expand",
         "choices": [
             {"key": "j", "name": "Jump", "value": "Jump"},
-            {"key": "y", "name": "Yes", "value": "No"},
+            {"key": "y", "name": "Yes", "value": 1},
             {"key": "w", "name": "Word", "value": "HAHAHA"},
         ],
         "message": "What do you think?",
-        "default": "No",
+        "default": 1,
         "multiselect": True,
         "keybindings": {"up": [{"key": "c-p"}], "down": [{"key": "c-n"}]},
     },

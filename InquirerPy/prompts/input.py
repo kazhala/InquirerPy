@@ -26,7 +26,7 @@ class InputPrompt(BaseSimplePrompt):
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param default: the default result
-    :type default: str
+    :type default: Union[str, Callable[[Dict[str, Any]], str]]
     :param qmark: question qmark to display
     :type qmark: str
     :param completer: add auto completer to user input
@@ -50,7 +50,7 @@ class InputPrompt(BaseSimplePrompt):
         message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
         vi_mode: bool = False,
-        default: str = "",
+        default: Union[str, Callable[[Dict[str, Any]], str]] = "",
         qmark: str = "?",
         completer: Union[Dict[str, Optional[str]], Completer] = None,
         multicolumn_complete: bool = False,
@@ -73,8 +73,8 @@ class InputPrompt(BaseSimplePrompt):
             transformer=transformer,
             filter=filter,
             session_result=session_result,
+            default=default,
         )
-        self._default = default
         if not isinstance(self._default, str):
             raise InvalidArgument(
                 "default for input type question should be type of str."

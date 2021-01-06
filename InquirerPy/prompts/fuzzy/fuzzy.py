@@ -217,7 +217,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param choices: list of choices available to select
     :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
     :param default: default value to insert into buffer
-    :type default: str
+    :type default: Union[str, Callable[[Dict[str, Any]], str]]
     :param pointer: pointer symbol
     :type pointer: str
     :param style: style dict to apply
@@ -258,7 +258,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
         choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
-        default: str = "",
+        default: Union[str, Callable[[Dict[str, Any]], str]] = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: Dict[str, str] = None,
         vi_mode: bool = False,
@@ -301,7 +301,6 @@ class FuzzyPrompt(BaseComplexPrompt):
         self._info = info
         self._task = None
         self._rendered = False
-        self._default = str(default)
         self._content_control: InquirerPyFuzzyControl
 
         keybindings = {
@@ -325,6 +324,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             keybindings=keybindings,
             session_result=session_result,
         )
+        self._default = default if not isinstance(default, Callable) else default(self._result)  # type: ignore
 
         self._content_control = InquirerPyFuzzyControl(
             choices=choices,

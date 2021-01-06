@@ -15,7 +15,7 @@ class SecretPrompt(InputPrompt):
     :param style: style to apply to the prompt
     :type style: Dict[str, str]
     :param default: the default value
-    :type default: str
+    :type default: Union[str, Callable[[Dict[str, Any]], str]]
     :param qmark: qmark to display infront of the question
     :type qmark: str
     :param vi_mode: use vi kb for the prompt
@@ -34,7 +34,7 @@ class SecretPrompt(InputPrompt):
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
-        default: str = "",
+        default: Union[str, Callable[[Dict[str, Any]], str]] = "",
         qmark: str = "?",
         vi_mode: bool = True,
         validate: Union[Validator, Callable[[str], bool]] = None,

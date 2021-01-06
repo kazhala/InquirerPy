@@ -25,7 +25,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
     def __init__(
         self,
         choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
-        default: str,
+        default: Any,
         pointer: str,
         separator: str,
         help_msg: str,
@@ -149,8 +149,8 @@ class ExpandPrompt(BaseListPrompt):
     :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param choices: list of choices to display
     :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
-    :param default: default value, needs to be a key of the choices
-    :type default: str
+    :param default: default value, can be a key of the choices or a value
+    :type default: Any
     :param style: style dict to apply to the prompt
     :type style: Dict[str, str]
     :param vi_mode: use vi kb for the prompt
@@ -191,7 +191,7 @@ class ExpandPrompt(BaseListPrompt):
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
         choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
-        default: str = "",
+        default: Any = "",
         style: Dict[str, str] = None,
         vi_mode: bool = False,
         qmark: str = "?",

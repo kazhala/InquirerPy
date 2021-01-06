@@ -19,7 +19,7 @@ class ConfirmPrompt(BaseSimplePrompt):
     :param style: the style dictionary to apply
     :type style: Dict[str, str]
     :param default: set default answer to true
-    :type default: bool
+    :type default: Union[bool, Callable[[Dict[str, Any]], bool]]
     :param qmark: the custom qmark to display infront of the question
     :type qmark: str
     :param transformer: a callable to transform the result, this is visual effect only
@@ -32,7 +32,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
         style: Dict[str, str] = None,
-        default: bool = False,
+        default: Union[bool, Callable[[Dict[str, Any]], bool]] = False,
         qmark: str = "?",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
@@ -48,8 +48,8 @@ class ConfirmPrompt(BaseSimplePrompt):
             transformer=transformer,
             filter=filter,
             session_result=session_result,
+            default=default,
         )
-        self._default = default
         if not isinstance(self._default, bool):
             raise InvalidArgument(
                 "default for confirm type question should be type of bool."
