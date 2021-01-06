@@ -418,8 +418,9 @@ class FuzzyPrompt(BaseComplexPrompt):
         if not self._rendered:
             super()._after_render(application)
             if self._default:
-                self._buffer.text = self._default
-                self._buffer.cursor_position = len(self._default)
+                default_text = str(self._default)  # fix type annotation
+                self._buffer.text = default_text
+                self._buffer.cursor_position = len(default_text)
 
     def _toggle_all(self, value: bool = None) -> None:
         """Toggle all choice `enabled` status.
