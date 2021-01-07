@@ -135,7 +135,7 @@ class TestSecret(unittest.TestCase):
                         "validator": "",
                         "marker": "#e5c07b",
                         "fuzzy_prompt": "#c678dd",
-                        "fuzzy_info": "#98c379",
+                        "fuzzy_info": "#56b6c2",
                         "fuzzy_match": "#c678dd",
                         "frame.border": "#4b5263",
                     }

@@ -47,7 +47,7 @@ class TestUtils(unittest.TestCase):
                 "marker": "#e5c07b",
                 "validator": "",
                 "fuzzy_prompt": "#c678dd",
-                "fuzzy_info": "#98c379",
+                "fuzzy_info": "#56b6c2",
                 "frame.border": "#4b5263",
                 "fuzzy_match": "#c678dd",
             },
