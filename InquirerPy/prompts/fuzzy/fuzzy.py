@@ -18,6 +18,7 @@ from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.layout.processors import AfterInput, BeforeInput
+from prompt_toolkit.lexers.base import SimpleLexer
 from prompt_toolkit.validation import ValidationError, Validator
 from prompt_toolkit.widgets.base import Frame
 
@@ -352,6 +353,7 @@ class FuzzyPrompt(BaseComplexPrompt):
                     AfterInput(self._generate_after_input),
                     BeforeInput(self._generate_before_input),
                 ],
+                lexer=SimpleLexer("class:input"),
             ),
         )
 
