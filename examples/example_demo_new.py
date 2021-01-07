@@ -9,7 +9,7 @@ client = boto3.client("s3")
 os.environ["INQUIRERPY_VI_MODE"] = "true"
 
 
-def get_bucket():
+def get_bucket(_):
     return [bucket["Name"] for bucket in client.list_buckets()["Buckets"]]
 
 
@@ -37,7 +37,7 @@ else:
     bucket = inquirer.fuzzy(message="Select a bucket:", choices=get_bucket).execute()
     file_to_download = inquirer.fuzzy(
         message="Select files to download:",
-        choices=lambda: walk_s3_bucket(bucket),
+        choices=lambda _: walk_s3_bucket(bucket),
         multiselect=True,
     ).execute()
     destination = inquirer.filepath(
