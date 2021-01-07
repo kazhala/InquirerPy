@@ -403,8 +403,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         instruction: str = "",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
-        height: Union[int, str] = None,
-        max_height: Union[int, str] = None,
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
@@ -431,9 +429,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._multiselect = multiselect
         self._rendered = False
         self._invalid = False
-        self._dimmension_height, self._dimmension_max_height = calculate_height(
-            height, max_height
-        )
         self._application: Application
 
         @Condition
@@ -763,10 +758,11 @@ class BaseListPrompt(BaseComplexPrompt):
             validate=validate,
             multiselect=multiselect,
             instruction=instruction,
-            height=height,
-            max_height=max_height,
             keybindings=keybindings,
             session_result=session_result,
+        )
+        self._dimmension_height, self._dimmension_max_height = calculate_height(
+            height, max_height
         )
 
         self.layout = HSplit(

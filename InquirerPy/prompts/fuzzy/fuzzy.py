@@ -26,6 +26,7 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py_async
 from InquirerPy.separator import Separator
+from InquirerPy.utils import calculate_height
 
 
 class InquirerPyFuzzyControl(InquirerPyUIControl):
@@ -317,14 +318,15 @@ class FuzzyPrompt(BaseComplexPrompt):
             filter=filter,
             validate=validate,
             invalid_message=invalid_message,
-            height=height,
-            max_height=max_height,
             multiselect=multiselect,
             instruction=instruction,
             keybindings=keybindings,
             session_result=session_result,
         )
         self._default = default if not isinstance(default, Callable) else default(self._result)  # type: ignore
+        self._dimmension_height, self._dimmension_max_height = calculate_height(
+            height, max_height, offset=2 if not self._border else 4
+        )
 
         self._content_control = InquirerPyFuzzyControl(
             choices=choices,

@@ -58,7 +58,7 @@ def get_style(
 def calculate_height(
     height: Optional[Union[int, str]],
     max_height: Optional[Union[int, str]],
-    offset: int = 1,
+    offset: int = 2,
 ) -> Tuple[Optional[int], int]:
     """Calculate the height and max_height for the choice window.
 
@@ -84,7 +84,7 @@ def calculate_height(
 
         if not max_height:
             dimmension_max_height = term_lines - offset
-            max_height = "50%"
+            max_height = "100%"
         if isinstance(max_height, str):
             max_height = max_height.replace("%", "")
             max_height = int(max_height)
