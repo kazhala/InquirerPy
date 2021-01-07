@@ -40,7 +40,7 @@ def get_style(
             "validator": os.getenv("INQUIRERPY_STYLE_VALIDATOR", ""),
             "marker": os.getenv("INQUIRERPY_STYLE_MARKER", "#e5c07b"),
             "fuzzy_prompt": os.getenv("INQUIRERPY_STYLE_FUZZY_PROMPT", "#c678dd"),
-            "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", "#98c379"),
+            "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", "#56b6c2"),
             "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", "#4b5263"),
             "fuzzy_match": os.getenv("INQUIRERPY_STYLE_FUZZY_MATCH", "#c678dd"),
             **style,
