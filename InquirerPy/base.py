@@ -774,36 +774,28 @@ class BaseListPrompt(BaseComplexPrompt):
                     ),
                 ),
                 ConditionalContainer(
-                    FloatContainer(
-                        content=Window(
-                            content=self.content_control,
-                            height=Dimension(
-                                max=self._dimmension_max_height,
-                                preferred=self._dimmension_height,
-                            ),
+                    Window(
+                        content=self.content_control,
+                        height=Dimension(
+                            max=self._dimmension_max_height,
+                            preferred=self._dimmension_height,
                         ),
-                        floats=[
-                            Float(
-                                ConditionalContainer(
-                                    Window(
-                                        FormattedTextControl(
-                                            [
-                                                (
-                                                    "class:validation-toolbar",
-                                                    self._invalid_message,
-                                                )
-                                            ]
-                                        ),
-                                        dont_extend_height=True,
-                                    ),
-                                    filter=self._is_invalid,
-                                ),
-                                bottom=0,
-                                left=0,
-                            )
-                        ],
                     ),
                     filter=~IsDone() & ~self._is_loading,
+                ),
+                ConditionalContainer(
+                    Window(
+                        FormattedTextControl(
+                            [
+                                (
+                                    "class:validation-toolbar",
+                                    self._invalid_message,
+                                )
+                            ]
+                        ),
+                        dont_extend_height=True,
+                    ),
+                    filter=self._is_invalid & ~IsDone(),
                 ),
             ]
         )
