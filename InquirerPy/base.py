@@ -8,10 +8,9 @@ BaseComplexPrompt ← FuzzyPrompt
         ↑
 BaseListPrompt ← ListPrompt, ExpandPrompt ...
 """
-
-from abc import ABC, abstractmethod
 import os
 import re
+from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union
 
 from prompt_toolkit.application import Application

@@ -8,10 +8,9 @@ All fuzzy logic credit goes to sweep.py.
     Copyright (c) 2018 Pavel Aslanov
 """
 import asyncio
-from functools import partial
 import heapq
+from functools import partial
 from typing import Any, Dict, List
-
 
 SCORE_MIN = float("-inf")
 SCORE_MAX = float("inf")

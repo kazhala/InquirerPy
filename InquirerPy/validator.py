@@ -1,6 +1,6 @@
 """Module contains some simple validator."""
-from pathlib import Path
 import re
+from pathlib import Path
 from typing import Optional
 
 from prompt_toolkit.validation import ValidationError, Validator
