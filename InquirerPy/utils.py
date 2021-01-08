@@ -26,12 +26,15 @@ def get_style(
 
     Reads the ENV variable first before apply default one dark theme.
 
+    Priority:
+    style parameter -> ENV variable -> default style
+
     :param style: style to apply to prompt
     :type style: Dict[str, str]
     :param style_override: override all default styles
     :type style_override: bool
-    :return: style dictionary ready to be consumed by `Style.from_dict`
-    :rtype: Dict[str, str]
+    :return: instance of InquirerPyStyle, consume it via `Style.from_dict(InquirerPyStyle.dict)`
+    :rtype: InquirerPyStyle
     """
     if not style_override or style is None:
         if not style:
@@ -55,7 +58,24 @@ def get_style(
             **style,
         }
     else:
-        result = style
+        result = {
+            "questionmark": os.getenv("INQUIRERPY_STYLE_QUESTIONMARK", ""),
+            "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", ""),
+            "input": os.getenv("INQUIRERPY_STYLE_INPUT", ""),
+            "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
+            "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
+            "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", ""),
+            "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", ""),
+            "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
+            "skipped": os.getenv("INQUIRERPY_STYLE_SKIPPED", ""),
+            "validator": os.getenv("INQUIRERPY_STYLE_VALIDATOR", ""),
+            "marker": os.getenv("INQUIRERPY_STYLE_MARKER", ""),
+            "fuzzy_prompt": os.getenv("INQUIRERPY_STYLE_FUZZY_PROMPT", ""),
+            "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", ""),
+            "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", ""),
+            "fuzzy_match": os.getenv("INQUIRERPY_STYLE_FUZZY_MATCH", ""),
+            **style,
+        }
 
     if result.get("fuzzy_border"):
         result["frame.border"] = result.pop("fuzzy_border")
