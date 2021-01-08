@@ -7,6 +7,7 @@ from prompt_toolkit.shortcuts import PromptSession
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument
+from InquirerPy.utils import InquirerPyStyle
 
 
 class ConfirmPrompt(BaseSimplePrompt):
@@ -17,7 +18,7 @@ class ConfirmPrompt(BaseSimplePrompt):
     :param message: the question message to display
     :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: the style dictionary to apply
-    :type style: Dict[str, str]
+    :type style: InquirerPyStyle
     :param default: set default answer to true
     :type default: Union[bool, Callable[[Dict[str, Any]], bool]]
     :param qmark: the custom qmark to display infront of the question
@@ -31,7 +32,7 @@ class ConfirmPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
-        style: Dict[str, str] = None,
+        style: InquirerPyStyle = None,
         default: Union[bool, Callable[[Dict[str, Any]], bool]] = False,
         qmark: str = "?",
         transformer: Callable[[str], Any] = None,

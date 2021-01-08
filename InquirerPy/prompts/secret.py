@@ -5,6 +5,7 @@ from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
+from InquirerPy.utils import InquirerPyStyle
 
 
 class SecretPrompt(InputPrompt):
@@ -13,7 +14,7 @@ class SecretPrompt(InputPrompt):
     :param message: the message to display in the prompt
     :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: style to apply to the prompt
-    :type style: Dict[str, str]
+    :type style: InquirerPyStyle
     :param default: the default value
     :type default: Union[str, Callable[[Dict[str, Any]], str]]
     :param qmark: qmark to display infront of the question
@@ -33,7 +34,7 @@ class SecretPrompt(InputPrompt):
     def __init__(
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
-        style: Dict[str, str] = None,
+        style: InquirerPyStyle = None,
         default: Union[str, Callable[[Dict[str, Any]], str]] = "",
         qmark: str = "?",
         vi_mode: bool = True,

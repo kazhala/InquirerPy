@@ -7,13 +7,7 @@ from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.filters.cli import IsDone
-from prompt_toolkit.layout.containers import (
-    ConditionalContainer,
-    Float,
-    FloatContainer,
-    HSplit,
-    Window,
-)
+from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
@@ -27,7 +21,7 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py_async
 from InquirerPy.separator import Separator
-from InquirerPy.utils import calculate_height
+from InquirerPy.utils import InquirerPyStyle, calculate_height
 
 
 class InquirerPyFuzzyControl(InquirerPyUIControl):
@@ -223,7 +217,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param pointer: pointer symbol
     :type pointer: str
     :param style: style dict to apply
-    :type style: Dict[str, str]
+    :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param qmark: question mark symbol
@@ -262,7 +256,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         default: Union[str, Callable[[Dict[str, Any]], str]] = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
-        style: Dict[str, str] = None,
+        style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
         transformer: Callable[[str], Any] = None,

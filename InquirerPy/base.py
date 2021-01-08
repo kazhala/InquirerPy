@@ -20,13 +20,7 @@ from prompt_toolkit.filters import IsDone
 from prompt_toolkit.filters.base import Condition, FilterOrBool
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.layout.containers import (
-    ConditionalContainer,
-    Float,
-    FloatContainer,
-    HSplit,
-    Window,
-)
+from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
@@ -36,7 +30,7 @@ from prompt_toolkit.validation import ValidationError, Validator
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
-from InquirerPy.utils import calculate_height, get_style
+from InquirerPy.utils import InquirerPyStyle, calculate_height, get_style
 
 __all__ = [
     "BaseSimplePrompt",
@@ -58,7 +52,7 @@ class BaseSimplePrompt(ABC):
     :param message: the question message to display
     :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: the style dictionary to apply
-    :type style: Dict[str, str]
+    :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: str
     :param qmark: the custom qmark to display infront of the question
@@ -79,7 +73,7 @@ class BaseSimplePrompt(ABC):
     def __init__(
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
-        style: Dict[str, str] = None,
+        style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
         validate: Union[Callable[[Any], bool], Validator] = None,
@@ -95,7 +89,7 @@ class BaseSimplePrompt(ABC):
         self._default = (
             default if not isinstance(default, Callable) else default(self._result)
         )
-        self._style = Style.from_dict(style or get_style())
+        self._style = Style.from_dict(style.dict if style else get_style().dict)
         self._qmark = qmark
         self._status = {"answered": False, "result": None}
         self._kb = KeyBindings()
@@ -397,7 +391,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
-        style: Dict[str, str] = None,
+        style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
         instruction: str = "",
@@ -704,7 +698,7 @@ class BaseListPrompt(BaseComplexPrompt):
     :param message: question to display to the user
     :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: style to apply to the prompt
-    :type style: Dict[str, str]
+    :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param qmark: question mark to display
@@ -732,7 +726,7 @@ class BaseListPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
-        style: Dict[str, str] = None,
+        style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
         instruction: str = "",

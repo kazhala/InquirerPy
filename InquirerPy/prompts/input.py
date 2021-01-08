@@ -12,6 +12,7 @@ from prompt_toolkit.validation import ValidationError, Validator
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT, INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
+from InquirerPy.utils import InquirerPyStyle
 
 
 class InputPrompt(BaseSimplePrompt):
@@ -22,7 +23,7 @@ class InputPrompt(BaseSimplePrompt):
     :param message: the question to ask
     :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: a dictionary of style to apply
-    :type style: Dict[str, str]
+    :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param default: the default result
@@ -48,7 +49,7 @@ class InputPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
-        style: Dict[str, str] = None,
+        style: InquirerPyStyle = None,
         vi_mode: bool = False,
         default: Union[str, Callable[[Dict[str, Any]], str]] = "",
         qmark: str = "?",

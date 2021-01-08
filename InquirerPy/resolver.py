@@ -72,7 +72,7 @@ def prompt(
     if not isinstance(questions, list):
         raise InvalidArgument("questions should be type of list.")
 
-    style = get_style(style, style_override)
+    question_style = get_style(style, style_override)
 
     for index, question in enumerate(questions):
         try:
@@ -85,7 +85,7 @@ def prompt(
                 continue
             args = {
                 "message": message,
-                "style": style,
+                "style": question_style,
                 "vi_mode": vi_mode,
                 "session_result": result,
             }

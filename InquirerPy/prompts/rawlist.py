@@ -8,6 +8,7 @@ from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.separator import Separator
+from InquirerPy.utils import InquirerPyStyle
 
 
 class InquirerPyRawlistControl(InquirerPyUIControl):
@@ -110,7 +111,7 @@ class RawlistPrompt(BaseListPrompt):
             2) whatever
     :type separator: str
     :param style: style for the prompt
-    :type style: Dict[str, str]
+    :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param qmark: question qmark to display
@@ -145,7 +146,7 @@ class RawlistPrompt(BaseListPrompt):
         choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         default: Any = None,
         separator: str = ")",
-        style: Dict[str, str] = None,
+        style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
         pointer: str = " ",

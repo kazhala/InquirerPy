@@ -12,6 +12,7 @@ from InquirerPy.enum import (
     INQUIRERPY_POINTER_SEQUENCE,
 )
 from InquirerPy.separator import Separator
+from InquirerPy.utils import InquirerPyStyle
 
 
 class InquirerPyCheckboxControl(InquirerPyUIControl):
@@ -99,7 +100,7 @@ class CheckboxPrompt(BaseListPrompt):
     :param default: default value
     :type default: Any
     :param style: a dictionary of style
-    :type style: Dict[str, str]
+    :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param qmark: question qmark to display
@@ -133,7 +134,7 @@ class CheckboxPrompt(BaseListPrompt):
         message: Union[str, Callable[[Dict[str, Any]], str]],
         choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
         default: Any = None,
-        style: Dict[str, str] = None,
+        style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,

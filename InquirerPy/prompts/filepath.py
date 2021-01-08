@@ -9,6 +9,7 @@ from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
+from InquirerPy.utils import InquirerPyStyle
 
 
 class FilePathCompleter(Completer):
@@ -82,7 +83,7 @@ class FilePathPrompt(InputPrompt):
     :param message: the question to ask
     :type message: Union[str, Callable[[Dict[str, Any]], str]]
     :param style: a dictionary of style to apply
-    :type style: Dict[str, str]
+    :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param default: the default result
@@ -108,7 +109,7 @@ class FilePathPrompt(InputPrompt):
     def __init__(
         self,
         message: Union[str, Callable[[Dict[str, Any]], str]],
-        style: Dict[str, str] = None,
+        style: InquirerPyStyle = None,
         vi_mode: bool = False,
         default: Union[str, Callable[[Dict[str, Any]], str]] = "",
         qmark: str = "?",

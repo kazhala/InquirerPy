@@ -2,16 +2,26 @@
 import math
 import os
 import shutil
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, NamedTuple, Optional, Tuple, Union
 
 from InquirerPy.exceptions import InvalidArgument
 
-__all__ = ["get_style", "calculate_height"]
+__all__ = ["get_style", "calculate_height", "InquirerPyStyle"]
+
+
+class InquirerPyStyle(NamedTuple):
+    """InquirerPy style class.
+
+    Enforce the method `get_style` to be used, avoiding
+    direct dict passed into prompts.
+    """
+
+    dict: Dict[str, str]
 
 
 def get_style(
     style: Dict[str, str] = None, style_override: bool = False
-) -> Dict[str, str]:
+) -> InquirerPyStyle:
     """Get default style if style parameter is missing.
 
     Reads the ENV variable first before apply default one dark theme.
@@ -52,7 +62,7 @@ def get_style(
         result["frame.border"] = result.pop("fuzzy_border")
     if result.get("validator"):
         result["validation-toolbar"] = result.pop("validator")
-    return result
+    return InquirerPyStyle(result)
 
 
 def calculate_height(
