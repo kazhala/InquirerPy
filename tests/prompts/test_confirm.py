@@ -7,6 +7,7 @@ from prompt_toolkit.shortcuts.prompt import PromptSession
 
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.prompts.confirm import ConfirmPrompt
+from InquirerPy.utils import InquirerPyStyle
 
 
 class TestConfirmPrompt(unittest.TestCase):
@@ -20,7 +21,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.inp.send_text("\n")
         confirm_prompt = ConfirmPrompt(
             message="hello",
-            style={"qmark": "bold"},
+            style=InquirerPyStyle({"qmark": "bold"}),
             default=False,
             qmark="x",
             output=DummyOutput(),
@@ -35,7 +36,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.inp.send_text("\n")
         confirm_prompt = ConfirmPrompt(
             message="hello",
-            style={"qmark": "bold", "answer": "#000000"},
+            style=InquirerPyStyle({"qmark": "bold", "answer": "#000000"}),
             default=True,
             qmark="x",
             output=DummyOutput(),
@@ -50,7 +51,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.inp.send_text("y")
         confirm_prompt = ConfirmPrompt(
             message="hello",
-            style={},
+            style=None,
             default=True,
             qmark="?",
             output=DummyOutput(),
@@ -64,7 +65,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.inp.send_text("Y")
         confirm_prompt = ConfirmPrompt(
             message="hello",
-            style={},
+            style=None,
             default=True,
             qmark="?",
             output=DummyOutput(),
@@ -77,7 +78,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.inp.send_text("n")
         confirm_prompt = ConfirmPrompt(
             message="hello",
-            style={},
+            style=None,
             default=True,
             qmark="?",
             output=DummyOutput(),
@@ -91,7 +92,7 @@ class TestConfirmPrompt(unittest.TestCase):
         self.inp.send_text("N")
         confirm_prompt = ConfirmPrompt(
             message="hello",
-            style={},
+            style=None,
             default=True,
             qmark="?",
             output=DummyOutput(),
@@ -103,7 +104,7 @@ class TestConfirmPrompt(unittest.TestCase):
     def test_get_prompt_message(self):
         confirm_prompt = ConfirmPrompt(
             message="hello",
-            style={},
+            style=None,
             default=True,
             qmark="?",
         )
@@ -131,7 +132,7 @@ class TestConfirmPrompt(unittest.TestCase):
 
         confirm_prompt = ConfirmPrompt(
             message="Are you sure?",
-            style={},
+            style=None,
             default=False,
             qmark="x",
         )
@@ -166,7 +167,7 @@ class TestConfirmPrompt(unittest.TestCase):
     ):
         ConfirmPrompt(
             message="Are you sure?",
-            style={},
+            style=None,
             default=False,
             qmark="x",
         )

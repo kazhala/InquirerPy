@@ -8,6 +8,7 @@ from prompt_toolkit.output import DummyOutput
 from prompt_toolkit.shortcuts.prompt import CompleteStyle
 
 from InquirerPy.prompts.secret import SecretPrompt
+from InquirerPy.utils import InquirerPyStyle
 from InquirerPy.validator import PasswordValidator
 
 
@@ -22,7 +23,7 @@ class TestSecret(unittest.TestCase):
         self.inp.send_text("what\n")
         secret_prompt = SecretPrompt(
             message="hello",
-            style={"answer": ""},
+            style=InquirerPyStyle({"answer": ""}),
             default="yes",
             qmark="~",
             vi_mode=False,
@@ -42,7 +43,7 @@ class TestSecret(unittest.TestCase):
         self.inp.send_text("afas\n")
         secret_prompt = SecretPrompt(
             message="what",
-            style={},
+            style=InquirerPyStyle({}),
             validate=PasswordValidator(length=8),
             input=self.inp,
             output=DummyOutput(),
@@ -55,7 +56,7 @@ class TestSecret(unittest.TestCase):
 
     def test_prompt_message(self):
         secret_prompt = SecretPrompt(
-            message="fooboo", style={}, qmark="[?]", vi_mode=True
+            message="fooboo", style=InquirerPyStyle({}), qmark="[?]", vi_mode=True
         )
         message = secret_prompt._get_prompt_message()
         self.assertEqual(
@@ -97,7 +98,7 @@ class TestSecret(unittest.TestCase):
         lexer = MockedLexer()
         SecretPrompt(
             message="what",
-            style={},
+            style=None,
             default="111",
             qmark="[!]",
             vi_mode=True,

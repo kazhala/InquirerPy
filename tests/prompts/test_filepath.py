@@ -1,9 +1,10 @@
-from contextlib import contextmanager
+from InquirerPy.utils import InquirerPyStyle
 import os
-from pathlib import Path
 import shutil
 import tempfile
 import unittest
+from contextlib import contextmanager
+from pathlib import Path
 from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.buffer import Buffer
@@ -14,8 +15,7 @@ from prompt_toolkit.input.defaults import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 from prompt_toolkit.shortcuts.prompt import CompleteStyle
 
-from InquirerPy.prompts.filepath import FilePathPrompt
-from InquirerPy.prompts.filepath import FilePathCompleter
+from InquirerPy.prompts.filepath import FilePathCompleter, FilePathPrompt
 from InquirerPy.validator import PathValidator
 
 
@@ -138,7 +138,7 @@ class TestFilePath(unittest.TestCase):
         self.inp.send_text("./file1\n")
         filepath_prompt = FilePathPrompt(
             message="hello",
-            style={"qmark": "bold"},
+            style=InquirerPyStyle({"qmark": "bold"}),
             input=self.inp,
             output=DummyOutput(),
         )
@@ -151,7 +151,7 @@ class TestFilePath(unittest.TestCase):
         self.inp.send_text("\n")
         filepath_prompt = FilePathPrompt(
             message="hello",
-            style={"qmark": "bold"},
+            style=InquirerPyStyle({"qmark": "bold"}),
             default=".vim",
             input=self.inp,
             output=DummyOutput(),
@@ -170,7 +170,7 @@ class TestFilePath(unittest.TestCase):
         self.inp.send_text("hello\n")
         filepath_prompt = FilePathPrompt(
             message="fooboo",
-            style={"qmark": ""},
+            style=InquirerPyStyle({"qmark": ""}),
             default=".vim",
             validate=PathValidator(),
             input=self.inp,
@@ -183,7 +183,9 @@ class TestFilePath(unittest.TestCase):
         self.assertEqual(filepath_prompt.status["result"], None)
 
     def test_get_prompt_message(self):
-        filepath_prompt = FilePathPrompt(message="brah", style={"foo": ""}, qmark="!")
+        filepath_prompt = FilePathPrompt(
+            message="brah", style=InquirerPyStyle({"foo": ""}), qmark="!"
+        )
         message = filepath_prompt._get_prompt_message()
         self.assertEqual(
             message,
@@ -226,7 +228,7 @@ class TestFilePath(unittest.TestCase):
 
         FilePathPrompt(
             message="yes",
-            style={"yes": ""},
+            style=InquirerPyStyle({"yes": ""}),
             default="",
             qmark="XD",
             multicolumn_complete=True,
@@ -257,4 +259,3 @@ class TestFilePath(unittest.TestCase):
         mocked_validator.assert_has_calls(
             [call(_validation, "Invalid input", move_cursor_to_end=True)]
         )
-        MockedLexer.assert_has_calls([call("class:input")])

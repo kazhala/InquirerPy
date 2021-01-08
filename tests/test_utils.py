@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.utils import calculate_height, get_style
+from InquirerPy.utils import InquirerPyStyle, calculate_height, get_style
 
 
 class TestUtils(unittest.TestCase):
@@ -34,23 +34,25 @@ class TestUtils(unittest.TestCase):
         style = get_style()
         self.assertEqual(
             style,
-            {
-                "questionmark": "#e5c07b",
-                "answer": "#61afef",
-                "input": "#98c379",
-                "question": "",
-                "instruction": "",
-                "pointer": "#61afef",
-                "checkbox": "#98c379",
-                "separator": "",
-                "skipped": "#5c6370",
-                "marker": "#e5c07b",
-                "validator": "",
-                "fuzzy_prompt": "#c678dd",
-                "fuzzy_info": "#56b6c2",
-                "frame.border": "#4b5263",
-                "fuzzy_match": "#c678dd",
-            },
+            InquirerPyStyle(
+                {
+                    "questionmark": "#e5c07b",
+                    "answer": "#61afef",
+                    "input": "#98c379",
+                    "question": "",
+                    "instruction": "",
+                    "pointer": "#61afef",
+                    "checkbox": "#98c379",
+                    "separator": "",
+                    "skipped": "#5c6370",
+                    "marker": "#e5c07b",
+                    "validator": "",
+                    "fuzzy_prompt": "#c678dd",
+                    "fuzzy_info": "#56b6c2",
+                    "frame.border": "#4b5263",
+                    "fuzzy_match": "#c678dd",
+                },
+            ),
         )
 
         os.environ["INQUIRERPY_STYLE_QUESTIONMARK"] = "#000000"
@@ -71,23 +73,25 @@ class TestUtils(unittest.TestCase):
         style = get_style()
         self.assertEqual(
             style,
-            {
-                "questionmark": "#000000",
-                "answer": "#111111",
-                "input": "#444444",
-                "question": "#222222",
-                "instruction": "#333333",
-                "pointer": "#555555",
-                "checkbox": "#66666",
-                "separator": "#777777",
-                "skipped": "#888888",
-                "fuzzy_prompt": "#999999",
-                "fuzzy_info": "#aaaaaa",
-                "marker": "#bbbbbb",
-                "validation-toolbar": "#dddddd",
-                "fuzzy_match": "#dddddd",
-                "frame.border": "#cccccc",
-            },
+            InquirerPyStyle(
+                {
+                    "questionmark": "#000000",
+                    "answer": "#111111",
+                    "input": "#444444",
+                    "question": "#222222",
+                    "instruction": "#333333",
+                    "pointer": "#555555",
+                    "checkbox": "#66666",
+                    "separator": "#777777",
+                    "skipped": "#888888",
+                    "fuzzy_prompt": "#999999",
+                    "fuzzy_info": "#aaaaaa",
+                    "marker": "#bbbbbb",
+                    "validation-toolbar": "#dddddd",
+                    "fuzzy_match": "#dddddd",
+                    "frame.border": "#cccccc",
+                },
+            ),
         )
 
     def test_format_style(self):
@@ -112,21 +116,23 @@ class TestUtils(unittest.TestCase):
         )
         self.assertEqual(
             style,
-            {
-                "questionmark": "#000000",
-                "answer": "#111111",
-                "input": "#444444",
-                "question": "#222222",
-                "instruction": "#333333",
-                "pointer": "#555555",
-                "checkbox": "#66666",
-                "separator": "#777777",
-                "skipped": "#888888",
-                "fuzzy_prompt": "#999999",
-                "fuzzy_info": "#aaaaaa",
-                "marker": "#bbbbbb",
-                "validation-toolbar": "#dddddd",
-                "fuzzy_match": "#dddddd",
-                "frame.border": "#cccccc",
-            },
+            InquirerPyStyle(
+                {
+                    "questionmark": "#000000",
+                    "answer": "#111111",
+                    "input": "#444444",
+                    "question": "#222222",
+                    "instruction": "#333333",
+                    "pointer": "#555555",
+                    "checkbox": "#66666",
+                    "separator": "#777777",
+                    "skipped": "#888888",
+                    "fuzzy_prompt": "#999999",
+                    "fuzzy_info": "#aaaaaa",
+                    "marker": "#bbbbbb",
+                    "validation-toolbar": "#dddddd",
+                    "fuzzy_match": "#dddddd",
+                    "frame.border": "#cccccc",
+                },
+            ),
         )

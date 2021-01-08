@@ -10,6 +10,7 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.list import InquirerPyListControl, ListPrompt
 from InquirerPy.separator import Separator
+from InquirerPy.utils import InquirerPyStyle
 
 
 class TestListPrompt(unittest.TestCase):
@@ -94,7 +95,7 @@ class TestListPrompt(unittest.TestCase):
             message="Select a fruit",
             choices=self.choices,
             default="watermelon",
-            style={"pointer": "#61afef"},
+            style=InquirerPyStyle({"pointer": "#61afef"}),
             vi_mode=True,
             qmark="[?]",
             pointer=">",
@@ -115,7 +116,11 @@ class TestListPrompt(unittest.TestCase):
         self.assertIsInstance(window_list[2], ConditionalContainer)
 
     def test_minimum_args(self):
-        ListPrompt(message="Select a fruit", choices=self.choices, style={})
+        ListPrompt(
+            message="Select a fruit",
+            choices=self.choices,
+            style=InquirerPyStyle({}),
+        )
 
     def test_choice_combination(self):
         prompt = ListPrompt(message="Test combo", choices=["hello"])
@@ -129,7 +134,7 @@ class TestListPrompt(unittest.TestCase):
             message="Select a fruit",
             choices=self.choices,
             default="watermelon",
-            style={"pointer": "#61afef"},
+            style=InquirerPyStyle({"pointer": "#61afef"}),
             vi_mode=True,
             qmark="[?]",
             pointer=">",
@@ -149,7 +154,7 @@ class TestListPrompt(unittest.TestCase):
             message="Select a fruit",
             choices=self.choices,
             default="watermelon",
-            style={"pointer": "#61afef"},
+            style=InquirerPyStyle({"pointer": "#61afef"}),
             vi_mode=True,
             qmark="[?]",
             pointer=">",

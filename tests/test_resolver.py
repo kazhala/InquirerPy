@@ -1,3 +1,4 @@
+from InquirerPy.utils import InquirerPyStyle
 import os
 import unittest
 from unittest.mock import ANY, call, patch
@@ -71,7 +72,10 @@ class TestResolver(unittest.TestCase):
         ]
         result = prompt(questions)
         mocked_confirm_init.assert_called_once_with(
-            message="hello", style=style, vi_mode=False, session_result=ANY
+            message="hello",
+            style=InquirerPyStyle(style),
+            vi_mode=False,
+            session_result=ANY,
         )
         mocked_confirm_execute.assert_called_once()
         self.assertEqual(result, {"0": False})
@@ -88,15 +92,25 @@ class TestResolver(unittest.TestCase):
         result = prompt(questions)
         mocked_confirm_init.assert_has_calls(
             [
-                call(message="hello", style=style, vi_mode=False, session_result=ANY),
-                call(message="world", style=style, vi_mode=False, session_result=ANY),
+                call(
+                    message="hello",
+                    style=InquirerPyStyle(style),
+                    vi_mode=False,
+                    session_result=ANY,
+                ),
+                call(
+                    message="world",
+                    style=InquirerPyStyle(style),
+                    vi_mode=False,
+                    session_result=ANY,
+                ),
             ]
         )
         mocked_filepath_init.assert_has_calls(
             [
                 call(
                     message="whaat",
-                    style=style,
+                    style=InquirerPyStyle(style),
                     default="./",
                     vi_mode=False,
                     session_result=ANY,
@@ -128,7 +142,7 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_execute.assert_called_once()
         mocked_confirm_init.assert_called_once_with(
             message="Confirm?",
-            style=style,
+            style=InquirerPyStyle(style),
             vi_mode=False,
             session_result={"question1": False},
         )
@@ -153,47 +167,51 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="Confirm?",
-                    style={
-                        "questionmark": "#e5c07b",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "instruction": "",
-                        "pointer": "#61afef",
-                        "checkbox": "#98c379",
-                        "separator": "",
-                        "skipped": "#5c6370",
-                        "validator": "",
-                        "marker": "#e5c07b",
-                        "fuzzy_prompt": "#c678dd",
-                        "fuzzy_info": "#56b6c2",
-                        "fuzzy_match": "#c678dd",
-                        "qmark": "#ffffff",
-                        "frame.border": "#4b5263",
-                    },
+                    style=InquirerPyStyle(
+                        {
+                            "questionmark": "#e5c07b",
+                            "answer": "#61afef",
+                            "input": "#98c379",
+                            "question": "",
+                            "instruction": "",
+                            "pointer": "#61afef",
+                            "checkbox": "#98c379",
+                            "separator": "",
+                            "skipped": "#5c6370",
+                            "validator": "",
+                            "marker": "#e5c07b",
+                            "fuzzy_prompt": "#c678dd",
+                            "fuzzy_info": "#56b6c2",
+                            "fuzzy_match": "#c678dd",
+                            "qmark": "#ffffff",
+                            "frame.border": "#4b5263",
+                        }
+                    ),
                     vi_mode=True,
                     session_result=ANY,
                 ),
                 call(
                     message="What?",
-                    style={
-                        "questionmark": "#e5c07b",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "instruction": "",
-                        "pointer": "#61afef",
-                        "checkbox": "#98c379",
-                        "separator": "",
-                        "skipped": "#5c6370",
-                        "validator": "",
-                        "marker": "#e5c07b",
-                        "fuzzy_prompt": "#c678dd",
-                        "fuzzy_info": "#56b6c2",
-                        "fuzzy_match": "#c678dd",
-                        "qmark": "#ffffff",
-                        "frame.border": "#4b5263",
-                    },
+                    style=InquirerPyStyle(
+                        {
+                            "questionmark": "#e5c07b",
+                            "answer": "#61afef",
+                            "input": "#98c379",
+                            "question": "",
+                            "instruction": "",
+                            "pointer": "#61afef",
+                            "checkbox": "#98c379",
+                            "separator": "",
+                            "skipped": "#5c6370",
+                            "validator": "",
+                            "marker": "#e5c07b",
+                            "fuzzy_prompt": "#c678dd",
+                            "fuzzy_info": "#56b6c2",
+                            "fuzzy_match": "#c678dd",
+                            "qmark": "#ffffff",
+                            "frame.border": "#4b5263",
+                        }
+                    ),
                     vi_mode=True,
                     session_result=ANY,
                 ),
@@ -215,7 +233,7 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="haha",
-                    style={"qmark": "#ffffff"},
+                    style=InquirerPyStyle({"qmark": "#ffffff"}),
                     vi_mode=True,
                     session_result=ANY,
                 )
@@ -256,14 +274,14 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="Confirm first?",
-                    style=style,
+                    style=InquirerPyStyle(style),
                     vi_mode=False,
                     default=True,
                     session_result=ANY,
                 ),
                 call(
                     message="Confirm second?",
-                    style=style,
+                    style=InquirerPyStyle(style),
                     vi_mode=False,
                     session_result=ANY,
                 ),
@@ -301,13 +319,16 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="Confirm first?",
-                    style=style,
+                    style=InquirerPyStyle(style),
                     vi_mode=False,
                     default=True,
                     session_result=ANY,
                 ),
                 call(
-                    message="Confirm?", style=style, vi_mode=False, session_result=ANY
+                    message="Confirm?",
+                    style=InquirerPyStyle(style),
+                    vi_mode=False,
+                    session_result=ANY,
                 ),
             ]
         )
