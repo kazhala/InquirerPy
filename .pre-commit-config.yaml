@@ -10,3 +10,10 @@ repos:
     hooks:
       - id: pydocstyle
         files: InquirerPy
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.6.4
+    hooks:
+      - id: isort
+        args: ['--profile', 'black', '--filter-files']
+        files: InquirerPy
