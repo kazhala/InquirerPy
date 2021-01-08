@@ -159,7 +159,9 @@ class TestResolver(unittest.TestCase):
             {"type": "confirm", "message": "What?"},
             {"type": "password", "message": "haha"},
         ]
-        result = prompt(questions, style={"qmark": "#ffffff"}, vi_mode=True)
+        result = prompt(
+            questions, style={"qmark": "#ffffff"}, vi_mode=True, style_override=False
+        )
         mocked_confirm_execute.assert_has_calls(
             [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
         )

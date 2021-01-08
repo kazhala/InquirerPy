@@ -20,7 +20,7 @@ class InquirerPyStyle(NamedTuple):
 
 
 def get_style(
-    style: Dict[str, str] = None, style_override: bool = False
+    style: Dict[str, str] = None, style_override: bool = True
 ) -> InquirerPyStyle:
     """Get default style if style parameter is missing.
 
@@ -33,10 +33,9 @@ def get_style(
     :return: style dictionary ready to be consumed by `Style.from_dict`
     :rtype: Dict[str, str]
     """
-    if not style:
-        style = {}
-
-    if not style_override:
+    if not style_override or style is None:
+        if not style:
+            style = {}
         result = {
             "questionmark": os.getenv("INQUIRERPY_STYLE_QUESTIONMARK", "#e5c07b"),
             "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", "#61afef"),

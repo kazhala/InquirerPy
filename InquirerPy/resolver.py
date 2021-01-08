@@ -38,7 +38,7 @@ def prompt(
     vi_mode: bool = False,
     raise_keyboard_interrupt: bool = True,
     keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
-    style_override: bool = False,
+    style_override: bool = True,
 ) -> Dict[str, Optional[Union[str, List[Any], bool]]]:
     """Resolve user provided list of questions and get result.
 
@@ -52,7 +52,7 @@ def prompt(
     :param questions: list of questions to ask
     :type questions: List[Dict[str, Any]]
     :param style: the style to apply to the prompt
-    :type style: Optional[Dict[str, str]]
+    :type style: Dict[str, str]
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param raise_keyboard_interrupt: raise the kbi exception when user hit c-c

@@ -55,4 +55,9 @@ questions = [
     },
     {"message": "Confirm order?", "type": "confirm", "default": False},
 ]
-result = prompt(questions, style={"questionmark": "#ff9d00 bold"}, vi_mode=True)
+result = prompt(
+    questions,
+    style={"questionmark": "#ff9d00 bold"},
+    vi_mode=True,
+    style_override=False,
+)
