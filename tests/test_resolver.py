@@ -235,9 +235,28 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="haha",
-                    style=InquirerPyStyle({"qmark": "#ffffff"}),
+                    style=InquirerPyStyle(
+                        dict={
+                            "questionmark": "",
+                            "answer": "",
+                            "input": "",
+                            "question": "",
+                            "instruction": "",
+                            "pointer": "",
+                            "checkbox": "",
+                            "separator": "",
+                            "skipped": "",
+                            "validator": "",
+                            "marker": "",
+                            "fuzzy_prompt": "",
+                            "fuzzy_info": "",
+                            "fuzzy_border": "",
+                            "fuzzy_match": "",
+                            "qmark": "#ffffff",
+                        }
+                    ),
                     vi_mode=True,
-                    session_result=ANY,
+                    session_result={"10": True, "1": True, "2": "111111"},
                 )
             ]
         )
