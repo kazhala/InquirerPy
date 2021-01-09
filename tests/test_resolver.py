@@ -442,6 +442,16 @@ class TestResolver(unittest.TestCase):
         }
         self.assertEqual(input_prompt._get_prompt_message(), [("class:skipped", "?  ")])
 
+        os.environ["INQUIRERPY_NO_RAISE_KBI"] = "true"
+        questions = [{"type": "input", "message": "hello"}]
+        result = prompt(questions)
+        self.assertEqual(result, {"0": None})
+
+        os.environ["INQUIRERPY_NO_RAISE_KBI"] = "true"
+        questions = [{"type": "input", "message": "hello"}]
+        result = prompt(questions, raise_keyboard_interrupt=True)
+        self.assertEqual(result, {"0": None})
+
     @patch.object(ListPrompt, "execute")
     @patch.object(InputPrompt, "execute")
     @patch.object(BaseComplexPrompt, "_register_kb")
