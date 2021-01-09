@@ -1,4 +1,5 @@
 """Module contains the class to create an input prompt."""
+import os
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.completion import NestedCompleter
@@ -189,15 +190,19 @@ class InputPrompt(BaseSimplePrompt):
             )
         return formatted_message
 
-    def execute(self, raise_keyboard_interrupt=True) -> Optional[str]:
-        """Display the filepath prompt and returns the result.
+    def execute(self, raise_keyboard_interrupt: bool = True) -> Optional[str]:
+        """Display the prompt and return the result.
 
-        :return: user entered filepath
+        :param raise_keyboard_interrupt: raise kbi exception when user hit 'c-c'
+        :type raise_keyboard_interrupt: bool
+        :return: user entered value
         :rtype: str
         """
         result = self._session.prompt(default=self._default)
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
-            if raise_keyboard_interrupt:
+            if raise_keyboard_interrupt and not os.getenv(
+                "INQUIRERPY_NO_RAISE_KBI", False
+            ):
                 raise KeyboardInterrupt
             else:
                 result = None

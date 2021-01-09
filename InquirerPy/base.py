@@ -542,11 +542,19 @@ class BaseComplexPrompt(BaseSimplePrompt):
         post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
 
-    def execute(self, raise_keyboard_interrupt=True) -> Any:
-        """Execute the application and get the result."""
+    def execute(self, raise_keyboard_interrupt: bool = True) -> Any:
+        """Execute the application and get the result.
+
+        :param raise_keyboard_interrupt: raise kbi exception when user hit 'c-c'
+        :type raise_keyboard_interrupt: bool
+        :return: user selected value
+        :rtype: Any
+        """
         result = self.application.run()
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
-            if raise_keyboard_interrupt:
+            if raise_keyboard_interrupt and not os.getenv(
+                "INQUIRERPY_NO_RAISE_KBI", False
+            ):
                 raise KeyboardInterrupt
             else:
                 result = None
