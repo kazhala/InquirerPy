@@ -1,7 +1,6 @@
 """Module contains some simple validator."""
 import re
 from pathlib import Path
-from typing import Optional
 
 from prompt_toolkit.validation import ValidationError, Validator
 
@@ -65,7 +64,7 @@ class PasswordValidator(Validator):
 
     def __init__(
         self,
-        length: Optional[int] = None,
+        length: int = None,
         cap: bool = False,
         special: bool = False,
         number: bool = False,
