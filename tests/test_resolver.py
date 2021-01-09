@@ -430,7 +430,6 @@ class TestResolver(unittest.TestCase):
         self.assertEqual(result, {"0": None})
 
         mocked_execute.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
-        questions = [{"type": "input", "message": "hello"}]
         self.assertRaises(
             KeyboardInterrupt, prompt, questions, raise_keyboard_interrupt=True
         )
@@ -443,12 +442,10 @@ class TestResolver(unittest.TestCase):
         self.assertEqual(input_prompt._get_prompt_message(), [("class:skipped", "?  ")])
 
         os.environ["INQUIRERPY_NO_RAISE_KBI"] = "true"
-        questions = [{"type": "input", "message": "hello"}]
         result = prompt(questions)
         self.assertEqual(result, {"0": None})
 
         os.environ["INQUIRERPY_NO_RAISE_KBI"] = "true"
-        questions = [{"type": "input", "message": "hello"}]
         result = prompt(questions, raise_keyboard_interrupt=True)
         self.assertEqual(result, {"0": None})
 
@@ -500,3 +497,8 @@ class TestResolver(unittest.TestCase):
             },
         ]
         prompt(questions)
+
+    @patch.object(InputPrompt, "execute")
+    def test_single_dict_question(self, mocked_execute):
+        mocked_execute.return_value = None
+        result = prompt({"type": "input", "message": "Name:"})
