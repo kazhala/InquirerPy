@@ -33,7 +33,7 @@ list_prompts = {"list", "checkbox", "rawlist", "expand", "fuzzy"}
 
 
 def prompt(
-    questions: List[Dict[str, Any]],
+    questions: Union[List[Dict[str, Any]], Dict[str, Any]],
     style: Dict[str, str] = None,
     vi_mode: bool = False,
     raise_keyboard_interrupt: bool = True,
@@ -50,7 +50,8 @@ def prompt(
     A default style is applied using Atom Onedark color if style is not present.
 
     :param questions: list of questions to ask
-    :type questions: List[Dict[str, Any]]
+        if only one question is needed, providing a single dict is also sufficent
+    :type questions: Union[List[Dict[str, Any]], Dict[str, Any]]
     :param style: the style to apply to the prompt
     :type style: Dict[str, str]
     :param vi_mode: use vi kb for the prompt
@@ -69,13 +70,17 @@ def prompt(
     if not keybindings:
         keybindings = {}
 
+    if isinstance(questions, dict):
+        questions = [questions]
+
     if not isinstance(questions, list):
         raise InvalidArgument("questions should be type of list.")
 
     question_style = get_style(style, style_override)
 
-    for index, question in enumerate(questions):
+    for index, original_question in enumerate(questions):
         try:
+            question = original_question.copy()
             question_type = question.pop("type")
             question_name = question.pop("name", str(index))
             message = question.pop("message")
