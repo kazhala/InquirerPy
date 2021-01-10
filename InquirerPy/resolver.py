@@ -1,8 +1,6 @@
 """This module contains the main prompt entrypoint."""
 from typing import Any, Dict, List, Optional, Union
 
-from prompt_toolkit.filters.base import FilterOrBool
-
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
 from InquirerPy.prompts.confirm import ConfirmPrompt
@@ -37,7 +35,7 @@ def prompt(
     style: Dict[str, str] = None,
     vi_mode: bool = False,
     raise_keyboard_interrupt: bool = True,
-    keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+    keybindings: Dict[str, List[Dict[str, Any]]] = None,
     style_override: bool = True,
 ) -> Dict[str, Optional[Union[str, List[Any], bool]]]:
     """Resolve user provided list of questions and get result.
@@ -60,7 +58,7 @@ def prompt(
         If false, store result as None and continue
     :type raise_keyboard_interrupt: bool
     :param keybindings: custom keybindings to apply
-    :type keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
+    :type keybindings: Dict[str, List[Dict[str, Any]]]
     :param style_override: override all default styles
     :type style_override: bool
     :return: dictionary of answers

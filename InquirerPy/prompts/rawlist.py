@@ -137,7 +137,7 @@ class RawlistPrompt(BaseListPrompt):
     :param invalid_message: message to display when input is invalid
     :type invalid_message: str
     :param keybindings: custom keybindings to apply
-    :type keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
+    :type keybindings: Dict[str, List[Dict[str, Any]]]
     """
 
     def __init__(
@@ -159,7 +159,7 @@ class RawlistPrompt(BaseListPrompt):
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
-        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        keybindings: Dict[str, List[Dict[str, Any]]] = None,
         session_result: Dict[str, Union[str, bool, List[Any]]] = None,
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""

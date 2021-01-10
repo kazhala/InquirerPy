@@ -247,7 +247,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param invalid_message: message to display when input is invalid
     :type invalid_message: str
     :param keybindings: custom keybindings to apply
-    :type keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
+    :type keybindings: Dict[str, List[Dict[str, Any]]]
     """
 
     def __init__(
@@ -271,7 +271,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         max_height: Union[str, int] = None,
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
-        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        keybindings: Dict[str, List[Dict[str, Any]]] = None,
         session_result: Dict[str, Union[str, bool, List[Any]]] = None,
     ) -> None:
         """Initialise the layout and create Application.
