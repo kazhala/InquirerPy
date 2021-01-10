@@ -4,7 +4,41 @@ from pathlib import Path
 
 from prompt_toolkit.validation import ValidationError, Validator
 
-__all__ = ["PathValidator", "EmptyInputValidator", "PasswordValidator"]
+__all__ = [
+    "PathValidator",
+    "EmptyInputValidator",
+    "PasswordValidator",
+    "NumberValidator",
+]
+
+
+class NumberValidator(Validator):
+    """Validator class to validate if input is a number.
+
+    :param float_allowed: allow float input
+    :type float_allowed: bool
+    :param message: error message to display
+    :type message: str
+    """
+
+    def __init__(
+        self, message: str = "Input should be number", float_allowed: bool = False
+    ) -> None:
+        """Set invalid message and determine float."""
+        self.message = message
+        self.float_allowed = float_allowed
+
+    def validate(self, document) -> None:
+        """Check if user input is a valid number."""
+        try:
+            if self.float_allowed:
+                float(document.text)
+            else:
+                int(document.text)
+        except ValueError:
+            raise ValidationError(
+                message=self.message, cursor_position=document.cursor_position
+            )
 
 
 class PathValidator(Validator):
@@ -14,11 +48,11 @@ class PathValidator(Validator):
     :type message: str
     """
 
-    def __init__(self, message: str = "Input is not a valid path"):
+    def __init__(self, message: str = "Input is not a valid path") -> None:
         """Set invalid message."""
         self.message = message
 
-    def validate(self, document):
+    def validate(self, document) -> None:
         """Check if user input filepath exists."""
         if not Path(document.text).expanduser().exists():
             raise ValidationError(
@@ -34,11 +68,11 @@ class EmptyInputValidator(Validator):
     :type message: str
     """
 
-    def __init__(self, message: str = "Input cannot be empty"):
+    def __init__(self, message: str = "Input cannot be empty") -> None:
         """Set invalid message."""
         self.message = message
 
-    def validate(self, document):
+    def validate(self, document) -> None:
         """Check if user input is empty."""
         if not len(document.text) > 0:
             raise ValidationError(
@@ -50,6 +84,8 @@ class EmptyInputValidator(Validator):
 class PasswordValidator(Validator):
     """Validator class to check password compliance.
 
+    :param message: error message to display
+    :type message: str
     :param length: the minimum length of the password
     :type length: Optional[int]
     :param cap: password include at least one cap
@@ -58,17 +94,15 @@ class PasswordValidator(Validator):
     :type special: bool
     :param number: password include at least one number
     :type number: bool
-    :param message: error message to display
-    :type message: str
     """
 
     def __init__(
         self,
+        message: str = "Input is not a valid pattern",
         length: int = None,
         cap: bool = False,
         special: bool = False,
         number: bool = False,
-        message: str = "Input is not a valid pattern",
     ) -> None:
         """Set regex pattern and invalid message."""
         password_pattern = r"^"
@@ -87,7 +121,7 @@ class PasswordValidator(Validator):
         self.re = re.compile(password_pattern)
         self.message = message
 
-    def validate(self, document):
+    def validate(self, document) -> None:
         """Check if user input passes the password constraint."""
         if not self.re.match(document.text):
             raise ValidationError(
