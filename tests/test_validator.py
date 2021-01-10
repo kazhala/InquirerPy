@@ -55,3 +55,15 @@ class TestValidators(unittest.TestCase):
         self.assertRaises(ValidationError, validator.validate, self.document)
         self.document._text = "!Iiasdfasfafdsfad99"
         self.execute_success_case(validator, "test_PasswordValidator")
+
+    def test_numberValidator(self):
+        self.document._text = "asfasdf"
+        validator = NumberValidator()
+        self.assertRaises(ValidationError, validator.validate, self.document)
+        self.document._text = "12"
+        self.execute_success_case(validator, "test_numberValidator")
+        self.document._text = "1.2"
+        validator = NumberValidator(float_allowed=False)
+        self.assertRaises(ValidationError, validator.validate, self.document)
+        validator = NumberValidator(float_allowed=True)
+        self.execute_success_case(validator, "test_numberValidator")
