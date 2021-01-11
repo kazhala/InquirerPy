@@ -1,27 +1,44 @@
 from pathlib import Path
 
-from InquirerPy.resolver import prompt
+from InquirerPy import prompt, inquirer
 from InquirerPy.validator import PathValidator
 
-questions = [
-    {
-        "type": "filepath",
-        "message": "Select file to upload",
-        "invalid_message": "Input is not a valid filepath",
-        "name": "location",
-        "default": str(Path.cwd()),
-        "validate": PathValidator(),
-        "only_directories": True,
-    },
-    {
-        "type": "filepath",
-        "message": "Select path to store",
-        "validate": None,
-        "name": "destination",
-        "qmark": "[?]",
-        "validate": lambda x: x != "",
-    },
-]
 
-result = prompt(questions, vi_mode=True)
-print(result)
+def classic():
+    questions = [
+        {
+            "type": "filepath",
+            "message": "Enter file to upload:",
+            "name": "location",
+            "default": str(Path.cwd()),
+            "validate": PathValidator(is_file=True, message="Input is not a file"),
+            "only_files": True,
+        },
+        {
+            "type": "filepath",
+            "message": "Enter path to download:",
+            "validate": PathValidator(is_dir=True, message="Input is not a directory"),
+            "name": "destination",
+            "only_directories": True,
+        },
+    ]
+
+    result = prompt(questions)
+
+
+def alternate():
+    src_path = inquirer.filepath(
+        message="Enter file to upload:",
+        default=str(Path.cwd()),
+        validate=PathValidator(is_file=True, message="Input is not a file"),
+        only_files=True,
+    ).execute()
+    dest_path = inquirer.filepath(
+        message="Enter path to download:",
+        validate=PathValidator(is_dir=True, message="Input is not a directory"),
+        only_directories=True,
+    ).execute()
+
+
+alternate()
+# classic()
