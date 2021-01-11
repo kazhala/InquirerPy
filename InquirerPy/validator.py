@@ -48,13 +48,31 @@ class PathValidator(Validator):
     :type message: str
     """
 
-    def __init__(self, message: str = "Input is not a valid path") -> None:
-        """Set invalid message."""
+    def __init__(
+        self,
+        message: str = "Input is not a valid path",
+        is_file: bool = False,
+        is_dir: bool = False,
+    ) -> None:
+        """Set invalid message and check condition."""
         self.message = message
+        self.is_file = is_file
+        self.is_dir = is_dir
 
     def validate(self, document) -> None:
-        """Check if user input filepath exists."""
-        if not Path(document.text).expanduser().exists():
+        """Check if user input filepath exists based on condition."""
+        path = Path(document.text).expanduser()
+        if self.is_file and not path.is_file():
+            raise ValidationError(
+                message=self.message,
+                cursor_position=document.cursor_position,
+            )
+        elif self.is_dir and not path.is_dir():
+            raise ValidationError(
+                message=self.message,
+                cursor_position=document.cursor_position,
+            )
+        elif not path.exists():
             raise ValidationError(
                 message=self.message,
                 cursor_position=document.cursor_position,
