@@ -37,6 +37,12 @@ class TestValidators(unittest.TestCase):
 
             self.document._text = "test_validator.py"
             self.execute_success_case(validator, "test_PathValidator")
+            validator = PathValidator(is_file=True)
+            self.execute_success_case(validator, "test_PathValidator")
+            validator = PathValidator(is_dir=True)
+            self.assertRaises(ValidationError, validator.validate, self.document)
+            self.document._text = "prompts"
+            self.execute_success_case(validator, "test_PathValidator")
 
     def test_EmptyInputValidator(self):
         self.document._text = ""
