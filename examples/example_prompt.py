@@ -1,19 +1,11 @@
 from InquirerPy import prompt
-
-
-def number_validation(text):
-    try:
-        int(text)
-        return True
-    except ValueError:
-        return False
-
+from InquirerPy.validator import NumberValidator
 
 questions = [
     {
         "type": "input",
         "message": "Enter your age:",
-        "validate": number_validation,
+        "validate": NumberValidator(),
         "invalid_message": "Input should be number.",
         "default": "18",
         "name": "age",
