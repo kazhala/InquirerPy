@@ -37,7 +37,7 @@ class SecretPrompt(InputPrompt):
         style: InquirerPyStyle = None,
         default: Union[str, Callable[[Dict[str, Any]], str]] = "",
         qmark: str = "?",
-        vi_mode: bool = True,
+        vi_mode: bool = False,
         validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
