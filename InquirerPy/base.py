@@ -17,7 +17,7 @@ from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters import IsDone
 from prompt_toolkit.filters.base import Condition, FilterOrBool
-from prompt_toolkit.key_binding.key_bindings import KeyBindings
+from prompt_toolkit.key_binding.key_bindings import KeyBindings, KeyHandlerCallable
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
@@ -124,6 +124,47 @@ class BaseSimplePrompt(ABC):
     def status(self, value) -> None:
         """Set status value of the prompt."""
         self._status = value
+
+    def register_kb(
+        self, *keys: Union[Keys, str], filter: FilterOrBool = True
+    ) -> Callable[[KeyHandlerCallable], KeyHandlerCallable]:
+        """Decorate keybinding registration function.
+
+        Format all alt related keybindings.
+
+        Due to `prompt_toolkit` doesn't process alt related keybindings,
+        it requires alt-ANY to "escape" + "ANY".
+
+        Check a list of keys argument if they are alt related, change
+        them to escape.
+
+        :param keys: keys to bind into the keybindings
+        :type keys: Union[Keys, str]
+        :param filter: condition of whether this keybinding should be active
+        :type filter: FilterOrBool
+        :return: a decorator that should be applied to the function thats intended
+            to be active when the keys being pressed
+        :rtype: Callable[[KeyHandlerCallable], KeyHandlerCallable]
+        """
+        alt_pattern = re.compile(r"^alt-(.*)")
+
+        def decorator(func: KeyHandlerCallable) -> KeyHandlerCallable:
+            formatted_keys = []
+            for key in keys:
+                match = alt_pattern.match(key)
+                if match:
+                    formatted_keys.append("escape")
+                    formatted_keys.append(match.group(1))
+                else:
+                    formatted_keys.append(key)
+
+            @self._kb.add(*formatted_keys, filter=filter)
+            def executable(event) -> None:
+                func(event)
+
+            return executable
+
+        return decorator
 
     @abstractmethod
     def _get_prompt_message(
@@ -485,9 +526,14 @@ class BaseComplexPrompt(BaseSimplePrompt):
             "toggle-all-true": [{"func": self._toggle_all, "args": [True]}],
             "toggle-all-false": [{"func": self._toggle_all, "args": [False]}],
         }
+        self._non_multiselect_action = {"down", "up"}
 
-        @self._format_keys
         def keybinding_factory(keys, filter, action):
+            if not isinstance(keys, list):
+                keys = [keys]
+            if action not in self._non_multiselect_action:
+                filter = filter & self._multiselect
+
             @self._register_kb(*keys, filter=filter)
             def _(event):
                 for method in self._kb_func_lookup[action]:
@@ -503,19 +549,19 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     def _register_kb(
         self, *keys: Union[Keys, str], filter: FilterOrBool = True
-    ) -> Callable:
+    ) -> Callable[[KeyHandlerCallable], KeyHandlerCallable]:
         """Decorate keybinding registration function.
 
         Ensure that invalid state is cleared on next
         keybinding entered.
         """
 
-        def decorator(func: Callable) -> Callable:
-            @self._kb.add(*keys, filter=filter)
+        def decorator(func: KeyHandlerCallable) -> KeyHandlerCallable:
+            @self.register_kb(*keys, filter=filter)
             def executable(event):
                 if self._invalid:
                     self._invalid = False
-                return func(event)
+                func(event)
 
             return executable
 
@@ -636,37 +682,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def application(self, value: Application) -> None:
         """Setter for `self._application`."""
         self._application = value
-
-    def _format_keys(self, func) -> Callable:
-        """Format all alt related keybindings.
-
-        Due to `prompt_toolkit` doesn't process alt related keybindings,
-        it requires alt-ANY to "escape" + "ANY".
-
-        Check a list of keys argument if they are alt related, change
-        them to escape.
-
-        Apply multiselect filter if action is related to multiselect action.
-        """
-        alt_pattern = re.compile(r"^alt-(.*)")
-        non_multiselect_action = {"down", "up"}
-
-        def wrapper(keys, filter, action):
-            formatted_keys = []
-            if not isinstance(keys, list):
-                keys = [keys]
-            for key in keys:
-                match = alt_pattern.match(key)
-                if match:
-                    formatted_keys.append("escape")
-                    formatted_keys.append(match.group(1))
-                else:
-                    formatted_keys.append(key)
-            if action not in non_multiselect_action:
-                filter = filter & self._multiselect
-            func(formatted_keys, filter, action)
-
-        return wrapper
 
     @abstractmethod
     def _handle_enter(self, event) -> None:
