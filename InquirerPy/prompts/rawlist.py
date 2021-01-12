@@ -1,14 +1,13 @@
 """Module contains the rawlist prompt."""
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle
+from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
 class InquirerPyRawlistControl(InquirerPyUIControl):
@@ -19,7 +18,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any,
         pointer: str,
         separator: str,
@@ -100,9 +99,9 @@ class RawlistPrompt(BaseListPrompt):
     """Used to create a rawlist prompt where user can use number to jump to items.
 
     :param message: message to display as question
-    :type message: Union[str, Callable[[Dict[str, Any]], str]]
+    :type message: Union[str, Callable[[SessionResult], str]]
     :param choices: list of choices available for selection
-    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
     :param default: default value
     :type default: Any
     :param separator: the separator between the index number and the choices
@@ -142,8 +141,8 @@ class RawlistPrompt(BaseListPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
-        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+        message: Union[str, Callable[[SessionResult], str]],
+        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any = None,
         separator: str = ")",
         style: InquirerPyStyle = None,
@@ -160,7 +159,7 @@ class RawlistPrompt(BaseListPrompt):
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
         self.content_control = InquirerPyRawlistControl(

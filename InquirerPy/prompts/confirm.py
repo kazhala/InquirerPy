@@ -7,7 +7,7 @@ from prompt_toolkit.shortcuts import PromptSession
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.utils import InquirerPyStyle
+from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
 class ConfirmPrompt(BaseSimplePrompt):
@@ -16,7 +16,7 @@ class ConfirmPrompt(BaseSimplePrompt):
     This class is used for confirm prompt.
 
     :param message: the question message to display
-    :type message: Union[str, Callable[[Dict[str, Any]], str]]
+    :type message: Union[str, Callable[[SessionResult], str]]
     :param style: the style dictionary to apply
     :type style: InquirerPyStyle
     :param default: set default answer to true
@@ -31,13 +31,13 @@ class ConfirmPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
+        message: Union[str, Callable[[SessionResult], str]],
         style: InquirerPyStyle = None,
         default: Union[bool, Callable[[Dict[str, Any]], bool]] = False,
         qmark: str = "?",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
         **kwargs
     ) -> None:
         """Construct a PromptSession object and apply keybindings."""

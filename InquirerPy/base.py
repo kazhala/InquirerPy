@@ -29,7 +29,7 @@ from prompt_toolkit.validation import ValidationError, Validator
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle, calculate_height, get_style
+from InquirerPy.utils import InquirerPyStyle, SessionResult, calculate_height, get_style
 
 __all__ = [
     "BaseSimplePrompt",
@@ -49,7 +49,7 @@ class BaseSimplePrompt(ABC):
     a call of `self.session = PromptSession(...)`.
 
     :param message: the question message to display
-    :type message: Union[str, Callable[[Dict[str, Any]], str]]
+    :type message: Union[str, Callable[[SessionResult], str]]
     :param style: the style dictionary to apply
     :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
@@ -66,12 +66,12 @@ class BaseSimplePrompt(ABC):
     :type filter: Callable[[Any], Any]
     :param session_result: the current session result, this is used by callable message and choices
         to generate dynamic values. If using alternate syntax, skip this value.
-    :type session_result: Dict[str, Union[str, bool, List[Any]]]
+    :type session_result: SessionResult
     """
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
+        message: Union[str, Callable[[SessionResult], str]],
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -79,7 +79,7 @@ class BaseSimplePrompt(ABC):
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
         default: Any = "",
     ) -> None:
         """Construct the base class for simple prompts."""
@@ -218,16 +218,16 @@ class InquirerPyUIControl(FormattedTextControl):
     Dynamically adapt to user input and update formatted text.
 
     :param choices: list of choices to display as the content
-    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
     :param default: default value, will impact the cursor position
     :type default: Any
     """
 
     def __init__(
         self,
-        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any = None,
-        session_result: Dict[str, Any] = None,
+        session_result: SessionResult = None,
     ) -> None:
         """Initialise choices and construct a FormattedTextControl object."""
         self._session_result = session_result or {}
@@ -259,7 +259,7 @@ class InquirerPyUIControl(FormattedTextControl):
 
         :param session_result: the current result of the prompt session,
             if using alternate syntax, skip this value
-        :type session_result: Dict[str, Any]
+        :type session_result: SessionResult
         """
         self._raw_choices = self._choice_func(self._session_result)  # type: ignore
         self.choices = self._get_choices(self._raw_choices, self._default)
@@ -430,7 +430,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
+        message: Union[str, Callable[[SessionResult], str]],
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -441,7 +441,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
         if not keybindings:
@@ -718,7 +718,7 @@ class BaseListPrompt(BaseComplexPrompt):
     Upon entering the answer, update the first window's formatted text.
 
     :param message: question to display to the user
-    :type message: Union[str, Callable[[Dict[str, Any]], str]]
+    :type message: Union[str, Callable[[SessionResult], str]]
     :param style: style to apply to the prompt
     :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
@@ -747,7 +747,7 @@ class BaseListPrompt(BaseComplexPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
+        message: Union[str, Callable[[SessionResult], str]],
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -760,7 +760,7 @@ class BaseListPrompt(BaseComplexPrompt):
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
         super().__init__(

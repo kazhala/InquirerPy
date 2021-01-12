@@ -13,7 +13,7 @@ from prompt_toolkit.validation import ValidationError, Validator
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT, INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.utils import InquirerPyStyle
+from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
 class InputPrompt(BaseSimplePrompt):
@@ -22,13 +22,13 @@ class InputPrompt(BaseSimplePrompt):
     This class is used for input prompt.
 
     :param message: the question to ask
-    :type message: Union[str, Callable[[Dict[str, Any]], str]]
+    :type message: Union[str, Callable[[SessionResult], str]]
     :param style: a dictionary of style to apply
     :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param default: the default result
-    :type default: Union[str, Callable[[Dict[str, Any]], str]]
+    :type default: Union[str, Callable[[SessionResult], str]]
     :param qmark: question qmark to display
     :type qmark: str
     :param completer: add auto completer to user input
@@ -49,10 +49,10 @@ class InputPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
+        message: Union[str, Callable[[SessionResult], str]],
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
-        default: Union[str, Callable[[Dict[str, Any]], str]] = "",
+        default: Union[str, Callable[[SessionResult], str]] = "",
         qmark: str = "?",
         completer: Union[Dict[str, Optional[str]], Completer] = None,
         multicolumn_complete: bool = False,
@@ -61,7 +61,7 @@ class InputPrompt(BaseSimplePrompt):
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""

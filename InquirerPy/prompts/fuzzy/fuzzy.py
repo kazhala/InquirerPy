@@ -5,7 +5,6 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
-from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.filters.cli import IsDone
 from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
@@ -21,7 +20,7 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py_async
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle, calculate_height
+from InquirerPy.utils import InquirerPyStyle, SessionResult, calculate_height
 
 
 class InquirerPyFuzzyControl(InquirerPyUIControl):
@@ -31,7 +30,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     The actual input buffer will be handled by a separate BufferControl.
 
     :param choices: list of choices to display
-    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
     :param pointer: pointer symbol
     :type pointer: str
     :param marker: marker symbol for the selected choice in the case of multiselect
@@ -44,7 +43,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         pointer: str,
         marker: str,
         current_text: Callable[[], str],
@@ -209,11 +208,11 @@ class FuzzyPrompt(BaseComplexPrompt):
     python provider.
 
     :param message: message to display to the user
-    :type message: Union[str, Callable[[Dict[str, Any]], str]]
+    :type message: Union[str, Callable[[SessionResult], str]]
     :param choices: list of choices available to select
-    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
     :param default: default value to insert into buffer
-    :type default: Union[str, Callable[[Dict[str, Any]], str]]
+    :type default: Union[str, Callable[[SessionResult], str]]
     :param pointer: pointer symbol
     :type pointer: str
     :param style: style dict to apply
@@ -252,9 +251,9 @@ class FuzzyPrompt(BaseComplexPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
-        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
-        default: Union[str, Callable[[Dict[str, Any]], str]] = "",
+        message: Union[str, Callable[[SessionResult], str]],
+        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
+        default: Union[str, Callable[[SessionResult], str]] = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
@@ -272,7 +271,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
     ) -> None:
         """Initialise the layout and create Application.
 

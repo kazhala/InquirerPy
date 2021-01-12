@@ -1,14 +1,13 @@
 """Module contains the expand prompt and its related helper classes."""
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
-from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle
+from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
 class ExpandHelp(NamedTuple):
@@ -25,7 +24,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any,
         pointer: str,
         separator: str,
@@ -147,9 +146,9 @@ class ExpandPrompt(BaseListPrompt):
     all controled via InquirerPyExpandControl under one window.
 
     :param message: message to ask user
-    :type message: Union[str, Callable[[Dict[str, Any]], str]]
+    :type message: Union[str, Callable[[SessionResult], str]]
     :param choices: list of choices to display
-    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
     :param default: default value, can be a key of the choices or a value
     :type default: Any
     :param style: style dict to apply to the prompt
@@ -190,8 +189,8 @@ class ExpandPrompt(BaseListPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
-        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+        message: Union[str, Callable[[SessionResult], str]],
+        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any = "",
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
@@ -210,7 +209,7 @@ class ExpandPrompt(BaseListPrompt):
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
     ) -> None:
         """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(

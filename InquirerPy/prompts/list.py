@@ -2,13 +2,12 @@
 
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from prompt_toolkit.filters.base import FilterOrBool
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle
+from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
 class InquirerPyListControl(InquirerPyUIControl):
@@ -21,7 +20,7 @@ class InquirerPyListControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any,
         pointer: str,
         marker: str,
@@ -70,9 +69,9 @@ class ListPrompt(BaseListPrompt):
     """A wrapper class around prompt_toolkit Application to create a list prompt.
 
     :param message: message to display
-    :type message: Union[str, Callable[[Dict[str, Any]], str]]
+    :type message: Union[str, Callable[[SessionResult], str]]
     :param choices: list of choices to display
-    :type choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
     :param default: default value
     :type default: Any
     :param style: a dictionary of style
@@ -107,8 +106,8 @@ class ListPrompt(BaseListPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
-        choices: Union[Callable[[Dict[str, Any]], List[Any]], List[Any]],
+        message: Union[str, Callable[[SessionResult], str]],
+        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any = None,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
@@ -124,7 +123,7 @@ class ListPrompt(BaseListPrompt):
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
     ) -> None:
         """Initialise the content_control and create Application."""
         self.content_control = InquirerPyListControl(

@@ -2,7 +2,7 @@
 import math
 import os
 import shutil
-from typing import Dict, NamedTuple, Optional, Tuple, Union
+from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from prompt_toolkit.application import run_in_terminal
 
@@ -19,6 +19,9 @@ class InquirerPyStyle(NamedTuple):
     """
 
     dict: Dict[str, str]
+
+
+SessionResult = Dict[str, Union[str, bool, List[Any]]]
 
 
 def get_style(

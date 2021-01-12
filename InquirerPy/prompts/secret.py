@@ -1,22 +1,22 @@
 """Module contains the class to create a secret prompt."""
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, List, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
-from InquirerPy.utils import InquirerPyStyle
+from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
 class SecretPrompt(InputPrompt):
     """A wrapper class around PromptSession to create a secret prompt.
 
     :param message: the message to display in the prompt
-    :type message: Union[str, Callable[[Dict[str, Any]], str]]
+    :type message: Union[str, Callable[[SessionResult], str]]
     :param style: style to apply to the prompt
     :type style: InquirerPyStyle
     :param default: the default value
-    :type default: Union[str, Callable[[Dict[str, Any]], str]]
+    :type default: Union[str, Callable[[SessionResult], str]]
     :param qmark: qmark to display infront of the question
     :type qmark: str
     :param vi_mode: use vi kb for the prompt
@@ -33,16 +33,16 @@ class SecretPrompt(InputPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
+        message: Union[str, Callable[[SessionResult], str]],
         style: InquirerPyStyle = None,
-        default: Union[str, Callable[[Dict[str, Any]], str]] = "",
+        default: Union[str, Callable[[SessionResult], str]] = "",
         qmark: str = "?",
         vi_mode: bool = False,
         validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
         **kwargs
     ) -> None:
         """Construct the prompt session."""

@@ -1,7 +1,7 @@
 """Module contains the filepath prompt and its completer class."""
 import os
 from pathlib import Path
-from typing import Any, Callable, Dict, Generator, List, Union
+from typing import Any, Callable, Dict, Generator, Union
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
@@ -9,7 +9,7 @@ from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
-from InquirerPy.utils import InquirerPyStyle
+from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
 class FilePathCompleter(Completer):
@@ -81,13 +81,13 @@ class FilePathPrompt(InputPrompt):
     This class is used for filepath prompt.
 
     :param message: the question to ask
-    :type message: Union[str, Callable[[Dict[str, Any]], str]]
+    :type message: Union[str, Callable[[SessionResult], str]]
     :param style: a dictionary of style to apply
     :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
     :type vi_mode: bool
     :param default: the default result
-    :type default: Union[str, Callable[[Dict[str, Any]], str]]
+    :type default: Union[str, Callable[[SessionResult], str]]
     :param qmark: question qmark to display
     :type qmark: str
     :param multicolumn_complete: complete in multi column
@@ -108,10 +108,10 @@ class FilePathPrompt(InputPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[Dict[str, Any]], str]],
+        message: Union[str, Callable[[SessionResult], str]],
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
-        default: Union[str, Callable[[Dict[str, Any]], str]] = "",
+        default: Union[str, Callable[[SessionResult], str]] = "",
         qmark: str = "?",
         multicolumn_complete: bool = False,
         validate: Union[Callable[[str], bool], Validator] = None,
@@ -120,7 +120,7 @@ class FilePathPrompt(InputPrompt):
         only_files: bool = False,
         transformer: Callable[[str], Any] = None,
         filter: Callable[[Any], Any] = None,
-        session_result: Dict[str, Union[str, bool, List[Any]]] = None,
+        session_result: SessionResult = None,
         **kwargs,
     ) -> None:
         """Construct a PromptSession based on parameters and apply key_bindings."""
