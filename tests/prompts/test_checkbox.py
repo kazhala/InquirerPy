@@ -186,11 +186,11 @@ class TestCheckbox(unittest.TestCase):
         mocked_kb.assert_has_calls([call("c-n", filter=ANY)])
         mocked_kb.assert_has_calls([call("j", filter=ANY)])
         try:
-            mocked_kb.assert_has_calls([call("escape", "r", filter=True)])
+            mocked_kb.assert_has_calls([call("alt-r", filter=True)])
             self.fail("keybinding failed to apply multiselect filter")
         except:
             pass
-        mocked_kb.assert_has_calls([call("escape", "a", filter=ANY)])
+        mocked_kb.assert_has_calls([call("alt-a", filter=ANY)])
 
     def test_kb(self):
         prompt = CheckboxPrompt(message="", choices=self.choices)
@@ -198,9 +198,9 @@ class TestCheckbox(unittest.TestCase):
 
         @prompt._register_kb("b")
         def test(_):
-            return True
+            pass
 
-        test("")
+        test("")  # type: ignore
         self.assertEqual(prompt._invalid, False)
 
     def test_checkbox_enter_empty(self):
