@@ -21,7 +21,7 @@ class InquirerPyStyle(NamedTuple):
     dict: Dict[str, str]
 
 
-SessionResult = Dict[str, Union[str, bool, List[Any]]]
+SessionResult = Dict[Union[str, int], Optional[Union[str, bool, List[Any]]]]
 
 
 def get_style(

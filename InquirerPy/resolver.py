@@ -11,7 +11,7 @@ from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.rawlist import RawlistPrompt
 from InquirerPy.prompts.secret import SecretPrompt
-from InquirerPy.utils import get_style
+from InquirerPy.utils import SessionResult, get_style
 
 __all__ = ["prompt"]
 
@@ -37,7 +37,7 @@ def prompt(
     raise_keyboard_interrupt: bool = True,
     keybindings: Dict[str, List[Dict[str, Any]]] = None,
     style_override: bool = True,
-) -> Dict[str, Optional[Union[str, List[Any], bool]]]:
+) -> SessionResult:
     """Resolve user provided list of questions and get result.
 
     if "name" param is not present, use the index as the name.
@@ -62,9 +62,9 @@ def prompt(
     :param style_override: override all default styles
     :type style_override: bool
     :return: dictionary of answers
-    :rtype: Dict[str, Optional[Union[str, List[str], bool]]]
+    :rtype: SessionResult
     """
-    result: Dict[str, Optional[Union[str, List[Any], bool]]] = {}
+    result: SessionResult = {}
     if not keybindings:
         keybindings = {}
 
@@ -80,7 +80,7 @@ def prompt(
         try:
             question = original_question.copy()
             question_type = question.pop("type")
-            question_name = question.pop("name", str(index))
+            question_name = question.pop("name", index)
             message = question.pop("message")
             question_when = question.pop("when", None)
             if question_when and not question_when(result):
