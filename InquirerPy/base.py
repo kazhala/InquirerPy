@@ -196,7 +196,10 @@ class BaseSimplePrompt(ABC):
                 display_message.append(
                     post_answer
                     if not self._transformer
-                    else ("class:answer", " %s" % self._transformer(post_answer[1][1:]))
+                    else (
+                        "class:answer",
+                        " %s" % self._transformer(self.status["result"]),
+                    )
                 )
             else:
                 display_message.append(pre_answer)
