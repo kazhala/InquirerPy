@@ -38,7 +38,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
         disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
-        session_result: Optional[Dict[str, Any]] = None,
+        session_result: Optional[SessionResult] = None,
     ) -> None:
         """Initialise required attributes and call base class."""
         self._pointer = "%s " % pointer

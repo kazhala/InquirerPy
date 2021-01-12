@@ -23,7 +23,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         pointer: str,
         separator: str,
         marker: str,
-        session_result: Optional[Dict[str, Any]],
+        session_result: Optional[SessionResult],
     ) -> None:
         """Construct the content control object and add the index to each choice for visual purposes."""
         self._pointer = pointer

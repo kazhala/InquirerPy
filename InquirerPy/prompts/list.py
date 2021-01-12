@@ -24,7 +24,7 @@ class InquirerPyListControl(InquirerPyUIControl):
         default: Any,
         pointer: str,
         marker: str,
-        session_result: Optional[Dict[str, Any]],
+        session_result: Optional[SessionResult],
     ) -> None:
         """Construct and init a custom FormattedTextControl object."""
         self._pointer: str = pointer

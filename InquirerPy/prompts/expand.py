@@ -31,7 +31,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         help_msg: str,
         expand_pointer: str,
         marker: str,
-        session_result: Optional[Dict[str, Any]],
+        session_result: Optional[SessionResult],
     ) -> None:
         """Construct content control object and initialise choices."""
         self._pointer = pointer

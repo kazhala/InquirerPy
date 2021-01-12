@@ -48,7 +48,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         marker: str,
         current_text: Callable[[], str],
         max_lines: int,
-        session_result: Optional[Dict[str, Any]],
+        session_result: Optional[SessionResult],
     ) -> None:
         """Construct UIControl and initialise choices."""
         self._pointer = pointer
