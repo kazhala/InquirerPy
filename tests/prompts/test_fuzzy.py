@@ -650,7 +650,7 @@ class TestFuzzy(unittest.TestCase):
             [
                 ("class:questionmark", "?"),
                 ("class:question", " "),
-                ("class:answer", " 111"),
+                ("class:answer", " 3"),
             ],
         )
         self.assertEqual(prompt._filter(1), 2)

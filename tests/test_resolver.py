@@ -52,7 +52,7 @@ class TestResolver(unittest.TestCase):
         mocked_confirm.return_value = True
         result = prompt(questions)
         mocked_confirm.assert_called_once()
-        self.assertEqual(result, {"0": True})
+        self.assertEqual(result, {0: True})
 
     @patch.object(FilePathPrompt, "__init__")
     @patch.object(FilePathPrompt, "execute")
@@ -78,7 +78,7 @@ class TestResolver(unittest.TestCase):
             session_result=ANY,
         )
         mocked_confirm_execute.assert_called_once()
-        self.assertEqual(result, {"0": False})
+        self.assertEqual(result, {0: False})
 
         mocked_filepath_init.return_value = None
         mocked_filepath_execute.return_value = "hello.py"
@@ -120,7 +120,7 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_execute.assert_has_calls(
             [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
         )
-        self.assertEqual(result, {"0": False, "foo": False, "boo": "hello.py"})
+        self.assertEqual(result, {0: False, "foo": False, "boo": "hello.py"})
 
     @patch.object(SecretPrompt, "__init__")
     @patch.object(SecretPrompt, "execute")
@@ -256,11 +256,11 @@ class TestResolver(unittest.TestCase):
                         }
                     ),
                     vi_mode=True,
-                    session_result={"10": True, "1": True, "2": "111111"},
+                    session_result={"10": True, 1: True, 2: "111111"},
                 )
             ]
         )
-        self.assertEqual(result, {"10": True, "1": True, "2": "111111"})
+        self.assertEqual(result, {"10": True, 1: True, 2: "111111"})
 
     @patch.object(ConfirmPrompt, "__init__")
     @patch.object(ConfirmPrompt, "execute")
@@ -427,7 +427,7 @@ class TestResolver(unittest.TestCase):
         mocked_execute.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
         questions = [{"type": "input", "message": "hello"}]
         result = prompt(questions, raise_keyboard_interrupt=False)
-        self.assertEqual(result, {"0": None})
+        self.assertEqual(result, {0: None})
 
         mocked_execute.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
         self.assertRaises(
@@ -443,11 +443,11 @@ class TestResolver(unittest.TestCase):
 
         os.environ["INQUIRERPY_NO_RAISE_KBI"] = "true"
         result = prompt(questions)
-        self.assertEqual(result, {"0": None})
+        self.assertEqual(result, {0: None})
 
         os.environ["INQUIRERPY_NO_RAISE_KBI"] = "true"
         result = prompt(questions, raise_keyboard_interrupt=True)
-        self.assertEqual(result, {"0": None})
+        self.assertEqual(result, {0: None})
 
     @patch.object(ListPrompt, "execute")
     @patch.object(InputPrompt, "execute")
