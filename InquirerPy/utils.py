@@ -4,6 +4,8 @@ import os
 import shutil
 from typing import Dict, NamedTuple, Optional, Tuple, Union
 
+from prompt_toolkit.application import run_in_terminal
+
 from InquirerPy.exceptions import InvalidArgument
 
 __all__ = ["get_style", "calculate_height", "InquirerPyStyle"]
@@ -131,3 +133,12 @@ def calculate_height(
         raise InvalidArgument(
             "prompt height needs to be either an int or str representing height percentage."
         )
+
+
+def patched_print(*values) -> None:
+    """Print the values without interrupting the prompt."""
+
+    def _print():
+        print(*values)
+
+    run_in_terminal(_print)
