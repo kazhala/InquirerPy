@@ -20,7 +20,7 @@ def walk_s3_bucket(result):
 
 
 def is_upload(result):
-    return result["0"] == "Upload"
+    return result[0] == "Upload"
 
 
 questions = [

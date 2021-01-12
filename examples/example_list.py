@@ -23,7 +23,7 @@ def classic():
             "multiselect": True,
             "transformer": lambda result: "%s region%s selected"
             % (len(result), "s" if len(result) > 1 else ""),
-            "when": lambda result: result["0"] is not None,
+            "when": lambda result: result[0] is not None,
         },
     ]
 
