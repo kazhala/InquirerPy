@@ -14,7 +14,7 @@ def get_choices(_):
             file = stack.enter_context(p.open("w+"))
             sample = stack.enter_context(
                 urllib.request.urlopen(
-                    "https://kazhala-public-shit.s3-ap-southeast-2.amazonaws.com/InquirerPy/sample.txt"
+                    "https://assets.kazhala.me/InquirerPy/sample.txt"
                 )
             )
             file.write(sample.read().decode())
