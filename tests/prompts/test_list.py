@@ -248,3 +248,16 @@ class TestListPrompt(unittest.TestCase):
             ],
         )
         self.assertEqual(prompt._filter(1), 2)
+
+    def test_prompt_message_with_cursor(self):
+        prompt = ListPrompt(message="Select one:", choices=[1, 2, 3])
+        self.assertEqual(
+            prompt._get_prompt_message_with_cursor(),
+            [
+                ("class:questionmark", "?"),
+                ("class:question", " Select one:"),
+                ("class:instruction", " "),
+                ("[SetCursorPosition]", ""),
+                ("", " "),
+            ],
+        )
