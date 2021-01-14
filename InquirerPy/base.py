@@ -788,9 +788,7 @@ class BaseListPrompt(BaseComplexPrompt):
             [
                 Window(
                     height=LayoutDimension.exact(1),
-                    content=FormattedTextControl(
-                        self._get_prompt_message, show_cursor=False
-                    ),
+                    content=FormattedTextControl(self._get_prompt_message_with_cursor),
                 ),
                 ConditionalContainer(
                     Window(
@@ -825,6 +823,20 @@ class BaseListPrompt(BaseComplexPrompt):
             key_bindings=self._kb,
             after_render=self._after_render,
         )
+
+    def _get_prompt_message_with_cursor(self) -> List[Tuple[str, str]]:
+        """Obtain the prompt message to display.
+
+        Introduced a new method instead of using the `_get_prompt_message`
+        due to `expand` and `rawlist` make changes after calling `super()._get_prompt_message()`.
+
+        This ensures that cursor is always at the end of the window no matter
+        when the changes is made to the `_get_prompt_message`.
+        """
+        message = self._get_prompt_message()
+        message.append(("[SetCursorPosition]", ""))
+        message.append(("", " "))  # [SetCursorPosition] require char behind it
+        return message
 
     def _toggle_choice(self) -> None:
         """Toggle the `enabled` status of the choice."""
