@@ -101,7 +101,7 @@ def calculate_height(
     * 20 - exact line height in int
 
     If max_height is not provided or is None,
-    set it to `50%` for best visual presentation in terminal.
+    set it to `60%` for best visual presentation in terminal.
     """
     try:
         _, term_lines = shutil.get_terminal_size()
@@ -117,8 +117,7 @@ def calculate_height(
                 dimmension_height = height
 
         if not max_height:
-            dimmension_max_height = term_lines - offset
-            max_height = "100%"
+            max_height = "60%"
         if isinstance(max_height, str):
             max_height = max_height.replace("%", "")
             max_height = int(max_height)
@@ -128,8 +127,10 @@ def calculate_height(
 
         if dimmension_height and dimmension_height > dimmension_max_height:
             dimmension_height = dimmension_max_height
-        if dimmension_height and dimmension_height < 0:
+        if dimmension_height and dimmension_height <= 0:
             dimmension_height = 1
+        if dimmension_max_height <= 0:
+            dimmension_max_height = 1
         return dimmension_height, dimmension_max_height
 
     except ValueError:

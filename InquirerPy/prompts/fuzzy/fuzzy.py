@@ -54,7 +54,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         self._pointer = pointer
         self._marker = marker
         self._current_text = current_text
-        self._max_lines = max_lines
+        self._max_lines = max_lines if max_lines > 0 else 1
         super().__init__(choices=choices, default=None, session_result=session_result)
 
     def _format_choices(self) -> None:
@@ -350,14 +350,18 @@ class FuzzyPrompt(BaseComplexPrompt):
             ),
         )
 
-        choice_height_dimmension = Dimension(
-            max=self._dimmension_max_height, preferred=self._dimmension_height
+        choice_height_dimmension = lambda: Dimension(
+            max=self._dimmension_max_height,
+            preferred=self._dimmension_height,
+            min=self.content_control._height if self.content_control._height > 0 else 1,
         )
-        choice_window = Window(
-            content=self.content_control, height=choice_height_dimmension
+        self.choice_window = Window(
+            content=self.content_control,
+            height=choice_height_dimmension,
+            dont_extend_height=True,
         )
 
-        main_content_window = HSplit([input_window, choice_window])
+        main_content_window = HSplit([input_window, self.choice_window])
         if self._border:
             main_content_window = Frame(main_content_window)
         self._layout = Layout(
