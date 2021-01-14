@@ -797,8 +797,13 @@ class BaseListPrompt(BaseComplexPrompt):
                             max=self._dimmension_max_height,
                             preferred=self._dimmension_height,
                         ),
+                        dont_extend_height=True,
                     ),
                     filter=~IsDone() & ~self._is_loading,
+                ),
+                ConditionalContainer(
+                    Window(FormattedTextControl([("", "")])),
+                    filter=~IsDone(),  # force validation bar to stay bottom
                 ),
                 ConditionalContainer(
                     Window(
