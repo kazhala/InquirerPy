@@ -185,6 +185,8 @@ class ExpandPrompt(BaseListPrompt):
     :type invalid_message: str
     :param keybindings: custom keybindings to apply
     :type keybindings: Dict[str, List[Dict[str, Any]]]
+    :param show_cursor: display cursor at the end of the prompt
+    :type show_cursor: bool
     """
 
     def __init__(
@@ -209,6 +211,7 @@ class ExpandPrompt(BaseListPrompt):
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
+        show_cursor: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         """Create the application and apply keybindings."""
@@ -236,6 +239,7 @@ class ExpandPrompt(BaseListPrompt):
             invalid_message=invalid_message,
             multiselect=multiselect,
             keybindings=keybindings,
+            show_cursor=show_cursor,
             session_result=session_result,
         )
 

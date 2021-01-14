@@ -746,6 +746,8 @@ class BaseListPrompt(BaseComplexPrompt):
     :type multiselect: bool
     :param keybindings: custom keybindings to apply
     :type keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
+    :param show_cursor: display cursor at the end of the prompt
+    :type show_cursor: bool
     """
 
     def __init__(
@@ -763,6 +765,7 @@ class BaseListPrompt(BaseComplexPrompt):
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        show_cursor: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
@@ -788,7 +791,12 @@ class BaseListPrompt(BaseComplexPrompt):
             [
                 Window(
                     height=LayoutDimension.exact(1),
-                    content=FormattedTextControl(self._get_prompt_message_with_cursor),
+                    content=FormattedTextControl(
+                        self._get_prompt_message_with_cursor
+                        if show_cursor
+                        else self._get_prompt_message,
+                        show_cursor=show_cursor,
+                    ),
                 ),
                 ConditionalContainer(
                     Window(
