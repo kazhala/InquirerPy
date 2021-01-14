@@ -117,7 +117,7 @@ def calculate_height(
                 dimmension_height = height
 
         if not max_height:
-            max_height = "60%"
+            max_height = "60%" if not height else "100%"
         if isinstance(max_height, str):
             max_height = max_height.replace("%", "")
             max_height = int(max_height)
