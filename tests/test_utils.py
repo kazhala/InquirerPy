@@ -16,7 +16,7 @@ class TestUtils(unittest.TestCase):
 
         height, max_height = calculate_height("50%", None)
         self.assertEqual(height, 38)
-        self.assertEqual(max_height, 46)
+        self.assertEqual(max_height, 78)
 
         calculate_height("50%", "80")
 
