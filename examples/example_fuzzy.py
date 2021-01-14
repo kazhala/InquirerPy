@@ -33,7 +33,6 @@ questions = [
         "choices": get_choices,
         "border": True,
         "multiselect": True,
-        "max_height": "70%",
         "validate": lambda x: len(x) > 1,
     },
     {
