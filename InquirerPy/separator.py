@@ -8,10 +8,10 @@ class Separator:
     :type content: str
     """
 
-    def __init__(self, content: str = 15 * "-") -> None:
+    def __init__(self, line: str = 15 * "-") -> None:
         """Initialise the content."""
-        self.content = content
+        self.line = line
 
     def __str__(self) -> str:
         """Call str function on Separator."""
-        return self.content
+        return self.line
