@@ -1,44 +1,55 @@
-from InquirerPy.resolver import prompt
+from InquirerPy import prompt, inquirer
 from InquirerPy.separator import Separator
 
 
-def hello(_):
+def question1_choice(_):
     return [
-        {"key": "1", "name": "1", "value": 1},
-        {"key": "2", "name": "2", "value": 2},
-        {"key": "3", "name": "3", "value": 3},
+        {"key": "a", "name": "Apple", "value": "Apple"},
+        {"key": "c", "name": "Cherry", "value": "Cherry"},
+        {"key": "o", "name": "Orange", "value": "Orange"},
+        {"key": "p", "name": "Peach", "value": "Peach"},
+        {"key": "m", "name": "Melon", "value": "Melon"},
+        {"key": "s", "name": "Strawberry", "value": "Strawberry"},
+        {"key": "g", "name": "Grapes", "value": "Grapes"},
     ]
 
 
-questions = [
-    {
-        "type": "expand",
-        "choices": [
-            {"key": "j", "name": "Jump", "value": "Jump"},
-            {"key": "y", "name": "Yes", "value": 1},
-            {"key": "w", "name": "Word", "value": "HAHAHA"},
-        ],
-        "message": "What do you think?",
-        "default": 1,
-        "multiselect": True,
-        "keybindings": {"up": [{"key": "c-p"}], "down": [{"key": "c-n"}]},
-    },
-    {
-        "type": "expand",
-        "choices": [
-            Separator(),
-            {"name": "hello", "value": "world", "key": "b"},
-            Separator("**********"),
-            {"name": "foo", "value": "boo", "key": "f"},
-        ],
-        "message": "What do you think?",
-        "default": "f",
-    },
-    {"type": "expand", "choices": hello, "message": "What"},
-]
+def question2_choice(_):
+    return [
+        {"key": "d", "name": "Delivery", "value": "dl"},
+        {"key": "p", "name": "Pick Up", "value": "pk"},
+        Separator(line=15 * "*"),
+        {"key": "c", "name": "Car Park", "value": "cp"},
+        {"key": "t", "name": "Third Party", "value": "tp"},
+    ]
 
-result = prompt(
-    questions,
-    vi_mode=True,
-)
-print(result)
+
+def classic():
+    questions = [
+        {
+            "type": "expand",
+            "choices": question1_choice,
+            "message": "Pick your favourite:",
+            "default": "o",
+        },
+        {
+            "type": "expand",
+            "choices": question2_choice,
+            "message": "Select your preferred method:",
+        },
+    ]
+
+    result = prompt(questions)
+
+
+def alternate():
+    fruit = inquirer.expand(
+        message="Pick your favourite:", choices=question1_choice, default="o"
+    ).execute()
+    method = inquirer.expand(
+        message="Select your preferred method:", choices=question2_choice
+    ).execute()
+
+
+# alternate()
+classic()
