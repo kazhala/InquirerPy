@@ -1,9 +1,11 @@
 import os
 import unittest
-from unittest.mock import patch
+from unittest.mock import PropertyMock, patch
+
+from prompt_toolkit.application.application import Application
 
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.utils import InquirerPyStyle, calculate_height, get_style
+from InquirerPy.utils import InquirerPyStyle, calculate_height, color_print, get_style
 
 
 class TestUtils(unittest.TestCase):
@@ -136,3 +138,17 @@ class TestUtils(unittest.TestCase):
                 },
             ),
         )
+
+    @patch("InquirerPy.utils.print_formatted_text")
+    @patch("InquirerPy.utils.run_in_terminal")
+    @patch.object(Application, "is_running", new_callable=PropertyMock)
+    def test_color_print(self, mocked_running, mocked_term, mocked_print):
+        mocked_running.return_value = True
+        color_print([("class:aa", "haha")], style={"aa": "#ffffff"})
+        mocked_term.assert_called_once()
+
+        mocked_term.reset_mock()
+        mocked_running.return_value = False
+        color_print([("class:aa", "haha")], style={"aa": "#ffffff"})
+        mocked_term.assert_not_called()
+        mocked_print.assert_called_once()
