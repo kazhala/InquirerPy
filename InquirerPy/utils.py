@@ -4,7 +4,11 @@ import os
 import shutil
 from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
 
+from prompt_toolkit import print_formatted_text
 from prompt_toolkit.application import run_in_terminal
+from prompt_toolkit.application.current import get_app
+from prompt_toolkit.formatted_text import FormattedText
+from prompt_toolkit.styles import Style
 
 from InquirerPy.exceptions import InvalidArgument
 
@@ -146,3 +150,31 @@ def patched_print(*values) -> None:
         print(*values)
 
     run_in_terminal(_print)
+
+
+def color_print(
+    formatted_text: List[Tuple[str, str]], style: Dict[str, str] = None
+) -> None:
+    """Print colored text.
+
+    This is a wrapper around `prompt_toolkit` `print_formatted_text`.
+    It automatically handles printing the text without interrupting the
+    current prompt.
+
+    :param formatted_text: a list of formatted text
+        [("class:aa", "Hello")] or [("#ffffff", "Hello")]
+    :type formatted_text: List[Tuple[str, str]]
+    :param style: a dictionary of style
+    :type style: Dict[str, str]
+    """
+
+    def _print():
+        print_formatted_text(
+            FormattedText(formatted_text),
+            style=Style.from_dict(style) if style else None,
+        )
+
+    if get_app().is_running:
+        run_in_terminal(_print)
+    else:
+        _print()
