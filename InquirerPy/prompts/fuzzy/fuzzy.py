@@ -351,7 +351,9 @@ class FuzzyPrompt(BaseComplexPrompt):
         )
 
         choice_height_dimmension = lambda: Dimension(
-            max=self._dimmension_max_height,
+            max=self._dimmension_max_height
+            if not self._border
+            else self._dimmension_max_height - 2,
             preferred=self._dimmension_height,
             min=self.content_control._height if self.content_control._height > 0 else 1,
         )
