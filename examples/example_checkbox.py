@@ -1,35 +1,66 @@
-from InquirerPy.resolver import prompt
+from InquirerPy import inquirer, prompt
 from InquirerPy.separator import Separator
 
-questions = [
-    {
-        "type": "checkbox",
-        "message": "Select which applies",
-        "choices": [
-            "boy",
-            "girl",
-            Separator(),
-            {"name": "mix", "value": "boy&girl", "enabled": True},
-        ],
-    },
-    {
-        "name": "nba",
-        "type": "checkbox",
-        "message": "Select players you want:",
-        "choices": [
-            {"name": "Chris Paul", "value": "pg"},
-            {"name": "Kobe Bryant", "value": "sg"},
-            {"name": "Lebron James", "value": "sf"},
-            {"name": "Tim Duncan", "value": "pf"},
-            {"name": "Yao Ming", "value": "c"},
-        ],
-        "pointer": ">",
-        "qmark": "[?]",
-        "validate": lambda x: len(x) > 1,
-        "invalid_message": "selection require to be more than 1",
-        "instruction": "(select at least 2 values)",
-    },
-]
 
-result = prompt(questions, vi_mode=True)
-print(result)
+def question1_choice(_):
+    return [
+        {"name": "Sydney", "value": "ap-southeast-2", "enabled": True},
+        {"name": "Singapore", "value": "ap-southeast-1", "enabled": False},
+        Separator(),
+        "us-east-1",
+        "us-west-1",
+    ]
+
+
+def question2_choice(_):
+    return [
+        {"enabled": False, "name": "Apple", "value": "Apple"},
+        {"enabled": False, "name": "Cherry", "value": "Cherry"},
+        {"enabled": False, "name": "Orange", "value": "Orange"},
+        {"enabled": False, "name": "Peach", "value": "Peach"},
+        {"enabled": False, "name": "Melon", "value": "Melon"},
+        {"enabled": False, "name": "Strawberry", "value": "Strawberry"},
+        {"enabled": False, "name": "Grapes", "value": "Grapes"},
+    ]
+
+
+def classic():
+    questions = [
+        {
+            "type": "checkbox",
+            "message": "Select regions:",
+            "choices": question1_choice,
+            "transformer": lambda result: "%s region%s selected"
+            % (len(result), "s" if len(result) > 1 else ""),
+        },
+        {
+            "type": "checkbox",
+            "message": "Pick your favourites:",
+            "choices": question2_choice,
+            "validate": lambda result: len(result) >= 1,
+            "invalid_message": "should be at least 1 selection",
+            "instruction": "(select at least 1)",
+        },
+    ]
+
+    result = prompt(questions, vi_mode=True)
+
+
+def alternate():
+    regions = inquirer.checkbox(
+        message="Select regions:",
+        choices=question1_choice,
+        transformer=lambda result: "%s region%s selected"
+        % (len(result), "s" if len(result) > 1 else ""),
+    ).execute()
+    fruits = inquirer.checkbox(
+        message="Pick your favourites:",
+        choices=question2_choice,
+        validate=lambda result: len(result) >= 1,
+        invalid_message="should be at least 1 selection",
+        instruction="(select at least 1)",
+    ).execute()
+
+
+alternate()
+# classic()
