@@ -28,7 +28,7 @@ class SecretPrompt(InputPrompt):
     :param transformer: a callable to transform the result, this is visual effect only
     :type transformer: Callable[[str], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[Any], Any]
+    :type filter: Callable[[str], Any]
     """
 
     def __init__(
@@ -41,7 +41,7 @@ class SecretPrompt(InputPrompt):
         validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
-        filter: Callable[[Any], Any] = None,
+        filter: Callable[[str], Any] = None,
         session_result: SessionResult = None,
         **kwargs
     ) -> None:

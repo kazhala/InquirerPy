@@ -61,7 +61,7 @@ class BaseSimplePrompt(ABC):
     :param invalid_message: message to display when input is invalid
     :type invalid_message: str
     :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[str], Any]
+    :type transformer: Callable[[Any], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
     :type filter: Callable[[Any], Any]
     :param session_result: the current session result, this is used by callable message and choices
@@ -77,7 +77,7 @@ class BaseSimplePrompt(ABC):
         qmark: str = "?",
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
-        transformer: Callable[[str], Any] = None,
+        transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         session_result: SessionResult = None,
         default: Any = "",
@@ -438,7 +438,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         vi_mode: bool = False,
         qmark: str = "?",
         instruction: str = "",
-        transformer: Callable[[str], Any] = None,
+        transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
@@ -731,7 +731,7 @@ class BaseListPrompt(BaseComplexPrompt):
     :param instruction: instruction to display after the question message
     :type instruction: str
     :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[str], Any]
+    :type transformer: Callable[[Any], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
     :type filter: Callable[[Any], Any]
     :param height: preferred height of the choice window
@@ -757,7 +757,7 @@ class BaseListPrompt(BaseComplexPrompt):
         vi_mode: bool = False,
         qmark: str = "?",
         instruction: str = "",
-        transformer: Callable[[str], Any] = None,
+        transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,

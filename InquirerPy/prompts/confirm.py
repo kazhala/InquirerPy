@@ -24,9 +24,9 @@ class ConfirmPrompt(BaseSimplePrompt):
     :param qmark: the custom qmark to display infront of the question
     :type qmark: str
     :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[str], Any]
+    :type transformer: Callable[[bool], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[Any], Any]
+    :type filter: Callable[[bool], Any]
     """
 
     def __init__(
@@ -35,8 +35,8 @@ class ConfirmPrompt(BaseSimplePrompt):
         style: InquirerPyStyle = None,
         default: Union[bool, Callable[[Dict[str, Any]], bool]] = False,
         qmark: str = "?",
-        transformer: Callable[[str], Any] = None,
-        filter: Callable[[Any], Any] = None,
+        transformer: Callable[[bool], Any] = None,
+        filter: Callable[[bool], Any] = None,
         session_result: SessionResult = None,
         **kwargs
     ) -> None:

@@ -222,7 +222,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param qmark: question mark symbol
     :type qmark: str
     :param transformer: transform the result to output, this is only visual effect
-    :type transformer: Callable[[str], Any]
+    :type transformer: Callable[[Any], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
     :type filter: Callable[[Any], Any]
     :param instruction: instruction to display after the message
@@ -258,7 +258,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
-        transformer: Callable[[str], Any] = None,
+        transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         instruction: str = "",
         multiselect: bool = False,
