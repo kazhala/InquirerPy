@@ -207,6 +207,10 @@ confirm = inquirer.confirm(message="Confirm?")
 Most APIs from `PyInquirer` should be compatible with `InquirerPy`. If you discovered any more incompatible APIs, please
 let me know via issues or directly update README via pull request.
 
+### EditorPrompt
+
+`InquirerPy` does not support `editor` prompt as of now.
+
 ### CheckboxPrompt
 
 The following table containing the mapping of the incompatible parameters.
