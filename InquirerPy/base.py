@@ -655,7 +655,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
         if self._multiselect:
             return [choice["value"] for choice in self.selected_choices]
         else:
-            return self.content_control.selection["value"]
+            try:
+                return self.content_control.selection["value"]
+            except IndexError:
+                return ""
 
     @property
     def selected_choices(self) -> List[Any]:
