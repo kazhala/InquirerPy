@@ -160,6 +160,7 @@ class TestFuzzy(unittest.TestCase):
             marker=INQUIRERPY_POINTER_SEQUENCE,
             current_text=lambda: "wh",
             max_lines=80,
+            session_result=None,
         )
         self.assertEqual(
             content_control._filtered_choices,
@@ -654,3 +655,20 @@ class TestFuzzy(unittest.TestCase):
             ],
         )
         self.assertEqual(prompt._filter(1), 2)
+
+    def test_prompt_validator_index(self):
+        class Hello(NamedTuple):
+            cancelled: Callable
+            result: Callable
+
+        class App(NamedTuple):
+            exit: Callable
+
+        class Event(NamedTuple):
+            app: NamedTuple
+
+        hello = Hello(cancelled=lambda: False, result=lambda: [])
+        self.prompt._filter_callback(hello)
+
+        event = Event(App(exit=lambda result: True))
+        self.prompt._handle_enter(event)
