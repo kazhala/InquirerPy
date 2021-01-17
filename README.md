@@ -3,6 +3,10 @@
 [![Test](https://github.com/kazhala/InquirerPy/workflows/Test/badge.svg)](https://github.com/kazhala/InquirerPy/actions?query=workflow%3ATest)
 [![Lint](https://github.com/kazhala/InquirerPy/workflows/Lint/badge.svg)](https://github.com/kazhala/InquirerPy/actions?query=workflow%3ALint)
 [![Build](https://codebuild.ap-southeast-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiUUYyRUIxOXBWZ0hKcUhrbXplQklMemRsTVBxbUk3bFlTdldnRGpxeEpQSXJidEtmVEVzbVNCTE1UR3VoRSt2N0NQV0VaUXlCUzNackFBNzRVUFBBS1FnPSIsIml2UGFyYW1ldGVyU3BlYyI6IloxREtFeWY4WkhxV0NFWU0iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://ap-southeast-2.console.aws.amazon.com/codesuite/codebuild/378756445655/projects/InquirerPy/history?region=ap-southeast-2&builds-meta=eyJmIjp7InRleHQiOiIifSwicyI6e30sIm4iOjIwLCJpIjowfQ)
+[![Code Style: black](https://img.shields.io/badge/Code%20Style-black-black)](https://github.com/psf/black)
+[![Version](https://img.shields.io/pypi/pyversions/InquirerPy)](https://pypi.org/project/InquirerPy/)
+[![PyPi](https://img.shields.io/pypi/v/InquirerPy)](https://pypi.org/project/InquirerPy/)
+[![License](https://img.shields.io/pypi/l/InquirerPy)](https://github.com/kazhala/InquirerPy/blob/master/LICENSE)
 
 Documentation: https://github.com/kazhala/InquirerPy/wiki
 
@@ -229,6 +233,9 @@ Although `InquirerPy` support all the keys from `PyInquirer`, the styling works 
 
 While developing this project, I've discovered there's already another re-implementation of [PyInquirer](https://github.com/CITGuru/PyInquirer) called [questionary](https://github.com/tmbo/questionary).
 It's a fantastic fork which supports `prompt_toolkit` 3.0.0+ with performance improvement and more customization options. It's already a well established and stable library.
+
+_Unfortunately, the discovery of this project is a little too late since I really believe this is a great project and brings just what I needed to solve my issues with `PyInquirer` and
+I may not proceed to develop `InquirerPy`._
 
 Comparing with [questionary](https://github.com/tmbo/questionary), `InquirerPy` offers even more customization options in styles, UI as well as key bindings. `InquirerPy` also provides a new
 and powerful [fuzzy](https://github.com/kazhala/InquirerPy/wiki/FuzzyPrompt) prompt.
