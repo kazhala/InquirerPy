@@ -3,6 +3,7 @@
 [![Test](https://github.com/kazhala/InquirerPy/workflows/Test/badge.svg)](https://github.com/kazhala/InquirerPy/actions?query=workflow%3ATest)
 [![Lint](https://github.com/kazhala/InquirerPy/workflows/Lint/badge.svg)](https://github.com/kazhala/InquirerPy/actions?query=workflow%3ALint)
 [![Build](https://codebuild.ap-southeast-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiUUYyRUIxOXBWZ0hKcUhrbXplQklMemRsTVBxbUk3bFlTdldnRGpxeEpQSXJidEtmVEVzbVNCTE1UR3VoRSt2N0NQV0VaUXlCUzNackFBNzRVUFBBS1FnPSIsIml2UGFyYW1ldGVyU3BlYyI6IloxREtFeWY4WkhxV0NFWU0iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)](https://ap-southeast-2.console.aws.amazon.com/codesuite/codebuild/378756445655/projects/InquirerPy/history?region=ap-southeast-2&builds-meta=eyJmIjp7InRleHQiOiIifSwicyI6e30sIm4iOjIwLCJpIjowfQ)
+[![Coverage](https://img.shields.io/coveralls/github/kazhala/InquirerPy?logo=coveralls)](https://coveralls.io/github/kazhala/InquirerPy?branch=master)
 [![Version](https://img.shields.io/pypi/pyversions/InquirerPy)](https://pypi.org/project/InquirerPy/)
 [![PyPi](https://img.shields.io/pypi/v/InquirerPy)](https://pypi.org/project/InquirerPy/)
 [![License](https://img.shields.io/pypi/l/InquirerPy)](https://github.com/kazhala/InquirerPy/blob/master/LICENSE)
@@ -264,4 +265,4 @@ This project is based on the great work done by the following projects & their a
 
 This project is licensed under [MIT](https://github.com/kazhala/InquirerPy/blob/master/LICENSE). Copyright (c) 2020 Kevin Zhuang
 
-The [fzy](https://github.com/kazhala/InquirerPy/blob/master/InquirerPy/prompts/fuzzy/fzy.py) code is licensed under [MIT](https://github.com/aslpavel/sweep.py/blob/master/LICENSE). Copyright (c) 2018 Pavel Aslanov
+The [fuzzy search logic](https://github.com/kazhala/InquirerPy/blob/master/InquirerPy/prompts/fuzzy/fzy.py) is licensed under [MIT](https://github.com/aslpavel/sweep.py/blob/master/LICENSE). Copyright (c) 2018 Pavel Aslanov
