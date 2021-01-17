@@ -1,8 +1,8 @@
+import urllib.request
 from contextlib import ExitStack
 from pathlib import Path
-import urllib.request
 
-from InquirerPy.resolver import prompt
+from InquirerPy import inquirer, prompt
 
 
 def get_choices(_):
@@ -26,22 +26,45 @@ def get_choices(_):
     return choices
 
 
-questions = [
-    {
-        "type": "fuzzy",
-        "message": "Select one of them",
-        "choices": get_choices,
-        "border": True,
-        "multiselect": True,
-        "validate": lambda x: len(x) > 1,
-    },
-    {
-        "type": "fuzzy",
-        "message": "Select one",
-        "choices": ["hello", "weather", "what", "whoa", "hey", "yo"],
-        "default": "he",
-    },
-]
+def classic():
+    questions = [
+        {
+            "type": "fuzzy",
+            "message": "Select actions:",
+            "choices": ["hello", "weather", "what", "whoa", "hey", "yo"],
+            "default": "he",
+            "max_height": "70%",
+        },
+        {
+            "type": "fuzzy",
+            "message": "Select preferred words:",
+            "choices": get_choices,
+            "multiselect": True,
+            "validate": lambda result: len(result) > 1,
+            "invalid_message": "minimum 2 selection",
+            "max_height": "70%",
+        },
+    ]
 
-result = prompt(questions=questions, vi_mode=True)
-print(result)
+    result = prompt(questions=questions)
+
+
+def alternate():
+    action = inquirer.fuzzy(
+        message="Select actions:",
+        choices=["hello", "weather", "what", "whoa", "hey", "yo"],
+        default="he",
+        max_height="70%",
+    ).execute()
+    words = inquirer.fuzzy(
+        message="Select preferred words:",
+        choices=get_choices,
+        multiselect=True,
+        validate=lambda result: len(result) > 1,
+        invalid_message="minimum 2 selections",
+        max_height="70%",
+    ).execute()
+
+
+alternate()
+# classic()
