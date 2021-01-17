@@ -143,17 +143,17 @@ confirm = inquirer.confirm(message="Confirm?").execute()
 
 ## Motivation
 
-[PyInquirer](https://github.com/CITGuru/PyInquirer) is a great Python port of [Inquirer.js](https://github.com/SBoudrias/Inquirer.js/), however the project is slowly reaching
+[PyInquirer](https://github.com/CITGuru/PyInquirer) is a great Python port of [Inquirer.js](https://github.com/SBoudrias/Inquirer.js/), however, the project is slowly reaching
 to an unmaintained state with various issues left behind and no intention to implement more feature requests. I was heavily relying on this library for other projects but
 could not proceed due to the limitations.
 
-Some noticeable ones that bothers me the most:
+Some noticeable ones that bother me the most:
 
 - hard limit on `prompt_toolkit` version 1.0.3 (current release)
 - color issues (unreleased)
 - cursor issues (unreleased)
 - No options for VI/Emacs navigation key bindings
-- Pagination options doesn't work
+- Pagination options don't work
 
 This project uses python3.7+ type hinting with focus on resolving above issues while providing greater customization options.
 
