@@ -572,10 +572,6 @@ class FuzzyPrompt(BaseComplexPrompt):
         try:
             fake_document = FakeDocument(self.result_value)
             self._validator.validate(fake_document)  # type: ignore
-        except ValidationError:
-            self._invalid = True
-            return
-        try:
             if self._multiselect:
                 self.status["answered"] = True
                 if not self.selected_choices:
@@ -588,6 +584,8 @@ class FuzzyPrompt(BaseComplexPrompt):
                 self.status["answered"] = True
                 self.status["result"] = self.content_control.selection["name"]
                 event.app.exit(result=self.content_control.selection["value"])
+        except ValidationError:
+            self._invalid = True
         except IndexError:
             self.status["answered"] = True
             self.status["result"] = None if not self._multiselect else []
