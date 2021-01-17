@@ -8,7 +8,7 @@ Documentation: https://github.com/kazhala/InquirerPy/wiki
 
 ## Introduction
 
-`InquirerPy` is a Python port of the infamous [Inquirer.js](https://github.com/SBoudrias/Inquirer.js/) (A collection of common interactive command line user interfaces).
+`InquirerPy` is a Python port of the famous [Inquirer.js](https://github.com/SBoudrias/Inquirer.js/) (A collection of common interactive command line user interfaces).
 This project is a re-implementation of the [PyInquirer](https://github.com/CITGuru/PyInquirer) project, with bug fixes of known issues, new prompts, backward compatible APIs
 as well as more customization options.
 
@@ -163,8 +163,6 @@ Leveraging `prompt_toolkit`, `InquirerPy` works cross platform for all OS. Altho
 
 `InquirerPy` requires Python3.7+.
 
-### Terminal
-
 ## Getting Started
 
 Checkout full documentation **[here](https://github.com/kazhala/InquirerPy/wiki)**.
@@ -200,6 +198,31 @@ name = inquirer.text(message="What's your name:")
 confirm = inquirer.confirm(message="Confirm?")
 ```
 
+## Migrating from PyInquirer
+
+Most APIs from `PyInquirer` should be compatible with `InquirerPy`. If you discovered any more incompatible APIs, please
+let me know via issues or directly update README via pull request.
+
+### CheckboxPrompt
+
+The following table containing the mapping of the incompatible parameters.
+
+| PyInquirer      | InquirerPy      |
+| --------------- | --------------- |
+| pointer_sign    | pointer         |
+| selected_sign   | enabled_symbol  |
+| unselected_sign | disabled_symbol |
+
+### Style
+
+Every style keys from `PyInquirer` is present in `InquirerPy` except the once in the following table.
+
+| PyInquirer | InquirerPy |
+| ---------- | ---------- |
+| selected   | pointer    |
+
+Although `InquirerPy` support all the keys from `PyInquirer`, the styling works slightly different. Please refer to the [Style](https://github.com/kazhala/InquirerPy/wiki/Style) documentation for detailed information.
+
 ## Similar projects
 
 ### questionary
@@ -208,9 +231,9 @@ While developing this project, I've discovered there's already another re-implem
 It's a fantastic fork which supports `prompt_toolkit` 3.0.0+ with performance improvement and more customization options. It's already a well established and stable library.
 
 Comparing with [questionary](https://github.com/tmbo/questionary), `InquirerPy` offers even more customization options in styles, UI as well as key bindings. `InquirerPy` also provides a new
-and powerful [fuzzy]() prompt.
+and powerful [fuzzy](https://github.com/kazhala/InquirerPy/wiki/FuzzyPrompt) prompt.
 
-If you are already using questionary, I do not suggest using `InquirerPy` unless you require more customization or wanna try out the [fuzzy]() prompt as both library is not API compatible.
+If you are already using questionary, I do not suggest using `InquirerPy` unless you require more customization or wanna try out the [fuzzy](https://github.com/kazhala/InquirerPy/wiki/FuzzyPrompt) prompt as both library is not API compatible.
 
 ### python-inquirer
 
@@ -218,7 +241,21 @@ If you are already using questionary, I do not suggest using `InquirerPy` unless
 leverages the library `blessed` to implement the UI.
 
 Before implementing `InquirerPy`, this library came up as an alternative. It's a more stable library comparing to the original [PyInquirer](https://github.com/CITGuru/PyInquirer), however
-it has a rather limited customization options and an older UI which did not solve the issues I'm facing described in the [Motivation](#Motivation) section.
+it has a rather limited customization options and an older UI which did not solve the issues I was facing described in the [Motivation](#Motivation) section.
 
 Comparing with [python-inquirer](https://github.com/magmax/python-inquirer), `InquirerPy` offers a slightly better UI,
 more customization options in key bindings and styles, providing pagination as well as more prompts.
+
+## Credit
+
+This project is based on the great work done by the following projects & their authors.
+
+- [PyInquirer](https://github.com/CITGuru/PyInquirer)
+- [prompt_toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit)
+- [sweep.py](https://github.com/aslpavel/sweep.py)
+
+## License
+
+This project is licensed under [MIT](https://github.com/kazhala/InquirerPy/blob/master/LICENSE). Copyright (c) 2020 Kevin Zhuang
+
+The [fzy](https://github.com/kazhala/InquirerPy/blob/master/InquirerPy/prompts/fuzzy/fzy.py) code is licensed under [MIT](https://github.com/aslpavel/sweep.py/blob/master/LICENSE). Copyright (c) 2018 Pavel Aslanov
