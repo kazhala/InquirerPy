@@ -29,16 +29,11 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     This UIControl is for listing the available choices based on filtering.
     The actual input buffer will be handled by a separate BufferControl.
 
-    :param choices: list of choices to display
-    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
-    :param pointer: pointer symbol
-    :type pointer: str
-    :param marker: marker symbol for the selected choice in the case of multiselect
-    :type marker: str
-    :param current_text: current buffer text
-    :type current_text: Callable[[], str]
-    :param max_lines: maximum height
-    :type max_lines: int
+    :param choices: List of choices to display.
+    :param pointer: The pointer symbol.
+    :param marker: Marker symbol for the selected choice in the case of multiselect.
+    :param current_text: Current buffer text.
+    :param max_lines: Maximum height.
     """
 
     def __init__(
@@ -50,7 +45,6 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         max_lines: int,
         session_result: Optional[SessionResult],
     ) -> None:
-        """Construct UIControl and initialise choices."""
         self._pointer = pointer
         self._marker = marker
         self._current_text = current_text
@@ -75,8 +69,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         If in the middle of filtering, loop through the char and color
         indices matched char into `class:fuzzy_match`.
 
-        :return: list of formatted text
-        :rtype: List[Tuple[str, str]]
+        :return: List of formatted text.
         """
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
@@ -106,8 +99,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
 
         Calculate spaces of pointer to make the choice equally align.
 
-        :return: list of formatted text
-        :rtype: List[Tuple[str, str]]
+        :return: List of formatted text.
         """
         display_choices = []
         display_choices.append(("class:pointer", len(self._pointer) * " "))
@@ -135,8 +127,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         full choice list. Using `self.filtered_choice` to get
         a list of choice based on current_text.
 
-        :return: a list of formatted choices
-        :rtype: List[Tuple[str, str]]
+        :return: List of formatted choices.
         """
         display_choices = []
 
@@ -167,10 +158,8 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     async def _filter_choices(self, wait_time: float) -> List[Dict[str, Any]]:
         """Call to filter choices using fzy fuzzy match.
 
-        :param wait_time: delay time for this task
-        :type wait_time: float
-        :return: filtered result
-        :rtype: List[Dict[str, Any]]
+        :param wait_time: Delay time for this task.
+        :return: Filtered result.
         """
         if not self._current_text():
             choices = self.choices
@@ -185,18 +174,13 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
 
         `self.filtered_choice` is the up to date choice displayed.
 
-        :return: a dictionary of name and value for the current pointed choice
-        :rtype: Dict[str, Any]
+        :return: A dictionary of name and value for the current pointed choice
         """
         return self._filtered_choices[self.selected_choice_index]
 
     @property
     def choice_count(self) -> int:
-        """Get the filtered choice count.
-
-        :return: total count of choices
-        :rtype: int
-        """
+        """int: Filtered choice count."""
         return len(self._filtered_choices)
 
 
@@ -207,46 +191,40 @@ class FuzzyPrompt(BaseComplexPrompt):
     is contains in the file fzy.py which is copied from `vim-clap`
     python provider.
 
+    The Application have mainly 3 layers.
+    1. question
+    2. input
+    3. choices
+
+    The content of choices content_control is bounded by the input buffer content_control
+    on_text_changed event.
+
+    Once Enter is pressed, hide both input buffer and choices buffer as well as
+    updating the question buffer with user selection.
+
+    Override the default keybindings as j/k cannot be bind even if editing_mode is vim
+    due to the input buffer.
+
     :param message: message to display to the user
-    :type message: Union[str, Callable[[SessionResult], str]]
     :param choices: list of choices available to select
-    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
     :param default: default value to insert into buffer
-    :type default: Union[str, Callable[[SessionResult], str]]
     :param pointer: pointer symbol
-    :type pointer: str
     :param style: style dict to apply
-    :type style: InquirerPyStyle
     :param vi_mode: use vi kb for the prompt
-    :type vi_mode: bool
     :param qmark: question mark symbol
-    :type qmark: str
     :param transformer: transform the result to output, this is only visual effect
-    :type transformer: Callable[[Any], Any]
     :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[Any], Any]
     :param instruction: instruction to display after the message
-    :type instruction: str
     :param multiselect: enable multi selection of the choices
-    :type multiselect: bool
     :param prompt: prompt symbol for buffer
-    :type prompt: str
     :param marker: marker symbol for the selected choice in the case of multiselect
-    :type marker: str
     :param border: enable border around the fuzzy prompt
-    :type border: bool
     :param info: display info as virtual text after input
-    :type info: bool
     :param height: preferred height of the choice window
-    :type height: Union[str, int]
     :param max_height: max height choice window should reach
-    :type max_height: Union[str, int]
     :param validate: a callable or Validator instance to validate user selection
-    :type validate: Union[Callable[[Any], bool], Validator]
     :param invalid_message: message to display when input is invalid
-    :type invalid_message: str
     :param keybindings: custom keybindings to apply
-    :type keybindings: Dict[str, List[Dict[str, Any]]]
     """
 
     def __init__(
@@ -273,22 +251,6 @@ class FuzzyPrompt(BaseComplexPrompt):
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
         session_result: SessionResult = None,
     ) -> None:
-        """Initialise the layout and create Application.
-
-        The Application have mainly 3 layers.
-        1. question
-        2. input
-        3. choices
-
-        The content of choices content_control is bounded by the input buffer content_control
-        on_text_changed event.
-
-        Once Enter is pressed, hide both input buffer and choices buffer as well as
-        updating the question buffer with user selection.
-
-        Override the default keybindings as j/k cannot be bind even if editing_mode is vim
-        due to the input buffer.
-        """
         if not keybindings:
             keybindings = {}
         self._prompt = prompt
@@ -416,15 +378,14 @@ class FuzzyPrompt(BaseComplexPrompt):
         if not self._rendered:
             super()._after_render(application)
             if self._default:
-                default_text = str(self._default)  # fix type annotation
+                default_text = str(self._default)
                 self._buffer.text = default_text
                 self._buffer.cursor_position = len(default_text)
 
     def _toggle_all(self, value: bool = None) -> None:
         """Toggle all choice `enabled` status.
 
-        :param value: sepcify a value to toggle
-        :type value: bool
+        :param value: Specify a value to toggle.
         """
         for choice in self.content_control.choices:
             if isinstance(choice["value"], Separator):
@@ -509,7 +470,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             return wait_table[digit]
         return wait_table[5] * (2 ** (digit - 5))
 
-    def _on_text_changed(self, buffer) -> None:
+    def _on_text_changed(self, _) -> None:
         """Handle buffer text change event.
 
         1. Check if there is current task running.
@@ -593,7 +554,7 @@ class FuzzyPrompt(BaseComplexPrompt):
 
     @property
     def content_control(self) -> InquirerPyFuzzyControl:
-        """Override for type-hinting."""
+        """InquirerPyFuzzyControl: Override for type-hinting."""
         return self._content_control
 
     def _get_current_text(self) -> str:
