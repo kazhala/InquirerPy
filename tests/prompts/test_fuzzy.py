@@ -365,26 +365,49 @@ class TestFuzzy(unittest.TestCase):
         self.prompt.content_control.selected_choice_index = 4
         hello = Hello(cancelled=lambda: False, result=lambda: [])
         self.prompt._filter_callback(hello)
+        self.prompt.content_control._get_formatted_choices()
         self.assertEqual(self.prompt.content_control._filtered_choices, [])
         self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
-        self.assertEqual(self.prompt.content_control._first_line, 0)
-        self.assertEqual(self.prompt.content_control._last_line, 0)
 
         self.prompt.content_control.selected_choice_index = -1
-        hello = Hello(cancelled=lambda: False, result=lambda: [i for i in range(3)])
+        hello = Hello(
+            cancelled=lambda: False,
+            result=lambda: [
+                {
+                    "enabled": False,
+                    "index": i,
+                    "indices": [],
+                    "name": "weaht",
+                    "value": "weaht",
+                }
+                for i in range(3)
+            ],
+        )
         self.prompt._filter_callback(hello)
-        self.assertEqual(self.prompt.content_control._filtered_choices, [0, 1, 2])
+        self.prompt.content_control._get_formatted_choices()
         self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
         self.assertEqual(self.prompt.content_control._first_line, 0)
         self.assertEqual(self.prompt.content_control._last_line, 3)
 
         self.prompt.content_control.selected_choice_index = 5
-        hello = Hello(cancelled=lambda: False, result=lambda: [i for i in range(3)])
+        hello = Hello(
+            cancelled=lambda: False,
+            result=lambda: [
+                {
+                    "enabled": False,
+                    "index": i,
+                    "indices": [],
+                    "name": "weaht",
+                    "value": "weaht",
+                }
+                for i in range(3)
+            ],
+        )
         self.prompt._filter_callback(hello)
-        self.assertEqual(self.prompt.content_control._filtered_choices, [0, 1, 2])
+        self.prompt.content_control._get_formatted_choices()
         self.assertEqual(self.prompt.content_control.selected_choice_index, 2)
         self.assertEqual(self.prompt.content_control._first_line, 0)
-        self.assertEqual(self.prompt.content_control._last_line, 2)
+        self.assertEqual(self.prompt.content_control._last_line, 3)
 
     def test_prompt_bindings(self):
         self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
