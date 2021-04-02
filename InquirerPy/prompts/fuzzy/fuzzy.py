@@ -130,26 +130,38 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         :return: List of formatted choices.
         """
         display_choices = []
+        if self.choice_count == 0:
+            self._selected_choice_index = 0
+            return display_choices
 
-        if self.selected_choice_index <= self._first_line:
-            self._first_line = self.selected_choice_index
+        if self._selected_choice_index < 0:
+            self._selected_choice_index = 0
+        elif self._selected_choice_index >= self.choice_count:
+            self._selected_choice_index = self.choice_count - 1
+
+        if (self._last_line - self._first_line) < min(self.choice_count, self._height):
+            self._last_line = min(self.choice_count, self._height)
+            self._first_line = self._last_line - min(self.choice_count, self._height)
+
+        if self._selected_choice_index <= self._first_line:
+            self._first_line = self._selected_choice_index
             self._last_line = self._first_line + min(self._height, self.choice_count)
-        elif self.selected_choice_index >= self._last_line:
-            self._last_line = self.selected_choice_index
+        elif self._selected_choice_index >= self._last_line:
+            self._last_line = self._selected_choice_index + 1
             self._first_line = self._last_line - min(self._height, self.choice_count)
 
-        for index in range(self._first_line, self._last_line + 1):
-            try:
-                if index == self.selected_choice_index:
-                    display_choices += self._get_hover_text(
-                        self._filtered_choices[index]
-                    )
-                else:
-                    display_choices += self._get_normal_text(
-                        self._filtered_choices[index]
-                    )
-            except IndexError:
-                break
+        if self._last_line > self.choice_count:
+            self._last_line = self.choice_count
+            self._first_line = self._last_line - min(self._height, self.choice_count)
+        if self._first_line < 0:
+            self._first_line = 0
+            self._last_line = self._first_line + min(self._height, self.choice_count)
+
+        for index in range(self._first_line, self._last_line):
+            if index == self.selected_choice_index:
+                display_choices += self._get_hover_text(self._filtered_choices[index])
+            else:
+                display_choices += self._get_normal_text(self._filtered_choices[index])
             display_choices.append(("", "\n"))
         if display_choices:
             display_choices.pop()
@@ -427,24 +439,6 @@ class FuzzyPrompt(BaseComplexPrompt):
         if task.cancelled():
             return
         self.content_control._filtered_choices = task.result()
-        self._application.invalidate()
-        if (
-            self.content_control.selected_choice_index
-            > self.content_control.choice_count - 1
-        ):
-            self.content_control.selected_choice_index = (
-                self.content_control.choice_count - 1
-            )
-            self.content_control._last_line = self.content_control.selected_choice_index
-            self.content_control._first_line = self.content_control._last_line - min(
-                self.content_control._height, self.content_control.choice_count - 1
-            )
-        if self.content_control.selected_choice_index == -1:
-            self.content_control.selected_choice_index = 0
-            self.content_control._first_line = 0
-            self.content_control._last_line = self.content_control._first_line + min(
-                self.content_control._height, self.content_control.choice_count
-            )
 
     def _calculate_wait_time(self) -> float:
         """Calculate wait time to smoother the application on big data set.

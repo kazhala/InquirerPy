@@ -1,5 +1,5 @@
 """This module contains the main prompt entrypoint."""
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
