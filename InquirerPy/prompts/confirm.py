@@ -58,7 +58,7 @@ class ConfirmPrompt(BaseSimplePrompt):
 
         @self._kb.add("y")
         @self._kb.add("Y")
-        def _(event) -> None:
+        def confirm(event) -> None:
             """Bind y and Y to accept confirmation."""
             self._session.default_buffer.text = ""
             self.status["answered"] = True
@@ -67,7 +67,7 @@ class ConfirmPrompt(BaseSimplePrompt):
 
         @self._kb.add("n")
         @self._kb.add("N")
-        def _(event) -> None:
+        def reject(event) -> None:
             """Bind n and N to reject confirmation."""
             self._session.default_buffer.text = ""
             self.status["answered"] = True
@@ -80,7 +80,7 @@ class ConfirmPrompt(BaseSimplePrompt):
             pass
 
         @self._kb.add(Keys.Enter)
-        def _(event) -> None:
+        def enter(event) -> None:
             """Bind enter to use the default answer."""
             self.status["answered"] = True
             self.status["result"] = self._default

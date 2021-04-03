@@ -1,7 +1,7 @@
 """Module contains the filepath prompt and its completer class."""
 import os
 from pathlib import Path
-from typing import Any, Callable, Dict, Generator, Union
+from typing import Any, Callable, Generator, Union
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter

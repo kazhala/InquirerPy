@@ -102,7 +102,7 @@ class InputPrompt(BaseSimplePrompt):
             return self._completer is not None
 
         @self._kb.add("c-space", filter=has_completion)
-        def _(event):
+        def completion(event):
             buff = event.app.current_buffer
             if buff.complete_state:
                 buff.complete_next()
@@ -110,7 +110,7 @@ class InputPrompt(BaseSimplePrompt):
                 buff.start_completion(select_first=False)
 
         @self._kb.add(Keys.Enter, filter=~is_multiline)
-        def _(event):
+        def enter(event):
             try:
                 self._session.validator.validate(self._session.default_buffer)
             except ValidationError:
@@ -122,7 +122,7 @@ class InputPrompt(BaseSimplePrompt):
                 event.app.exit(result=self.status["result"])
 
         @self._kb.add(Keys.Escape, Keys.Enter, filter=is_multiline)
-        def _(event):
+        def multiline_enter(event):
             try:
                 self._session.validator.validate(self._session.default_buffer)
             except ValidationError:

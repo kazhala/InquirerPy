@@ -1,0 +1,7 @@
+{
+  "reportUnusedImport": "warning",
+  "reportUnusedVariable": "warning",
+  "reportUnusedClass": "warning",
+  "reportDuplicateImport": "warning",
+  "exclude": ["**/__init__.py", "./InquirerPy/inquirer.py"]
+}
