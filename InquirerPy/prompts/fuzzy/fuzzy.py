@@ -432,13 +432,11 @@ class FuzzyPrompt(BaseComplexPrompt):
         return display_message
 
     def _filter_callback(self, task):
-        """Redraw `self._application` when the filter task is finished.
-
-        Re-calculate the first line and last line to render.
-        """
+        """Redraw `self._application` when the filter task is finished."""
         if task.cancelled():
             return
         self.content_control._filtered_choices = task.result()
+        self._application.invalidate()
 
     def _calculate_wait_time(self) -> float:
         """Calculate wait time to smoother the application on big data set.
