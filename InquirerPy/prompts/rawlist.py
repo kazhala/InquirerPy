@@ -24,13 +24,17 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         separator: str,
         marker: str,
         session_result: Optional[SessionResult],
+        multiselect: bool,
     ) -> None:
         """Construct the content control object and add the index to each choice for visual purposes."""
         self._pointer = pointer
         self._separator = separator
         self._marker = marker
         super().__init__(
-            choices=choices, default=default, session_result=session_result
+            choices=choices,
+            default=default,
+            session_result=session_result,
+            multiselect=multiselect,
         )
 
     def _format_choices(self) -> None:
@@ -172,6 +176,7 @@ class RawlistPrompt(BaseListPrompt):
             separator=separator,
             marker=marker,
             session_result=session_result,
+            multiselect=multiselect,
         )
         self._instruction = instruction
         super().__init__(

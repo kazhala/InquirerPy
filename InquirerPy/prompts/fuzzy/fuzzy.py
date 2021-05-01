@@ -44,12 +44,18 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         current_text: Callable[[], str],
         max_lines: int,
         session_result: Optional[SessionResult],
+        multiselect: bool,
     ) -> None:
         self._pointer = pointer
         self._marker = marker
         self._current_text = current_text
         self._max_lines = max_lines if max_lines > 0 else 1
-        super().__init__(choices=choices, default=None, session_result=session_result)
+        super().__init__(
+            choices=choices,
+            default=None,
+            session_result=session_result,
+            multiselect=multiselect,
+        )
 
     def _format_choices(self) -> None:
         for index, choice in enumerate(self.choices):
@@ -304,6 +310,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             if not self._border
             else self._dimmension_max_height - 2,
             session_result=session_result,
+            multiselect=multiselect,
         )
 
         self._buffer = Buffer(on_text_changed=self._on_text_changed)

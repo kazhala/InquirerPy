@@ -32,6 +32,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         expand_pointer: str,
         marker: str,
         session_result: Optional[SessionResult],
+        multiselect: bool,
     ) -> None:
         """Construct content control object and initialise choices."""
         self._pointer = pointer
@@ -42,7 +43,10 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         self._marker = marker
         self._help_msg = help_msg
         super().__init__(
-            choices=choices, default=default, session_result=session_result
+            choices=choices,
+            default=default,
+            session_result=session_result,
+            multiselect=multiselect,
         )
 
     def _format_choices(self) -> None:
@@ -224,6 +228,7 @@ class ExpandPrompt(BaseListPrompt):
             expand_pointer=expand_pointer,
             marker=marker,
             session_result=session_result,
+            multiselect=multiselect,
         )
         super().__init__(
             message=message,

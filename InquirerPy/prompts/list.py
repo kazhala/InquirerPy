@@ -25,12 +25,16 @@ class InquirerPyListControl(InquirerPyUIControl):
         pointer: str,
         marker: str,
         session_result: Optional[SessionResult],
+        multiselect: bool,
     ) -> None:
         """Construct and init a custom FormattedTextControl object."""
         self._pointer: str = pointer
         self._marker: str = marker
         super().__init__(
-            choices=choices, default=default, session_result=session_result
+            choices=choices,
+            default=default,
+            session_result=session_result,
+            multiselect=multiselect,
         )
 
     def _format_choices(self) -> None:
@@ -135,6 +139,7 @@ class ListPrompt(BaseListPrompt):
             pointer=pointer,
             marker=marker,
             session_result=session_result,
+            multiselect=multiselect,
         )
         self._instruction = instruction
         super().__init__(

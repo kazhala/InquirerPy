@@ -45,7 +45,10 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         self._enabled_symbol = enabled_symbol
         self._disabled_symbol = disabled_symbol
         super().__init__(
-            choices=choices, default=default, session_result=session_result
+            choices=choices,
+            default=default,
+            session_result=session_result,
+            multiselect=True,
         )
 
     def _format_choices(self) -> None:

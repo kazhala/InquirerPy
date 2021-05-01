@@ -223,10 +223,10 @@ class InquirerPyUIControl(FormattedTextControl):
 
     Dynamically adapt to user input and update formatted text.
 
-    :param choices: list of choices to display as the content
-    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
-    :param default: default value, will impact the cursor position
-    :type default: Any
+    :param choices: List of choices to display as the content.
+    :param default: Default value, will impact the cursor position.
+    :param session_result: Current session result.
+    :param multiselect: Indicate if the current prompt is multiselect enabled.
     """
 
     def __init__(
@@ -234,6 +234,7 @@ class InquirerPyUIControl(FormattedTextControl):
         choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any = None,
         session_result: SessionResult = None,
+        multiselect: bool = False,
     ) -> None:
         """Initialise choices and construct a FormattedTextControl object."""
         self._session_result = session_result or {}
@@ -241,6 +242,7 @@ class InquirerPyUIControl(FormattedTextControl):
         self._choice_func = None
         self._loading = False
         self._raw_choices = []
+        self._multiselect = multiselect
         self._default = (
             default
             if not isinstance(default, Callable)
@@ -262,10 +264,6 @@ class InquirerPyUIControl(FormattedTextControl):
         """Retrieve the callable choices and format them.
 
         Should be called in the `after_render` call in `Application`.
-
-        :param session_result: the current result of the prompt session,
-            if using alternate syntax, skip this value
-        :type session_result: SessionResult
         """
         self._raw_choices = self._choice_func(self._session_result)  # type: ignore
         self.choices = self._get_choices(self._raw_choices, self._default)
@@ -293,7 +291,9 @@ class InquirerPyUIControl(FormattedTextControl):
                         {
                             "name": str(choice["name"]),
                             "value": choice["value"],
-                            "enabled": choice.get("enabled", False),
+                            "enabled": choice.get("enabled", False)
+                            if self._multiselect
+                            else False,
                         }
                     )
                 elif isinstance(choice, Separator):
