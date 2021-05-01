@@ -190,7 +190,6 @@ class BaseSimplePrompt(ABC):
                 display_message.append(("class:skipped", "%s " % self._qmark))
 
             display_message.append(("class:skipped", self._message))
-            display_message.append(("class:skipped", question))
         else:
             if self._qmark != "":
                 display_message.append(("class:questionmark", "%s " % self._qmark))
