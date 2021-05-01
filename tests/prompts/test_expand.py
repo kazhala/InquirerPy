@@ -1,8 +1,6 @@
 import unittest
 from unittest.mock import ANY, call, patch
 
-from prompt_toolkit.key_binding.key_bindings import KeyBindings
-
 from InquirerPy.base import BaseComplexPrompt
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.expand import ExpandHelp, ExpandPrompt, InquirerPyExpandControl
@@ -22,16 +20,16 @@ class TestExpandPrompt(unittest.TestCase):
             choices=self.choices,
             default="f",
             help_msg="(haha)",
-            expand_pointer=">>",
+            expand_pointer=">> ",
             pointer=" ",
-            separator=")",
+            separator=") ",
             marker=">",
             session_result=None,
             multiselect=True,
         )
         self.assertEqual(content_control._pointer, " ")
         self.assertEqual(content_control._marker, ">")
-        self.assertEqual(content_control._separator, ")")
+        self.assertEqual(content_control._separator, ") ")
         self.assertEqual(content_control._expanded, False)
         self.assertEqual(content_control._key_maps, {"b": 1, "f": 3, "h": 4})
         self.assertEqual(content_control._expand_pointer, ">> ")

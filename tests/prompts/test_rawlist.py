@@ -17,10 +17,10 @@ class TestRawList(unittest.TestCase):
 
     def test_content_control(self):
         content_control = InquirerPyRawlistControl(
-            self.choices, "yes", " ", ")", ">", None, True
+            self.choices, "yes", " ", ") ", ">", None, True
         )
         self.assertEqual(content_control._pointer, " ")
-        self.assertEqual(content_control._separator, ")")
+        self.assertEqual(content_control._separator, ") ")
         self.assertEqual(content_control.choice_count, 4)
         self.assertEqual(content_control.selected_choice_index, 3)
         self.assertEqual(
