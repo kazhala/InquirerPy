@@ -17,7 +17,7 @@ class TestRawList(unittest.TestCase):
 
     def test_content_control(self):
         content_control = InquirerPyRawlistControl(
-            self.choices, "yes", " ", ")", ">", None
+            self.choices, "yes", " ", ")", ">", None, True
         )
         self.assertEqual(content_control._pointer, " ")
         self.assertEqual(content_control._separator, ")")
@@ -89,23 +89,49 @@ class TestRawList(unittest.TestCase):
             ],
         )
 
-        content_control = InquirerPyRawlistControl(self.choices, 2, " ", ")", ">", None)
+        content_control = InquirerPyRawlistControl(
+            self.choices, 2, " ", ")", ">", None, False
+        )
         self.assertEqual(content_control.selected_choice_index, 1)
 
     def test_content_control_exceptions(self):
         choices = [{"hello": "hello"}]
         self.assertRaises(
-            RequiredKeyNotFound, InquirerPyRawlistControl, choices, "", "", "", "", None
+            RequiredKeyNotFound,
+            InquirerPyRawlistControl,
+            choices,
+            "",
+            "",
+            "",
+            "",
+            None,
+            False,
         )
 
         choices = [Separator(), Separator()]
         self.assertRaises(
-            InvalidArgument, InquirerPyRawlistControl, choices, "", "", "", "", None
+            InvalidArgument,
+            InquirerPyRawlistControl,
+            choices,
+            "",
+            "",
+            "",
+            "",
+            None,
+            True,
         )
 
         choices = []
         self.assertRaises(
-            InvalidArgument, InquirerPyRawlistControl, choices, "", "", "", "", None
+            InvalidArgument,
+            InquirerPyRawlistControl,
+            choices,
+            "",
+            "",
+            "",
+            "",
+            None,
+            False,
         )
 
     def test_prompt(self):

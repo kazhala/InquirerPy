@@ -19,6 +19,7 @@ class TestFuzzy(unittest.TestCase):
         current_text=lambda: "yes",
         max_lines=80,
         session_result=None,
+        multiselect=False,
     )
 
     def setUp(self):
@@ -167,6 +168,7 @@ class TestFuzzy(unittest.TestCase):
             current_text=lambda: "wh",
             max_lines=80,
             session_result=None,
+            multiselect=False,
         )
         self.assertEqual(
             content_control._filtered_choices,
@@ -359,7 +361,7 @@ class TestFuzzy(unittest.TestCase):
                     "value": "waht",
                 },
                 {
-                    "enabled": True,
+                    "enabled": False,
                     "index": 4,
                     "indices": [],
                     "name": "weaht",
