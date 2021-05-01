@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="InquirerPy",
-    version="0.1.1",
+    version="0.2.0",
     author="Kevin Zhuang",
     author_email="kevin7441@gmail.com",
     description="Enhaced Python port of Inquirer.js",
