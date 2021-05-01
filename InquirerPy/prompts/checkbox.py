@@ -35,13 +35,13 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         self,
         choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any = None,
-        pointer: str = INQUIRERPY_POINTER_SEQUENCE,
+        pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
         disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
         session_result: Optional[SessionResult] = None,
     ) -> None:
         """Initialise required attributes and call base class."""
-        self._pointer = "%s " % pointer
+        self._pointer = pointer
         self._enabled_symbol = enabled_symbol
         self._disabled_symbol = disabled_symbol
         super().__init__(
@@ -49,11 +49,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         )
 
     def _format_choices(self) -> None:
-        for raw_choice, choice in zip(self._raw_choices, self.choices):  # type: ignore
-            if isinstance(raw_choice, dict):
-                choice["enabled"] = raw_choice.get("enabled", False)
-            else:
-                choice["enabled"] = False
+        pass
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
@@ -138,7 +134,7 @@ class CheckboxPrompt(BaseListPrompt):
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
-        pointer: str = INQUIRERPY_POINTER_SEQUENCE,
+        pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
         disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
         instruction: str = "",

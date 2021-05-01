@@ -293,7 +293,7 @@ class InquirerPyUIControl(FormattedTextControl):
                         {
                             "name": str(choice["name"]),
                             "value": choice["value"],
-                            "enabled": False,
+                            "enabled": choice.get("enabled", False),
                         }
                     )
                 elif isinstance(choice, Separator):
