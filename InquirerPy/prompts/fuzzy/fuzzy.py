@@ -22,6 +22,8 @@ from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py_async
 from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, SessionResult, calculate_height
 
+__all__ = ["FuzzyPrompt"]
+
 
 class InquirerPyFuzzyControl(InquirerPyUIControl):
     """A UIControl element intended to be used by `prompt_toolkit` Window class.

@@ -9,6 +9,8 @@ from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+__all__ = ["ConfirmPrompt"]
+
 
 class ConfirmPrompt(BaseSimplePrompt):
     """A wrapper class around PromptSession.

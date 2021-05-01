@@ -9,6 +9,8 @@ from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+__all__ = ["RawlistPrompt"]
+
 
 class InquirerPyRawlistControl(InquirerPyUIControl):
     """A content control instance intended to used by `prompt_tool_kit` Window.

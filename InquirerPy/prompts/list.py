@@ -9,6 +9,8 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+__all__ = ["ListPrompt"]
+
 
 class InquirerPyListControl(InquirerPyUIControl):
     """A UIControl class intended to be consumed by prompt_toolkit window.
@@ -26,10 +28,12 @@ class InquirerPyListControl(InquirerPyUIControl):
         marker: str,
         session_result: Optional[SessionResult],
         multiselect: bool,
+        marker_pl: str = " ",
     ) -> None:
         """Construct and init a custom FormattedTextControl object."""
         self._pointer: str = pointer
         self._marker: str = marker
+        self._marker_pl: str = marker_pl
         super().__init__(
             choices=choices,
             default=default,
@@ -46,7 +50,7 @@ class InquirerPyListControl(InquirerPyUIControl):
         display_choices.append(
             (
                 "class:marker",
-                self._marker if choice["enabled"] else " ",
+                self._marker if choice["enabled"] else self._marker_pl,
             )
         )
         display_choices.append(("[SetCursorPosition]", ""))
@@ -59,7 +63,7 @@ class InquirerPyListControl(InquirerPyUIControl):
         display_choices.append(
             (
                 "class:marker",
-                self._marker if choice["enabled"] else " ",
+                self._marker if choice["enabled"] else self._marker_pl,
             )
         )
         if not isinstance(choice["value"], Separator):
@@ -72,42 +76,25 @@ class InquirerPyListControl(InquirerPyUIControl):
 class ListPrompt(BaseListPrompt):
     """A wrapper class around prompt_toolkit Application to create a list prompt.
 
-    :param message: message to display
-    :type message: Union[str, Callable[[SessionResult], str]]
-    :param choices: list of choices to display
-    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
-    :param default: default value
-    :type default: Any
-    :param style: a dictionary of style
-    :type style: InquirerPyStyle
-    :param vi_mode: use vi kb for the prompt
-    :type vi_mode: bool
-    :param qmark: question qmark to display
-    :type qmark: str
-    :param pointer: the pointer qmark of hovered choice
-    :type pointer: str
-    :param instruction: instruction to display to user
-    :type instruction: str
-    :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[Any], Any]
-    :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[Any], Any]
-    :param height: preferred height of the choice window
-    :type height: Union[str, int]
-    :param max_height: max height choice window should reach
-    :type max_height: Union[str, int]
-    :param multiselect: enable multiselectiion
-    :type multiselect: bool
-    :param marker: marker symbol to indicate selected choice in multiselect mode
-    :type marker: str
-    :param validate: a callable or Validator instance to validate user selection
-    :type validate: Union[Callable[[Any], bool], Validator]
-    :param invalid_message: message to display when input is invalid
-    :type invalid_message: str
-    :param keybindings: custom keybindings to apply
-    :type keybindings: Dict[str, List[Dict[str, Any]]]
-    :param show_cursor: display cursor at the end of the prompt
-    :type show_cursor: bool
+    :param message: Message to display.
+    :param choices: List of choices to display.
+    :param default: The default value.
+    :param style: Style config in dictionary form.
+    :param vi_mode: Use vi keybindings for the prompt.
+    :param qmark: The question qmark to display.
+    :param pointer: The pointer qmark of hovered choice.
+    :param instruction: Instruction to display to user.
+    :param transformer: A callable to transform the result, this is visual effect only.
+    :param filter: A callable to filter the result, updating the user input before returning the result.
+    :param height: Preferred height of the choice window.
+    :param max_height: Max height choice window should reach.
+    :param multiselect: Enable multiselectiion.
+    :param marker: Marker symbol to indicate selected choice in multiselect mode.
+    :param marker_pl: Marker place holder for non selected choices.
+    :param validate: A callable or Validator instance to validate user selection.
+    :param invalid_message: Message to display when input is invalid.
+    :param keybindings: Custom keybindings to apply.
+    :param show_cursor: Display cursor at the end of the prompt.
     """
 
     def __init__(
@@ -126,6 +113,7 @@ class ListPrompt(BaseListPrompt):
         max_height: Union[int, str] = None,
         multiselect: bool = False,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
+        marker_pl: str = " ",
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
@@ -140,6 +128,7 @@ class ListPrompt(BaseListPrompt):
             marker=marker,
             session_result=session_result,
             multiselect=multiselect,
+            marker_pl=marker_pl,
         )
         self._instruction = instruction
         super().__init__(

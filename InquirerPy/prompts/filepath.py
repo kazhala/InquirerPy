@@ -11,6 +11,8 @@ from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+__all__ = ["FilePathPrompt"]
+
 
 class FilePathCompleter(Completer):
     """An auto completion class used for prompt session.

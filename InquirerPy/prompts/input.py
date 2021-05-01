@@ -15,6 +15,8 @@ from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT, INQUIRERPY_POINTER_SE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+__all__ = ["InputPrompt"]
+
 
 class InputPrompt(BaseSimplePrompt):
     """A wrapper class around PromptSession.

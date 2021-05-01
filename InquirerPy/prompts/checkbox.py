@@ -13,6 +13,8 @@ from InquirerPy.enum import (
 from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+__all__ = ["CheckboxPrompt"]
+
 
 class InquirerPyCheckboxControl(InquirerPyUIControl):
     """A UIControl class intended to be used by `prompt_toolkit` window.

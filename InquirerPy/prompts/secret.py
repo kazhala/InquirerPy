@@ -7,6 +7,8 @@ from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+__all__ = ["SecretPrompt"]
+
 
 class SecretPrompt(InputPrompt):
     """A wrapper class around PromptSession to create a secret prompt.

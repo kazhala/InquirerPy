@@ -9,6 +9,8 @@ from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+__all__ = ["ExpandPrompt"]
+
 
 class ExpandHelp(NamedTuple):
     """A struct class to identify if user selected the help choice."""
