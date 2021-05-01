@@ -77,7 +77,7 @@ class TestCheckbox(unittest.TestCase):
             message="Select something",
             choices=self.choices,
             default="boy&girl",
-            style={},
+            style=None,
             vi_mode=False,
             qmark="!",
             pointer="<",
