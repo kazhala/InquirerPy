@@ -20,6 +20,27 @@ class TestListPrompt(unittest.TestCase):
         {"name": "melon", "value": "watermelon"},
     ]
 
+    def test_list_control_enabled(self) -> None:
+        list_control = InquirerPyListControl(
+            [
+                {"name": "apple", "value": "peach", "enabled": True},
+                "pear",
+                {"name": "melon", "value": "watermelon"},
+            ],
+            "watermelon",
+            INQUIRERPY_POINTER_SEQUENCE,
+            ">",
+            None,
+        )
+        self.assertEqual(
+            list_control.choices,
+            [
+                {"name": "apple", "value": "peach", "enabled": True},
+                {"name": "pear", "value": "pear", "enabled": False},
+                {"name": "melon", "value": "watermelon", "enabled": False},
+            ],
+        )
+
     def test_list_control(self):
         list_control = InquirerPyListControl(
             self.choices, "watermelon", INQUIRERPY_POINTER_SEQUENCE, ">", None

@@ -24,7 +24,13 @@ class TestFuzzy(unittest.TestCase):
     def setUp(self):
         self.prompt = FuzzyPrompt(
             message="Select one of them",
-            choices=["haah", "haha", "what", "waht", "weaht"],
+            choices=[
+                "haah",
+                "haha",
+                "what",
+                "waht",
+                {"name": "weaht", "value": "weaht", "enabled": True},
+            ],
         )
 
     def test_content_control_init(self):
@@ -153,7 +159,7 @@ class TestFuzzy(unittest.TestCase):
         )
         self.content_control.choices[0]["enabled"] = False
 
-    def test_prompt_filter(self):
+    def test_prompt_filter1(self):
         content_control = InquirerPyFuzzyControl(
             choices=["meat", "what", "whaaah", "weather", "haha"],
             pointer=INQUIRERPY_POINTER_SEQUENCE,
@@ -353,7 +359,7 @@ class TestFuzzy(unittest.TestCase):
                     "value": "waht",
                 },
                 {
-                    "enabled": False,
+                    "enabled": True,
                     "index": 4,
                     "indices": [],
                     "name": "weaht",

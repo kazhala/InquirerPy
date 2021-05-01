@@ -8,7 +8,12 @@ from InquirerPy.separator import Separator
 
 
 class TestRawList(unittest.TestCase):
-    choices = [{"name": "foo", "value": "boo"}, "hello", Separator(), "yes"]
+    choices = [
+        {"name": "foo", "value": "boo", "enabled": True},
+        "hello",
+        Separator(),
+        "yes",
+    ]
 
     def test_content_control(self):
         content_control = InquirerPyRawlistControl(
@@ -22,7 +27,7 @@ class TestRawList(unittest.TestCase):
             content_control._get_hover_text(content_control.choices[0]),
             [
                 ("class:pointer", " "),
-                ("class:marker", " "),
+                ("class:marker", ">"),
                 ("class:pointer", "1) "),
                 ("[SetCursorPosition]", ""),
                 ("class:pointer", "foo"),
@@ -30,7 +35,7 @@ class TestRawList(unittest.TestCase):
         )
         self.assertEqual(
             content_control._get_normal_text(content_control.choices[0]),
-            [("", " "), ("class:marker", " "), ("", "1) "), ("", "foo")],
+            [("", " "), ("class:marker", ">"), ("", "1) "), ("", "foo")],
         )
         self.assertEqual(
             content_control.choices,
@@ -40,7 +45,7 @@ class TestRawList(unittest.TestCase):
                     "display_index": 1,
                     "name": "foo",
                     "value": "boo",
-                    "enabled": False,
+                    "enabled": True,
                 },
                 {
                     "actual_index": 1,
@@ -63,7 +68,7 @@ class TestRawList(unittest.TestCase):
             content_control._get_formatted_choices(),
             [
                 ("", " "),
-                ("class:marker", " "),
+                ("class:marker", ">"),
                 ("", "1) "),
                 ("", "foo"),
                 ("", "\n"),
