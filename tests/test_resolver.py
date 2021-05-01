@@ -434,12 +434,15 @@ class TestResolver(unittest.TestCase):
             KeyboardInterrupt, prompt, questions, raise_keyboard_interrupt=True
         )
 
-        input_prompt = InputPrompt(message="")
+        input_prompt = InputPrompt(message="hello")
         input_prompt.status = {
             "answered": True,
             "result": INQUIRERPY_KEYBOARD_INTERRUPT,
         }
-        self.assertEqual(input_prompt._get_prompt_message(), [("class:skipped", "?  ")])
+        self.assertEqual(
+            input_prompt._get_prompt_message(),
+            [("class:skipped", "?"), ("class:skipped", " hello ")],
+        )
 
         os.environ["INQUIRERPY_NO_RAISE_KBI"] = "true"
         result = prompt(questions)

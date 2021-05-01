@@ -186,15 +186,15 @@ class BaseSimplePrompt(ABC):
         """
         display_message = []
         if self.status["result"] == INQUIRERPY_KEYBOARD_INTERRUPT:
-            if self._qmark != "":
-                display_message.append(("class:skipped", "%s " % self._qmark))
-
-            display_message.append(("class:skipped", self._message))
+            display_message.append(("class:skipped", self._qmark))
+            display_message.append(
+                ("class:skipped", "%s%s " % (" " if self._qmark else "", self._message))
+            )
         else:
-            if self._qmark != "":
-                display_message.append(("class:questionmark", "%s " % self._qmark))
-
-            display_message.append(("class:question", self._message))
+            display_message.append(("class:questionmark", self._qmark))
+            display_message.append(
+                ("class:question", "%s%s" % (" " if self._qmark else "", self._message))
+            )
             if self.status["answered"]:
                 display_message.append(
                     post_answer
