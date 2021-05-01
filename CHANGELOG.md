@@ -34,7 +34,7 @@ regions = inquirer.checkbox(
 regions = inquirer.checkbox(
     message="Select regions:",
     choices=["us-east-1", "us-east-2"],
-    enabled_symbol="> ", # dd a space
+    enabled_symbol="> ", # add a space
     disabled_symbol="< " # add a space
 ).execute()
 ```
