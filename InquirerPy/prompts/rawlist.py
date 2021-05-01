@@ -27,11 +27,13 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         marker: str,
         session_result: Optional[SessionResult],
         multiselect: bool,
+        marker_pl: str = " ",
     ) -> None:
         """Construct the content control object and add the index to each choice for visual purposes."""
         self._pointer = pointer
         self._separator = separator
         self._marker = marker
+        self._marker_pl = marker_pl
         super().__init__(
             choices=choices,
             default=default,
@@ -68,14 +70,14 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         display_choices.append(
             (
                 "class:marker",
-                self._marker if choice["enabled"] else " ",
+                self._marker if choice["enabled"] else self._marker_pl,
             )
         )
         if not isinstance(choice["value"], Separator):
             display_choices.append(
                 (
                     "class:pointer",
-                    "%s%s " % (str(choice["display_index"]), self._separator),
+                    "%s%s" % (str(choice["display_index"]), self._separator),
                 )
             )
         display_choices.append(("[SetCursorPosition]", ""))
@@ -88,12 +90,12 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         display_choices.append(
             (
                 "class:marker",
-                self._marker if choice["enabled"] else " ",
+                self._marker if choice["enabled"] else self._marker_pl,
             )
         )
         if not isinstance(choice["value"], Separator):
             display_choices.append(
-                ("", "%s%s " % (str(choice["display_index"]), self._separator))
+                ("", "%s%s" % (str(choice["display_index"]), self._separator))
             )
             display_choices.append(("", choice["name"]))
         else:
@@ -104,47 +106,29 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
 class RawlistPrompt(BaseListPrompt):
     """Used to create a rawlist prompt where user can use number to jump to items.
 
-    :param message: message to display as question
-    :type message: Union[str, Callable[[SessionResult], str]]
-    :param choices: list of choices available for selection
-    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
-    :param default: default value
-    :type default: Any
-    :param separator: the separator between the index number and the choices
+    :param message: Message to display as question
+    :param choices: List of choices available for selection.
+    :param default: Default value.
+    :param separator: The separator between the index number and the choices.
         e.g. default separator is ")"
             1) whatever
             2) whatever
-    :type separator: str
-    :param style: style for the prompt
-    :type style: InquirerPyStyle
-    :param vi_mode: use vi kb for the prompt
-    :type vi_mode: bool
-    :param qmark: question qmark to display
-    :type qmark: str
-    :param pointer: pointer qmark to display
-    :type pointer: str
-    :param instruction: instruction to display at the end of the prompt
-    :type instruction: str
-    :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[Any], Any]
-    :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[Any], Any]
-    :param height: preferred height of the choice window
-    :type height: Union[str, int]
-    :param max_height: max height choice window should reach
-    :type max_height: Union[str, int]
-    :param multiselect: enable multiselectiion
-    :type multiselect: bool
-    :param marker: marker symbol to indicate selected choice in multiselect mode
-    :type marker: str
-    :param validate: a callable or Validator instance to validate user selection
-    :type validate: Union[Callable[[Any], bool], Validator]
-    :param invalid_message: message to display when input is invalid
-    :type invalid_message: str
-    :param keybindings: custom keybindings to apply
-    :type keybindings: Dict[str, List[Dict[str, Any]]]
-    :param show_cursor: display cursor at the end of the prompt
-    :type show_cursor: bool
+    :param style: Style for the prompt.
+    :param vi_mode: Use vi kb for the prompt.
+    :param qmark: Question qmark to display.
+    :param pointer: Pointer qmark to display.
+    :param instruction: Instruction to display at the end of the prompt.
+    :param transformer: A callable to transform the result, this is visual effect only.
+    :param filter: A callable to filter the result, updating the user input before returning the result.
+    :param height: Preferred height of the choice window.
+    :param max_height: Max height choice window should reach.
+    :param multiselect: Enable multiselectiion.
+    :param marker: Marker symbol to indicate selected choice in multiselect mode.
+    :param marker_pl: Marker place holder for non selected choices.
+    :param validate: A callable or Validator instance to validate user selection.
+    :param invalid_message: Message to display when input is invalid.
+    :param keybindings: Custom keybindings to apply.
+    :param show_cursor: Display cursor at the end of the prompt.
     """
 
     def __init__(
@@ -152,7 +136,7 @@ class RawlistPrompt(BaseListPrompt):
         message: Union[str, Callable[[SessionResult], str]],
         choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any = None,
-        separator: str = ")",
+        separator: str = ") ",
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -164,6 +148,7 @@ class RawlistPrompt(BaseListPrompt):
         max_height: Union[int, str] = None,
         multiselect: bool = False,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
+        marker_pl: str = " ",
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
@@ -179,6 +164,7 @@ class RawlistPrompt(BaseListPrompt):
             marker=marker,
             session_result=session_result,
             multiselect=multiselect,
+            marker_pl=marker_pl,
         )
         self._instruction = instruction
         super().__init__(

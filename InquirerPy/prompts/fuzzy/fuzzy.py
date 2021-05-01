@@ -36,6 +36,9 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     :param marker: Marker symbol for the selected choice in the case of multiselect.
     :param current_text: Current buffer text.
     :param max_lines: Maximum height.
+    :param session_result: Current session result.
+    :param multiselect: Enable multiselect.
+    :param marker_pl: Marker place holder for non selected choices.
     """
 
     def __init__(
@@ -47,9 +50,11 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         max_lines: int,
         session_result: Optional[SessionResult],
         multiselect: bool,
+        marker_pl: str = " ",
     ) -> None:
         self._pointer = pointer
         self._marker = marker
+        self._marker_pl = marker_pl
         self._current_text = current_text
         self._max_lines = max_lines if max_lines > 0 else 1
         super().__init__(
@@ -83,7 +88,9 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         display_choices.append(
             (
                 "class:marker",
-                self._marker if self.choices[choice["index"]]["enabled"] else " ",
+                self._marker
+                if self.choices[choice["index"]]["enabled"]
+                else self._marker_pl,
             )
         )
         display_choices.append(("[SetCursorPosition]", ""))
@@ -113,7 +120,9 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         display_choices.append(
             (
                 "class:marker",
-                self._marker if self.choices[choice["index"]]["enabled"] else " ",
+                self._marker
+                if self.choices[choice["index"]]["enabled"]
+                else self._marker_pl,
             )
         )
         if not choice["indices"]:
@@ -224,26 +233,27 @@ class FuzzyPrompt(BaseComplexPrompt):
     Override the default keybindings as j/k cannot be bind even if editing_mode is vim
     due to the input buffer.
 
-    :param message: message to display to the user
-    :param choices: list of choices available to select
-    :param default: default value to insert into buffer
-    :param pointer: pointer symbol
-    :param style: style dict to apply
-    :param vi_mode: use vi kb for the prompt
-    :param qmark: question mark symbol
-    :param transformer: transform the result to output, this is only visual effect
-    :param filter: a callable to filter the result, updating the user input before returning the result
-    :param instruction: instruction to display after the message
-    :param multiselect: enable multi selection of the choices
-    :param prompt: prompt symbol for buffer
-    :param marker: marker symbol for the selected choice in the case of multiselect
-    :param border: enable border around the fuzzy prompt
-    :param info: display info as virtual text after input
-    :param height: preferred height of the choice window
-    :param max_height: max height choice window should reach
-    :param validate: a callable or Validator instance to validate user selection
-    :param invalid_message: message to display when input is invalid
-    :param keybindings: custom keybindings to apply
+    :param message: Message to display to the user.
+    :param choices: List of choices available to select.
+    :param default: Default value to insert into buffer.
+    :param pointer: Pointer symbol.
+    :param style: Style dict to apply.
+    :param vi_mode: Use vi kb for the prompt.
+    :param qmark: Question mark symbol.
+    :param transformer: Transform the result to output, this is only visual effect.
+    :param filter: A callable to filter the result, updating the user input before returning the result.
+    :param instruction: Instruction to display after the message.
+    :param multiselect: Enable multi selection of the choices.
+    :param prompt: Prompt symbol for buffer.
+    :param marker: Marker symbol for the selected choice in the case of multiselect.
+    :param marker_pl: Marker place holder for non selected choices.
+    :param border: Enable border around the fuzzy prompt.
+    :param info: Display info as virtual text after input.
+    :param height: Preferred height of the choice window.
+    :param max_height: Max height choice window should reach.
+    :param validate: A callable or Validator instance to validate user selection.
+    :param invalid_message: Message to display when input is invalid.
+    :param keybindings: Custom keybindings to apply.
     """
 
     def __init__(
@@ -261,6 +271,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         multiselect: bool = False,
         prompt: str = INQUIRERPY_POINTER_SEQUENCE,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
+        marker_pl: str = " ",
         border: bool = True,
         info: bool = True,
         height: Union[str, int] = None,
@@ -313,6 +324,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             else self._dimmension_max_height - 2,
             session_result=session_result,
             multiselect=multiselect,
+            marker_pl=marker_pl,
         )
 
         self._buffer = Buffer(on_text_changed=self._on_text_changed)

@@ -21,16 +21,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
 
     Used to dynamically update the content and indicate the current user selection
 
-    :param choices: a list of choices to display
-    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
-    :param default: default value for selection
-    :type default: Any
-    :param pointer: the pointer to display, indicating current line, default is unicode ">"
-    :type pointer: str
-    :param enabled_symbol: the qmark to indicate selected choices
-    :type enabled_symbol: str
-    :param disabled_symbol: the qmark to indicate not selected choices
-    :type disabled_symbol: str
+    Reference the param definition in `CheckboxPrompt`.
     """
 
     def __init__(
@@ -38,8 +29,8 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
         default: Any = None,
         pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
-        enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
-        disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
+        enabled_symbol: str = "%s " % INQUIRERPY_FILL_HEX_SEQUENCE,
+        disabled_symbol: str = "%s " % INQUIRERPY_EMPTY_HEX_SEQUENCE,
         session_result: Optional[SessionResult] = None,
     ) -> None:
         """Initialise required attributes and call base class."""
@@ -63,9 +54,9 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
             display_choices.append(
                 (
                     "class:checkbox",
-                    "%s " % self._enabled_symbol
+                    self._enabled_symbol
                     if choice["enabled"]
-                    else "%s " % self._disabled_symbol,
+                    else self._disabled_symbol,
                 )
             )
         display_choices.append(("[SetCursorPosition]", ""))
@@ -79,9 +70,9 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
             display_choices.append(
                 (
                     "class:checkbox",
-                    "%s " % self._enabled_symbol
+                    self._enabled_symbol
                     if choice["enabled"]
-                    else "%s " % self._disabled_symbol,
+                    else self._disabled_symbol,
                 )
             )
             display_choices.append(("", choice["name"]))
@@ -93,42 +84,24 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
 class CheckboxPrompt(BaseListPrompt):
     """A wrapper class around `prompt_toolkit` Application to create a checkbox prompt.
 
-    :param message: message to display
-    :type message: Union[str, Callable[[SessionResult], str]]
-    :param choices: list of choices to display
-    :type choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
-    :param default: default value
-    :type default: Any
-    :param style: a dictionary of style
-    :type style: InquirerPyStyle
-    :param vi_mode: use vi kb for the prompt
-    :type vi_mode: bool
-    :param qmark: question qmark to display
-    :type qmark: str
-    :param pointer: the pointer qmark to display
-    :type pointer: str
-    :param enabled_symbol: qmark indicating enabled box
-    :type enabled_symbol: str
-    :param disabled_symbol: qmark indicating not selected qmark
-    :type disabled_symbol: str
-    :param instruction: instruction to display after the message
-    :type instruction: str
-    :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[Any], Any]
-    :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[Any], Any]
-    :param height: preferred height of the choice window
-    :type height: Union[str, int]
-    :param max_height: max height choice window should reach
-    :type max_height: Union[str, int]
-    :param validate: a callable or Validator instance to validate user selection
-    :type validate: Union[Callable[[Any], bool], Validator]
-    :param invalid_message: message to display when input is invalid
-    :type invalid_message: str
-    :param keybindings: custom keybindings to apply
-    :type keybindings: Dict[str, List[Dict[str, Any]]]
-    :param show_cursor: display cursor at the end of the prompt
-    :type show_cursor: bool
+    :param message: Message to display.
+    :param choices: List of choices to display.
+    :param default: Default value.
+    :param style: A dictionary of style.
+    :param vi_mode: Use vi kb for the prompt.
+    :param qmark: Question qmark to display.
+    :param pointer: The pointer qmark to display.
+    :param enabled_symbol: Qmark indicating enabled box.
+    :param disabled_symbol: Qmark indicating not selected qmark.
+    :param instruction: Instruction to display after the message.
+    :param transformer: A callable to transform the result, this is visual effect only.
+    :param filter: A callable to filter the result, updating the user input before returning the result.
+    :param height: Preferred height of the choice window.
+    :param max_height: Max height choice window should reach.
+    :param validate: A callable or Validator instance to validate user selection.
+    :param invalid_message: Message to display when input is invalid.
+    :param keybindings: Custom keybindings to apply.
+    :param show_cursor: Display cursor at the end of the prompt.
     """
 
     def __init__(
@@ -140,8 +113,8 @@ class CheckboxPrompt(BaseListPrompt):
         vi_mode: bool = False,
         qmark: str = "?",
         pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
-        enabled_symbol: str = INQUIRERPY_FILL_HEX_SEQUENCE,
-        disabled_symbol: str = INQUIRERPY_EMPTY_HEX_SEQUENCE,
+        enabled_symbol: str = "%s " % INQUIRERPY_FILL_HEX_SEQUENCE,
+        disabled_symbol: str = "%s " % INQUIRERPY_EMPTY_HEX_SEQUENCE,
         instruction: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
