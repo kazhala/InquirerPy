@@ -17,7 +17,7 @@ questions = [
         "message": "What's your address",
         "type": "input",
         "validate": EmptyInputValidator("Address cannot be empty"),
-        "when": lambda x: x["0"] == "Delivery",
+        "when": lambda x: x[0] == "Delivery",
     },
     {
         "message": "What pizza would you like?",
