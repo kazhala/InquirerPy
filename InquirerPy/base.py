@@ -48,25 +48,16 @@ class BaseSimplePrompt(ABC):
     Note: the PromptSession is not initialised in the constructor, require
     a call of `self.session = PromptSession(...)`.
 
-    :param message: the question message to display
-    :type message: Union[str, Callable[[SessionResult], str]]
-    :param style: the style dictionary to apply
-    :type style: InquirerPyStyle
-    :param vi_mode: use vi kb for the prompt
-    :type vi_mode: str
-    :param qmark: the custom qmark to display infront of the question
-    :type qmark: str
-    :param validate: a callable or Validator instance to validate user input
-    :type validate: Union[Callable[[Any], bool], Validator]
-    :param invalid_message: message to display when input is invalid
-    :type invalid_message: str
-    :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[Any], Any]
-    :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[Any], Any]
-    :param session_result: the current session result, this is used by callable message and choices
+    :param message: The question message to display.
+    :param style: The style dictionary to apply.
+    :param vi_mode: Use vi kb for the prompt.
+    :param qmark: The custom qmark to display infront of the question.
+    :param validate: A callable or Validator instance to validate user input.
+    :param invalid_message: The message to display when input is invalid.
+    :param transformer: A callable to transform the result, this is visual effect only.
+    :param filter: A callable to filter the result, updating the user input before returning the result.
+    :param session_result: The current session result, this is used by callable message and choices
         to generate dynamic values. If using alternate syntax, skip this value.
-    :type session_result: SessionResult
     """
 
     def __init__(
@@ -138,13 +129,10 @@ class BaseSimplePrompt(ABC):
         Check a list of keys argument if they are alt related, change
         them to escape.
 
-        :param keys: keys to bind into the keybindings
-        :type keys: Union[Keys, str]
-        :param filter: condition of whether this keybinding should be active
-        :type filter: FilterOrBool
-        :return: a decorator that should be applied to the function thats intended
-            to be active when the keys being pressed
-        :rtype: Callable[[KeyHandlerCallable], KeyHandlerCallable]
+        :param keys: The keys to bind into the keybindings
+        :param filter: Condition of whether this keybinding should be active.
+        :return: A decorator that should be applied to the function thats intended
+            to be active when the keys being pressed.
         """
         alt_pattern = re.compile(r"^alt-(.*)")
 
@@ -177,12 +165,9 @@ class BaseSimplePrompt(ABC):
 
         This is useful to format/customize user input for better visual.
 
-        :param pre_answer: the information to display before answering the question
-        :type pre_answer: Tuple[str, str]
-        :param post_answer: the information to display after answering the question
-        :type post_answer: Tuple[str, str]
-        :return: formatted text thats ready to be consumed by PromptSession
-        :rtype: List[Tuple[str, str]]
+        :param pre_answer: The information to display before answering the question.
+        :param post_answer: The information to display after answering the question.
+        :return: Formatted text thats ready to be consumed by PromptSession.
         """
         display_message = []
         if self.status["result"] == INQUIRERPY_KEYBOARD_INTERRUPT:
@@ -274,12 +259,9 @@ class InquirerPyUIControl(FormattedTextControl):
     def _get_choices(self, choices: List[Any], default: Any) -> List[Dict[str, Any]]:
         """Process the raw user input choices and format it into dictionary.
 
-        :param choices: list of choices to display
-        :type choices: List[Union[str, Dict[str, Any]]]
-        :param default: default value, this affect selected_choice_index
-        :type default: Any
-        :return: formatted choices
-        :rtype: List[Dict[str, Any]]
+        :param choices: List of choices to display.
+        :param default: The default value, this affect selected_choice_index.
+        :return: Formatted choices>
         """
         processed_choices: List[Dict[str, Any]] = []
         try:
@@ -353,8 +335,7 @@ class InquirerPyUIControl(FormattedTextControl):
     def _get_formatted_choices(self) -> List[Tuple[str, str]]:
         """Get all choices in formatted text format.
 
-        :return: a list of formatted choices
-        :rtype: List[Tuple[str, str]]
+        :return: A list of formatted choices.
         """
         display_choices = []
 
@@ -380,8 +361,7 @@ class InquirerPyUIControl(FormattedTextControl):
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         """Generate the formatted text for hovered choice.
 
-        :return: list of formatted text
-        :rtype: List[Tuple[str, str]]
+        :return: List of formatted text.
         """
         pass
 
@@ -389,8 +369,7 @@ class InquirerPyUIControl(FormattedTextControl):
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         """Generate the formatted text for non-hovered choices.
 
-        :return: list of formatted text
-        :rtype: List[Tuple[str, str]]]
+        :return: List of formatted text.
         """
         pass
 
@@ -398,8 +377,7 @@ class InquirerPyUIControl(FormattedTextControl):
     def choice_count(self) -> int:
         """Get the choice count.
 
-        :return: total count of choices
-        :rtype: int
+        :return: The total count of choices.
         """
         return len(self.choices)
 
@@ -407,8 +385,7 @@ class InquirerPyUIControl(FormattedTextControl):
     def selection(self) -> Dict[str, Any]:
         """Get current selection value.
 
-        :return: a dictionary of name and value for the current pointed choice
-        :rtype: Dict[str, Any]
+        :return: A dictionary of name and value for the current pointed choice.
         """
         return self.choices[self.selected_choice_index]
 
@@ -587,8 +564,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message.
 
-        :return: list of formatted text
-        :rtype: List[Tuple[str, str]]
+        :return: List of formatted text.
         """
         pre_answer = ("class:instruction", " %s" % self.instruction)
         post_answer = ("class:answer", " %s" % self.status["result"])
@@ -597,10 +573,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def execute(self, raise_keyboard_interrupt: bool = True) -> Any:
         """Execute the application and get the result.
 
-        :param raise_keyboard_interrupt: raise kbi exception when user hit 'c-c'
-        :type raise_keyboard_interrupt: bool
-        :return: user selected value
-        :rtype: Any
+        :param raise_keyboard_interrupt: Raise kbi exception when user hit 'c-c'
+        :return: User selected value.
         """
         result = self.application.run()
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
@@ -618,8 +592,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def instruction(self) -> str:
         """Instruction to display next to question.
 
-        :return: instruction text
-        :rtype: str
+        :return: Instruction text
         """
         return self._instruction
 
@@ -667,8 +640,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def selected_choices(self) -> List[Any]:
         """Get all user selected choices.
 
-        :return: list of selected/enabled choices
-        :rtype: List[Any]
+        :return: List of selected/enabled choices.
         """
 
         def filter_choice(choice):
@@ -726,34 +698,20 @@ class BaseListPrompt(BaseComplexPrompt):
 
     Upon entering the answer, update the first window's formatted text.
 
-    :param message: question to display to the user
-    :type message: Union[str, Callable[[SessionResult], str]]
-    :param style: style to apply to the prompt
-    :type style: InquirerPyStyle
-    :param vi_mode: use vi kb for the prompt
-    :type vi_mode: bool
-    :param qmark: question mark to display
-    :type qmark: str
-    :param instruction: instruction to display after the question message
-    :type instruction: str
-    :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[Any], Any]
-    :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[Any], Any]
-    :param height: preferred height of the choice window
-    :type height: Union[str, int]
-    :param max_height: max height choice window should reach
-    :type max_height: Union[str, int]
-    :param validate: a callable or Validator instance to validate user selection
-    :type validate: Union[Callable[[Any], bool], Validator]
-    :param invalid_message: message to display when input is invalid
-    :type invalid_message: str
-    :param multiselect: enable multiselect mode
-    :type multiselect: bool
-    :param keybindings: custom keybindings to apply
-    :type keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
-    :param show_cursor: display cursor at the end of the prompt
-    :type show_cursor: bool
+    :param message: The question to display to the user.
+    :param style: Style to apply to the prompt.
+    :param vi_mode: Use vi kb for the prompt.
+    :param qmark: The question mark to display.
+    :param instruction: Instruction to display after the question message.
+    :param transformer: A callable to transform the result, this is visual effect only.
+    :param filter: A callable to filter the result, updating the user input before returning the result.
+    :param height: The preferred height of the choice window.
+    :param max_height: Max height choice window should reach.
+    :param validate: A callable or Validator instance to validate user selection.
+    :param invalid_message: Message to display when input is invalid.
+    :param multiselect: Enable multiselect mode.
+    :param keybindings: Custom keybindings to apply.
+    :param show_cursor: Display cursor at the end of the prompt.
     """
 
     def __init__(
@@ -866,8 +824,7 @@ class BaseListPrompt(BaseComplexPrompt):
     def _toggle_all(self, value: bool = None) -> None:
         """Toggle all choice `enabled` status.
 
-        :param value: sepcify a value to toggle
-        :type value: bool
+        :param value: Sepcify a value to toggle.
         """
         for choice in self.content_control.choices:
             if isinstance(choice["value"], Separator):
