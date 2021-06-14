@@ -4,11 +4,13 @@ from InquirerPy.separator import Separator
 
 def question1_choice(_):
     return [
+        Separator(),
         {"name": "Sydney", "value": "ap-southeast-2", "enabled": True},
         {"name": "Singapore", "value": "ap-southeast-1", "enabled": False},
         Separator(),
         "us-east-1",
         "us-west-1",
+        Separator(),
     ]
 
 
@@ -50,6 +52,7 @@ def alternate():
     regions = inquirer.checkbox(
         message="Select regions:",
         choices=question1_choice,
+        cycle=False,
         transformer=lambda result: "%s region%s selected"
         % (len(result), "s" if len(result) > 1 else ""),
     ).execute()

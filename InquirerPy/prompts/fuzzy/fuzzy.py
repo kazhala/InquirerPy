@@ -254,6 +254,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param validate: A callable or Validator instance to validate user selection.
     :param invalid_message: Message to display when input is invalid.
     :param keybindings: Custom keybindings to apply.
+    :param cycle: Return to top item if hit bottom or vice versa.
     """
 
     def __init__(
@@ -279,6 +280,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
+        cycle: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         if not keybindings:
@@ -307,6 +309,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             multiselect=multiselect,
             instruction=instruction,
             keybindings=keybindings,
+            cycle=cycle,
             session_result=session_result,
         )
         self._default = default if not isinstance(default, Callable) else default(self._result)  # type: ignore

@@ -102,6 +102,7 @@ class CheckboxPrompt(BaseListPrompt):
     :param invalid_message: Message to display when input is invalid.
     :param keybindings: Custom keybindings to apply.
     :param show_cursor: Display cursor at the end of the prompt.
+    :param cycle: Return to top item if hit bottom or vice versa.
     """
 
     def __init__(
@@ -124,6 +125,7 @@ class CheckboxPrompt(BaseListPrompt):
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
         show_cursor: bool = True,
+        cycle: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         """Initialise the content_control and create Application."""
@@ -150,6 +152,7 @@ class CheckboxPrompt(BaseListPrompt):
             multiselect=True,
             keybindings=keybindings,
             show_cursor=show_cursor,
+            cycle=cycle,
             session_result=session_result,
         )
 

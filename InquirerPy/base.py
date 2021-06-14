@@ -666,12 +666,16 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """Setter for `self._application`."""
         self._application = value
 
-    def _handle_down(self) -> None:
-        """Handle event when user attempting to move down."""
+    def _handle_down(self) -> bool:
+        """Handle event when user attempting to move down.
+
+        :return: Boolean indicating if the action hits the cap.
+        """
         if self._cycle:
             self.content_control.selected_choice_index = (
                 self.content_control.selected_choice_index + 1
             ) % self.content_control.choice_count
+            return False
         else:
             self.content_control.selected_choice_index += 1
             if (
@@ -681,17 +685,25 @@ class BaseComplexPrompt(BaseSimplePrompt):
                 self.content_control.selected_choice_index = (
                     self.content_control.choice_count - 1
                 )
+                return True
+            return False
 
-    def _handle_up(self) -> None:
-        """Handle event when user attempting to move down."""
+    def _handle_up(self) -> bool:
+        """Handle event when user attempting to move down.
+
+        :return: Boolean indicating if the action hits the cap.
+        """
         if self._cycle:
             self.content_control.selected_choice_index = (
                 self.content_control.selected_choice_index - 1
             ) % self.content_control.choice_count
+            return False
         else:
             self.content_control.selected_choice_index -= 1
             if self.content_control.selected_choice_index < 0:
                 self.content_control.selected_choice_index = 0
+                return True
+            return False
 
     @abstractmethod
     def _handle_enter(self, event) -> None:
@@ -730,6 +742,7 @@ class BaseListPrompt(BaseComplexPrompt):
     :param invalid_message: Message to display when input is invalid.
     :param multiselect: Enable multiselect mode.
     :param keybindings: Custom keybindings to apply.
+    :param cycle: Return to top item if hit bottom or vice versa.
     :param show_cursor: Display cursor at the end of the prompt.
     """
 
@@ -855,16 +868,24 @@ class BaseListPrompt(BaseComplexPrompt):
     def _handle_up(self) -> None:
         """Handle the event when user attempt to move up."""
         while True:
-            super()._handle_up()
+            cap = super()._handle_up()
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
+            else:
+                if cap and not self._cycle:
+                    self._handle_down()
+                    break
 
     def _handle_down(self) -> None:
         """Handle the event when user attempt to move down."""
         while True:
-            super()._handle_down()
+            cap = super()._handle_down()
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
+            else:
+                if cap and not self._cycle:
+                    self._handle_up()
+                    break
 
     def _handle_enter(self, event) -> None:
         """Handle the event when user hit Enter key.

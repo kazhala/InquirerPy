@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
+from InquirerPy.base import BaseComplexPrompt, BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
@@ -175,6 +175,7 @@ class ExpandPrompt(BaseListPrompt):
     :param invalid_message: Message to display when input is invalid.
     :param keybindings: Custom keybindings to apply.
     :param show_cursor: Display cursor at the end of the prompt.
+    :param cycle: Return to top item if hit bottom or vice versa.
     """
 
     def __init__(
@@ -201,6 +202,7 @@ class ExpandPrompt(BaseListPrompt):
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
         show_cursor: bool = True,
+        cycle: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         """Create the application and apply keybindings."""
@@ -231,6 +233,7 @@ class ExpandPrompt(BaseListPrompt):
             multiselect=multiselect,
             keybindings=keybindings,
             show_cursor=show_cursor,
+            cycle=cycle,
             session_result=session_result,
         )
 
@@ -270,13 +273,15 @@ class ExpandPrompt(BaseListPrompt):
         if not self.content_control._expanded:
             return
         while True:
-            self.content_control.selected_choice_index = (
-                self.content_control.selected_choice_index - 1
-            ) % self.content_control.choice_count
+            cap = BaseComplexPrompt._handle_up(self)
             if not isinstance(
                 self.content_control.selection["value"], Separator
             ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
                 break
+            else:
+                if cap and not self._cycle:
+                    self._handle_down()
+                    break
 
     def _handle_down(self) -> None:
         """Handle the event when user attempt to move down.
@@ -286,13 +291,21 @@ class ExpandPrompt(BaseListPrompt):
         if not self.content_control._expanded:
             return
         while True:
-            self.content_control.selected_choice_index = (
-                self.content_control.selected_choice_index + 1
-            ) % self.content_control.choice_count
+            cap = BaseComplexPrompt._handle_down(self)
             if not isinstance(
                 self.content_control.selection["value"], Separator
             ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
                 break
+            elif (
+                isinstance(self.content_control.selection["value"], ExpandHelp)
+                and not self._cycle
+            ):
+                self._handle_up()
+                break
+            else:
+                if cap and not self._cycle:
+                    self._handle_up()
+                    break
 
     @property
     def instruction(self) -> str:
