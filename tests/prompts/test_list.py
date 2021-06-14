@@ -286,3 +286,37 @@ class TestListPrompt(unittest.TestCase):
                 ("", " "),
             ],
         )
+
+    def test_prompt_cycle(self):
+        choices = [
+            {"name": "apple", "value": "peach"},
+            "pear",
+            {"name": "melon", "value": "watermelon"},
+        ]
+        prompt = ListPrompt(message="hello", choices=choices, cycle=False)
+        prompt._handle_up()
+        self.assertEqual(prompt.content_control.selected_choice_index, 0)
+        prompt._handle_down()
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
+        prompt._handle_down()
+        prompt._handle_down()
+        prompt._handle_down()
+        self.assertEqual(prompt.content_control.selected_choice_index, 2)
+
+        choices = [
+            Separator(),
+            {"name": "apple", "value": "peach"},
+            "pear",
+            {"name": "melon", "value": "watermelon"},
+            Separator(),
+        ]
+        prompt = ListPrompt(message="hello", choices=choices, cycle=False)
+        prompt._handle_up()
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
+        prompt._handle_up()
+        self.assertEqual(prompt.content_control.selected_choice_index, 1)
+        prompt._handle_down()
+        prompt._handle_down()
+        prompt._handle_down()
+        prompt._handle_down()
+        self.assertEqual(prompt.content_control.selected_choice_index, 3)
