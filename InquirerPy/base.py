@@ -424,6 +424,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        cycle: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
@@ -447,6 +448,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._rendered = False
         self._invalid = False
         self._application: Application
+        self._cycle = cycle
 
         @Condition
         def is_multiselect() -> bool:
@@ -664,19 +666,36 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """Setter for `self._application`."""
         self._application = value
 
+    def _handle_down(self) -> None:
+        """Handle event when user attempting to move down."""
+        if self._cycle:
+            self.content_control.selected_choice_index = (
+                self.content_control.selected_choice_index + 1
+            ) % self.content_control.choice_count
+        else:
+            self.content_control.selected_choice_index += 1
+            if (
+                self.content_control.selected_choice_index
+                >= self.content_control.choice_count
+            ):
+                self.content_control.selected_choice_index = (
+                    self.content_control.choice_count - 1
+                )
+
+    def _handle_up(self) -> None:
+        """Handle event when user attempting to move down."""
+        if self._cycle:
+            self.content_control.selected_choice_index = (
+                self.content_control.selected_choice_index - 1
+            ) % self.content_control.choice_count
+        else:
+            self.content_control.selected_choice_index -= 1
+            if self.content_control.selected_choice_index < 0:
+                self.content_control.selected_choice_index = 0
+
     @abstractmethod
     def _handle_enter(self, event) -> None:
         """Handle event when user input enter key."""
-        pass
-
-    @abstractmethod
-    def _handle_down(self) -> None:
-        """Handle event when user attempting to move down."""
-        pass
-
-    @abstractmethod
-    def _handle_up(self) -> None:
-        """Handle event when user attempting to move down."""
         pass
 
     @abstractmethod
@@ -730,6 +749,7 @@ class BaseListPrompt(BaseComplexPrompt):
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
         show_cursor: bool = True,
+        cycle: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
@@ -745,6 +765,7 @@ class BaseListPrompt(BaseComplexPrompt):
             multiselect=multiselect,
             instruction=instruction,
             keybindings=keybindings,
+            cycle=cycle,
             session_result=session_result,
         )
         self._dimmension_height, self._dimmension_max_height = calculate_height(
@@ -834,18 +855,14 @@ class BaseListPrompt(BaseComplexPrompt):
     def _handle_up(self) -> None:
         """Handle the event when user attempt to move up."""
         while True:
-            self.content_control.selected_choice_index = (
-                self.content_control.selected_choice_index - 1
-            ) % self.content_control.choice_count
+            super()._handle_up()
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
 
     def _handle_down(self) -> None:
         """Handle the event when user attempt to move down."""
         while True:
-            self.content_control.selected_choice_index = (
-                self.content_control.selected_choice_index + 1
-            ) % self.content_control.choice_count
+            super()._handle_down()
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
 

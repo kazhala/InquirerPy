@@ -510,18 +510,6 @@ class FuzzyPrompt(BaseComplexPrompt):
         )
         self._task.add_done_callback(self._filter_callback)
 
-    def _handle_down(self) -> None:
-        """Move down."""
-        self.content_control.selected_choice_index = (
-            self.content_control.selected_choice_index + 1
-        ) % self.content_control.choice_count
-
-    def _handle_up(self) -> None:
-        """Move up."""
-        self.content_control.selected_choice_index = (
-            self.content_control.selected_choice_index - 1
-        ) % self.content_control.choice_count
-
     def _toggle_choice(self) -> None:
         """Handle tab event, alter the `selected` state of the choice."""
         current_selected_index = self.content_control.selection["index"]
