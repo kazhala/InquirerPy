@@ -24,7 +24,7 @@ class TestInputPrompt(unittest.TestCase):
         self.inp.send_text("hello\n")
         input_prompt = InputPrompt(
             message="yes",
-            style={},
+            style=None,
             default="world",
             qmark="!",
             vi_mode=False,
@@ -41,7 +41,7 @@ class TestInputPrompt(unittest.TestCase):
         self.inp.send_text("hello\n")
         input_prompt = InputPrompt(
             message="yes",
-            style={},
+            style=None,
             default="world",
             qmark="!",
             vi_mode=False,
@@ -58,8 +58,8 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(
             input_prompt._get_prompt_message(),
             [
-                ("class:questionmark", "!"),
-                ("class:question", " yes"),
+                ("class:answermark", "?"),
+                ("class:answered_question", " yes"),
                 ("class:answer", " what"),
             ],
         )
@@ -68,7 +68,7 @@ class TestInputPrompt(unittest.TestCase):
         self.inp.send_text("hello\nworld\nfoo\nboo\x1b\r")
         input_prompt = InputPrompt(
             message="yes",
-            style={},
+            style=None,
             default="",
             qmark="!",
             vi_mode=False,
@@ -85,7 +85,7 @@ class TestInputPrompt(unittest.TestCase):
     def test_prompt_completion(self):
         input_prompt = InputPrompt(
             message="yes",
-            style={},
+            style=None,
             default="",
             qmark="!",
             vi_mode=False,
@@ -101,12 +101,12 @@ class TestInputPrompt(unittest.TestCase):
         event = CompleteEvent()
         completions = [
             completion.text
-            for completion in list(completer.get_completions(doc, event))
+            for completion in list(completer.get_completions(doc, event))  # type: ignore
         ]
         self.assertEqual(sorted(completions), ["hello", "hey"])
 
     def test_prompt_message(self):
-        input_prompt = InputPrompt(message="Enter your name", style={}, qmark="[?]")
+        input_prompt = InputPrompt(message="Enter your name", style=None, qmark="[?]")
         message = input_prompt._get_prompt_message()
         self.assertEqual(
             message,
@@ -122,15 +122,15 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:questionmark", "[?]"),
-                ("class:question", " Enter your name"),
+                ("class:answermark", "?"),
+                ("class:answered_question", " Enter your name"),
                 ("class:answer", " haha"),
             ],
         )
 
         input_prompt = InputPrompt(
             message="Enter your name",
-            style={},
+            style=None,
             default="",
             qmark="[?]",
             vi_mode=False,
@@ -153,8 +153,8 @@ class TestInputPrompt(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:questionmark", "[?]"),
-                ("class:question", " Enter your name"),
+                ("class:answermark", "?"),
+                ("class:answered_question", " Enter your name"),
                 ("class:answer", " haha...[3 chars]"),
             ],
         )
@@ -183,7 +183,7 @@ class TestInputPrompt(unittest.TestCase):
         lexer = MockedLexer()
         InputPrompt(
             message="Enter your name",
-            style={},
+            style=None,
             default="",
             qmark="[?]",
             vi_mode=False,
@@ -217,9 +217,11 @@ class TestInputPrompt(unittest.TestCase):
                 call(
                     {
                         "questionmark": "#e5c07b",
+                        "answermark": "#e5c07b",
                         "answer": "#61afef",
                         "input": "#98c379",
                         "question": "",
+                        "answered_question": "",
                         "instruction": "",
                         "pointer": "#61afef",
                         "checkbox": "#98c379",
