@@ -1,4 +1,3 @@
-from InquirerPy.utils import InquirerPyStyle
 import os
 import shutil
 import tempfile
@@ -16,6 +15,7 @@ from prompt_toolkit.output import DummyOutput
 from prompt_toolkit.shortcuts.prompt import CompleteStyle
 
 from InquirerPy.prompts.filepath import FilePathCompleter, FilePathPrompt
+from InquirerPy.utils import InquirerPyStyle
 from InquirerPy.validator import PathValidator
 
 
@@ -184,7 +184,7 @@ class TestFilePath(unittest.TestCase):
 
     def test_get_prompt_message(self):
         filepath_prompt = FilePathPrompt(
-            message="brah", style=InquirerPyStyle({"foo": ""}), qmark="!"
+            message="brah", style=InquirerPyStyle({"foo": ""}), qmark="!", amark="x"
         )
         message = filepath_prompt._get_prompt_message()
         self.assertEqual(
@@ -202,8 +202,8 @@ class TestFilePath(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:questionmark", "!"),
-                ("class:question", " brah"),
+                ("class:answermark", "x"),
+                ("class:answered_question", " brah"),
                 ("class:answer", " hello"),
             ],
         )
