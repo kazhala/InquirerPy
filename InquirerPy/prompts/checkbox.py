@@ -89,7 +89,8 @@ class CheckboxPrompt(BaseListPrompt):
     :param default: Default value.
     :param style: A dictionary of style.
     :param vi_mode: Use vi kb for the prompt.
-    :param qmark: Question qmark to display.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: The custom symbol to display infront of the question after its answered.
     :param pointer: The pointer qmark to display.
     :param enabled_symbol: Qmark indicating enabled box.
     :param disabled_symbol: Qmark indicating not selected qmark.
@@ -113,6 +114,7 @@ class CheckboxPrompt(BaseListPrompt):
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
+        amark: str = "?",
         pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = "%s " % INQUIRERPY_FILL_HEX_SEQUENCE,
         disabled_symbol: str = "%s " % INQUIRERPY_EMPTY_HEX_SEQUENCE,
@@ -142,6 +144,7 @@ class CheckboxPrompt(BaseListPrompt):
             style=style,
             vi_mode=vi_mode,
             qmark=qmark,
+            amark=amark,
             instruction=instruction,
             transformer=transformer,
             filter=filter,
