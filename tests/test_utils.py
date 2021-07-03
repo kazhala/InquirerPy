@@ -39,9 +39,11 @@ class TestUtils(unittest.TestCase):
             InquirerPyStyle(
                 {
                     "questionmark": "#e5c07b",
+                    "answermark": "#e5c07b",
                     "answer": "#61afef",
                     "input": "#98c379",
                     "question": "",
+                    "answered_question": "",
                     "instruction": "",
                     "pointer": "#61afef",
                     "checkbox": "#98c379",
@@ -58,8 +60,10 @@ class TestUtils(unittest.TestCase):
         )
 
         os.environ["INQUIRERPY_STYLE_QUESTIONMARK"] = "#000000"
+        os.environ["INQUIRERPY_STYLE_ANSWERMARK"] = "#000000"
         os.environ["INQUIRERPY_STYLE_ANSWER"] = "#111111"
         os.environ["INQUIRERPY_STYLE_QUESTION"] = "#222222"
+        os.environ["INQUIRERPY_STYLE_ANSWERED_QUESTION"] = "#222222"
         os.environ["INQUIRERPY_STYLE_INSTRUCTION"] = "#333333"
         os.environ["INQUIRERPY_STYLE_INPUT"] = "#444444"
         os.environ["INQUIRERPY_STYLE_POINTER"] = "#555555"
@@ -78,9 +82,11 @@ class TestUtils(unittest.TestCase):
             InquirerPyStyle(
                 {
                     "questionmark": "#000000",
+                    "answermark": "#000000",
                     "answer": "#111111",
                     "input": "#444444",
                     "question": "#222222",
+                    "answered_question": "#222222",
                     "instruction": "#333333",
                     "pointer": "#555555",
                     "checkbox": "#66666",
@@ -100,9 +106,11 @@ class TestUtils(unittest.TestCase):
         style = get_style(
             {
                 "questionmark": "#000000",
+                "answermark": "#mmmmmm",
                 "answer": "#111111",
                 "input": "#444444",
                 "question": "#222222",
+                "answered_question": "#222222",
                 "instruction": "#333333",
                 "pointer": "#555555",
                 "checkbox": "#66666",
@@ -121,9 +129,11 @@ class TestUtils(unittest.TestCase):
             InquirerPyStyle(
                 {
                     "questionmark": "#000000",
+                    "answermark": "#mmmmmm",
                     "answer": "#111111",
                     "input": "#444444",
                     "question": "#222222",
+                    "answered_question": "#222222",
                     "instruction": "#333333",
                     "pointer": "#555555",
                     "checkbox": "#66666",
