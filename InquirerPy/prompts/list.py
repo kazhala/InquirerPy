@@ -81,7 +81,8 @@ class ListPrompt(BaseListPrompt):
     :param default: The default value.
     :param style: Style config in dictionary form.
     :param vi_mode: Use vi keybindings for the prompt.
-    :param qmark: The question qmark to display.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: The custom symbol to display infront of the question after its answered.
     :param pointer: The pointer qmark of hovered choice.
     :param instruction: Instruction to display to user.
     :param transformer: A callable to transform the result, this is visual effect only.
@@ -106,6 +107,7 @@ class ListPrompt(BaseListPrompt):
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
+        amark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
         transformer: Callable[[Any], Any] = None,
@@ -138,6 +140,7 @@ class ListPrompt(BaseListPrompt):
             style=style,
             vi_mode=vi_mode,
             qmark=qmark,
+            amark=amark,
             instruction=instruction,
             transformer=transformer,
             filter=filter,
