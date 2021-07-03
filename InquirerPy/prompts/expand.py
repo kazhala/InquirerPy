@@ -158,9 +158,10 @@ class ExpandPrompt(BaseListPrompt):
     :param default: Default value, can be a key of the choices or a value.
     :param style: Style dict to apply to the prompt.
     :param vi_mode: Use vi keybindings for the prompt.
-    :param qmark: The question qmark to display.
-    :param pointer: Pointer qmark to indicate current selected line.
-    :param separator: Separator qmark to display between the shortcut key and the content.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: THe custom symbol to display infront of the question after its answered.
+    :param pointer: Pointer symbol to indicate current selected line.
+    :param separator: Separator symbol to display between the shortcut key and the content.
     :param help_msg: Help message to display to the user.
     :param expand_pointer: Visual pointer before expansion of the prompt.
     :param instruction: Override the default instruction e.g. (Yabh).
@@ -186,6 +187,7 @@ class ExpandPrompt(BaseListPrompt):
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
+        amark: str = "?",
         pointer: str = " ",
         separator: str = ") ",
         help_msg: str = "Help, list all choices",
@@ -223,6 +225,7 @@ class ExpandPrompt(BaseListPrompt):
             style=style,
             vi_mode=vi_mode,
             qmark=qmark,
+            amark=amark,
             instruction=instruction,
             transformer=transformer,
             filter=filter,
@@ -313,8 +316,7 @@ class ExpandPrompt(BaseListPrompt):
 
         If _instruction exists, use that.
 
-        :return: instruction
-        :rtype: str
+        :return: The instruction text.
         """
         return (
             "(%s)" % "".join(self.content_control._key_maps.keys())
@@ -337,8 +339,7 @@ class ExpandPrompt(BaseListPrompt):
     def _toggle_all(self, value: bool = None) -> None:
         """Override this method to ignore `ExpandHelp`.
 
-        :param value: sepcify a value to toggle
-        :type value: bool
+        :param value: Specify a value to toggle.
         """
         if not self.content_control._expanded:
             return
