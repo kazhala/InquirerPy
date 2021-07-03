@@ -170,8 +170,8 @@ class TestRawList(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:questionmark", "?"),
-                ("class:question", " hello"),
+                ("class:answermark", "?"),
+                ("class:answered_question", " hello"),
                 ("class:answer", " []"),
             ],
         )
