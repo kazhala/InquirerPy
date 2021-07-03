@@ -19,12 +19,10 @@ class FilePathCompleter(Completer):
 
     The class structure is defined by prompt_toolkit and is only intended to be used by PromptSession.
 
-    :param only_directories: complete directories only
-    :type only_directories: bool
+    :param only_directories: Complete directories only.
     """
 
     def __init__(self, only_directories: bool = False, only_files: bool = False):
-        """Set base params."""
         self._only_directories = only_directories
         self._only_files = only_files
 
@@ -82,30 +80,19 @@ class FilePathPrompt(InputPrompt):
 
     This class is used for filepath prompt.
 
-    :param message: the question to ask
-    :type message: Union[str, Callable[[SessionResult], str]]
-    :param style: a dictionary of style to apply
-    :type style: InquirerPyStyle
-    :param vi_mode: use vi kb for the prompt
-    :type vi_mode: bool
-    :param default: the default result
-    :type default: Union[str, Callable[[SessionResult], str]]
-    :param qmark: question qmark to display
-    :type qmark: str
-    :param multicolumn_complete: complete in multi column
-    :type multicolumn_complete: bool
-    :param validate: a callable or a validation class to validate user input
-    :type validate: Union[Callable[[str], bool], Validator]
-    :param invalid_message: the error message to display when input is invalid
-    :type invalid_message: str
-    :param only_directories: only complete directories
-    :type only_directories: bool
-    :param only_files: only complete files
-    :type only_files: bool
-    :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[str], Any]
-    :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[str], Any]
+    :param message: The question to ask.
+    :param style: A dictionary of style to apply.
+    :param vi_mode: Use vi kb for the prompt.
+    :param default: The default result.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: The custom symbol to display infront of the question after its answered.
+    :param multicolumn_complete: Complete in multi column.
+    :param validate: A callable or a validation class to validate user input.
+    :param invalid_message: The error message to display when input is invalid.
+    :param only_directories: Only complete directories.
+    :param only_files: Only complete files.
+    :param transformer: A callable to transform the result, this is visual effect only.
+    :param filter: A callable to filter the result, updating the user input before returning the result.
     """
 
     def __init__(
@@ -115,6 +102,7 @@ class FilePathPrompt(InputPrompt):
         vi_mode: bool = False,
         default: Union[str, Callable[[SessionResult], str]] = "",
         qmark: str = "?",
+        amark: str = "?",
         multicolumn_complete: bool = False,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
@@ -125,7 +113,6 @@ class FilePathPrompt(InputPrompt):
         session_result: SessionResult = None,
         **kwargs,
     ) -> None:
-        """Construct a PromptSession based on parameters and apply key_bindings."""
         if not isinstance(default, str):
             raise InvalidArgument(
                 "default for filepath type question should be type of str."
@@ -136,6 +123,7 @@ class FilePathPrompt(InputPrompt):
             vi_mode=vi_mode,
             default=default,
             qmark=qmark,
+            amark=amark,
             completer=ThreadedCompleter(
                 FilePathCompleter(
                     only_directories=only_directories, only_files=only_files
