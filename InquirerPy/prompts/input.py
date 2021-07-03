@@ -23,30 +23,19 @@ class InputPrompt(BaseSimplePrompt):
 
     This class is used for input prompt.
 
-    :param message: the question to ask
-    :type message: Union[str, Callable[[SessionResult], str]]
-    :param style: a dictionary of style to apply
-    :type style: InquirerPyStyle
-    :param vi_mode: use vi kb for the prompt
-    :type vi_mode: bool
-    :param default: the default result
-    :type default: Union[str, Callable[[SessionResult], str]]
-    :param qmark: question qmark to display
-    :type qmark: str
-    :param completer: add auto completer to user input
-    :type completer: Union[Dict[str, str], Completer]
-    :param multicolumn_complete: complete in multi column
-    :type multicolumn_complete: bool
-    :param multiline: enable multiline mode
-    :type multiline: bool
-    :param validate: a callable or a validation class to validate user input
-    :type validate: Union[Callable[[str], bool], Validator]
-    :param invalid_message: the error message to display when input is invalid
-    :type invalid_message: str
-    :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[str], Any]
-    :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[str], Any]
+    :param message: The question to ask.
+    :param style: A dictionary of style to apply.
+    :param vi_mode: Use vi kb for the prompt.
+    :param default: The default result.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: The custom symbol to display infront of the question after its answered.
+    :param completer: Add auto completer to user input.
+    :param multicolumn_complete: Complete in multi column.
+    :param multiline: Enable multiline mode.
+    :param validate: A callable or a validation class to validate user input.
+    :param invalid_message: The error message to display when input is invalid.
+    :param transformer: A callable to transform the result, this is visual effect only.
+    :param filter: A callable to filter the result, updating the user input before returning the result.
     """
 
     def __init__(
@@ -56,6 +45,7 @@ class InputPrompt(BaseSimplePrompt):
         vi_mode: bool = False,
         default: Union[str, Callable[[SessionResult], str]] = "",
         qmark: str = "?",
+        amark: str = "?",
         completer: Union[Dict[str, Optional[str]], Completer] = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
@@ -66,12 +56,12 @@ class InputPrompt(BaseSimplePrompt):
         session_result: SessionResult = None,
         **kwargs,
     ) -> None:
-        """Construct a PromptSession based on parameters and apply key_bindings."""
         super().__init__(
             message,
             style,
             vi_mode=vi_mode,
             qmark=qmark,
+            amark=amark,
             validate=validate,
             invalid_message=invalid_message,
             transformer=transformer,
@@ -114,7 +104,7 @@ class InputPrompt(BaseSimplePrompt):
         @self._kb.add(Keys.Enter, filter=~is_multiline)
         def enter(event):
             try:
-                self._session.validator.validate(self._session.default_buffer)
+                self._session.validator.validate(self._session.default_buffer)  # type: ignore
             except ValidationError:
                 self._session.default_buffer.validate_and_handle()
             else:
@@ -126,7 +116,7 @@ class InputPrompt(BaseSimplePrompt):
         @self._kb.add(Keys.Escape, Keys.Enter, filter=is_multiline)
         def multiline_enter(event):
             try:
-                self._session.validator.validate(self._session.default_buffer)
+                self._session.validator.validate(self._session.default_buffer)  # type: ignore
             except ValidationError:
                 self._session.default_buffer.validate_and_handle()
             else:
@@ -160,12 +150,9 @@ class InputPrompt(BaseSimplePrompt):
 
         Change the user input path to the 'answer' color in style.
 
-        :param pre_answer: the formatted text to display before answering the question
-        :type pre_answer: Optional[Tuple[str, str]]
-        :param post_answer: the formatted text to display after answering the question
-        :type post_answer: Optional[Tuple[str, str]]
-        :return: the formatted text for PromptSession
-        :rtype: List[Tuple[str, str]]
+        :param pre_answer: The formatted text to display before answering the question.
+        :param post_answer: The formatted text to display after answering the question.
+        :return: The formatted text for PromptSession.
         """
         if not pre_answer:
             if self._multiline:
@@ -195,10 +182,8 @@ class InputPrompt(BaseSimplePrompt):
     def execute(self, raise_keyboard_interrupt: bool = True) -> Optional[str]:
         """Display the prompt and return the result.
 
-        :param raise_keyboard_interrupt: raise kbi exception when user hit 'c-c'
-        :type raise_keyboard_interrupt: bool
-        :return: user entered value
-        :rtype: str
+        :param raise_keyboard_interrupt: Raise kbi exception when user hit 'c-c'.
+        :return: The user entered value.
         """
         result = self._session.prompt(default=self._default)
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
