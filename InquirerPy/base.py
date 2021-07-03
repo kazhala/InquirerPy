@@ -38,6 +38,10 @@ __all__ = [
     "InquirerPyUIControl",
 ]
 
+# TODO: pydantic experiment
+# TODO: poetry
+# TODO: documentation
+
 
 class BaseSimplePrompt(ABC):
     """The base class for simple prompts.
@@ -51,7 +55,8 @@ class BaseSimplePrompt(ABC):
     :param message: The question message to display.
     :param style: The style dictionary to apply.
     :param vi_mode: Use vi kb for the prompt.
-    :param qmark: The custom qmark to display infront of the question.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: THe custom symbol to display infront of the question after its answered.
     :param validate: A callable or Validator instance to validate user input.
     :param invalid_message: The message to display when input is invalid.
     :param transformer: A callable to transform the result, this is visual effect only.
@@ -66,6 +71,7 @@ class BaseSimplePrompt(ABC):
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
+        amark: str = "?",
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[Any], Any] = None,
@@ -81,6 +87,7 @@ class BaseSimplePrompt(ABC):
         )
         self._style = Style.from_dict(style.dict if style else get_style().dict)
         self._qmark = qmark
+        self._amark = amark
         self._status = {"answered": False, "result": None}
         self._kb = KeyBindings()
         self._lexer = "class:input"
@@ -176,11 +183,14 @@ class BaseSimplePrompt(ABC):
                 ("class:skipped", "%s%s " % (" " if self._qmark else "", self._message))
             )
         else:
-            display_message.append(("class:questionmark", self._qmark))
-            display_message.append(
-                ("class:question", "%s%s" % (" " if self._qmark else "", self._message))
-            )
             if self.status["answered"]:
+                display_message.append(("class:answermark", self._amark))
+                display_message.append(
+                    (
+                        "class:answered_question",
+                        "%s%s" % (" " if self._qmark else "", self._message),
+                    )
+                )
                 display_message.append(
                     post_answer
                     if not self._transformer
@@ -190,6 +200,13 @@ class BaseSimplePrompt(ABC):
                     )
                 )
             else:
+                display_message.append(("class:questionmark", self._qmark))
+                display_message.append(
+                    (
+                        "class:question",
+                        "%s%s" % (" " if self._qmark else "", self._message),
+                    )
+                )
                 display_message.append(pre_answer)
         return display_message
 
@@ -221,7 +238,6 @@ class InquirerPyUIControl(FormattedTextControl):
         session_result: SessionResult = None,
         multiselect: bool = False,
     ) -> None:
-        """Initialise choices and construct a FormattedTextControl object."""
         self._session_result = session_result or {}
         self._selected_choice_index: int = 0
         self._choice_func = None
@@ -231,7 +247,7 @@ class InquirerPyUIControl(FormattedTextControl):
         self._default = (
             default
             if not isinstance(default, Callable)
-            else default(self._session_result)
+            else default(self._session_result)  # type: ignore
         )
         if isinstance(choices, Callable):
             self._loading = True
@@ -261,7 +277,7 @@ class InquirerPyUIControl(FormattedTextControl):
 
         :param choices: List of choices to display.
         :param default: The default value, this affect selected_choice_index.
-        :return: Formatted choices>
+        :return: Formatted choices.
         """
         processed_choices: List[Dict[str, Any]] = []
         try:
@@ -417,6 +433,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
+        amark: str = "?",
         instruction: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
@@ -435,6 +452,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             style=style,
             vi_mode=vi_mode,
             qmark=qmark,
+            amark=amark,
             transformer=transformer,
             filter=filter,
             invalid_message=invalid_message,
@@ -732,7 +750,8 @@ class BaseListPrompt(BaseComplexPrompt):
     :param message: The question to display to the user.
     :param style: Style to apply to the prompt.
     :param vi_mode: Use vi kb for the prompt.
-    :param qmark: The question mark to display.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: THe custom symbol to display infront of the question after its answered.
     :param instruction: Instruction to display after the question message.
     :param transformer: A callable to transform the result, this is visual effect only.
     :param filter: A callable to filter the result, updating the user input before returning the result.
@@ -752,6 +771,7 @@ class BaseListPrompt(BaseComplexPrompt):
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
+        amark: str = "?",
         instruction: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
@@ -771,6 +791,7 @@ class BaseListPrompt(BaseComplexPrompt):
             style=style,
             vi_mode=vi_mode,
             qmark=qmark,
+            amark=amark,
             transformer=transformer,
             filter=filter,
             invalid_message=invalid_message,

@@ -39,20 +39,19 @@ def get_style(
     style parameter -> ENV variable -> default style
 
     :param style: style to apply to prompt
-    :type style: Dict[str, str]
     :param style_override: override all default styles
-    :type style_override: bool
     :return: instance of InquirerPyStyle, consume it via `Style.from_dict(InquirerPyStyle.dict)`
-    :rtype: InquirerPyStyle
     """
     if not style_override or style is None:
         if not style:
             style = {}
         result = {
             "questionmark": os.getenv("INQUIRERPY_STYLE_QUESTIONMARK", "#e5c07b"),
+            "answermark": os.getenv("INQUIRERPY_STYLE_ANSWERMARK", "#e5c07b"),
             "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", "#61afef"),
             "input": os.getenv("INQUIRERPY_STYLE_INPUT", "#98c379"),
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
+            "answered_question": os.getenv("INQUIRERPY_STYLE_ANSWERED_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
             "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
@@ -69,9 +68,11 @@ def get_style(
     else:
         result = {
             "questionmark": os.getenv("INQUIRERPY_STYLE_QUESTIONMARK", ""),
+            "answermark": os.getenv("INQUIRERPY_STYLE_ANSWERMARK", ""),
             "answer": os.getenv("INQUIRERPY_STYLE_ANSWER", ""),
             "input": os.getenv("INQUIRERPY_STYLE_INPUT", ""),
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
+            "answered_question": os.getenv("INQUIRERPY_STYLE_ANSWERED_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", ""),
             "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", ""),
