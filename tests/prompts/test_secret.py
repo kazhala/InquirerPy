@@ -74,8 +74,8 @@ class TestSecret(unittest.TestCase):
         self.assertEqual(
             message,
             [
-                ("class:questionmark", "[?]"),
-                ("class:question", " fooboo"),
+                ("class:answermark", "?"),
+                ("class:answered_question", " fooboo"),
                 ("class:answer", " *****"),
             ],
         )
@@ -125,9 +125,11 @@ class TestSecret(unittest.TestCase):
                 call(
                     {
                         "questionmark": "#e5c07b",
+                        "answermark": "#e5c07b",
                         "answer": "#61afef",
                         "input": "#98c379",
                         "question": "",
+                        "answered_question": "",
                         "instruction": "",
                         "pointer": "#61afef",
                         "checkbox": "#98c379",
