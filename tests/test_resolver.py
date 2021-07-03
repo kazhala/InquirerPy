@@ -1,4 +1,3 @@
-from InquirerPy.utils import InquirerPyStyle
 import os
 import unittest
 from unittest.mock import ANY, call, patch
@@ -16,12 +15,15 @@ from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.resolver import prompt
+from InquirerPy.utils import InquirerPyStyle
 
 style = {
     "questionmark": "#e5c07b",
+    "answermark": "#e5c07b",
     "answer": "#61afef",
     "input": "#98c379",
     "question": "",
+    "answered_question": "",
     "instruction": "",
     "pointer": "#61afef",
     "checkbox": "#98c379",
@@ -172,9 +174,11 @@ class TestResolver(unittest.TestCase):
                     style=InquirerPyStyle(
                         {
                             "questionmark": "#e5c07b",
+                            "answermark": "#e5c07b",
                             "answer": "#61afef",
                             "input": "#98c379",
                             "question": "",
+                            "answered_question": "",
                             "instruction": "",
                             "pointer": "#61afef",
                             "checkbox": "#98c379",
@@ -197,9 +201,11 @@ class TestResolver(unittest.TestCase):
                     style=InquirerPyStyle(
                         {
                             "questionmark": "#e5c07b",
+                            "answermark": "#e5c07b",
                             "answer": "#61afef",
                             "input": "#98c379",
                             "question": "",
+                            "answered_question": "",
                             "instruction": "",
                             "pointer": "#61afef",
                             "checkbox": "#98c379",
@@ -238,9 +244,11 @@ class TestResolver(unittest.TestCase):
                     style=InquirerPyStyle(
                         dict={
                             "questionmark": "",
+                            "answermark": "",
                             "answer": "",
                             "input": "",
                             "question": "",
+                            "answered_question": "",
                             "instruction": "",
                             "pointer": "",
                             "checkbox": "",
@@ -386,8 +394,8 @@ class TestResolver(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:questionmark", "?"),
-                ("class:question", " Select one"),
+                ("class:answermark", "?"),
+                ("class:answered_question", " Select one"),
                 ("class:answer", " 11"),
             ],
         )
@@ -401,8 +409,8 @@ class TestResolver(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:questionmark", "?"),
-                ("class:question", " Select one"),
+                ("class:answermark", "?"),
+                ("class:answered_question", " Select one"),
                 ("class:answer", " 22"),
             ],
         )
@@ -416,8 +424,8 @@ class TestResolver(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:questionmark", "?"),
-                ("class:question", " Select one"),
+                ("class:answermark", "?"),
+                ("class:answered_question", " Select one"),
                 ("class:answer", " 22"),
             ],
         )
