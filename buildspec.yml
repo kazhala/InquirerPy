@@ -10,17 +10,13 @@ phases:
     runtime-versions:
       python: latest
     commands:
-      - echo Installing build tools ...
-      - pip install --upgrade setuptools wheel
-      - echo Installing upload tools ...
-      - pip install --upgrade twine
+      - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+      - poetry install
 
   build:
     commands:
-      - echo Building InquirerPy ...
-      - python setup.py sdist bdist_wheel
+      - poetry build
 
   post_build:
     commands:
-      - echo Uploading InquirerPy to PyPI ...
-      - twine upload --username $PYPI_USERNAME --password $PYPI_PASSWORD dist/*
+      - poetry publish --username $PYPI_USERNAME --password $PYPI_PASSWORD
