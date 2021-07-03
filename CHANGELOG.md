@@ -2,9 +2,13 @@
 
 Notable changes are documented in this file.
 
+## 0.2.2 (03/07/2021)
+
+N/A
+
 ## 0.2.1 (03/07/2021)
 
-## Added
+### Added
 
 - Added otpion to disable cycle behavior in list type prompts [#9](https://github.com/kazhala/InquirerPy/issues/9)
 - Added parameter `amark`. You can use this value to change the `qmark` after the question is answered.
