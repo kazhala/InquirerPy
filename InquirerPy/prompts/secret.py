@@ -13,24 +13,16 @@ __all__ = ["SecretPrompt"]
 class SecretPrompt(InputPrompt):
     """A wrapper class around PromptSession to create a secret prompt.
 
-    :param message: the message to display in the prompt
-    :type message: Union[str, Callable[[SessionResult], str]]
-    :param style: style to apply to the prompt
-    :type style: InquirerPyStyle
-    :param default: the default value
-    :type default: Union[str, Callable[[SessionResult], str]]
-    :param qmark: qmark to display infront of the question
-    :type qmark: str
-    :param vi_mode: use vi kb for the prompt
-    :type vi_mode: bool
-    :param validate: a callable to validate the user input
-    :type validate: Union[Validator, Callable[[str], bool]]
-    :param invalid_message: the error message to display when validator failed
-    :type invalid_message: str
-    :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[str], Any]
-    :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[str], Any]
+    :param message: The message to display in the prompt.
+    :param style: The style to apply to the prompt.
+    :param default: The default value.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: The custom symbol to display infront of the question after its answered.
+    :param vi_mode: Use vi kb for the prompt.
+    :param validate: A callable to validate the user input.
+    :param invalid_message: The error message to display when validator failed.
+    :param transformer: A callable to transform the result, this is visual effect only.
+    :param filter: A callable to filter the result, updating the user input before returning the result.
     """
 
     def __init__(
@@ -39,6 +31,7 @@ class SecretPrompt(InputPrompt):
         style: InquirerPyStyle = None,
         default: Union[str, Callable[[SessionResult], str]] = "",
         qmark: str = "?",
+        amark: str = "?",
         vi_mode: bool = False,
         validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
@@ -58,6 +51,7 @@ class SecretPrompt(InputPrompt):
             vi_mode=vi_mode,
             default=default,
             qmark=qmark,
+            amark=amark,
             validate=validate,
             invalid_message=invalid_message,
             is_password=True,
@@ -70,8 +64,7 @@ class SecretPrompt(InputPrompt):
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get formatted message to display in prompt.
 
-        :return: a list of formatted message
-        :rtype: List[Tuple[str, str]]
+        :return: A list of formatted message.
         """
         pre_answer = ("class:instruction", " ")
         if not self._transformer:
