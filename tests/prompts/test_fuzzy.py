@@ -1,6 +1,6 @@
 import asyncio
-from typing import Callable, NamedTuple
 import unittest
+from typing import Callable, NamedTuple
 from unittest.mock import patch
 
 from prompt_toolkit.application.application import Application
@@ -483,8 +483,8 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(
             self.prompt._get_prompt_message(),
             [
-                ("class:questionmark", "?"),
-                ("class:question", " Select one of them"),
+                ("class:answermark", "?"),
+                ("class:answered_question", " Select one of them"),
                 ("class:answer", " ['hello']"),
             ],
         )
@@ -680,8 +680,8 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:questionmark", "?"),
-                ("class:question", " "),
+                ("class:answermark", "?"),
+                ("class:answered_question", " "),
                 ("class:answer", " 3"),
             ],
         )
