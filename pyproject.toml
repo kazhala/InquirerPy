@@ -25,6 +25,9 @@ classifiers = [
   "Topic :: Software Development :: Libraries",
   "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]
+packages = [
+  {include = "InquirerPy"}
+]
 
 [tool.poetry.dependencies]
 python = "^3.7"
