@@ -1,18 +1,18 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 21.6b0
     hooks:
       - id: black
         files: InquirerPy
 
   - repo: https://github.com/PyCQA/pydocstyle
-    rev: 6.0.0
+    rev: 6.1.1
     hooks:
       - id: pydocstyle
         files: InquirerPy
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.8.0
+    rev: 5.9.1
     hooks:
       - id: isort
         args: ['--profile', 'black', '--filter-files']
