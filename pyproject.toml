@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "InquirerPy"
+version = "0.2.1"
+description = "Python port of Inquirer.js (A collection of common interactive command-line user interfaces)"
+authors = ["Kevin Zhuang <kevin7441@gmail.com>"]
+maintainers = ["Kevin Zhuang <kevin7441@gmail.com>"]
+readme = "README.md"
+repository = "https://github.com/kazhala/InquirerPy"
+documentation = "https://github.com/kazhala/InquirerPy/wiki"
+license = "MIT"
+keywords=["cli", "prompt-toolkit", "commandline", "inquirer", "development"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Unix",
+  "Operating System :: Microsoft",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: User Interfaces",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+prompt-toolkit = "^3.0.1"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.11.1"
+isort = "^5.9.1"
+black = "^21.6b0"
+pydocstyle = "^6.1.1"
+coveralls = "^3.1.0"
+
+[tool.isort]
+profile = "black"
+
+[tool.pydocstyle]
+match = "^(?!(.*fzy|.*(init|main))).*\\.py"
+convention = "pep257"
+add-ignore = "D107"
+match_dir = "^(?!(example)).*"
+
+[tool.coverage.run]
+source = ["InquirerPy"]
+omit = ["InquirerPy/prompts/fuzzy/fzy.py"]
+
+[tool.coverage.report]
+ignore_errors = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
