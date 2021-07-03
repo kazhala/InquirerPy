@@ -267,8 +267,8 @@ class TestListPrompt(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:questionmark", "?"),
-                ("class:question", " "),
+                ("class:answermark", "?"),
+                ("class:answered_question", " "),
                 ("class:answer", " 3"),
             ],
         )
