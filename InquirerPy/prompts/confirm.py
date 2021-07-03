@@ -17,18 +17,13 @@ class ConfirmPrompt(BaseSimplePrompt):
 
     This class is used for confirm prompt.
 
-    :param message: the question message to display
-    :type message: Union[str, Callable[[SessionResult], str]]
-    :param style: the style dictionary to apply
-    :type style: InquirerPyStyle
-    :param default: set default answer to true
-    :type default: Union[bool, Callable[[Dict[str, Any]], bool]]
-    :param qmark: the custom qmark to display infront of the question
-    :type qmark: str
-    :param transformer: a callable to transform the result, this is visual effect only
-    :type transformer: Callable[[bool], Any]
-    :param filter: a callable to filter the result, updating the user input before returning the result
-    :type filter: Callable[[bool], Any]
+    :param message: The question message to display.
+    :param style: The style dictionary to apply.
+    :param default: Set default answer value.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: THe custom symbol to display infront of the question after its answered.
+    :param transformer: A callable to transform the result, this is visual effect only.
+    :param filter: A callable to filter the result, updating the user input before returning the result.
     """
 
     def __init__(
@@ -37,17 +32,18 @@ class ConfirmPrompt(BaseSimplePrompt):
         style: InquirerPyStyle = None,
         default: Union[bool, Callable[[Dict[str, Any]], bool]] = False,
         qmark: str = "?",
+        amark: str = "?",
         transformer: Callable[[bool], Any] = None,
         filter: Callable[[bool], Any] = None,
         session_result: SessionResult = None,
         **kwargs
     ) -> None:
-        """Construct a PromptSession object and apply keybindings."""
         super().__init__(
             message=message,
             style=style,
             vi_mode=False,
             qmark=qmark,
+            amark=amark,
             transformer=transformer,
             filter=filter,
             session_result=session_result,
@@ -102,8 +98,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         After user select an answer, remove (Y/n) or (y/N) and inject
         the pretty answer.
 
-        :return: a list of formatted message to use for PromptSession
-        :rtype: List[Tuple[str, str]]
+        :return: A list of formatted message to be consumed by PromptSession.
         """
         pre_answer = (
             "class:instruction",
@@ -115,8 +110,7 @@ class ConfirmPrompt(BaseSimplePrompt):
     def execute(self, raise_keyboard_interrupt: bool = True) -> Optional[bool]:
         """Display a confirm prompt and get user input for confirmation.
 
-        :return: user selected answer, either True or False
-        :rtype: bool
+        :return: The user selected answer, either True or False.
         """
         result = self._session.prompt()
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
