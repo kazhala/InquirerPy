@@ -239,7 +239,8 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param pointer: Pointer symbol.
     :param style: Style dict to apply.
     :param vi_mode: Use vi kb for the prompt.
-    :param qmark: Question mark symbol.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: The custom symbol to display infront of the question after its answered.
     :param transformer: Transform the result to output, this is only visual effect.
     :param filter: A callable to filter the result, updating the user input before returning the result.
     :param instruction: Instruction to display after the message.
@@ -266,6 +267,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
+        amark: str = "?",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         instruction: str = "",
@@ -302,6 +304,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             style=style,
             vi_mode=vi_mode,
             qmark=qmark,
+            amark=amark,
             transformer=transformer,
             filter=filter,
             validate=validate,
