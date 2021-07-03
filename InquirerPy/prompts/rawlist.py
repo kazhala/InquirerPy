@@ -29,7 +29,6 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         multiselect: bool,
         marker_pl: str = " ",
     ) -> None:
-        """Construct the content control object and add the index to each choice for visual purposes."""
         self._pointer = pointer
         self._separator = separator
         self._marker = marker
@@ -115,7 +114,8 @@ class RawlistPrompt(BaseListPrompt):
             2) whatever
     :param style: Style for the prompt.
     :param vi_mode: Use vi kb for the prompt.
-    :param qmark: Question qmark to display.
+    :param qmark: The custom symbol to display infront of the question before its answered.
+    :param amark: The custom symbol to display infront of the question after its answered.
     :param pointer: Pointer qmark to display.
     :param instruction: Instruction to display at the end of the prompt.
     :param transformer: A callable to transform the result, this is visual effect only.
@@ -141,6 +141,7 @@ class RawlistPrompt(BaseListPrompt):
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
+        amark: str = "?",
         pointer: str = " ",
         instruction: str = "",
         transformer: Callable[[Any], Any] = None,
@@ -174,6 +175,7 @@ class RawlistPrompt(BaseListPrompt):
             style=style,
             vi_mode=vi_mode,
             qmark=qmark,
+            amark=amark,
             instruction=instruction,
             transformer=transformer,
             filter=filter,
