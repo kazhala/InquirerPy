@@ -180,8 +180,8 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(
             prompt._get_prompt_message(),
             [
-                ("class:questionmark", "?"),
-                ("class:question", " Choose one"),
+                ("class:answermark", "?"),
+                ("class:answered_question", " Choose one"),
                 ("class:answer", " foo"),
             ],
         )
