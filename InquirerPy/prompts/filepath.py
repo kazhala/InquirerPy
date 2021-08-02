@@ -93,6 +93,7 @@ class FilePathPrompt(InputPrompt):
     :param only_files: Only complete files.
     :param transformer: A callable to transform the result, this is visual effect only.
     :param filter: A callable to filter the result, updating the user input before returning the result.
+    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
     """
 
     def __init__(
@@ -110,6 +111,7 @@ class FilePathPrompt(InputPrompt):
         only_files: bool = False,
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
+        wrap_lines: bool = True,
         session_result: SessionResult = None,
         **kwargs,
     ) -> None:
@@ -134,6 +136,7 @@ class FilePathPrompt(InputPrompt):
             invalid_message=invalid_message,
             transformer=transformer,
             filter=filter,
+            wrap_lines=wrap_lines,
             session_result=session_result,
             **kwargs,
         )

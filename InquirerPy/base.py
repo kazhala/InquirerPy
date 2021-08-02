@@ -62,6 +62,8 @@ class BaseSimplePrompt(ABC):
     :param filter: A callable to filter the result, updating the user input before returning the result.
     :param session_result: The current session result, this is used by callable message and choices
         to generate dynamic values. If using alternate syntax, skip this value.
+    :param default: Default value for the prompt.
+    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
     """
 
     def __init__(
@@ -77,6 +79,7 @@ class BaseSimplePrompt(ABC):
         filter: Callable[[Any], Any] = None,
         session_result: SessionResult = None,
         default: Any = "",
+        wrap_lines: bool = True,
     ) -> None:
         """Construct the base class for simple prompts."""
         self._result = session_result or {}
@@ -92,6 +95,7 @@ class BaseSimplePrompt(ABC):
         self._lexer = "class:input"
         self._transformer = transformer
         self._filter = filter
+        self._wrap_lines = wrap_lines
         self._editing_mode = (
             EditingMode.VI
             if vi_mode or bool(os.getenv("INQUIRERPY_VI_MODE", False))

@@ -36,6 +36,7 @@ class InputPrompt(BaseSimplePrompt):
     :param invalid_message: The error message to display when input is invalid.
     :param transformer: A callable to transform the result, this is visual effect only.
     :param filter: A callable to filter the result, updating the user input before returning the result.
+    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
     """
 
     def __init__(
@@ -53,6 +54,7 @@ class InputPrompt(BaseSimplePrompt):
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
+        wrap_lines: bool = True,
         session_result: SessionResult = None,
         **kwargs,
     ) -> None:
@@ -68,6 +70,7 @@ class InputPrompt(BaseSimplePrompt):
             filter=filter,
             session_result=session_result,
             default=default,
+            wrap_lines=wrap_lines,
         )
         if not isinstance(self._default, str):
             raise InvalidArgument(
@@ -139,6 +142,7 @@ class InputPrompt(BaseSimplePrompt):
             is_password=kwargs.pop("is_password", False),
             multiline=self._multiline,
             complete_style=self._complete_style,
+            wrap_lines=wrap_lines,
         )
 
     def _get_prompt_message(

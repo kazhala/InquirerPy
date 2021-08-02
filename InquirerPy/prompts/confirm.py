@@ -24,6 +24,7 @@ class ConfirmPrompt(BaseSimplePrompt):
     :param amark: THe custom symbol to display infront of the question after its answered.
     :param transformer: A callable to transform the result, this is visual effect only.
     :param filter: A callable to filter the result, updating the user input before returning the result.
+    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
     """
 
     def __init__(
@@ -35,6 +36,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         amark: str = "?",
         transformer: Callable[[bool], Any] = None,
         filter: Callable[[bool], Any] = None,
+        wrap_lines: bool = True,
         session_result: SessionResult = None,
         **kwargs
     ) -> None:
@@ -46,8 +48,9 @@ class ConfirmPrompt(BaseSimplePrompt):
             amark=amark,
             transformer=transformer,
             filter=filter,
-            session_result=session_result,
             default=default,
+            wrap_lines=wrap_lines,
+            session_result=session_result,
         )
         if not isinstance(self._default, bool):
             raise InvalidArgument(
@@ -88,6 +91,7 @@ class ConfirmPrompt(BaseSimplePrompt):
             message=self._get_prompt_message,
             key_bindings=self._kb,
             style=self._style,
+            wrap_lines=self._wrap_lines,
             input=kwargs.pop("input", None),
             output=kwargs.pop("output", None),
         )

@@ -23,6 +23,7 @@ class SecretPrompt(InputPrompt):
     :param invalid_message: The error message to display when validator failed.
     :param transformer: A callable to transform the result, this is visual effect only.
     :param filter: A callable to filter the result, updating the user input before returning the result.
+    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
     """
 
     def __init__(
@@ -37,6 +38,7 @@ class SecretPrompt(InputPrompt):
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
+        wrap_lines: bool = True,
         session_result: SessionResult = None,
         **kwargs
     ) -> None:
@@ -57,6 +59,7 @@ class SecretPrompt(InputPrompt):
             is_password=True,
             transformer=transformer,
             filter=filter,
+            wrap_lines=wrap_lines,
             session_result=session_result,
             **kwargs
         )
