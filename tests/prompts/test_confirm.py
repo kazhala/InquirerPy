@@ -178,6 +178,7 @@ class TestConfirmPrompt(unittest.TestCase):
             message=mocked_message,
             key_bindings=kb,
             style=style,
+            wrap_lines=True,
             input=None,
             output=None,
         )

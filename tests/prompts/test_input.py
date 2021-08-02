@@ -204,6 +204,7 @@ class TestInputPrompt(unittest.TestCase):
             is_password=False,
             multiline=True,
             complete_style=CompleteStyle.COLUMN,
+            wrap_lines=True,
         )
         mocked_validator.assert_has_calls(
             [call(ANY, "Invalid input", move_cursor_to_end=True)]

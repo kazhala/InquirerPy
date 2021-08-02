@@ -253,6 +253,7 @@ class TestFilePath(unittest.TestCase):
             is_password=False,
             multiline=False,
             complete_style=CompleteStyle.MULTI_COLUMN,
+            wrap_lines=True,
         )
 
         MockedStyle.assert_has_calls([call({"yes": ""})])

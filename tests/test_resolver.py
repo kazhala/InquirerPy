@@ -512,4 +512,4 @@ class TestResolver(unittest.TestCase):
     @patch.object(InputPrompt, "execute")
     def test_single_dict_question(self, mocked_execute):
         mocked_execute.return_value = None
-        result = prompt({"type": "input", "message": "Name:"})
+        prompt({"type": "input", "message": "Name:"})
