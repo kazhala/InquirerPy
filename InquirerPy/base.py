@@ -21,7 +21,7 @@ from prompt_toolkit.key_binding.key_bindings import KeyBindings, KeyHandlerCalla
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
-from prompt_toolkit.layout.dimension import Dimension
+from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import ValidationError, Validator
@@ -77,9 +77,9 @@ class BaseSimplePrompt(ABC):
         invalid_message: str = "Invalid input",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
-        session_result: SessionResult = None,
         default: Any = "",
         wrap_lines: bool = True,
+        session_result: SessionResult = None,
     ) -> None:
         """Construct the base class for simple prompts."""
         self._result = session_result or {}
@@ -445,6 +445,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
         cycle: bool = True,
+        wrap_lines: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
@@ -460,6 +461,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             filter=filter,
             invalid_message=invalid_message,
             validate=validate,
+            wrap_lines=wrap_lines,
             session_result=session_result,
         )
         self._content_control: InquirerPyUIControl
@@ -766,6 +768,7 @@ class BaseListPrompt(BaseComplexPrompt):
     :param keybindings: Custom keybindings to apply.
     :param cycle: Return to top item if hit bottom or vice versa.
     :param show_cursor: Display cursor at the end of the prompt.
+    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
     """
 
     def __init__(
@@ -786,6 +789,7 @@ class BaseListPrompt(BaseComplexPrompt):
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
         show_cursor: bool = True,
         cycle: bool = True,
+        wrap_lines: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
@@ -803,6 +807,7 @@ class BaseListPrompt(BaseComplexPrompt):
             instruction=instruction,
             keybindings=keybindings,
             cycle=cycle,
+            wrap_lines=wrap_lines,
             session_result=session_result,
         )
         self._dimmension_height, self._dimmension_max_height = calculate_height(
@@ -812,14 +817,14 @@ class BaseListPrompt(BaseComplexPrompt):
         self.layout = HSplit(
             [
                 Window(
-                    # height=LayoutDimension.exact(1),
+                    height=LayoutDimension.exact(1) if not self._wrap_lines else None,
                     content=FormattedTextControl(
                         self._get_prompt_message_with_cursor
                         if show_cursor
                         else self._get_prompt_message,
                         show_cursor=show_cursor,
                     ),
-                    wrap_lines=True,
+                    wrap_lines=self._wrap_lines,
                 ),
                 ConditionalContainer(
                     Window(

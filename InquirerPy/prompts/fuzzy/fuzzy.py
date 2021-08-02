@@ -256,6 +256,7 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param invalid_message: Message to display when input is invalid.
     :param keybindings: Custom keybindings to apply.
     :param cycle: Return to top item if hit bottom or vice versa.
+    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
     """
 
     def __init__(
@@ -283,6 +284,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
         cycle: bool = True,
+        wrap_lines: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         if not keybindings:
@@ -313,6 +315,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             instruction=instruction,
             keybindings=keybindings,
             cycle=cycle,
+            wrap_lines=wrap_lines,
             session_result=session_result,
         )
         self._default = default if not isinstance(default, Callable) else default(self._result)  # type: ignore
@@ -335,8 +338,9 @@ class FuzzyPrompt(BaseComplexPrompt):
 
         self._buffer = Buffer(on_text_changed=self._on_text_changed)
         message_window = Window(
-            height=LayoutDimension.exact(1),
+            height=LayoutDimension.exact(1) if not self._wrap_lines else None,
             content=FormattedTextControl(self._get_prompt_message, show_cursor=False),
+            wrap_lines=self._wrap_lines,
         )
         input_window = Window(
             height=LayoutDimension.exact(1),

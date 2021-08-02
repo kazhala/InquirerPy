@@ -130,6 +130,7 @@ class RawlistPrompt(BaseListPrompt):
     :param keybindings: Custom keybindings to apply.
     :param show_cursor: Display cursor at the end of the prompt.
     :param cycle: Return to top item if hit bottom or vice versa.
+    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
     """
 
     def __init__(
@@ -156,6 +157,7 @@ class RawlistPrompt(BaseListPrompt):
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
         show_cursor: bool = True,
         cycle: bool = True,
+        wrap_lines: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
@@ -187,6 +189,7 @@ class RawlistPrompt(BaseListPrompt):
             keybindings=keybindings,
             show_cursor=show_cursor,
             cycle=cycle,
+            wrap_lines=wrap_lines,
             session_result=session_result,
         )
 
