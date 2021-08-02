@@ -2,6 +2,16 @@
 
 Notable changes are documented in this file.
 
+## Dev
+
+### Added
+
+- Added option `wrap_lines` to all prompts to configure line wrapping
+
+### Fixed
+
+- Line wrapping [#11](https://github.com/kazhala/InquirerPy/issues/11)
+
 ## 0.2.2 (03/07/2021)
 
 N/A
@@ -10,7 +20,7 @@ N/A
 
 ### Added
 
-- Added otpion to disable cycle behavior in list type prompts [#9](https://github.com/kazhala/InquirerPy/issues/9)
+- Added option to disable cycle behavior in list type prompts [#9](https://github.com/kazhala/InquirerPy/issues/9)
 - Added parameter `amark`. You can use this value to change the `qmark` after the question is answered.
 - Added some more style customization option.
   - `answermark`: Used to change the color and style of `amark`.
