@@ -22,7 +22,9 @@ class TestFuzzy(unittest.TestCase):
         multiselect=False,
     )
 
-    def setUp(self):
+    @patch("InquirerPy.utils.shutil.get_terminal_size")
+    def setUp(self, mocked_term):
+        mocked_term.return_value = (24, 80)
         self.prompt = FuzzyPrompt(
             message="Select one of them",
             choices=[
