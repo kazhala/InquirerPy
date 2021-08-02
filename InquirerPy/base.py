@@ -21,7 +21,7 @@ from prompt_toolkit.key_binding.key_bindings import KeyBindings, KeyHandlerCalla
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
 from prompt_toolkit.layout.controls import FormattedTextControl
-from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
+from prompt_toolkit.layout.dimension import Dimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import ValidationError, Validator
@@ -39,7 +39,6 @@ __all__ = [
 ]
 
 # TODO: pydantic experiment
-# TODO: poetry
 # TODO: documentation
 
 
@@ -809,13 +808,14 @@ class BaseListPrompt(BaseComplexPrompt):
         self.layout = HSplit(
             [
                 Window(
-                    height=LayoutDimension.exact(1),
+                    # height=LayoutDimension.exact(1),
                     content=FormattedTextControl(
                         self._get_prompt_message_with_cursor
                         if show_cursor
                         else self._get_prompt_message,
                         show_cursor=show_cursor,
                     ),
+                    wrap_lines=True,
                 ),
                 ConditionalContainer(
                     Window(
