@@ -22,6 +22,7 @@ class ConfirmPrompt(BaseSimplePrompt):
     :param default: Set default answer value.
     :param qmark: The custom symbol to display infront of the question before its answered.
     :param amark: THe custom symbol to display infront of the question after its answered.
+    :param instruction: Instruction to display after the question message.
     :param transformer: A callable to transform the result, this is visual effect only.
     :param filter: A callable to filter the result, updating the user input before returning the result.
     :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
@@ -34,6 +35,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         default: Union[bool, Callable[[Dict[str, Any]], bool]] = False,
         qmark: str = "?",
         amark: str = "?",
+        instruction: str = "",
         transformer: Callable[[bool], Any] = None,
         filter: Callable[[bool], Any] = None,
         wrap_lines: bool = True,
@@ -46,6 +48,7 @@ class ConfirmPrompt(BaseSimplePrompt):
             vi_mode=False,
             qmark=qmark,
             amark=amark,
+            instruction=instruction,
             transformer=transformer,
             filter=filter,
             default=default,
@@ -104,10 +107,13 @@ class ConfirmPrompt(BaseSimplePrompt):
 
         :return: A list of formatted message to be consumed by PromptSession.
         """
-        pre_answer = (
-            "class:instruction",
-            "%s" % " (Y/n)" if self._default else " (y/N)",
-        )
+        if not self.instruction:
+            pre_answer = (
+                "class:instruction",
+                " (Y/n)" if self._default else " (y/N)",
+            )
+        else:
+            pre_answer = ("class:instruction", " %s" % self.instruction)
         post_answer = ("class:answer", " Yes" if self.status["result"] else " No")
         return super()._get_prompt_message(pre_answer, post_answer)
 

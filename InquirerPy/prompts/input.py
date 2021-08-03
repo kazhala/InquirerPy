@@ -29,6 +29,7 @@ class InputPrompt(BaseSimplePrompt):
     :param default: The default result.
     :param qmark: The custom symbol to display infront of the question before its answered.
     :param amark: The custom symbol to display infront of the question after its answered.
+    :param instruction: Instruction to display after the question message.
     :param completer: Add auto completer to user input.
     :param multicolumn_complete: Complete in multi column.
     :param multiline: Enable multiline mode.
@@ -47,6 +48,7 @@ class InputPrompt(BaseSimplePrompt):
         default: Union[str, Callable[[SessionResult], str]] = "",
         qmark: str = "?",
         amark: str = "?",
+        instruction: str = "",
         completer: Union[Dict[str, Optional[str]], Completer] = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
@@ -64,6 +66,7 @@ class InputPrompt(BaseSimplePrompt):
             vi_mode=vi_mode,
             qmark=qmark,
             amark=amark,
+            instruction=instruction,
             validate=validate,
             invalid_message=invalid_message,
             transformer=transformer,
@@ -159,10 +162,13 @@ class InputPrompt(BaseSimplePrompt):
         :return: The formatted text for PromptSession.
         """
         if not pre_answer:
-            if self._multiline:
+            if self._multiline and not self._instruction:
                 pre_answer = ("class:instruction", " ESC + Enter to finish input")
             else:
-                pre_answer = ("class:instruction", " ")
+                pre_answer = (
+                    "class:instruction",
+                    " %s " % self.instruction if self.instruction else " ",
+                )
         if not post_answer:
             if self._multiline and self.status["result"]:
                 lines = self.status["result"].split("\n")

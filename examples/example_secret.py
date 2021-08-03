@@ -1,4 +1,4 @@
-from InquirerPy import prompt, inquirer
+from InquirerPy import inquirer, prompt
 from InquirerPy.validator import PasswordValidator
 
 original_password = "InquirerPy45@"
@@ -33,6 +33,7 @@ def alternate():
         transformer=lambda _: "[hidden]",
         validate=lambda text: text == original_password,
         invalid_message="Wrong password",
+        instruction="(abc)",
     ).execute()
     new_password = inquirer.secret(
         message="New password:",

@@ -86,6 +86,7 @@ class FilePathPrompt(InputPrompt):
     :param default: The default result.
     :param qmark: The custom symbol to display infront of the question before its answered.
     :param amark: The custom symbol to display infront of the question after its answered.
+    :param instruction: Instruction to display after the question message.
     :param multicolumn_complete: Complete in multi column.
     :param validate: A callable or a validation class to validate user input.
     :param invalid_message: The error message to display when input is invalid.
@@ -104,6 +105,7 @@ class FilePathPrompt(InputPrompt):
         default: Union[str, Callable[[SessionResult], str]] = "",
         qmark: str = "?",
         amark: str = "?",
+        instruction: str = "",
         multicolumn_complete: bool = False,
         validate: Union[Callable[[str], bool], Validator] = None,
         invalid_message: str = "Invalid input",
@@ -126,6 +128,7 @@ class FilePathPrompt(InputPrompt):
             default=default,
             qmark=qmark,
             amark=amark,
+            instruction=instruction,
             completer=ThreadedCompleter(
                 FilePathCompleter(
                     only_directories=only_directories, only_files=only_files

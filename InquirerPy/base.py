@@ -55,7 +55,8 @@ class BaseSimplePrompt(ABC):
     :param style: The style dictionary to apply.
     :param vi_mode: Use vi kb for the prompt.
     :param qmark: The custom symbol to display infront of the question before its answered.
-    :param amark: THe custom symbol to display infront of the question after its answered.
+    :param amark: The custom symbol to display infront of the question after its answered.
+    :param instruction: Instruction to display after the question message.
     :param validate: A callable or Validator instance to validate user input.
     :param invalid_message: The message to display when input is invalid.
     :param transformer: A callable to transform the result, this is visual effect only.
@@ -73,6 +74,7 @@ class BaseSimplePrompt(ABC):
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
+        instruction: str = "",
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[Any], Any] = None,
@@ -84,6 +86,7 @@ class BaseSimplePrompt(ABC):
         """Construct the base class for simple prompts."""
         self._result = session_result or {}
         self._message = message if not isinstance(message, Callable) else message(self._result)  # type: ignore
+        self._instruction = instruction
         self._default = (
             default if not isinstance(default, Callable) else default(self._result)
         )
@@ -221,6 +224,14 @@ class BaseSimplePrompt(ABC):
         This is being called in the resolver.
         """
         pass
+
+    @property
+    def instruction(self) -> str:
+        """Instruction to display next to question.
+
+        :return: Instruction text
+        """
+        return self._instruction
 
 
 class InquirerPyUIControl(FormattedTextControl):
@@ -457,6 +468,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             vi_mode=vi_mode,
             qmark=qmark,
             amark=amark,
+            instruction=instruction,
             transformer=transformer,
             filter=filter,
             invalid_message=invalid_message,
@@ -465,7 +477,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
             session_result=session_result,
         )
         self._content_control: InquirerPyUIControl
-        self._instruction = instruction
         self._invalid_message = invalid_message
         self._multiselect = multiselect
         self._rendered = False
@@ -612,14 +623,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         if not self._filter:
             return result
         return self._filter(result)
-
-    @property
-    def instruction(self) -> str:
-        """Instruction to display next to question.
-
-        :return: Instruction text
-        """
-        return self._instruction
 
     @property
     def content_control(self) -> InquirerPyUIControl:

@@ -18,6 +18,7 @@ class SecretPrompt(InputPrompt):
     :param default: The default value.
     :param qmark: The custom symbol to display infront of the question before its answered.
     :param amark: The custom symbol to display infront of the question after its answered.
+    :param instruction: Instruction to display after the question message.
     :param vi_mode: Use vi kb for the prompt.
     :param validate: A callable to validate the user input.
     :param invalid_message: The error message to display when validator failed.
@@ -33,6 +34,7 @@ class SecretPrompt(InputPrompt):
         default: Union[str, Callable[[SessionResult], str]] = "",
         qmark: str = "?",
         amark: str = "?",
+        instruction: str = "",
         vi_mode: bool = False,
         validate: Union[Validator, Callable[[str], bool]] = None,
         invalid_message: str = "Invalid input",
@@ -54,6 +56,7 @@ class SecretPrompt(InputPrompt):
             default=default,
             qmark=qmark,
             amark=amark,
+            instruction=instruction,
             validate=validate,
             invalid_message=invalid_message,
             is_password=True,
@@ -69,14 +72,14 @@ class SecretPrompt(InputPrompt):
 
         :return: A list of formatted message.
         """
-        pre_answer = ("class:instruction", " ")
-        if not self._transformer:
-            post_answer = (
-                "class:answer",
-                ""
-                if not self.status["result"]
-                else " %s" % "".join(["*" for _ in self.status["result"]]),
-            )
-        else:
-            post_answer = ("class:answer", " %s" % self.status["result"])
+        pre_answer = (
+            "class:instruction",
+            " %s " % self.instruction if self.instruction else " ",
+        )
+        post_answer = (
+            "class:answer",
+            ""
+            if not self.status["result"]
+            else " %s" % "".join(["*" for _ in self.status["result"]]),
+        )
         return super()._get_prompt_message(pre_answer, post_answer)
