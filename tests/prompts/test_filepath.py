@@ -211,8 +211,8 @@ class TestFilePath(unittest.TestCase):
     @patch("InquirerPy.prompts.input.SimpleLexer")
     @patch("InquirerPy.prompts.filepath.Validator.from_callable")
     @patch("InquirerPy.prompts.filepath.FilePathPrompt._get_prompt_message")
-    @patch("InquirerPy.base.Style.from_dict")
-    @patch("InquirerPy.base.KeyBindings")
+    @patch("InquirerPy.base.simple.Style.from_dict")
+    @patch("InquirerPy.base.simple.KeyBindings")
     @patch("InquirerPy.prompts.input.PromptSession")
     def test_callable_called(
         self,
