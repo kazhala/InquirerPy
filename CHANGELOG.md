@@ -7,6 +7,7 @@ Notable changes are documented in this file.
 ### Added
 
 - Added option `wrap_lines` to all prompts to configure line wrapping
+- Added option `instruction` for non-list type prompts. This is already supported in all list type prompts previously.
 
 ### Fixed
 
