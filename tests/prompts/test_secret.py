@@ -80,6 +80,24 @@ class TestSecret(unittest.TestCase):
             ],
         )
 
+        # instruction
+        secret_prompt = SecretPrompt(
+            message="fooboo",
+            style=InquirerPyStyle({}),
+            qmark="[?]",
+            vi_mode=True,
+            instruction="(abc)",
+        )
+        message = secret_prompt._get_prompt_message()
+        self.assertEqual(
+            message,
+            [
+                ("class:questionmark", "[?]"),
+                ("class:question", " fooboo"),
+                ("class:instruction", " (abc) "),
+            ],
+        )
+
     @patch("InquirerPy.prompts.input.SimpleLexer")
     @patch("InquirerPy.prompts.secret.SecretPrompt._get_prompt_message")
     @patch("InquirerPy.base.Style.from_dict")

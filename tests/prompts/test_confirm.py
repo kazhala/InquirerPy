@@ -114,7 +114,7 @@ class TestConfirmPrompt(unittest.TestCase):
             [
                 ("class:questionmark", "?"),
                 ("class:question", " hello"),
-                ("class:instruction", " (Y/n)"),
+                ("class:instruction", " (Y/n) "),
             ],
         )
 
@@ -143,7 +143,7 @@ class TestConfirmPrompt(unittest.TestCase):
             [
                 ("class:questionmark", "x"),
                 ("class:question", " Are you sure?"),
-                ("class:instruction", " (y/N)"),
+                ("class:instruction", " (y/N) "),
             ],
         )
 
@@ -156,6 +156,25 @@ class TestConfirmPrompt(unittest.TestCase):
                 ("class:answermark", "x"),
                 ("class:answered_question", " Are you sure?"),
                 ("class:answer", " No"),
+            ],
+        )
+
+        # instruction
+        confirm_prompt = ConfirmPrompt(
+            message="Are you sure?",
+            style=None,
+            default=False,
+            qmark="x",
+            amark="x",
+            instruction="(abc)",
+        )
+        message = confirm_prompt._get_prompt_message()
+        self.assertEqual(
+            message,
+            [
+                ("class:questionmark", "x"),
+                ("class:question", " Are you sure?"),
+                ("class:instruction", " (abc) "),
             ],
         )
 

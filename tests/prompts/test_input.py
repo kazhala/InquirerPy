@@ -159,6 +159,25 @@ class TestInputPrompt(unittest.TestCase):
             ],
         )
 
+        # instruction test
+        input_prompt = InputPrompt(
+            message="Enter your name:",
+            style=None,
+            default="",
+            qmark="[?]",
+            vi_mode=False,
+            instruction="(abc)",
+        )
+        message = input_prompt._get_prompt_message()
+        self.assertEqual(
+            message,
+            [
+                ("class:questionmark", "[?]"),
+                ("class:question", " Enter your name:"),
+                ("class:instruction", " (abc) "),
+            ],
+        )
+
     @patch("InquirerPy.prompts.input.Validator.from_callable")
     @patch("InquirerPy.prompts.input.NestedCompleter.from_nested_dict")
     @patch("InquirerPy.prompts.input.SimpleLexer")
