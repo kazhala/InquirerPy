@@ -110,10 +110,10 @@ class ConfirmPrompt(BaseSimplePrompt):
         if not self.instruction:
             pre_answer = (
                 "class:instruction",
-                " (Y/n)" if self._default else " (y/N)",
+                " (Y/n) " if self._default else " (y/N) ",
             )
         else:
-            pre_answer = ("class:instruction", " %s" % self.instruction)
+            pre_answer = ("class:instruction", " %s " % self.instruction)
         post_answer = ("class:answer", " Yes" if self.status["result"] else " No")
         return super()._get_prompt_message(pre_answer, post_answer)
 
