@@ -189,20 +189,5 @@ class InputPrompt(BaseSimplePrompt):
             )
         return formatted_message
 
-    def execute(self, raise_keyboard_interrupt: bool = True) -> Optional[str]:
-        """Display the prompt and return the result.
-
-        :param raise_keyboard_interrupt: Raise kbi exception when user hit 'c-c'.
-        :return: The user entered value.
-        """
-        result = self._session.prompt(default=self._default)
-        if result == INQUIRERPY_KEYBOARD_INTERRUPT:
-            if raise_keyboard_interrupt and not os.getenv(
-                "INQUIRERPY_NO_RAISE_KBI", False
-            ):
-                raise KeyboardInterrupt
-            else:
-                result = None
-        if not self._filter:
-            return result
-        return self._filter(result)
+    def _run(self) -> str:
+        return self._session.prompt(default=self._default)

@@ -117,17 +117,5 @@ class ConfirmPrompt(BaseSimplePrompt):
         post_answer = ("class:answer", " Yes" if self.status["result"] else " No")
         return super()._get_prompt_message(pre_answer, post_answer)
 
-    def execute(self, raise_keyboard_interrupt: bool = True) -> Optional[bool]:
-        """Display a confirm prompt and get user input for confirmation.
-
-        :return: The user selected answer, either True or False.
-        """
-        result = self._session.prompt()
-        if result == INQUIRERPY_KEYBOARD_INTERRUPT:
-            if raise_keyboard_interrupt:
-                raise KeyboardInterrupt
-            else:
-                result = None
-        if not self._filter:
-            return result
-        return self._filter(result)
+    def _run(self) -> bool:
+        return self._session.prompt()

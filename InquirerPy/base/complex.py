@@ -1,5 +1,4 @@
 """Contains the interface class for list type prompts and the mocked document class `FakeDocument`."""
-import os
 import shutil
 from abc import abstractmethod
 from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union
@@ -13,7 +12,6 @@ from prompt_toolkit.validation import Validator
 
 from InquirerPy.base.control import InquirerPyUIControl
 from InquirerPy.base.simple import BaseSimplePrompt
-from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
@@ -207,23 +205,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
         post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
 
-    def execute(self, raise_keyboard_interrupt: bool = True) -> Any:
-        """Execute the application and get the result.
-
-        :param raise_keyboard_interrupt: Raise kbi exception when user hit 'c-c'
-        :return: User selected value.
-        """
-        result = self.application.run()
-        if result == INQUIRERPY_KEYBOARD_INTERRUPT:
-            if raise_keyboard_interrupt and not os.getenv(
-                "INQUIRERPY_NO_RAISE_KBI", False
-            ):
-                raise KeyboardInterrupt
-            else:
-                result = None
-        if not self._filter:
-            return result
-        return self._filter(result)
+    def _run(self) -> Any:
+        return self.application.run()
 
     @property
     def content_control(self) -> InquirerPyUIControl:

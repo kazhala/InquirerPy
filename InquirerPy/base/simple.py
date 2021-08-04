@@ -190,13 +190,30 @@ class BaseSimplePrompt(ABC):
         return display_message
 
     @abstractmethod
-    def execute(self) -> Any:
-        """Abstractmethod to enforce a execute function is implemented for eaiser management.
+    def _run(self) -> Any:
+        """Abstractmethod to enforce a run function is implemented for eaiser management.
 
-        All prompt instance require a execute call to initialised the `PromptSession` or `Application`.
-        This is being called in the resolver.
+        All prompt instance require a run call to initialised the `PromptSession` or `Application`.
         """
         pass
+
+    def execute(self, raise_keyboard_interrupt: bool = True) -> Any:
+        """Run the prompt and get the result.
+
+        :param raise_keyboard_interrupt: Raise kbi exception when user hit 'c-c'.
+        :return: User entered/selected value.
+        """
+        result = self._run()
+        if result == INQUIRERPY_KEYBOARD_INTERRUPT:
+            if raise_keyboard_interrupt and not os.getenv(
+                "INQUIRERPY_NO_RAISE_KBI", False
+            ):
+                raise KeyboardInterrupt
+            else:
+                result = None
+        if not self._filter:
+            return result
+        return self._filter(result)
 
     @property
     def instruction(self) -> str:
