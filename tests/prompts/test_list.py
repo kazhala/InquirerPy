@@ -6,7 +6,7 @@ from prompt_toolkit.key_binding.key_bindings import KeyBindings
 from prompt_toolkit.layout.containers import ConditionalContainer, Window
 from prompt_toolkit.styles.style import Style
 
-from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
+from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT, INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.list import InquirerPyListControl, ListPrompt
 from InquirerPy.separator import Separator
@@ -320,3 +320,23 @@ class TestListPrompt(unittest.TestCase):
         prompt._handle_down()
         prompt._handle_down()
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
+
+    @patch("InquirerPy.base.complex.Application.run")
+    def test_prompt_execute(self, mocked_run):
+        mocked_run.return_value = "hello"
+        result = ListPrompt("hello world", ["yes", "no"]).execute()
+        self.assertEqual(result, "hello")
+
+        result = ListPrompt(
+            "hello world", ["yes", "no"], filter=lambda _: "no"
+        ).execute()
+        self.assertEqual(result, "no")
+
+        mocked_run.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
+        prompt = ListPrompt("hello world", ["yes", "no"], filter=lambda _: "no")
+        self.assertRaises(KeyboardInterrupt, prompt.execute)
+
+        mocked_run.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
+        prompt = ListPrompt("hello world", ["yes", "no"])
+        result = prompt.execute(raise_keyboard_interrupt=False)
+        self.assertEqual(result, None)
