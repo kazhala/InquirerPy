@@ -1,4 +1,5 @@
 """Contains the base class for all list type prompts."""
+import shutil
 from typing import Any, Callable, Dict, List, Tuple, Union
 
 from prompt_toolkit.application import Application
@@ -81,12 +82,11 @@ class BaseListPrompt(BaseComplexPrompt):
             wrap_lines=wrap_lines,
             session_result=session_result,
         )
+        self._show_cursor = show_cursor
         self._dimmension_height, self._dimmension_max_height = calculate_height(
             height,
             max_height,
-            wrap_lines_offset=self.wrap_lines_offset
-            if not show_cursor
-            else self.wrap_lines_offset + 1,
+            wrap_lines_offset=self.wrap_lines_offset,
         )
 
         self.layout = HSplit(
@@ -95,9 +95,9 @@ class BaseListPrompt(BaseComplexPrompt):
                     height=LayoutDimension.exact(1) if not self._wrap_lines else None,
                     content=FormattedTextControl(
                         self._get_prompt_message_with_cursor
-                        if show_cursor
+                        if self._show_cursor
                         else self._get_prompt_message,
-                        show_cursor=show_cursor,
+                        show_cursor=self._show_cursor,
                     ),
                     wrap_lines=self._wrap_lines,
                     dont_extend_height=True,
@@ -215,3 +215,19 @@ class BaseListPrompt(BaseComplexPrompt):
             else:
                 self.status["result"] = self.result_name
                 event.app.exit(result=self.result_value)
+
+    @property
+    def wrap_lines_offset(self) -> int:
+        """Get extra offset due to line wrapping.
+
+        Overriding it to count the cursor as well.
+
+        :return: Extra offset.
+        """
+        if not self._wrap_lines:
+            return 0
+        total_message_length = self.total_message_length
+        if self._show_cursor:
+            total_message_length += 1
+        term_width, _ = shutil.get_terminal_size()
+        return total_message_length // term_width

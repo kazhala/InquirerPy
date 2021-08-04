@@ -348,6 +348,23 @@ class BaseComplexPrompt(BaseSimplePrompt):
         pass
 
     @property
+    def total_message_length(self) -> int:
+        """Get total width of the message row.
+
+        :return: Mesage length.
+        """
+        total_message_length = 0
+        if self._qmark:
+            total_message_length += len(self._qmark)
+            total_message_length += 1  # Extra space if qmark is present
+        total_message_length += len(str(self._message))
+        total_message_length += 1  # Extra space between message and instruction
+        total_message_length += len(str(self._instruction))
+        if self._instruction:
+            total_message_length += 1  # Extra space behind the instruction
+        return total_message_length
+
+    @property
     def wrap_lines_offset(self) -> int:
         """Get extra offset due to line wrapping.
 
@@ -355,14 +372,5 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """
         if not self._wrap_lines:
             return 0
-        total_message_length = 0
-        if self._qmark:
-            total_message_length += 2  # Extra space if qmark is present
-        total_message_length += len(str(self._message))
-        total_message_length += 1  # Extra space between message and instruction
-        total_message_length += len(str(self._instruction))
-        if self._instruction:
-            total_message_length += 1  # Extra space behind the instruction
-
         term_width, _ = shutil.get_terminal_size()
-        return total_message_length // term_width
+        return self.total_message_length // term_width
