@@ -170,7 +170,7 @@ class TestListPrompt(unittest.TestCase):
             [
                 ("class:questionmark", "[?]"),
                 ("class:question", " Select a fruit"),
-                ("class:instruction", " (j/k)"),
+                ("class:instruction", " (j/k) "),
             ],
         )
 

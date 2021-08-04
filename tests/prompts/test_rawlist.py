@@ -161,8 +161,8 @@ class TestRawList(unittest.TestCase):
             [
                 ("class:questionmark", "?"),
                 ("class:question", " hello"),
-                ("class:instruction", " bb"),
-                ("class:input", " 2"),
+                ("class:instruction", " bb "),
+                ("class:input", "2"),
             ],
         )
         prompt.status["answered"] = True

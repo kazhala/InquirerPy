@@ -136,8 +136,8 @@ class TestExpandPrompt(unittest.TestCase):
             [
                 ("class:questionmark", "?"),
                 ("class:question", " Choose one"),
-                ("class:instruction", " (bfh)"),
-                ("class:input", " b"),
+                ("class:instruction", " (bfh) "),
+                ("class:input", "b"),
             ],
         )
 
@@ -147,8 +147,8 @@ class TestExpandPrompt(unittest.TestCase):
             [
                 ("class:questionmark", "?"),
                 ("class:question", " Choose one"),
-                ("class:instruction", " (bfh)"),
-                ("class:input", " f"),
+                ("class:instruction", " (bfh) "),
+                ("class:input", "f"),
             ],
         )
         prompt._handle_up()
@@ -159,8 +159,8 @@ class TestExpandPrompt(unittest.TestCase):
             [
                 ("class:questionmark", "?"),
                 ("class:question", " Choose one"),
-                ("class:instruction", " (bfh)"),
-                ("class:input", " f"),
+                ("class:instruction", " (bfh) "),
+                ("class:input", "f"),
             ],
         )
         prompt.content_control._expanded = True
@@ -170,8 +170,8 @@ class TestExpandPrompt(unittest.TestCase):
             [
                 ("class:questionmark", "?"),
                 ("class:question", " Choose one"),
-                ("class:instruction", " (bfh)"),
-                ("class:input", " b"),
+                ("class:instruction", " (bfh) "),
+                ("class:input", "b"),
             ],
         )
 

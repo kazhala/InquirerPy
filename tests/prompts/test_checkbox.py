@@ -105,7 +105,7 @@ class TestCheckbox(unittest.TestCase):
             [
                 ("class:questionmark", "?"),
                 ("class:question", " Select something"),
-                ("class:instruction", " TAB"),
+                ("class:instruction", " TAB "),
             ],
         )
 
