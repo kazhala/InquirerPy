@@ -8,10 +8,30 @@ Notable changes are documented in this file.
 
 - Added option `wrap_lines` to all prompts to configure line wrapping
 - Added option `instruction` for non-list type prompts. This is already supported in all list type prompts previously.
+- Added option `confirm_letter` and `reject_letter` to confirm prompts. Use the 2 value to change from the default "y/n".
+  - For updating the result value, please use the `transformer` arguments. By default, no matter what confirm_letter or
+    reject letter you set, it will always be Yes or No.
+
+```python
+from InquirerPy import inquirer
+
+inquirer.confirm(
+    message="Proceed?",
+    default=True,
+    confirm_letter="s",
+    reject_letter="n",
+    transformer=lambda result: "SIm" if result else "Não",
+).execute()
+```
 
 ### Fixed
 
 - Line wrapping [#11](https://github.com/kazhala/InquirerPy/issues/11)
+
+### Changes
+
+- Answered question prefix spacing now depends on `amark` arguments instead of `qmark`
+  - If you previously disable the `qmark` by setting it to empty string, please also set `amark` to empty string.
 
 ## 0.2.2 (03/07/2021)
 
