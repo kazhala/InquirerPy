@@ -1,11 +1,10 @@
 """Module contains the main question function to create a confirm prompt."""
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
 
 from InquirerPy.base import BaseSimplePrompt
-from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
@@ -39,6 +38,8 @@ class ConfirmPrompt(BaseSimplePrompt):
         transformer: Callable[[bool], Any] = None,
         filter: Callable[[bool], Any] = None,
         wrap_lines: bool = True,
+        confirm_letter: str = "y",
+        reject_letter: str = "n",
         session_result: SessionResult = None,
         **kwargs
     ) -> None:
@@ -59,9 +60,11 @@ class ConfirmPrompt(BaseSimplePrompt):
             raise InvalidArgument(
                 "default for confirm type question should be type of bool."
             )
+        self._confirm_letter = confirm_letter
+        self._reject_letter = reject_letter
 
-        @self._kb.add("y")
-        @self._kb.add("Y")
+        @self._kb.add(self._confirm_letter)
+        @self._kb.add(self._confirm_letter.upper())
         def confirm(event) -> None:
             """Bind y and Y to accept confirmation."""
             self._session.default_buffer.text = ""
@@ -69,8 +72,8 @@ class ConfirmPrompt(BaseSimplePrompt):
             self.status["result"] = True
             event.app.exit(result=True)
 
-        @self._kb.add("n")
-        @self._kb.add("N")
+        @self._kb.add(self._reject_letter)
+        @self._kb.add(self._reject_letter.upper())
         def reject(event) -> None:
             """Bind n and N to reject confirmation."""
             self._session.default_buffer.text = ""
@@ -110,7 +113,9 @@ class ConfirmPrompt(BaseSimplePrompt):
         if not self.instruction:
             pre_answer = (
                 "class:instruction",
-                " (Y/n) " if self._default else " (y/N) ",
+                " (%s/%s) " % (self._confirm_letter.upper(), self._reject_letter)
+                if self._default
+                else " (%s/%s) " % (self._confirm_letter, self._reject_letter.upper()),
             )
         else:
             pre_answer = ("class:instruction", " %s " % self.instruction)
