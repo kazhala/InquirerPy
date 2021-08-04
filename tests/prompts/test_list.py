@@ -120,9 +120,9 @@ class TestListPrompt(unittest.TestCase):
     def test_list_prompt(self, mocked_height, mocked_term):
         mocked_term.return_value = (24, 80)
         mocked_height.return_value = (24, 80)
-        message = "Select a fruit"
+        message = 15 * "i"
         qmark = "[?]"
-        instruction = "(j/k)"
+        instruction = 2 * "i"
         prompt = ListPrompt(
             message=message,
             choices=self.choices,
@@ -132,18 +132,22 @@ class TestListPrompt(unittest.TestCase):
             qmark=qmark,
             pointer=">",
             instruction=instruction,
+            show_cursor=True,
+            wrap_lines=True,
         )
         self.assertEqual(prompt._editing_mode, EditingMode.VI)
         self.assertIsInstance(prompt.content_control, InquirerPyListControl)
         self.assertIsInstance(prompt._kb, KeyBindings)
         self.assertIsInstance(prompt._style, Style)
-        self.assertEqual(prompt._message, "Select a fruit")
-        self.assertEqual(prompt._qmark, "[?]")
-        self.assertEqual(prompt.instruction, "(j/k)")
+        self.assertEqual(prompt._message, message)
+        self.assertEqual(prompt._qmark, qmark)
+        self.assertEqual(prompt.instruction, instruction)
         mocked_height.assert_called_with(
             None,
             None,
-            wrap_lines_offset=(len(qmark) + 1 + len(message) + 1 + len(instruction) + 1)
+            wrap_lines_offset=(
+                len(qmark) + 1 + len(message) + 1 + len(instruction) + 1 + 1
+            )
             // 24,
         )
 
