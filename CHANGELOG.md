@@ -28,7 +28,7 @@ inquirer.confirm(
 
 - Line wrapping [#11](https://github.com/kazhala/InquirerPy/issues/11)
 
-### Changes
+### Changed
 
 - Answered question prefix spacing now depends on `amark` arguments instead of `qmark`
   - If you previously disable the `qmark` by setting it to empty string, please also set `amark` to empty string.
@@ -57,7 +57,7 @@ N/A
   - This value exists in all list type prompts which by default is an empty space.
     This space is replaced when the choice is selected in multiselect scenario.
 
-### Changes
+### Changed
 
 - Spacing in `checkbox` prompt `enabled_symbol` and `disabled_symbol`
   - If you have customised these values, add an empty space at the end.
