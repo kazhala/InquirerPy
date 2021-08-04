@@ -136,7 +136,6 @@ class ListPrompt(BaseListPrompt):
             multiselect=multiselect,
             marker_pl=marker_pl,
         )
-        self._instruction = instruction
         super().__init__(
             message=message,
             style=style,

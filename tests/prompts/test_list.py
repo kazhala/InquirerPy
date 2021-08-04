@@ -115,16 +115,23 @@ class TestListPrompt(unittest.TestCase):
             InvalidArgument, InquirerPyListControl, [], "", "", "", None, False
         )
 
-    def test_list_prompt(self):
+    @patch("InquirerPy.base.complex.shutil.get_terminal_size")
+    @patch("InquirerPy.base.list.calculate_height")
+    def test_list_prompt(self, mocked_height, mocked_term):
+        mocked_term.return_value = (24, 80)
+        mocked_height.return_value = (24, 80)
+        message = "Select a fruit"
+        qmark = "[?]"
+        instruction = "(j/k)"
         prompt = ListPrompt(
-            message="Select a fruit",
+            message=message,
             choices=self.choices,
             default="watermelon",
             style=InquirerPyStyle({"pointer": "#61afef"}),
             vi_mode=True,
-            qmark="[?]",
+            qmark=qmark,
             pointer=">",
-            instruction="(j/k)",
+            instruction=instruction,
         )
         self.assertEqual(prompt._editing_mode, EditingMode.VI)
         self.assertIsInstance(prompt.content_control, InquirerPyListControl)
@@ -133,6 +140,12 @@ class TestListPrompt(unittest.TestCase):
         self.assertEqual(prompt._message, "Select a fruit")
         self.assertEqual(prompt._qmark, "[?]")
         self.assertEqual(prompt.instruction, "(j/k)")
+        mocked_height.assert_called_with(
+            None,
+            None,
+            wrap_lines_offset=(len(qmark) + 1 + len(message) + 1 + len(instruction) + 1)
+            // 24,
+        )
 
         window_list = list(prompt.layout.children)
         self.assertEqual(len(window_list), 4)
@@ -340,3 +353,20 @@ class TestListPrompt(unittest.TestCase):
         prompt = ListPrompt("hello world", ["yes", "no"])
         result = prompt.execute(raise_keyboard_interrupt=False)
         self.assertEqual(result, None)
+
+    @patch("InquirerPy.base.complex.shutil.get_terminal_size")
+    def test_wrap_lines_offset(self, mocked_term) -> None:
+        mocked_term.return_value = (24, 80)
+        message = "hello_world"
+        qmark = "?"
+        instruction = "abcdefghi"
+        prompt = ListPrompt(
+            message=message, choices=[1, 2, 3], qmark="?", instruction=instruction
+        )
+        total_length = (
+            len(message) + 1 + len(qmark) + 1 + len(instruction) + 1
+        )  # should be 24
+        self.assertEqual(prompt.wrap_lines_offset, total_length // 24)
+
+        prompt._wrap_lines = False
+        self.assertEqual(prompt.wrap_lines_offset, 0)
