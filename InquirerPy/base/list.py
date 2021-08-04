@@ -100,6 +100,7 @@ class BaseListPrompt(BaseComplexPrompt):
                         show_cursor=show_cursor,
                     ),
                     wrap_lines=self._wrap_lines,
+                    dont_extend_height=True,
                 ),
                 ConditionalContainer(
                     Window(
