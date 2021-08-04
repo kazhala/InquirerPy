@@ -1,5 +1,6 @@
 """Contains the interface class for list type prompts and the mocked document class `FakeDocument`."""
 import os
+import shutil
 from abc import abstractmethod
 from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union
 
@@ -199,7 +200,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         :return: List of formatted text.
         """
-        pre_answer = ("class:instruction", " %s" % self.instruction)
+        pre_answer = (
+            "class:instruction",
+            " %s " % self.instruction if self.instruction else " ",
+        )
         post_answer = ("class:answer", " %s" % self.status["result"])
         return super()._get_prompt_message(pre_answer, post_answer)
 
@@ -342,3 +346,23 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def _toggle_all(self, value: bool) -> None:
         """Handle event when user attempting to alter the state of all choices."""
         pass
+
+    @property
+    def wrap_lines_offset(self) -> int:
+        """Get extra offset due to line wrapping.
+
+        :return: Extra offset.
+        """
+        if not self._wrap_lines:
+            return 0
+        total_message_length = 0
+        if self._qmark:
+            total_message_length += 2  # Extra space if qmark is present
+        total_message_length += len(str(self._message))
+        total_message_length += 1  # Extra space between message and instruction
+        total_message_length += len(str(self._instruction))
+        if self._instruction:
+            total_message_length += 1  # Extra space behind the instruction
+
+        term_width, _ = shutil.get_terminal_size()
+        return total_message_length // term_width

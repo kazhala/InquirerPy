@@ -320,7 +320,7 @@ class FuzzyPrompt(BaseComplexPrompt):
         )
         self._default = default if not isinstance(default, Callable) else default(self._result)  # type: ignore
         self._dimmension_height, self._dimmension_max_height = calculate_height(
-            height, max_height, offset=3 if not self._border else 5
+            height, max_height, offset=3, wrap_lines_offset=self.wrap_lines_offset
         )
 
         self._content_control = InquirerPyFuzzyControl(

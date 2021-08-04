@@ -98,6 +98,7 @@ def calculate_height(
     height: Optional[Union[int, str]],
     max_height: Optional[Union[int, str]],
     offset: int = 2,
+    wrap_lines_offset: int = 0,
 ) -> Tuple[Optional[int], int]:
     """Calculate the height and max_height for the choice window.
 
@@ -107,6 +108,12 @@ def calculate_height(
 
     If max_height is not provided or is None,
     set it to `60%` for best visual presentation in terminal.
+
+    :param height: The desired height in either percentage form or exact int form.
+    :param max_height: Max acceptable height in either percentage form or exact int form.
+    :param offset: Offset to apply to the height.
+    :param wrap_lines_offset: Additional offset that should be applied when wrapping lines.
+    :return: Tuple of desired height and max height.
     """
     try:
         _, term_lines = shutil.get_terminal_size()
@@ -117,7 +124,9 @@ def calculate_height(
             if isinstance(height, str):
                 height = height.replace("%", "")
                 height = int(height)
-                dimmension_height = math.floor(term_lines * (height / 100)) - offset
+                dimmension_height = (
+                    math.floor(term_lines * (height / 100)) - offset - wrap_lines_offset
+                )
             else:
                 dimmension_height = height
 
@@ -126,7 +135,9 @@ def calculate_height(
         if isinstance(max_height, str):
             max_height = max_height.replace("%", "")
             max_height = int(max_height)
-            dimmension_max_height = math.floor(term_lines * (max_height / 100)) - offset
+            dimmension_max_height = (
+                math.floor(term_lines * (max_height / 100)) - offset - wrap_lines_offset
+            )
         else:
             dimmension_max_height = max_height
 

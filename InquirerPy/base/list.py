@@ -82,7 +82,11 @@ class BaseListPrompt(BaseComplexPrompt):
             session_result=session_result,
         )
         self._dimmension_height, self._dimmension_max_height = calculate_height(
-            height, max_height
+            height,
+            max_height,
+            wrap_lines_offset=self.wrap_lines_offset
+            if not show_cursor
+            else self.wrap_lines_offset + 1,
         )
 
         self.layout = HSplit(
