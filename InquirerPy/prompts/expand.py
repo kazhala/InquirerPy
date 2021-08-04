@@ -335,7 +335,7 @@ class ExpandPrompt(BaseListPrompt):
         display_message = super()._get_prompt_message()
         if not self.status["answered"]:
             display_message.append(
-                ("class:input", " %s" % self.content_control.selection["key"])
+                ("class:input", self.content_control.selection["key"])
             )
         return display_message
 
