@@ -167,7 +167,7 @@ class BaseSimplePrompt(ABC):
                 display_message.append(
                     (
                         "class:answered_question",
-                        "%s%s" % (" " if self._qmark else "", self._message),
+                        "%s%s" % (" " if self._amark else "", self._message),
                     )
                 )
                 display_message.append(

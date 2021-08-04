@@ -1,5 +1,4 @@
 """Module contains the class to create an input prompt."""
-import os
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.completion import NestedCompleter
@@ -11,7 +10,7 @@ from prompt_toolkit.shortcuts.prompt import CompleteStyle, PromptSession
 from prompt_toolkit.validation import ValidationError, Validator
 
 from InquirerPy.base import BaseSimplePrompt
-from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT, INQUIRERPY_POINTER_SEQUENCE
+from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
