@@ -101,12 +101,67 @@ class TestConfirmPrompt(unittest.TestCase):
         result = confirm_prompt.execute()
         self.assertEqual(result, False)
 
-    def test_get_prompt_message(self):
+    def test_custom_confirm(self):
+        self.inp.send_text("s")
         confirm_prompt = ConfirmPrompt(
             message="hello",
             style=None,
             default=True,
             qmark="?",
+            output=DummyOutput(),
+            input=self.inp,
+            confirm_letter="s",
+        )
+        result = confirm_prompt._session.prompt()
+        self.assertEqual(result, True)
+        self.assertEqual(confirm_prompt.status["answered"], True)
+        self.assertEqual(confirm_prompt.status["result"], True)
+
+        self.inp.send_text("S")
+        confirm_prompt = ConfirmPrompt(
+            message="hello",
+            style=None,
+            default=True,
+            qmark="?",
+            output=DummyOutput(),
+            input=self.inp,
+            confirm_letter="s",
+        )
+        result = confirm_prompt.execute()
+        self.assertEqual(result, True)
+
+    def test_custom_reject(self):
+        self.inp.send_text("w")
+        confirm_prompt = ConfirmPrompt(
+            message="hello",
+            style=None,
+            default=False,
+            qmark="?",
+            output=DummyOutput(),
+            input=self.inp,
+            reject_letter="w",
+        )
+        result = confirm_prompt.execute()
+        self.assertEqual(result, False)
+        self.assertEqual(confirm_prompt.status["answered"], True)
+        self.assertEqual(confirm_prompt.status["result"], False)
+
+        self.inp.send_text("W")
+        confirm_prompt = ConfirmPrompt(
+            message="hello",
+            style=None,
+            default=True,
+            qmark="?",
+            output=DummyOutput(),
+            input=self.inp,
+            reject_letter="w",
+        )
+        result = confirm_prompt.execute()
+        self.assertEqual(result, False)
+
+    def test_get_prompt_message(self):
+        confirm_prompt = ConfirmPrompt(
+            message="hello", style=None, default=True, qmark="?", confirm_letter="W"
         )
         message = confirm_prompt._get_prompt_message()
         self.assertEqual(
@@ -114,7 +169,7 @@ class TestConfirmPrompt(unittest.TestCase):
             [
                 ("class:questionmark", "?"),
                 ("class:question", " hello"),
-                ("class:instruction", " (Y/n) "),
+                ("class:instruction", " (W/n) "),
             ],
         )
 
