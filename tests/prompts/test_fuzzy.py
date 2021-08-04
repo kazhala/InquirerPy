@@ -275,15 +275,63 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(content_control.choice_count, 3)
         self.assertEqual(content_control.selected_choice_index, 0)
 
-    def test_prompt_init(self):
-        self.assertEqual(self.prompt._instruction, "")
-        self.assertEqual(self.prompt._multiselect, False)
-        self.assertEqual(self.prompt._prompt, INQUIRERPY_POINTER_SEQUENCE)
-        self.assertEqual(self.prompt._border, True)
-        self.assertEqual(self.prompt._info, True)
-        self.assertIsInstance(self.prompt._buffer, Buffer)
-        self.assertIsInstance(self.prompt._layout, Layout)
-        self.assertIsInstance(self.prompt._application, Application)
+    @patch("InquirerPy.prompts.fuzzy.fuzzy.calculate_height")
+    @patch("InquirerPy.utils.shutil.get_terminal_size")
+    def test_prompt_init(self, mocked_term, mocked_height):
+        mocked_term.return_value = (24, 80)
+        mocked_height.return_value = (24, 80)
+        message = 15 * "i"
+        qmark = "[?]"
+        instruction = 2 * "i"
+        prompt = FuzzyPrompt(
+            message=message,
+            qmark=qmark,
+            instruction=instruction,
+            choices=[
+                "haah",
+                "haha",
+                "what",
+                "waht",
+                {"name": "weaht", "value": "weaht", "enabled": True},
+            ],
+        )
+
+        self.assertEqual(prompt._instruction, instruction)
+        self.assertEqual(prompt._multiselect, False)
+        self.assertEqual(prompt._prompt, INQUIRERPY_POINTER_SEQUENCE)
+        self.assertEqual(prompt._border, True)
+        self.assertEqual(prompt._info, True)
+        self.assertIsInstance(prompt._buffer, Buffer)
+        self.assertIsInstance(prompt._layout, Layout)
+        self.assertIsInstance(prompt._application, Application)
+        mocked_height.assert_called_with(
+            None,
+            None,
+            offset=3,
+            wrap_lines_offset=(len(qmark) + 1 + len(message) + 1 + len(instruction) + 1)
+            // 24,
+        )
+
+        instruction = 3 * "i"
+        prompt = FuzzyPrompt(
+            message=message,
+            qmark=qmark,
+            instruction=instruction,
+            choices=[
+                "haah",
+                "haha",
+                "what",
+                "waht",
+                {"name": "weaht", "value": "weaht", "enabled": True},
+            ],
+        )
+        mocked_height.assert_called_with(
+            None,
+            None,
+            offset=3,
+            wrap_lines_offset=(len(qmark) + 1 + len(message) + 1 + len(instruction) + 1)
+            // 24,
+        )
 
     def test_prompt_after_input(self):
         prompt = FuzzyPrompt(
