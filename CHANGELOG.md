@@ -2,6 +2,12 @@
 
 Notable changes are documented in this file.
 
+## Dev
+
+### Added
+
+- Optional spinner to display while loading choices for list prompts.
+
 ## 0.2.4 (12/08/2021)
 
 ### Fixed
