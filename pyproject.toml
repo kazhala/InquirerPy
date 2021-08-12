@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "InquirerPy"
-version = "0.2.3"
+version = "0.2.4"
 description = "Python port of Inquirer.js (A collection of common interactive command-line user interfaces)"
 authors = ["Kevin Zhuang <kevin7441@gmail.com>"]
 maintainers = ["Kevin Zhuang <kevin7441@gmail.com>"]
