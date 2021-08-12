@@ -1,13 +1,17 @@
 """Contains the interface class for list type prompts and the mocked document class `FakeDocument`."""
+import asyncio
 import shutil
 from abc import abstractmethod
-from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union, cast
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
-from prompt_toolkit.filters.base import Condition, FilterOrBool
+from prompt_toolkit.filters.base import Condition, Filter, FilterOrBool
+from prompt_toolkit.filters.utils import to_filter
 from prompt_toolkit.key_binding.key_bindings import KeyHandlerCallable
 from prompt_toolkit.keys import Keys
+from prompt_toolkit.layout.containers import ConditionalContainer, Window
+from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.base.control import InquirerPyUIControl
@@ -24,6 +28,61 @@ class FakeDocument(NamedTuple):
     """
 
     text: str
+
+
+class SpinnerWindow(ConditionalContainer):
+    """A conditional `prompt_toolkit` window that display a spinner.
+
+    :param loading: A `Condition` to indicate if the spinner should be visible.
+    :param redraw: A redraw function to refresh the UI.
+    :param pattern: List of pattern to display as the spinner.
+    :param delay: Spinner refresh frequency.
+    :param text: Loading text to display.
+    """
+
+    def __init__(
+        self,
+        loading: Filter,
+        redraw: Callable[[], None],
+        pattern: List[str] = None,
+        delay: float = 0.1,
+        text: str = "",
+    ) -> None:
+        self._loading = to_filter(loading)
+        self._spinning = False
+        self._redraw = redraw
+        self._pattern = pattern or ["|", "/", "-", "\\"]
+        self._char = self._pattern[0]
+        self._delay = delay
+        self._text = text or "Loading ..."
+
+        super().__init__(
+            content=Window(content=FormattedTextControl(text=self._get_text)),
+            filter=self._loading,
+        )
+
+    def _get_text(self) -> List[Tuple[str, str]]:
+        """Dynamically get the text for the `Window`.
+
+        :return: Formatted text.
+        """
+        return [
+            ("class:spinner_pattern", self._char),
+            ("", " "),
+            ("class:spinner_text", self._text),
+        ]
+
+    async def start(self) -> None:
+        """Start the spinner."""
+        if self._spinning:
+            return
+        self._spinning = True
+        while self._loading():
+            for char in self._pattern:
+                await asyncio.sleep(self._delay)
+                self._char = char
+                self._redraw()
+        self._spinning = False
 
 
 class BaseComplexPrompt(BaseSimplePrompt):
@@ -53,6 +112,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
         cycle: bool = True,
         wrap_lines: bool = True,
+        spinner_enable: bool = False,
+        spinner_pattern: List[str] = None,
+        spinner_text: str = "",
+        spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
@@ -79,27 +142,21 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._invalid = False
         self._application: Application
         self._cycle = cycle
+        self._spinner_enable = spinner_enable
 
-        @Condition
-        def is_multiselect() -> bool:
-            return self._multiselect
+        self._is_multiselect = Condition(lambda: self._multiselect)
+        self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
+        self._is_invalid = Condition(lambda: self._invalid)
+        self._is_loading = Condition(lambda: self.content_control.loading)
+        self._is_spinner_enable = Condition(lambda: self._spinner_enable)
 
-        @Condition
-        def is_vim_edit() -> bool:
-            return self._editing_mode == EditingMode.VI
-
-        @Condition
-        def is_invalid() -> bool:
-            return self._invalid
-
-        @Condition
-        def is_loading() -> bool:
-            return self.content_control._loading
-
-        self._is_multiselect = is_multiselect
-        self._is_vim_edit = is_vim_edit
-        self._is_invalid = is_invalid
-        self._is_loading = is_loading
+        self._spinner = SpinnerWindow(
+            loading=self._is_loading & self._is_spinner_enable,
+            redraw=self._redraw,
+            pattern=spinner_pattern,
+            text=spinner_text or cast(str, self._message),
+            delay=spinner_delay,
+        )
 
         self._kb_maps = {
             "down": [
@@ -150,7 +207,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
                 filter = filter & self._is_multiselect
 
             @self._register_kb(*keys, filter=filter)
-            def _(event):
+            def _(_):
                 for method in self._kb_func_lookup[action]:
                     method["func"](*method.get("args", []))
 
@@ -163,6 +220,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
         @self._register_kb("enter")
         def _(event):
             self._handle_enter(event)
+
+    def _redraw(self) -> None:
+        """Redraw the application UI."""
+        self._application.invalidate()
 
     def _register_kb(
         self, *keys: Union[Keys, str], filter: FilterOrBool = True
@@ -193,7 +254,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
         if not self._rendered:
             self._rendered = True
             if self.content_control._choice_func:
-                self.content_control._retrieve_choices()
+                self.loading = True
+                asyncio.create_task(self.content_control.retrieve_choices())
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message.
@@ -359,3 +421,14 @@ class BaseComplexPrompt(BaseSimplePrompt):
             return 0
         term_width, _ = shutil.get_terminal_size()
         return self.total_message_length // term_width
+
+    @property
+    def loading(self) -> bool:
+        """bool: Indicate if the prompt should be loading."""
+        return self.content_control.loading
+
+    @loading.setter
+    def loading(self, value: bool) -> None:
+        self.content_control.loading = value
+        if self.loading:
+            asyncio.create_task(self._spinner.start())
