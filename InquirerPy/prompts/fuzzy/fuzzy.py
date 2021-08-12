@@ -341,6 +341,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             height=LayoutDimension.exact(1) if not self._wrap_lines else None,
             content=FormattedTextControl(self._get_prompt_message, show_cursor=False),
             wrap_lines=self._wrap_lines,
+            dont_extend_height=True,
         )
         input_window = Window(
             height=LayoutDimension.exact(1),
