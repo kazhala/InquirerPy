@@ -147,7 +147,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             if not isinstance(keys, list):
                 keys = [keys]
             if action not in self._non_multiselect_action:
-                filter = filter & self._multiselect
+                filter = filter & self._is_multiselect
 
             @self._register_kb(*keys, filter=filter)
             def _(event):
@@ -156,7 +156,9 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         for key, item in self._kb_maps.items():
             for kb in item:
-                keybinding_factory(kb["key"], kb.get("filter", True), key)
+                keybinding_factory(
+                    kb["key"], kb.get("filter", Condition(lambda: True)), key
+                )
 
         @self._register_kb("enter")
         def _(event):
