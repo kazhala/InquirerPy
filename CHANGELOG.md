@@ -2,6 +2,12 @@
 
 Notable changes are documented in this file.
 
+## 0.2.4 (12/08/2021)
+
+### Fixed
+
+- fuzzy prompt choices are centered
+
 ## 0.2.3 (04/08/2021)
 
 ### Added
