@@ -1,4 +1,5 @@
 """Contains the content control class `InquirerPyUIControl`."""
+import inspect
 from abc import abstractmethod
 from typing import Any, Awaitable, Callable, Dict, List, Tuple, cast
 
@@ -6,7 +7,7 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
-from InquirerPy.utils import ListChoices, SessionResult
+from InquirerPy.utils import ListChoices, SessionResult, transform_async
 
 
 class InquirerPyUIControl(FormattedTextControl):
@@ -39,40 +40,27 @@ class InquirerPyUIControl(FormattedTextControl):
         self._default = (
             default
             if not isinstance(default, Callable)
-            else cast(Callable[[SessionResult], Any], default)(self._session_result)
+            else cast(Callable, default)(self._session_result)
         )
         if isinstance(choices, Callable):
             self._choices = []
-            self._choice_func = choices
+            self._choice_func = (
+                choices
+                if inspect.iscoroutinefunction(choices)
+                else transform_async(cast(Callable, choices))
+            )
             self._loading = True
         else:
             self._raw_choices = choices
-            self._choices = self._get_choices(cast(List[str], choices), self._default)
+            self._choices = self._get_choices(cast(List, choices), self._default)
             self._safety_check()
         self._format_choices()
         super().__init__(self._get_formatted_choices)
-
-    def retrieve_choices_sync(self) -> None:
-        """Retrieve the callable choices and format them.
-
-        Should be called in the `after_render` call in `Application`.
-
-        Only use this if `choices` provided is a sync callable.
-        """
-        self._raw_choices = cast(
-            Callable[[SessionResult], List[Any]], self._choice_func
-        )(self._session_result)
-        self.choices = self._get_choices(self._raw_choices, self._default)
-        self._loading = False
-        self._safety_check()
-        self._format_choices()
 
     async def retrieve_choices(self) -> None:
         """Retrieve the callable choices and format them.
 
         Should be called in the `after_render` call in `Application`.
-
-        Only use this if `choices` provided is an async callable.
         """
         self._raw_choices = await cast(
             Callable[..., Awaitable[Any]], self._choice_func
