@@ -20,7 +20,12 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py_async
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle, SessionResult, calculate_height
+from InquirerPy.utils import (
+    InquirerPyStyle,
+    ListChoices,
+    SessionResult,
+    calculate_height,
+)
 
 __all__ = ["FuzzyPrompt"]
 
@@ -43,7 +48,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
+        choices: ListChoices,
         pointer: str,
         marker: str,
         current_text: Callable[[], str],
@@ -257,12 +262,16 @@ class FuzzyPrompt(BaseComplexPrompt):
     :param keybindings: Custom keybindings to apply.
     :param cycle: Return to top item if hit bottom or vice versa.
     :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+    :param spinner_enable: Enable spinner while loading choices.
+    :param spinner_pattern: List of pattern to display as the spinner.
+    :param spinner_delay: Spinner refresh frequency.
+    :param spinner_text: Loading text to display.
     """
 
     def __init__(
         self,
         message: Union[str, Callable[[SessionResult], str]],
-        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
+        choices: ListChoices,
         default: Union[str, Callable[[SessionResult], str]] = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: InquirerPyStyle = None,
@@ -285,6 +294,10 @@ class FuzzyPrompt(BaseComplexPrompt):
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
         cycle: bool = True,
         wrap_lines: bool = True,
+        spinner_enable: bool = False,
+        spinner_pattern: List[str] = None,
+        spinner_text: str = "",
+        spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
         if not keybindings:
@@ -316,6 +329,10 @@ class FuzzyPrompt(BaseComplexPrompt):
             keybindings=keybindings,
             cycle=cycle,
             wrap_lines=wrap_lines,
+            spinner_enable=spinner_enable,
+            spinner_pattern=spinner_pattern,
+            spinner_delay=spinner_delay,
+            spinner_text=spinner_text,
             session_result=session_result,
         )
         self._default = default if not isinstance(default, Callable) else default(self._result)  # type: ignore
@@ -374,7 +391,11 @@ class FuzzyPrompt(BaseComplexPrompt):
         self._layout = Layout(
             HSplit(
                 [
-                    message_window,
+                    ConditionalContainer(
+                        content=message_window,
+                        filter=~self._is_loading | ~self._is_spinner_enable,
+                    ),
+                    self._spinner,
                     ConditionalContainer(
                         main_content_window, filter=~IsDone() & ~self._is_loading
                     ),
