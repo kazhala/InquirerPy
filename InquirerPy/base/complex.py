@@ -6,17 +6,15 @@ from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union, cast
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
-from prompt_toolkit.filters.base import Condition, Filter, FilterOrBool
-from prompt_toolkit.filters.utils import to_filter
+from prompt_toolkit.filters.base import Condition, FilterOrBool
 from prompt_toolkit.key_binding.key_bindings import KeyHandlerCallable
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.layout.containers import ConditionalContainer, Window
-from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.base.control import InquirerPyUIControl
 from InquirerPy.base.simple import BaseSimplePrompt
 from InquirerPy.separator import Separator
+from InquirerPy.spinner import SpinnerWindow
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
@@ -28,61 +26,6 @@ class FakeDocument(NamedTuple):
     """
 
     text: str
-
-
-class SpinnerWindow(ConditionalContainer):
-    """A conditional `prompt_toolkit` window that display a spinner.
-
-    :param loading: A `Condition` to indicate if the spinner should be visible.
-    :param redraw: A redraw function to refresh the UI.
-    :param pattern: List of pattern to display as the spinner.
-    :param delay: Spinner refresh frequency.
-    :param text: Loading text to display.
-    """
-
-    def __init__(
-        self,
-        loading: Filter,
-        redraw: Callable[[], None],
-        pattern: List[str] = None,
-        delay: float = 0.1,
-        text: str = "",
-    ) -> None:
-        self._loading = to_filter(loading)
-        self._spinning = False
-        self._redraw = redraw
-        self._pattern = pattern or ["|", "/", "-", "\\"]
-        self._char = self._pattern[0]
-        self._delay = delay
-        self._text = text or "Loading ..."
-
-        super().__init__(
-            content=Window(content=FormattedTextControl(text=self._get_text)),
-            filter=self._loading,
-        )
-
-    def _get_text(self) -> List[Tuple[str, str]]:
-        """Dynamically get the text for the `Window`.
-
-        :return: Formatted text.
-        """
-        return [
-            ("class:spinner_pattern", self._char),
-            ("", " "),
-            ("class:spinner_text", self._text),
-        ]
-
-    async def start(self) -> None:
-        """Start the spinner."""
-        if self._spinning:
-            return
-        self._spinning = True
-        while self._loading():
-            for char in self._pattern:
-                await asyncio.sleep(self._delay)
-                self._char = char
-                self._redraw()
-        self._spinning = False
 
 
 class BaseComplexPrompt(BaseSimplePrompt):
