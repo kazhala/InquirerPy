@@ -41,6 +41,10 @@ class BaseListPrompt(BaseComplexPrompt):
     :param cycle: Return to top item if hit bottom or vice versa.
     :param show_cursor: Display cursor at the end of the prompt.
     :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+    :param spinner_enable: Enable spinner while loading choices.
+    :param spinner_pattern: List of pattern to display as the spinner.
+    :param spinner_delay: Spinner refresh frequency.
+    :param spinner_text: Loading text to display.
     """
 
     def __init__(
@@ -62,6 +66,10 @@ class BaseListPrompt(BaseComplexPrompt):
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
+        spinner_enable: bool = False,
+        spinner_pattern: List[str] = None,
+        spinner_text: str = "",
+        spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
@@ -80,6 +88,10 @@ class BaseListPrompt(BaseComplexPrompt):
             keybindings=keybindings,
             cycle=cycle,
             wrap_lines=wrap_lines,
+            spinner_enable=spinner_enable,
+            spinner_pattern=spinner_pattern,
+            spinner_delay=spinner_delay,
+            spinner_text=spinner_text,
             session_result=session_result,
         )
         self._show_cursor = show_cursor
@@ -91,17 +103,23 @@ class BaseListPrompt(BaseComplexPrompt):
 
         self.layout = HSplit(
             [
-                Window(
-                    height=LayoutDimension.exact(1) if not self._wrap_lines else None,
-                    content=FormattedTextControl(
-                        self._get_prompt_message_with_cursor
-                        if self._show_cursor
-                        else self._get_prompt_message,
-                        show_cursor=self._show_cursor,
+                ConditionalContainer(
+                    Window(
+                        height=LayoutDimension.exact(1)
+                        if not self._wrap_lines
+                        else None,
+                        content=FormattedTextControl(
+                            self._get_prompt_message_with_cursor
+                            if self._show_cursor
+                            else self._get_prompt_message,
+                            show_cursor=self._show_cursor,
+                        ),
+                        wrap_lines=self._wrap_lines,
+                        dont_extend_height=True,
                     ),
-                    wrap_lines=self._wrap_lines,
-                    dont_extend_height=True,
+                    filter=~self._is_loading | ~self._is_spinner_enable,
                 ),
+                self._spinner,
                 ConditionalContainer(
                     Window(
                         content=self.content_control,

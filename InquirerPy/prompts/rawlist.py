@@ -7,7 +7,7 @@ from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle, SessionResult
+from InquirerPy.utils import InquirerPyStyle, ListChoices, SessionResult
 
 __all__ = ["RawlistPrompt"]
 
@@ -20,7 +20,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
+        choices: ListChoices,
         default: Any,
         pointer: str,
         separator: str,
@@ -131,12 +131,16 @@ class RawlistPrompt(BaseListPrompt):
     :param show_cursor: Display cursor at the end of the prompt.
     :param cycle: Return to top item if hit bottom or vice versa.
     :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+    :param spinner_enable: Enable spinner while loading choices.
+    :param spinner_pattern: List of pattern to display as the spinner.
+    :param spinner_delay: Spinner refresh frequency.
+    :param spinner_text: Loading text to display.
     """
 
     def __init__(
         self,
         message: Union[str, Callable[[SessionResult], str]],
-        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
+        choices: ListChoices,
         default: Any = None,
         separator: str = ") ",
         style: InquirerPyStyle = None,
@@ -158,6 +162,10 @@ class RawlistPrompt(BaseListPrompt):
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
+        spinner_enable: bool = False,
+        spinner_pattern: List[str] = None,
+        spinner_text: str = "",
+        spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
         """Construct content control and initialise the application while also apply keybindings."""
@@ -189,36 +197,36 @@ class RawlistPrompt(BaseListPrompt):
             show_cursor=show_cursor,
             cycle=cycle,
             wrap_lines=wrap_lines,
+            spinner_enable=spinner_enable,
+            spinner_pattern=spinner_pattern,
+            spinner_delay=spinner_delay,
+            spinner_text=spinner_text,
             session_result=session_result,
         )
 
-    def _after_render(self, application) -> None:
+    def _choices_callback(self, _) -> None:
         """Override this method to apply custom keybindings.
 
-        Since `self.content_control.choices` may not exists before
-        `Application` is created if its a callable, create these
-        chocies based keybindings in the after_render call.
+        Needs to creat these kb in the callback due to `after_render`
+        retrieve the choices asynchronously.
 
         Check if fetched choices exceed the limit of 9, raise
         InvalidArgument exception.
         """
-        if not self._rendered:
-            super()._after_render(application)
-            if self.content_control.choice_count >= 10:
-                raise InvalidArgument("rawlist choices cannot exceed 9.")
 
-            def keybinding_factory(choice):
-                @self._register_kb(str(choice["display_index"]))
-                def keybinding(_) -> None:
-                    self.content_control.selected_choice_index = int(
-                        choice["actual_index"]
-                    )
+        def keybinding_factory(choice):
+            @self._register_kb(str(choice["display_index"]))
+            def keybinding(_) -> None:
+                self.content_control.selected_choice_index = int(choice["actual_index"])
 
-                return keybinding
+            return keybinding
 
-            for choice in self.content_control.choices:
-                if not isinstance(choice["value"], Separator):
-                    keybinding_factory(choice)
+        if self.content_control.choice_count > 10:
+            raise InvalidArgument("rawlist choices cannot exceed 9.")
+
+        for choice in self.content_control.choices:
+            if not isinstance(choice["value"], Separator):
+                keybinding_factory(choice)
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Return the formatted text to display in the prompt.
