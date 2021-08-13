@@ -101,6 +101,8 @@ def get_style(
             "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", ""),
             "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", ""),
             "fuzzy_match": os.getenv("INQUIRERPY_STYLE_FUZZY_MATCH", ""),
+            "spinner_pattern": os.getenv("INQUIRERPY_STYLE_SPINNER_PATTERN", ""),
+            "spinner_text": os.getenv("INQUIRERPY_STYLE_SPINNER_TEXT", ""),
             **style,
         }
 
