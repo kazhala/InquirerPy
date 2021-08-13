@@ -393,7 +393,7 @@ class TestResolver(unittest.TestCase):
         mocked_kb.assert_not_called()
         questions = [{"type": "list", "message": "aasdf", "choices": [1, 2, 3]}]
         prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
-        mocked_kb.assert_has_calls([call("c-p", filter=True)])
+        mocked_kb.assert_has_calls([call("c-p", filter=ANY)])
         try:
             mocked_kb.assert_has_calls([call("k", filter=ANY)])
             self.fail("should not have called")
@@ -410,7 +410,7 @@ class TestResolver(unittest.TestCase):
             }
         ]
         prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
-        mocked_kb.assert_has_calls([call("c-w", filter=True)])
+        mocked_kb.assert_has_calls([call("c-w", filter=ANY)])
         try:
             mocked_kb.assert_has_calls([call("c-p", filter=ANY)])
             self.fail("should not have called")

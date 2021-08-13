@@ -10,6 +10,7 @@ from prompt_toolkit.shortcuts.prompt import CompleteStyle
 from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.utils import InquirerPyStyle
 from InquirerPy.validator import PasswordValidator
+from tests.style import get_sample_style
 
 
 class TestSecret(unittest.TestCase):
@@ -141,27 +142,7 @@ class TestSecret(unittest.TestCase):
         MockedStyle.assert_has_calls(
             [
                 call(),
-                call(
-                    {
-                        "questionmark": "#e5c07b",
-                        "answermark": "#e5c07b",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "answered_question": "",
-                        "instruction": "",
-                        "pointer": "#61afef",
-                        "checkbox": "#98c379",
-                        "separator": "",
-                        "skipped": "#5c6370",
-                        "validator": "",
-                        "marker": "#e5c07b",
-                        "fuzzy_prompt": "#c678dd",
-                        "fuzzy_info": "#56b6c2",
-                        "fuzzy_match": "#c678dd",
-                        "frame.border": "#4b5263",
-                    }
-                ),
+                call(get_sample_style()),
             ]
         )
         MockedLexer.assert_has_calls([call("class:input")])

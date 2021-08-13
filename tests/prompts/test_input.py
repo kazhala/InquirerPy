@@ -11,6 +11,7 @@ from prompt_toolkit.shortcuts.prompt import CompleteStyle
 
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.input import InputPrompt
+from tests.style import get_sample_style
 
 
 class TestInputPrompt(unittest.TestCase):
@@ -234,27 +235,7 @@ class TestInputPrompt(unittest.TestCase):
         MockedStyle.assert_has_calls(
             [
                 call(),
-                call(
-                    {
-                        "questionmark": "#e5c07b",
-                        "answermark": "#e5c07b",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "answered_question": "",
-                        "instruction": "",
-                        "pointer": "#61afef",
-                        "checkbox": "#98c379",
-                        "separator": "",
-                        "skipped": "#5c6370",
-                        "validator": "",
-                        "marker": "#e5c07b",
-                        "fuzzy_prompt": "#c678dd",
-                        "fuzzy_info": "#56b6c2",
-                        "fuzzy_match": "#c678dd",
-                        "frame.border": "#4b5263",
-                    }
-                ),
+                call(get_sample_style()),
             ]
         )
         MockedLexer.assert_has_calls([call("class:input")])

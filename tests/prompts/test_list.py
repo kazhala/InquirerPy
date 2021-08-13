@@ -1,3 +1,4 @@
+import asyncio
 import unittest
 from unittest.mock import patch
 
@@ -260,10 +261,13 @@ class TestListPrompt(unittest.TestCase):
             prompt._handle_enter(event)
             self.assertEqual(prompt.status["result"], ["haah"])
 
-    def test_after_render(self):
+    def test_retrieve_choices(self) -> None:
+        async def retrieve_choices(content_control) -> None:
+            await content_control.retrieve_choices()
+
         prompt = ListPrompt(message="", choices=lambda _: [1, 2, 3])
         self.assertEqual(prompt.content_control.choices, [])
-        prompt._after_render("")
+        asyncio.run(retrieve_choices(prompt.content_control))
         self.assertEqual(
             prompt.content_control.choices,
             [

@@ -1,12 +1,14 @@
 import asyncio
 import unittest
 from typing import Callable, NamedTuple
-from unittest.mock import patch
+from unittest.mock import PropertyMock, patch
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.layout import Layout
 
+from InquirerPy.base.complex import BaseComplexPrompt
+from InquirerPy.base.control import InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.fuzzy.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
 
@@ -212,8 +214,7 @@ class TestFuzzy(unittest.TestCase):
                 },
             ],
         )
-        loop = asyncio.get_event_loop()
-        result = loop.run_until_complete(content_control._filter_choices(0.0))
+        result = asyncio.run(content_control._filter_choices(0.0))
         self.assertEqual(
             result,
             [
@@ -700,11 +701,30 @@ class TestFuzzy(unittest.TestCase):
         self.prompt.content_control.choices = [{} for _ in range(1000000)]
         self.assertEqual(self.prompt._calculate_wait_time(), 1.2)
 
+    @patch.object(InquirerPyUIControl, "retrieve_choices", new_callable=PropertyMock)
+    @patch.object(BaseComplexPrompt, "loading", new_callable=PropertyMock)
     @patch("asyncio.create_task")
-    def test_after_render(self, mocked):
+    def test_after_render(self, mocked, mocked_loading, mocked_choices):
+        class Task(NamedTuple):
+            add_done_callback: Callable
+
+        mocked.return_value = Task(add_done_callback=lambda _: True)
+        prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
+        self.assertEqual(prompt._rendered, False)
+        prompt._after_render("")
+
+        mocked.assert_called()
+        mocked_loading.assert_called_once()
+        mocked_choices.assert_called_once()
+        self.assertEqual(prompt._rendered, True)
+
+    def test_retrieve_choices(self):
+        async def retrieve_choices(content_control) -> None:
+            await content_control.retrieve_choices()
+
         prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
         self.assertEqual(prompt.content_control.choices, [])
-        prompt._after_render("")
+        asyncio.run(retrieve_choices(prompt.content_control))
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -713,11 +733,6 @@ class TestFuzzy(unittest.TestCase):
                 {"enabled": False, "index": 2, "indices": [], "name": "3", "value": 3},
             ],
         )
-
-        prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3], default="1")
-        self.assertEqual(prompt.content_control.choices, [])
-        prompt._after_render("")
-        mocked.assert_called()
 
     def test_prompt_filter(self):
         prompt = FuzzyPrompt(
