@@ -1,7 +1,7 @@
 import asyncio
 import unittest
 from typing import Callable, NamedTuple
-from unittest.mock import PropertyMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -11,6 +11,12 @@ from InquirerPy.base.complex import BaseComplexPrompt
 from InquirerPy.base.control import InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.fuzzy.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
+from InquirerPy.spinner import SpinnerWindow
+
+
+class AsyncMock(MagicMock):
+    async def __call__(self, *args, **kwargs):
+        return super().__call__(*args, **kwargs)
 
 
 class TestFuzzy(unittest.TestCase):
@@ -768,3 +774,13 @@ class TestFuzzy(unittest.TestCase):
 
         event = Event(App(exit=lambda result: True))
         self.prompt._handle_enter(event)
+
+    def test_loading(self):
+        async def run_spinner(prompt) -> None:
+            prompt.loading = True
+            self.assertTrue(prompt.loading)
+            prompt.loading = False
+
+        prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
+        asyncio.run(run_spinner(prompt))
+        self.assertFalse(prompt.loading)

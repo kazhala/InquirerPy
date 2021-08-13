@@ -51,10 +51,13 @@ match_dir = "^(?!(example)).*"
 
 [tool.coverage.run]
 source = ["InquirerPy"]
-omit = ["InquirerPy/prompts/fuzzy/fzy.py", "Inquirer/inquirer.py"]
+omit = ["InquirerPy/prompts/fuzzy/fzy.py"]
 
 [tool.coverage.report]
 ignore_errors = true
+exclude_lines = [
+    "if TYPE_CHECKING:"
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
