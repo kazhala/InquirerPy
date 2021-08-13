@@ -199,7 +199,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
             if self.content_control._choice_func:
                 self.loading = True
                 task = asyncio.create_task(self.content_control.retrieve_choices())
-                task.add_done_callback(lambda _: self._redraw())
+                task.add_done_callback(self._choices_callback)
+
+    def _choices_callback(self, _) -> None:
+        """Perform actions once all choices are retrieved."""
+        self._redraw()
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message.
