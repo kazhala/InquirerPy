@@ -51,7 +51,7 @@ match_dir = "^(?!(example)).*"
 
 [tool.coverage.run]
 source = ["InquirerPy"]
-omit = ["InquirerPy/prompts/fuzzy/fzy.py"]
+omit = ["InquirerPy/prompts/fuzzy/fzy.py", "Inquirer/inquirer.py"]
 
 [tool.coverage.report]
 ignore_errors = true
