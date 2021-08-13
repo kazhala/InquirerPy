@@ -7,6 +7,8 @@ from prompt_toolkit.application.application import Application
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.utils import InquirerPyStyle, calculate_height, color_print, get_style
 
+from .style import get_sample_style
+
 
 class TestUtils(unittest.TestCase):
     @patch("InquirerPy.utils.shutil.get_terminal_size")
@@ -36,27 +38,7 @@ class TestUtils(unittest.TestCase):
         style = get_style()
         self.assertEqual(
             style,
-            InquirerPyStyle(
-                {
-                    "questionmark": "#e5c07b",
-                    "answermark": "#e5c07b",
-                    "answer": "#61afef",
-                    "input": "#98c379",
-                    "question": "",
-                    "answered_question": "",
-                    "instruction": "",
-                    "pointer": "#61afef",
-                    "checkbox": "#98c379",
-                    "separator": "",
-                    "skipped": "#5c6370",
-                    "marker": "#e5c07b",
-                    "validator": "",
-                    "fuzzy_prompt": "#c678dd",
-                    "fuzzy_info": "#56b6c2",
-                    "frame.border": "#4b5263",
-                    "fuzzy_match": "#c678dd",
-                },
-            ),
+            InquirerPyStyle(get_sample_style()),
         )
 
         os.environ["INQUIRERPY_STYLE_QUESTIONMARK"] = "#000000"
@@ -76,6 +58,8 @@ class TestUtils(unittest.TestCase):
         os.environ["INQUIRERPY_STYLE_FUZZY_BORDER"] = "#cccccc"
         os.environ["INQUIRERPY_STYLE_FUZZY_MATCH"] = "#dddddd"
         os.environ["INQUIRERPY_STYLE_VALIDATOR"] = "#dddddd"
+        os.environ["INQUIRERPY_STYLE_SPINNER_PATTERN"] = "#ssssss"
+        os.environ["INQUIRERPY_STYLE_SPINNER_TEXT"] = "#llllll"
         style = get_style()
         self.assertEqual(
             style,
@@ -98,55 +82,40 @@ class TestUtils(unittest.TestCase):
                     "validation-toolbar": "#dddddd",
                     "fuzzy_match": "#dddddd",
                     "frame.border": "#cccccc",
+                    "spinner_pattern": "#ssssss",
+                    "spinner_text": "#llllll",
                 },
             ),
         )
 
     def test_format_style(self):
-        style = get_style(
-            {
-                "questionmark": "#000000",
-                "answermark": "#mmmmmm",
-                "answer": "#111111",
-                "input": "#444444",
-                "question": "#222222",
-                "answered_question": "#222222",
-                "instruction": "#333333",
-                "pointer": "#555555",
-                "checkbox": "#66666",
-                "separator": "#777777",
-                "skipped": "#888888",
-                "fuzzy_prompt": "#999999",
-                "fuzzy_info": "#aaaaaa",
-                "marker": "#bbbbbb",
-                "validator": "#dddddd",
-                "fuzzy_match": "#dddddd",
-                "fuzzy_border": "#cccccc",
-            }
-        )
+        raw = {
+            "questionmark": "#000000",
+            "answermark": "#mmmmmm",
+            "answer": "#111111",
+            "input": "#444444",
+            "question": "#222222",
+            "answered_question": "#222222",
+            "instruction": "#333333",
+            "pointer": "#555555",
+            "checkbox": "#66666",
+            "separator": "#777777",
+            "skipped": "#888888",
+            "fuzzy_prompt": "#999999",
+            "fuzzy_info": "#aaaaaa",
+            "marker": "#bbbbbb",
+            "validator": "#dddddd",
+            "fuzzy_match": "#dddddd",
+            "fuzzy_border": "#cccccc",
+            "spinner_pattern": "#ssssss",
+            "spinner_text": "#llllll",
+        }
+        style = get_style(raw)
+        raw["frame.border"] = raw.pop("fuzzy_border")
+        raw["validation-toolbar"] = raw.pop("validator")
         self.assertEqual(
             style,
-            InquirerPyStyle(
-                {
-                    "questionmark": "#000000",
-                    "answermark": "#mmmmmm",
-                    "answer": "#111111",
-                    "input": "#444444",
-                    "question": "#222222",
-                    "answered_question": "#222222",
-                    "instruction": "#333333",
-                    "pointer": "#555555",
-                    "checkbox": "#66666",
-                    "separator": "#777777",
-                    "skipped": "#888888",
-                    "fuzzy_prompt": "#999999",
-                    "fuzzy_info": "#aaaaaa",
-                    "marker": "#bbbbbb",
-                    "validation-toolbar": "#dddddd",
-                    "fuzzy_match": "#dddddd",
-                    "frame.border": "#cccccc",
-                },
-            ),
+            InquirerPyStyle(raw),
         )
 
     @patch("InquirerPy.utils.print_formatted_text")
