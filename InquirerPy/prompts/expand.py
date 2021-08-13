@@ -243,33 +243,29 @@ class ExpandPrompt(BaseListPrompt):
             session_result=session_result,
         )
 
-    def _after_render(self, application) -> None:
+    def _choices_callback(self, _) -> None:
         """Override this method to apply custom keybindings.
 
-        Since `self.content_control.choices` may not exists before
-        `Application` is created if its a callable, create these
-        chocies based keybindings in the after_render call.
+        Needs to creat these kb in the callback due to `after_render`
+        retrieve the choices asynchronously.
         """
-        if not self._rendered:
-            super()._after_render(application)
+        self._redraw()
 
-            def keybinding_factory(key):
-                @self._register_kb(key.lower())
-                def keybinding(_) -> None:
-                    if key == "h":
-                        self.content_control._expanded = (
-                            not self.content_control._expanded
-                        )
-                    else:
-                        self.content_control.selected_choice_index = (
-                            self.content_control._key_maps[key]
-                        )
+        def keybinding_factory(key):
+            @self._register_kb(key.lower())
+            def keybinding(_) -> None:
+                if key == "h":
+                    self.content_control._expanded = not self.content_control._expanded
+                else:
+                    self.content_control.selected_choice_index = (
+                        self.content_control._key_maps[key]
+                    )
 
-                return keybinding
+            return keybinding
 
-            for choice in self.content_control.choices:
-                if not isinstance(choice["value"], Separator):
-                    keybinding_factory(choice["key"])
+        for choice in self.content_control.choices:
+            if not isinstance(choice["value"], Separator):
+                keybinding_factory(choice["key"])
 
     def _handle_up(self) -> None:
         """Handle the event when user attempt to move up.
