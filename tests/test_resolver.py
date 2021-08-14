@@ -17,25 +17,7 @@ from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.resolver import prompt
 from InquirerPy.utils import InquirerPyStyle
 
-style = {
-    "questionmark": "#e5c07b",
-    "answermark": "#e5c07b",
-    "answer": "#61afef",
-    "input": "#98c379",
-    "question": "",
-    "answered_question": "",
-    "instruction": "",
-    "pointer": "#61afef",
-    "checkbox": "#98c379",
-    "separator": "",
-    "skipped": "#5c6370",
-    "fuzzy_prompt": "#c678dd",
-    "fuzzy_info": "#56b6c2",
-    "marker": "#e5c07b",
-    "frame.border": "#4b5263",
-    "fuzzy_match": "#c678dd",
-    "validator": "",
-}
+from .style import get_sample_style
 
 
 class TestResolver(unittest.TestCase):
@@ -75,7 +57,7 @@ class TestResolver(unittest.TestCase):
         result = prompt(questions)
         mocked_confirm_init.assert_called_once_with(
             message="hello",
-            style=InquirerPyStyle(style),
+            style=InquirerPyStyle(get_sample_style()),
             vi_mode=False,
             session_result=ANY,
         )
@@ -96,13 +78,13 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="hello",
-                    style=InquirerPyStyle(style),
+                    style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
                     session_result=ANY,
                 ),
                 call(
                     message="world",
-                    style=InquirerPyStyle(style),
+                    style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
                     session_result=ANY,
                 ),
@@ -112,7 +94,7 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="whaat",
-                    style=InquirerPyStyle(style),
+                    style=InquirerPyStyle(get_sample_style()),
                     default="./",
                     vi_mode=False,
                     session_result=ANY,
@@ -144,7 +126,7 @@ class TestResolver(unittest.TestCase):
         mocked_confirm_execute.assert_called_once()
         mocked_confirm_init.assert_called_once_with(
             message="Confirm?",
-            style=InquirerPyStyle(style),
+            style=InquirerPyStyle(get_sample_style()),
             vi_mode=False,
             session_result={"question1": False},
         )
@@ -171,55 +153,13 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="Confirm?",
-                    style=InquirerPyStyle(
-                        {
-                            "questionmark": "#e5c07b",
-                            "answermark": "#e5c07b",
-                            "answer": "#61afef",
-                            "input": "#98c379",
-                            "question": "",
-                            "answered_question": "",
-                            "instruction": "",
-                            "pointer": "#61afef",
-                            "checkbox": "#98c379",
-                            "separator": "",
-                            "skipped": "#5c6370",
-                            "validator": "",
-                            "marker": "#e5c07b",
-                            "fuzzy_prompt": "#c678dd",
-                            "fuzzy_info": "#56b6c2",
-                            "fuzzy_match": "#c678dd",
-                            "qmark": "#ffffff",
-                            "frame.border": "#4b5263",
-                        }
-                    ),
+                    style=InquirerPyStyle(get_sample_style({"qmark": "#ffffff"})),
                     vi_mode=True,
                     session_result=ANY,
                 ),
                 call(
                     message="What?",
-                    style=InquirerPyStyle(
-                        {
-                            "questionmark": "#e5c07b",
-                            "answermark": "#e5c07b",
-                            "answer": "#61afef",
-                            "input": "#98c379",
-                            "question": "",
-                            "answered_question": "",
-                            "instruction": "",
-                            "pointer": "#61afef",
-                            "checkbox": "#98c379",
-                            "separator": "",
-                            "skipped": "#5c6370",
-                            "validator": "",
-                            "marker": "#e5c07b",
-                            "fuzzy_prompt": "#c678dd",
-                            "fuzzy_info": "#56b6c2",
-                            "fuzzy_match": "#c678dd",
-                            "qmark": "#ffffff",
-                            "frame.border": "#4b5263",
-                        }
-                    ),
+                    style=InquirerPyStyle(get_sample_style({"qmark": "#ffffff"})),
                     vi_mode=True,
                     session_result=ANY,
                 ),
@@ -237,32 +177,16 @@ class TestResolver(unittest.TestCase):
             vi_mode=True,
             style_override=True,
         )
+        style = get_sample_style()
+        for key in style.keys():
+            style[key] = ""
+        style["qmark"] = "#ffffff"
+        style["fuzzy_border"] = style.pop("frame.border")
         mocked_secret_init.assert_has_calls(
             [
                 call(
                     message="haha",
-                    style=InquirerPyStyle(
-                        dict={
-                            "questionmark": "",
-                            "answermark": "",
-                            "answer": "",
-                            "input": "",
-                            "question": "",
-                            "answered_question": "",
-                            "instruction": "",
-                            "pointer": "",
-                            "checkbox": "",
-                            "separator": "",
-                            "skipped": "",
-                            "validator": "",
-                            "marker": "",
-                            "fuzzy_prompt": "",
-                            "fuzzy_info": "",
-                            "fuzzy_border": "",
-                            "fuzzy_match": "",
-                            "qmark": "#ffffff",
-                        }
-                    ),
+                    style=InquirerPyStyle(style),
                     vi_mode=True,
                     session_result={"10": True, 1: True, 2: "111111"},
                 )
@@ -303,14 +227,14 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="Confirm first?",
-                    style=InquirerPyStyle(style),
+                    style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
                     default=True,
                     session_result=ANY,
                 ),
                 call(
                     message="Confirm second?",
-                    style=InquirerPyStyle(style),
+                    style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
                     session_result=ANY,
                 ),
@@ -348,14 +272,14 @@ class TestResolver(unittest.TestCase):
             [
                 call(
                     message="Confirm first?",
-                    style=InquirerPyStyle(style),
+                    style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
                     default=True,
                     session_result=ANY,
                 ),
                 call(
                     message="Confirm?",
-                    style=InquirerPyStyle(style),
+                    style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
                     session_result=ANY,
                 ),
@@ -469,7 +393,7 @@ class TestResolver(unittest.TestCase):
         mocked_kb.assert_not_called()
         questions = [{"type": "list", "message": "aasdf", "choices": [1, 2, 3]}]
         prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
-        mocked_kb.assert_has_calls([call("c-p", filter=True)])
+        mocked_kb.assert_has_calls([call("c-p", filter=ANY)])
         try:
             mocked_kb.assert_has_calls([call("k", filter=ANY)])
             self.fail("should not have called")
@@ -486,7 +410,7 @@ class TestResolver(unittest.TestCase):
             }
         ]
         prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
-        mocked_kb.assert_has_calls([call("c-w", filter=True)])
+        mocked_kb.assert_has_calls([call("c-w", filter=ANY)])
         try:
             mocked_kb.assert_has_calls([call("c-p", filter=ANY)])
             self.fail("should not have called")

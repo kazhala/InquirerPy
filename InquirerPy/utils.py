@@ -1,8 +1,20 @@
 """Module contains shared utility functions."""
+import asyncio
 import math
 import os
 import shutil
-from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
+from functools import partial
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Tuple,
+    Union,
+)
 
 from prompt_toolkit import print_formatted_text
 from prompt_toolkit.application import run_in_terminal
@@ -26,6 +38,9 @@ class InquirerPyStyle(NamedTuple):
 
 
 SessionResult = Dict[Union[str, int], Optional[Union[str, bool, List[Any]]]]
+ListChoices = Union[
+    Callable[[SessionResult], Union[Awaitable[List[Any]], List[Any]]], List[Any]
+]
 
 
 def get_style(
@@ -63,6 +78,8 @@ def get_style(
             "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", "#56b6c2"),
             "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", "#4b5263"),
             "fuzzy_match": os.getenv("INQUIRERPY_STYLE_FUZZY_MATCH", "#c678dd"),
+            "spinner_pattern": os.getenv("INQUIRERPY_STYLE_SPINNER_PATTERN", "#e5c07b"),
+            "spinner_text": os.getenv("INQUIRERPY_STYLE_SPINNER_TEXT", ""),
             **style,
         }
     else:
@@ -84,6 +101,8 @@ def get_style(
             "fuzzy_info": os.getenv("INQUIRERPY_STYLE_FUZZY_INFO", ""),
             "fuzzy_border": os.getenv("INQUIRERPY_STYLE_FUZZY_BORDER", ""),
             "fuzzy_match": os.getenv("INQUIRERPY_STYLE_FUZZY_MATCH", ""),
+            "spinner_pattern": os.getenv("INQUIRERPY_STYLE_SPINNER_PATTERN", ""),
+            "spinner_text": os.getenv("INQUIRERPY_STYLE_SPINNER_TEXT", ""),
             **style,
         }
 
@@ -190,3 +209,39 @@ def color_print(
         run_in_terminal(_print)
     else:
         _print()
+
+
+def transform_async(func: Callable[..., Any]) -> Callable[..., Awaitable[Any]]:
+    """Transform a standard blocking call to async call.
+
+    Args:
+        func: The function to transform.
+
+    Returns:
+        Transformed function.
+
+    Reference:
+        https://github.com/Tinche/aiofiles/blob/32e3a7346b8a4060efb6102afdf9c3398b19030f/aiofiles/os.py#L7
+
+    Examples:
+        >>> import inspect
+
+        >>> def hello_world():
+        ...     pass
+        >>> inspect.iscoroutinefunction(hello_world)
+        False
+
+        >>> @transform_async
+        ... def hello_world():
+        ...     pass
+        >>> inspect.iscoroutinefunction(hello_world)
+        True
+    """
+
+    async def run(*args, loop=None, executor=None, **kwargs):
+        if loop is None:
+            loop = asyncio.get_running_loop()
+        partial_func = partial(func, *args, **kwargs)
+        return await loop.run_in_executor(executor, partial_func)
+
+    return run

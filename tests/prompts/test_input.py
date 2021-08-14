@@ -1,6 +1,5 @@
-import os
 import unittest
-from unittest.mock import ANY, call, patch
+from unittest.mock import call, patch
 
 from prompt_toolkit.completion.base import CompleteEvent
 from prompt_toolkit.document import Document
@@ -48,7 +47,7 @@ class TestInputPrompt(unittest.TestCase):
             input=self.inp,
             output=DummyOutput(),
             filter=lambda x: x * 2,
-            transformer=lambda x: "what",
+            transformer=lambda _: "what",
         )
         result = input_prompt.execute()
         self.assertEqual(result, "worldhelloworldhello")
@@ -105,29 +104,7 @@ class TestInputPrompt(unittest.TestCase):
         ]
         self.assertEqual(sorted(completions), ["hello", "hey"])
 
-    def test_prompt_message(self):
-        input_prompt = InputPrompt(message="Enter your name", style=None, qmark="[?]")
-        message = input_prompt._get_prompt_message()
-        self.assertEqual(
-            message,
-            [
-                ("class:questionmark", "[?]"),
-                ("class:question", " Enter your name"),
-                ("class:instruction", " "),
-            ],
-        )
-        input_prompt.status["answered"] = True
-        input_prompt.status["result"] = "haha"
-        message = input_prompt._get_prompt_message()
-        self.assertEqual(
-            message,
-            [
-                ("class:answermark", "?"),
-                ("class:answered_question", " Enter your name"),
-                ("class:answer", " haha"),
-            ],
-        )
-
+    def test_prompt_message_multiline(self):
         input_prompt = InputPrompt(
             message="Enter your name",
             style=None,
@@ -159,7 +136,7 @@ class TestInputPrompt(unittest.TestCase):
             ],
         )
 
-        # instruction test
+    def test_prompt_message_instruction(self):
         input_prompt = InputPrompt(
             message="Enter your name:",
             style=None,
@@ -175,6 +152,26 @@ class TestInputPrompt(unittest.TestCase):
                 ("class:questionmark", "[?]"),
                 ("class:question", " Enter your name:"),
                 ("class:instruction", " (abc) "),
+            ],
+        )
+
+        input_prompt = InputPrompt(
+            message="Enter your name:",
+            style=None,
+            default="",
+            qmark="[?]",
+            vi_mode=False,
+            instruction="(abc)",
+            multiline=True,
+        )
+        message = input_prompt._get_prompt_message()
+        self.assertEqual(
+            message,
+            [
+                ("class:questionmark", "[?]"),
+                ("class:question", " Enter your name:"),
+                ("class:instruction", " (abc) "),
+                ("class:questionmark", "\n%s " % INQUIRERPY_POINTER_SEQUENCE),
             ],
         )
 
@@ -225,58 +222,7 @@ class TestInputPrompt(unittest.TestCase):
             complete_style=CompleteStyle.COLUMN,
             wrap_lines=True,
         )
-        mocked_validator.assert_has_calls(
-            [call(ANY, "Invalid input", move_cursor_to_end=True)]
-        )
         mocked_completer.assert_has_calls(
             [call({"hello": None, "hey": None, "what": None})]
         )
-        MockedStyle.assert_has_calls(
-            [
-                call(),
-                call(
-                    {
-                        "questionmark": "#e5c07b",
-                        "answermark": "#e5c07b",
-                        "answer": "#61afef",
-                        "input": "#98c379",
-                        "question": "",
-                        "answered_question": "",
-                        "instruction": "",
-                        "pointer": "#61afef",
-                        "checkbox": "#98c379",
-                        "separator": "",
-                        "skipped": "#5c6370",
-                        "validator": "",
-                        "marker": "#e5c07b",
-                        "fuzzy_prompt": "#c678dd",
-                        "fuzzy_info": "#56b6c2",
-                        "fuzzy_match": "#c678dd",
-                        "frame.border": "#4b5263",
-                    }
-                ),
-            ]
-        )
         MockedLexer.assert_has_calls([call("class:input")])
-
-    def test_vi_kb(self):
-        prompt = InputPrompt(message="")
-        self.assertEqual(prompt._editing_mode, EditingMode.EMACS)
-        prompt = InputPrompt(message="", vi_mode=True)
-        self.assertEqual(prompt._editing_mode, EditingMode.VI)
-        os.environ["INQUIRERPY_VI_MODE"] = "true"
-        prompt = InputPrompt(message="")
-        self.assertEqual(prompt._editing_mode, EditingMode.VI)
-        prompt = InputPrompt(message="", vi_mode=False)
-        self.assertEqual(prompt._editing_mode, EditingMode.VI)
-
-    def test_message_call(self):
-        prompt = InputPrompt(message=lambda result: "Hello" if not result else "yes")
-        self.assertEqual(
-            prompt._get_prompt_message(),
-            [
-                ("class:questionmark", "?"),
-                ("class:question", " Hello"),
-                ("class:instruction", " "),
-            ],
-        )

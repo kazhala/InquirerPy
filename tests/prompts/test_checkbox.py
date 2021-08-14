@@ -1,3 +1,4 @@
+import asyncio
 import unittest
 from unittest.mock import ANY, call, patch
 
@@ -182,11 +183,11 @@ class TestCheckbox(unittest.TestCase):
             message="",
             choices=self.choices,
         )
-        mocked_kb.assert_has_calls([call("down", filter=True)])
+        mocked_kb.assert_has_calls([call("down", filter=ANY)])
         mocked_kb.assert_has_calls([call("c-n", filter=ANY)])
         mocked_kb.assert_has_calls([call("j", filter=ANY)])
         try:
-            mocked_kb.assert_has_calls([call("alt-r", filter=True)])
+            mocked_kb.assert_has_calls([call("alt-r", filter=ANY)])
             self.fail("keybinding failed to apply multiselect filter")
         except:
             pass
@@ -210,10 +211,13 @@ class TestCheckbox(unittest.TestCase):
             prompt._handle_enter(event)
         self.assertEqual(prompt.status["result"], [])
 
-    def test_after_render(self):
+    def test_retrieve_choices(self) -> None:
+        async def retrieve_choices(content_control) -> None:
+            await content_control.retrieve_choices()
+
         prompt = CheckboxPrompt(message="", choices=lambda _: [1, 2, 3])
         self.assertEqual(prompt.content_control.choices, [])
-        prompt._after_render("")
+        asyncio.run(retrieve_choices(prompt.content_control))
         self.assertEqual(
             prompt.content_control.choices,
             [

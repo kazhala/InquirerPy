@@ -1,7 +1,8 @@
 """Contains the interface class for list type prompts and the mocked document class `FakeDocument`."""
+import asyncio
 import shutil
 from abc import abstractmethod
-from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union
+from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union, cast
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -13,6 +14,7 @@ from prompt_toolkit.validation import Validator
 from InquirerPy.base.control import InquirerPyUIControl
 from InquirerPy.base.simple import BaseSimplePrompt
 from InquirerPy.separator import Separator
+from InquirerPy.spinner import SpinnerWindow
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
@@ -53,6 +55,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
         cycle: bool = True,
         wrap_lines: bool = True,
+        spinner_enable: bool = False,
+        spinner_pattern: List[str] = None,
+        spinner_text: str = "",
+        spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
         """Initialise the Application with Layout and keybindings."""
@@ -79,27 +85,21 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._invalid = False
         self._application: Application
         self._cycle = cycle
+        self._spinner_enable = spinner_enable
 
-        @Condition
-        def is_multiselect() -> bool:
-            return self._multiselect
+        self._is_multiselect = Condition(lambda: self._multiselect)
+        self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
+        self._is_invalid = Condition(lambda: self._invalid)
+        self._is_loading = Condition(lambda: self.content_control.loading)
+        self._is_spinner_enable = Condition(lambda: self._spinner_enable)
 
-        @Condition
-        def is_vim_edit() -> bool:
-            return self._editing_mode == EditingMode.VI
-
-        @Condition
-        def is_invalid() -> bool:
-            return self._invalid
-
-        @Condition
-        def is_loading() -> bool:
-            return self.content_control._loading
-
-        self._is_multiselect = is_multiselect
-        self._is_vim_edit = is_vim_edit
-        self._is_invalid = is_invalid
-        self._is_loading = is_loading
+        self._spinner = SpinnerWindow(
+            loading=self._is_loading & self._is_spinner_enable,
+            redraw=self._redraw,
+            pattern=spinner_pattern,
+            text=spinner_text or cast(str, self._message),
+            delay=spinner_delay,
+        )
 
         self._kb_maps = {
             "down": [
@@ -147,20 +147,26 @@ class BaseComplexPrompt(BaseSimplePrompt):
             if not isinstance(keys, list):
                 keys = [keys]
             if action not in self._non_multiselect_action:
-                filter = filter & self._multiselect
+                filter = filter & self._is_multiselect
 
             @self._register_kb(*keys, filter=filter)
-            def _(event):
+            def _(_):
                 for method in self._kb_func_lookup[action]:
                     method["func"](*method.get("args", []))
 
         for key, item in self._kb_maps.items():
             for kb in item:
-                keybinding_factory(kb["key"], kb.get("filter", True), key)
+                keybinding_factory(
+                    kb["key"], kb.get("filter", Condition(lambda: True)), key
+                )
 
         @self._register_kb("enter")
         def _(event):
             self._handle_enter(event)
+
+    def _redraw(self) -> None:
+        """Redraw the application UI."""
+        self._application.invalidate()
 
     def _register_kb(
         self, *keys: Union[Keys, str], filter: FilterOrBool = True
@@ -191,7 +197,13 @@ class BaseComplexPrompt(BaseSimplePrompt):
         if not self._rendered:
             self._rendered = True
             if self.content_control._choice_func:
-                self.content_control._retrieve_choices()
+                self.loading = True
+                task = asyncio.create_task(self.content_control.retrieve_choices())
+                task.add_done_callback(self._choices_callback)
+
+    def _choices_callback(self, _) -> None:
+        """Perform actions once all choices are retrieved."""
+        self._redraw()
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message.
@@ -357,3 +369,14 @@ class BaseComplexPrompt(BaseSimplePrompt):
             return 0
         term_width, _ = shutil.get_terminal_size()
         return self.total_message_length // term_width
+
+    @property
+    def loading(self) -> bool:
+        """bool: Indicate if the prompt should be loading."""
+        return self.content_control.loading
+
+    @loading.setter
+    def loading(self, value: bool) -> None:
+        self.content_control.loading = value
+        if self.loading:
+            asyncio.create_task(self._spinner.start())

@@ -1,13 +1,16 @@
+import time
 import urllib.request
 from contextlib import ExitStack
 from pathlib import Path
 
 from InquirerPy import inquirer, prompt
+from InquirerPy.spinner import SPINNERS
 
 
 def get_choices(_):
     p = Path(__file__).resolve().parent.joinpath("sample.txt")
     choices = []
+    time.sleep(1)
 
     with ExitStack() as stack:
         if not p.exists():
@@ -63,6 +66,9 @@ def alternate():
         validate=lambda result: len(result) > 1,
         invalid_message="minimum 2 selections",
         max_height="70%",
+        spinner_enable=True,
+        spinner_pattern=SPINNERS.line,
+        spinner_text="Fetching sample texts ...",
     ).execute()
 
 

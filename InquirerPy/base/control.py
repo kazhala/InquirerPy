@@ -1,12 +1,13 @@
 """Contains the content control class `InquirerPyUIControl`."""
+import inspect
 from abc import abstractmethod
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Awaitable, Callable, Dict, List, Tuple, cast
 
 from prompt_toolkit.layout.controls import FormattedTextControl
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
-from InquirerPy.utils import SessionResult
+from InquirerPy.utils import ListChoices, SessionResult, transform_async
 
 
 class InquirerPyUIControl(FormattedTextControl):
@@ -15,6 +16,9 @@ class InquirerPyUIControl(FormattedTextControl):
     Dynamically adapt to user input and update formatted text.
 
     :param choices: List of choices to display as the content.
+        Can be a sync callable or async callale.
+        If its async callable, use `retrieve_choices` in `after_render` otherwise use `retrieve_choices_sync` in `after_render`.
+
     :param default: Default value, will impact the cursor position.
     :param session_result: Current session result.
     :param multiselect: Indicate if the current prompt is multiselect enabled.
@@ -22,7 +26,7 @@ class InquirerPyUIControl(FormattedTextControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
+        choices: ListChoices,
         default: Any = None,
         session_result: SessionResult = None,
         multiselect: bool = False,
@@ -36,26 +40,31 @@ class InquirerPyUIControl(FormattedTextControl):
         self._default = (
             default
             if not isinstance(default, Callable)
-            else default(self._session_result)  # type: ignore
+            else cast(Callable, default)(self._session_result)
         )
         if isinstance(choices, Callable):
-            self._loading = True
             self._choices = []
-            self._choice_func = choices
+            self._choice_func = (
+                choices
+                if inspect.iscoroutinefunction(choices)
+                else transform_async(cast(Callable, choices))
+            )
             self._loading = True
         else:
             self._raw_choices = choices
-            self._choices = self._get_choices(choices, self._default)  # type: ignore
+            self._choices = self._get_choices(cast(List, choices), self._default)
             self._safety_check()
         self._format_choices()
         super().__init__(self._get_formatted_choices)
 
-    def _retrieve_choices(self) -> None:
+    async def retrieve_choices(self) -> None:
         """Retrieve the callable choices and format them.
 
         Should be called in the `after_render` call in `Application`.
         """
-        self._raw_choices = self._choice_func(self._session_result)  # type: ignore
+        self._raw_choices = await cast(
+            Callable[..., Awaitable[Any]], self._choice_func
+        )(self._session_result)
         self.choices = self._get_choices(self._raw_choices, self._default)
         self._loading = False
         self._safety_check()
@@ -193,3 +202,12 @@ class InquirerPyUIControl(FormattedTextControl):
         :return: A dictionary of name and value for the current pointed choice.
         """
         return self.choices[self.selected_choice_index]
+
+    @property
+    def loading(self) -> bool:
+        """bool: Indicate if the content control is loading."""
+        return self._loading
+
+    @loading.setter
+    def loading(self, value: bool) -> None:
+        self._loading = value

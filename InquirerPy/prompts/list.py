@@ -7,7 +7,7 @@ from prompt_toolkit.validation import Validator
 from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle, SessionResult
+from InquirerPy.utils import InquirerPyStyle, ListChoices, SessionResult
 
 __all__ = ["ListPrompt"]
 
@@ -22,7 +22,7 @@ class InquirerPyListControl(InquirerPyUIControl):
 
     def __init__(
         self,
-        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
+        choices: ListChoices,
         default: Any,
         pointer: str,
         marker: str,
@@ -98,12 +98,16 @@ class ListPrompt(BaseListPrompt):
     :param show_cursor: Display cursor at the end of the prompt.
     :param cycle: Return to top item if hit bottom or vice versa.
     :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+    :param spinner_enable: Enable spinner while loading choices.
+    :param spinner_pattern: List of pattern to display as the spinner.
+    :param spinner_delay: Spinner refresh frequency.
+    :param spinner_text: Loading text to display.
     """
 
     def __init__(
         self,
         message: Union[str, Callable[[SessionResult], str]],
-        choices: Union[Callable[[SessionResult], List[Any]], List[Any]],
+        choices: ListChoices,
         default: Any = None,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
@@ -124,6 +128,10 @@ class ListPrompt(BaseListPrompt):
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
+        spinner_enable: bool = False,
+        spinner_pattern: List[str] = None,
+        spinner_text: str = "",
+        spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
         """Initialise the content_control and create Application."""
@@ -154,5 +162,9 @@ class ListPrompt(BaseListPrompt):
             show_cursor=show_cursor,
             cycle=cycle,
             wrap_lines=wrap_lines,
+            spinner_enable=spinner_enable,
+            spinner_pattern=spinner_pattern,
+            spinner_delay=spinner_delay,
+            spinner_text=spinner_text,
             session_result=session_result,
         )
