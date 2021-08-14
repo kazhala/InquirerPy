@@ -216,13 +216,13 @@ class TestRawList(unittest.TestCase):
             self.fail("choices kb should be after_render")
         except:
             pass
-        prompt._after_render("")
+        prompt._choices_callback("")
         mocked_add.assert_has_calls([call("1")])
         mocked_add.assert_has_calls([call("2")])
         mocked_add.assert_has_calls([call("3")])
 
     def test_rawlist_10(self):
         prompt = RawlistPrompt(message="", choices=[i for i in range(10)])
-        self.assertRaises(InvalidArgument, prompt._after_render, "")
+        self.assertRaises(InvalidArgument, prompt._choices_callback, "")
         prompt = RawlistPrompt(message="", choices=[i for i in range(9)])
         prompt._after_render("")
