@@ -328,6 +328,8 @@ class TestBaseComples(unittest.TestCase):
             prompt.wrap_lines_offset,
             (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1) // 24,
         )
+        prompt._wrap_lines = False
+        self.assertEqual(prompt.wrap_lines_offset, 0)
 
     def test_loading(self):
         async def run_spinner(prompt) -> None:

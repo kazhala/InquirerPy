@@ -690,16 +690,6 @@ class TestFuzzy(unittest.TestCase):
             ],
         )
 
-    def test_prompt_filter(self):
-        prompt = FuzzyPrompt(
-            message="",
-            choices=[1, 2, 3],
-            filter=lambda x: x * 2,
-            transformer=lambda x: x * 3,
-        )
-        prompt.status = {"answered": True, "result": 1}
-        self.assertEqual(prompt._filter(1), 2)
-
     def test_prompt_validator_index(self):
         class Hello(NamedTuple):
             cancelled: Callable
