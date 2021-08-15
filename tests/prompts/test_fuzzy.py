@@ -1,17 +1,14 @@
 import asyncio
 import unittest
 from typing import Callable, NamedTuple
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import ANY, MagicMock, patch
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.layout import Layout
 
-from InquirerPy.base.complex import BaseComplexPrompt
-from InquirerPy.base.control import InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.fuzzy.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
-from InquirerPy.spinner import SpinnerWindow
 
 
 class AsyncMock(MagicMock):
@@ -282,11 +279,12 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(content_control.choice_count, 3)
         self.assertEqual(content_control.selected_choice_index, 0)
 
+    @patch("InquirerPy.prompts.fuzzy.fuzzy.InquirerPyFuzzyControl")
     @patch("InquirerPy.prompts.fuzzy.fuzzy.calculate_height")
     @patch("InquirerPy.utils.shutil.get_terminal_size")
-    def test_prompt_init(self, mocked_term, mocked_height):
+    def test_constructor(self, mocked_term, mocked_height, mocked_control):
         mocked_term.return_value = (24, 80)
-        mocked_height.return_value = (24, 80)
+        mocked_height.return_value = (80, 80)
         message = 15 * "i"
         qmark = "[?]"
         instruction = 2 * "i"
@@ -311,15 +309,23 @@ class TestFuzzy(unittest.TestCase):
         self.assertIsInstance(prompt._buffer, Buffer)
         self.assertIsInstance(prompt._layout, Layout)
         self.assertIsInstance(prompt._application, Application)
-        mocked_height.assert_called_with(
-            None,
-            None,
-            offset=3,
-            wrap_lines_offset=(len(qmark) + 1 + len(message) + 1 + len(instruction) + 1)
-            // 24,
+        mocked_control.assert_called_with(
+            choices=[
+                "haah",
+                "haha",
+                "what",
+                "waht",
+                {"name": "weaht", "value": "weaht", "enabled": True},
+            ],
+            pointer=INQUIRERPY_POINTER_SEQUENCE,
+            marker=INQUIRERPY_POINTER_SEQUENCE,
+            current_text=ANY,
+            max_lines=78,
+            session_result=None,
+            multiselect=False,
+            marker_pl=" ",
         )
 
-        instruction = 3 * "i"
         prompt = FuzzyPrompt(
             message=message,
             qmark=qmark,
@@ -331,13 +337,23 @@ class TestFuzzy(unittest.TestCase):
                 "waht",
                 {"name": "weaht", "value": "weaht", "enabled": True},
             ],
+            border=False,
         )
-        mocked_height.assert_called_with(
-            None,
-            None,
-            offset=3,
-            wrap_lines_offset=(len(qmark) + 1 + len(message) + 1 + len(instruction) + 1)
-            // 24,
+        mocked_control.assert_called_with(
+            choices=[
+                "haah",
+                "haha",
+                "what",
+                "waht",
+                {"name": "weaht", "value": "weaht", "enabled": True},
+            ],
+            pointer=INQUIRERPY_POINTER_SEQUENCE,
+            marker=INQUIRERPY_POINTER_SEQUENCE,
+            current_text=ANY,
+            max_lines=80,
+            session_result=None,
+            multiselect=False,
+            marker_pl=" ",
         )
 
     def test_prompt_after_input(self):
@@ -476,22 +492,6 @@ class TestFuzzy(unittest.TestCase):
 
     def test_prompt_bindings(self):
         self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
-        self.prompt._handle_down()
-        self.assertEqual(self.prompt.content_control.selected_choice_index, 1)
-        self.prompt._handle_down()
-        self.prompt._handle_down()
-        self.prompt._handle_down()
-        self.assertEqual(self.prompt.content_control.selected_choice_index, 4)
-        self.prompt._handle_down()
-        self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
-        self.prompt._handle_up()
-        self.assertEqual(self.prompt.content_control.selected_choice_index, 4)
-        self.prompt._handle_up()
-        self.assertEqual(self.prompt.content_control.selected_choice_index, 3)
-        self.prompt._handle_up()
-        self.prompt._handle_up()
-        self.prompt._handle_up()
-        self.assertEqual(self.prompt.content_control.selected_choice_index, 0)
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             self.prompt._handle_enter(event)
@@ -526,39 +526,6 @@ class TestFuzzy(unittest.TestCase):
             event = mock.return_value
             prompt._handle_enter(event)
         self.assertEqual(prompt.status, {"answered": True, "result": []})
-
-    def test_prompt_message(self):
-        self.assertEqual(
-            self.prompt._get_prompt_message(),
-            [
-                ("class:questionmark", "?"),
-                ("class:question", " Select one of them"),
-                ("class:instruction", " "),
-            ],
-        )
-        self.prompt.status = {"answered": True, "result": ["hello"]}
-        self.assertEqual(
-            self.prompt._get_prompt_message(),
-            [
-                ("class:answermark", "?"),
-                ("class:answered_question", " Select one of them"),
-                ("class:answer", " ['hello']"),
-            ],
-        )
-
-        prompt = FuzzyPrompt(
-            message=lambda result: "no" if not result else "hello",
-            choices=[1, 2, 3],
-            session_result={"1": True},
-        )
-        self.assertEqual(
-            prompt._get_prompt_message(),
-            [
-                ("class:questionmark", "?"),
-                ("class:question", " hello"),
-                ("class:instruction", " "),
-            ],
-        )
 
     @patch("asyncio.create_task")
     def test_prompt_validator(self, mocked):
@@ -707,23 +674,6 @@ class TestFuzzy(unittest.TestCase):
         self.prompt.content_control.choices = [{} for _ in range(1000000)]
         self.assertEqual(self.prompt._calculate_wait_time(), 1.2)
 
-    @patch.object(InquirerPyUIControl, "retrieve_choices", new_callable=PropertyMock)
-    @patch.object(BaseComplexPrompt, "loading", new_callable=PropertyMock)
-    @patch("asyncio.create_task")
-    def test_after_render(self, mocked, mocked_loading, mocked_choices):
-        class Task(NamedTuple):
-            add_done_callback: Callable
-
-        mocked.return_value = Task(add_done_callback=lambda _: True)
-        prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
-        self.assertEqual(prompt._rendered, False)
-        prompt._after_render("")
-
-        mocked.assert_called()
-        mocked_loading.assert_called_once()
-        mocked_choices.assert_called_once()
-        self.assertEqual(prompt._rendered, True)
-
     def test_retrieve_choices(self):
         async def retrieve_choices(content_control) -> None:
             await content_control.retrieve_choices()
@@ -748,14 +698,6 @@ class TestFuzzy(unittest.TestCase):
             transformer=lambda x: x * 3,
         )
         prompt.status = {"answered": True, "result": 1}
-        self.assertEqual(
-            prompt._get_prompt_message(),
-            [
-                ("class:answermark", "?"),
-                ("class:answered_question", " "),
-                ("class:answer", " 3"),
-            ],
-        )
         self.assertEqual(prompt._filter(1), 2)
 
     def test_prompt_validator_index(self):
@@ -774,13 +716,3 @@ class TestFuzzy(unittest.TestCase):
 
         event = Event(App(exit=lambda result: True))
         self.prompt._handle_enter(event)
-
-    def test_loading(self):
-        async def run_spinner(prompt) -> None:
-            prompt.loading = True
-            self.assertTrue(prompt.loading)
-            prompt.loading = False
-
-        prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
-        asyncio.run(run_spinner(prompt))
-        self.assertFalse(prompt.loading)
