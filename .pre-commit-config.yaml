@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 21.6b0
+    rev: 21.7b0
     hooks:
       - id: black
         files: InquirerPy
@@ -13,8 +13,8 @@ repos:
         additional_dependencies: [toml]
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.9.1
+    rev: 5.9.3
     hooks:
       - id: isort
-        args: ['--profile', 'black', '--filter-files']
+        args: ["--profile", "black", "--filter-files"]
         files: InquirerPy
