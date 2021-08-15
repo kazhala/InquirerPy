@@ -38,61 +38,6 @@ class TestListPrompt(unittest.TestCase):
             ],
         )
 
-    def test_list_control(self):
-        list_control = InquirerPyListControl(
-            self.choices, "watermelon", INQUIRERPY_POINTER_SEQUENCE, ">", None, False
-        )
-        self.assertEqual(
-            list_control.choices,
-            [
-                {"name": "apple", "value": "peach", "enabled": False},
-                {"name": "pear", "value": "pear", "enabled": False},
-                {"name": "melon", "value": "watermelon", "enabled": False},
-            ],
-        )
-        self.assertEqual(list_control.selected_choice_index, 2)
-        self.assertEqual(
-            list_control._get_formatted_choices(),
-            [
-                ("", " "),
-                ("class:marker", " "),
-                ("", "apple"),
-                ("", "\n"),
-                ("", " "),
-                ("class:marker", " "),
-                ("", "pear"),
-                ("", "\n"),
-                ("class:pointer", "❯"),
-                ("class:marker", " "),
-                ("[SetCursorPosition]", ""),
-                ("class:pointer", "melon"),
-            ],
-        )
-        self.assertEqual(list_control.choice_count, 3)
-        self.assertEqual(
-            list_control.selection,
-            {"name": "melon", "value": "watermelon", "enabled": False},
-        )
-        list_control.choices[0]["enabled"] = True
-        list_control.choices[1]["enabled"] = True
-        self.assertEqual(
-            list_control._get_formatted_choices(),
-            [
-                ("", " "),
-                ("class:marker", ">"),
-                ("", "apple"),
-                ("", "\n"),
-                ("", " "),
-                ("class:marker", ">"),
-                ("", "pear"),
-                ("", "\n"),
-                ("class:pointer", "❯"),
-                ("class:marker", " "),
-                ("[SetCursorPosition]", ""),
-                ("class:pointer", "melon"),
-            ],
-        )
-
     def test_list_control_exceptions(self):
         self.assertRaises(
             RequiredKeyNotFound,
