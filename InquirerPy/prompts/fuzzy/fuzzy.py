@@ -1,7 +1,7 @@
 """Module contains the class to construct fuzzyfinder prompt."""
 import asyncio
 import math
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union, cast
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -307,7 +307,6 @@ class FuzzyPrompt(BaseComplexPrompt):
         self._info = info
         self._task = None
         self._rendered = False
-        self._content_control: InquirerPyFuzzyControl
 
         keybindings = {
             "up": [{"key": "up"}, {"key": "c-p"}],
@@ -340,7 +339,7 @@ class FuzzyPrompt(BaseComplexPrompt):
             height, max_height, offset=3, wrap_lines_offset=self.wrap_lines_offset
         )
 
-        self._content_control = InquirerPyFuzzyControl(
+        self._content_control: InquirerPyFuzzyControl = InquirerPyFuzzyControl(
             choices=choices,
             pointer=pointer,
             marker=marker,
@@ -587,7 +586,11 @@ class FuzzyPrompt(BaseComplexPrompt):
     @property
     def content_control(self) -> InquirerPyFuzzyControl:
         """InquirerPyFuzzyControl: Override for type-hinting."""
-        return self._content_control
+        return cast(InquirerPyFuzzyControl, super().content_control)
+
+    @content_control.setter
+    def content_control(self, value: InquirerPyFuzzyControl) -> None:
+        self._content_control = value
 
     def _get_current_text(self) -> str:
         """Get current input buffer text."""

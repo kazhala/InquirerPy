@@ -2,7 +2,7 @@
 import os
 import re
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Tuple, Union, cast
 
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters.base import FilterOrBool
@@ -58,7 +58,11 @@ class BaseSimplePrompt(ABC):
     ) -> None:
         """Construct the base class for simple prompts."""
         self._result = session_result or {}
-        self._message = message if not isinstance(message, Callable) else message(self._result)  # type: ignore
+        self._message = (
+            message
+            if not isinstance(message, Callable)
+            else cast(Callable, message)(self._result)
+        )
         self._instruction = instruction
         self._default = (
             default if not isinstance(default, Callable) else default(self._result)
