@@ -198,8 +198,8 @@ confirm = result["confirm"]
 ```python
 from InquirerPy import inquirer
 
-name = inquirer.text(message="What's your name:")
-confirm = inquirer.confirm(message="Confirm?")
+name = inquirer.text(message="What's your name:").execute()
+confirm = inquirer.confirm(message="Confirm?").execute()
 ```
 
 ## Migrating from PyInquirer
