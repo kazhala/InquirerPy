@@ -45,14 +45,13 @@ coveralls = "^3.2.0"
 profile = "black"
 
 [tool.pydocstyle]
-match = "^(?!(.*fzy|.*(init|main))).*\\.py"
+match = "^(?!(.*(init|main))).*\\.py"
 convention = "pep257"
 add-ignore = "D107"
 match_dir = "^(?!(example)).*"
 
 [tool.coverage.run]
 source = ["InquirerPy"]
-omit = ["InquirerPy/prompts/fuzzy/fzy.py"]
 
 [tool.coverage.report]
 ignore_errors = true
