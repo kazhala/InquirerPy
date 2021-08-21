@@ -3,6 +3,8 @@ import asyncio
 import math
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union, cast
 
+from pfzy import fuzzy_match
+from pfzy.types import HAYSTACKS
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters.cli import IsDone
@@ -18,7 +20,6 @@ from prompt_toolkit.widgets.base import Frame
 from InquirerPy.base import BaseComplexPrompt, FakeDocument, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.prompts.fuzzy.fzy import fuzzy_match_py_async
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
     InquirerPyStyle,
@@ -198,7 +199,11 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
             choices = self.choices
         else:
             await asyncio.sleep(wait_time)
-            choices = await fuzzy_match_py_async(self._current_text(), self.choices)
+            choices = await fuzzy_match(
+                self._current_text(),
+                cast(HAYSTACKS, self.choices),
+                key="name",
+            )
         return choices
 
     @property

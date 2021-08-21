@@ -8,7 +8,7 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 
 from InquirerPy.base.complex import BaseComplexPrompt
 from InquirerPy.base.control import InquirerPyUIControl
-from InquirerPy.prompts.fuzzy.fuzzy import FuzzyPrompt
+from InquirerPy.prompts.fuzzy import FuzzyPrompt
 from InquirerPy.spinner import SPINNERS
 
 

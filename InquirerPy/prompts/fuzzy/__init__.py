@@ -1,1 +1,0 @@
-from .fuzzy import FuzzyPrompt

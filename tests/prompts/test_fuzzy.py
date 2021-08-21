@@ -8,7 +8,7 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.layout import Layout
 
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
-from InquirerPy.prompts.fuzzy.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
+from InquirerPy.prompts.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
 
 
 class AsyncMock(MagicMock):
@@ -279,8 +279,8 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(content_control.choice_count, 3)
         self.assertEqual(content_control.selected_choice_index, 0)
 
-    @patch("InquirerPy.prompts.fuzzy.fuzzy.InquirerPyFuzzyControl")
-    @patch("InquirerPy.prompts.fuzzy.fuzzy.calculate_height")
+    @patch("InquirerPy.prompts.fuzzy.InquirerPyFuzzyControl")
+    @patch("InquirerPy.prompts.fuzzy.calculate_height")
     @patch("InquirerPy.utils.shutil.get_terminal_size")
     def test_constructor(self, mocked_term, mocked_height, mocked_control):
         mocked_term.return_value = (24, 80)
@@ -528,7 +528,7 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(prompt.status, {"answered": True, "result": []})
 
     @patch("asyncio.create_task")
-    def test_prompt_validator(self, mocked):
+    def test_prompt_validator(self, _):
         prompt = FuzzyPrompt(
             message="Select one",
             choices=["haha", "asa", "132132"],
