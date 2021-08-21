@@ -32,6 +32,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.7"
 prompt-toolkit = "^3.0.1"
+pfzy = "^0.3.1"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.11.1"
