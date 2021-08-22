@@ -1,4 +1,4 @@
-"""Module contains common string."""
+"""Module contains common constants."""
 INQUIRERPY_KEYBOARD_INTERRUPT: str = "INQUIRERPY_KEYBOARD_INTERRUPT"
 
 INQUIRERPY_POINTER_SEQUENCE: str = "\u276f"
