@@ -1,9 +1,10 @@
 """Module contains spinner related resources.
 
-The spinner is not a standalone spinner to run in the terminal
-but rather a `prompt_toolkit` window that displays a spinner.
+Note:
+    The spinner is not a standalone spinner to run in the terminal
+    but rather a `prompt_toolkit` :class:`~prompt_toolkit.layout.Window` that displays a spinner.
 
-Use library such as `yaspin` if you need a plain spinner.
+    Use library such as `yaspin <https://github.com/pavdmyt/yaspin>`_ if you need a plain spinner.
 """
 import asyncio
 from typing import TYPE_CHECKING, Callable, List, NamedTuple, Tuple, Union
@@ -15,13 +16,22 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 if TYPE_CHECKING:
     from prompt_toolkit.filters.base import Filter
 
+__all__ = ["SPINNERS", "SpinnerWindow"]
+
 
 class SPINNERS(NamedTuple):
-    """Spinner pattern presets.
+    """Presets of spinner patterns.
 
-    source: https://github.com/pavdmyt/yaspin/blob/master/yaspin/data/spinners.json
+    See Also:
+        https://github.com/pavdmyt/yaspin/blob/master/yaspin/data/spinners.json
 
-    Just some basic ones thats ready to use. For more patterns, go to the above URL.
+    This only contains some basic ones thats ready to use. For more patterns, go to
+    the `yaspin <https://github.com/pavdmyt/yaspin/blob/master/yaspin/data/spinners.json>`_ repository.
+
+    Examples:
+        >>> from InquirerPy import inquirer
+        >>> from InquirerPy.spinner import SPINNERS
+        >>> inquirer.select(message="", choices=lambda _: [1, 2, 3], spinner_pattern=SPINNERS.dots)
     """
 
     dots = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
@@ -42,13 +52,14 @@ class SPINNERS(NamedTuple):
 
 
 class SpinnerWindow(ConditionalContainer):
-    """A conditional `prompt_toolkit` window that display a spinner.
+    """Conditional `prompt_toolkit` :class:`~prompt_toolkit.layout.Window` that displays a spinner.
 
-    :param loading: A `Condition` to indicate if the spinner should be visible.
-    :param redraw: A redraw function to refresh the UI.
-    :param pattern: List of pattern to display as the spinner.
-    :param delay: Spinner refresh frequency.
-    :param text: Loading text to display.
+    Args:
+        loading: A :class:`~prompt_toolkit.filters.Condition` to indicate if the spinner should be visible.
+        redraw: A redraw function (i.e. :meth:`~prompt_toolkit.application.Application.invalidate`) to refresh the UI.
+        pattern: List of pattern to display as the spinner.
+        delay: Spinner refresh frequency.
+        text: Loading text to display.
     """
 
     def __init__(
@@ -73,9 +84,10 @@ class SpinnerWindow(ConditionalContainer):
         )
 
     def _get_text(self) -> List[Tuple[str, str]]:
-        """Dynamically get the text for the `Window`.
+        """Dynamically get the text for the :class:`~prompt_toolkit.layout.Window`.
 
-        :return: Formatted text.
+        Returns:
+            Formatted text.
         """
         return [
             ("class:spinner_pattern", self._char),

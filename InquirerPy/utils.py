@@ -232,7 +232,7 @@ def calculate_height(
 def patched_print(*values) -> None:
     """Patched :func:`print` that can print values without interrupting the prompt.
 
-    References:
+    See Also:
         :func:`print`
         :func:`~prompt_toolkit.application.run_in_terminal`
 
