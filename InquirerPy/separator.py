@@ -1,17 +1,23 @@
-"""Module contains Separator class."""
+"""Module contains the :class:`.Separator` class."""
 
 
 class Separator:
-    """Can be used between choices to separete list content.
+    """A non selectable choice that can be used as part of the choies argument in list type prompts.
 
-    :param content: the content to display as the separator
-    :type content: str
+    It can be used to create some visual separations between choices in list type prompts.
+
+    Args:
+        line: Content to display as the separator.
+
+    Example:
+        >>> from InquirerPy import inquirer
+        >>> choices = [1, 2, Separator(), 3]
+        >>> inquirer.select(message="", choices=choices)
     """
 
     def __init__(self, line: str = 15 * "-") -> None:
-        """Initialise the content."""
-        self.line = line
+        self._line = line
 
     def __str__(self) -> str:
-        """Call str function on Separator."""
-        return self.line
+        """Create string representation of `Separator`."""
+        return self._line
