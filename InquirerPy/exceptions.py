@@ -1,27 +1,25 @@
-"""Module contains exceptions dedicated to InquirerPy."""
+"""Module contains exceptions that will be raised by `InquirerPy`."""
 
 
 class InvalidArgument(Exception):
-    """Invalid parameter type."""
+    """Provided argument is invalid.
 
-    def __init__(self, message: str):
-        """Construct the exception.
+    Args:
+        message: Exception message.
+    """
 
-        :param message: the exception message
-        :type message: str
-        """
-        self.message = "Invalid argument type" if not message else message
-        super().__init__(self.message)
+    def __init__(self, message: str = "invalid argument"):
+        self._message = message
+        super().__init__(self._message)
 
 
 class RequiredKeyNotFound(Exception):
-    """Required keys for question is not present."""
+    """Missing required keys in dictionary.
 
-    def __init__(self, message="Required keys for question is not present"):
-        """Construct the exception.
+    Args:
+        message: Exception message.
+    """
 
-        :param message: the exception message
-        :type message: str
-        """
+    def __init__(self, message="required key not found"):
         self.message = message
         super().__init__(self.message)
