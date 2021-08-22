@@ -1,4 +1,4 @@
-"""Module contains some simple validator."""
+"""Module contains pre-built validators."""
 import re
 from pathlib import Path
 
@@ -13,39 +13,45 @@ __all__ = [
 
 
 class NumberValidator(Validator):
-    """Validator class to validate if input is a number.
+    """:class:`~prompt_toolkit.validation.Validator` to validate if input is a number.
 
-    :param float_allowed: allow float input
-    :type float_allowed: bool
-    :param message: error message to display
-    :type message: str
+    Args:
+        message: Error message to display in the validatation toolbar when validation failed.
+        float_allowed: Allow input to contain floaing number (with decimal).
     """
 
     def __init__(
-        self, message: str = "Input should be number", float_allowed: bool = False
+        self, message: str = "Input should be a number", float_allowed: bool = False
     ) -> None:
-        """Set invalid message and determine float."""
-        self.message = message
-        self.float_allowed = float_allowed
+        self._message = message
+        self._float_allowed = float_allowed
 
     def validate(self, document) -> None:
-        """Check if user input is a valid number."""
+        """Check if user input is a valid number.
+
+        This method is used internally by `prompt_toolkit <https://python-prompt-toolkit.readthedocs.io/en/master/>`_.
+
+        See Also:
+            https://python-prompt-toolkit.readthedocs.io/en/master/pages/asking_for_input.html?highlight=validator#input-validation
+        """
         try:
-            if self.float_allowed:
+            if self._float_allowed:
                 float(document.text)
             else:
                 int(document.text)
         except ValueError:
             raise ValidationError(
-                message=self.message, cursor_position=document.cursor_position
+                message=self._message, cursor_position=document.cursor_position
             )
 
 
 class PathValidator(Validator):
-    """Validator class to validate if input is a valid filepath.
+    """:class:`~prompt_toolkit.validation.Validator` to validate if input is a valid filepath on the system.
 
-    :param message: error message to display
-    :type message: str
+    Args:
+        message: Error message to display in the validatation toolbar when validation failed.
+        is_file: Explicitly check if the input is a valid file on the system.
+        is_dir: Explicitly check if the input is a valid directory/folder on the system.
     """
 
     def __init__(
@@ -54,75 +60,80 @@ class PathValidator(Validator):
         is_file: bool = False,
         is_dir: bool = False,
     ) -> None:
-        """Set invalid message and check condition."""
-        self.message = message
-        self.is_file = is_file
-        self.is_dir = is_dir
+        self._message = message
+        self._is_file = is_file
+        self._is_dir = is_dir
 
     def validate(self, document) -> None:
-        """Check if user input filepath exists based on condition."""
+        """Check if user input is a filepath that exists on the system based on conditions.
+
+        This method is used internally by `prompt_toolkit <https://python-prompt-toolkit.readthedocs.io/en/master/>`_.
+
+        See Also:
+            https://python-prompt-toolkit.readthedocs.io/en/master/pages/asking_for_input.html?highlight=validator#input-validation
+        """
         path = Path(document.text).expanduser()
-        if self.is_file and not path.is_file():
+        if self._is_file and not path.is_file():
             raise ValidationError(
-                message=self.message,
+                message=self._message,
                 cursor_position=document.cursor_position,
             )
-        elif self.is_dir and not path.is_dir():
+        elif self._is_dir and not path.is_dir():
             raise ValidationError(
-                message=self.message,
+                message=self._message,
                 cursor_position=document.cursor_position,
             )
         elif not path.exists():
             raise ValidationError(
-                message=self.message,
+                message=self._message,
                 cursor_position=document.cursor_position,
             )
 
 
 class EmptyInputValidator(Validator):
-    """Validator class to validate empty input.
+    """:class:`~prompt_toolkit.validation.Validator` to validate if the input is empty.
 
-    :param message: error message to display
-    :type message: str
+    Args:
+        message: Error message to display in the validatation toolbar when validation failed.
     """
 
     def __init__(self, message: str = "Input cannot be empty") -> None:
-        """Set invalid message."""
-        self.message = message
+        self._message = message
 
     def validate(self, document) -> None:
-        """Check if user input is empty."""
+        """Check if user input is empty.
+
+        This method is used internally by `prompt_toolkit <https://python-prompt-toolkit.readthedocs.io/en/master/>`_.
+
+        See Also:
+            https://python-prompt-toolkit.readthedocs.io/en/master/pages/asking_for_input.html?highlight=validator#input-validation
+        """
         if not len(document.text) > 0:
             raise ValidationError(
-                message=self.message,
+                message=self._message,
                 cursor_position=document.cursor_position,
             )
 
 
 class PasswordValidator(Validator):
-    """Validator class to check password compliance.
+    """:class:`~prompt_toolkit.validation.Validator` to validate password compliance.
 
-    :param message: error message to display
-    :type message: str
-    :param length: the minimum length of the password
-    :type length: Optional[int]
-    :param cap: password include at least one cap
-    :type cap: bool
-    :param special: password include at least one special char "@$!%*#?&"
-    :type special: bool
-    :param number: password include at least one number
-    :type number: bool
+    Args:
+        message: Error message to display in the validatation toolbar when validation failed.
+        length: The minimum length of the password.
+        cap: Password should include at least one capital letter.
+        special: Password should include at least one special char "@$!%*#?&".
+        number: Password should include at least one number.
     """
 
     def __init__(
         self,
-        message: str = "Input is not a valid pattern",
+        message: str = "Input is not compliant with the password constraints",
         length: int = None,
         cap: bool = False,
         special: bool = False,
         number: bool = False,
     ) -> None:
-        """Set regex pattern and invalid message."""
         password_pattern = r"^"
         if cap:
             password_pattern += r"(?=.*[A-Z])"
@@ -136,12 +147,18 @@ class PasswordValidator(Validator):
         else:
             password_pattern += r"*"
         password_pattern += r"$"
-        self.re = re.compile(password_pattern)
-        self.message = message
+        self._re = re.compile(password_pattern)
+        self._message = message
 
     def validate(self, document) -> None:
-        """Check if user input passes the password constraint."""
-        if not self.re.match(document.text):
+        """Check if user input is compliant with the specified password constraints.
+
+        This method is used internally by `prompt_toolkit <https://python-prompt-toolkit.readthedocs.io/en/master/>`_.
+
+        See Also:
+            https://python-prompt-toolkit.readthedocs.io/en/master/pages/asking_for_input.html?highlight=validator#input-validation
+        """
+        if not self._re.match(document.text):
             raise ValidationError(
-                message=self.message, cursor_position=document.cursor_position
+                message=self._message, cursor_position=document.cursor_position
             )
