@@ -47,7 +47,7 @@ class SecretPrompt(InputPrompt):
         """Construct the prompt session."""
         if not isinstance(default, str):
             raise InvalidArgument(
-                "default for secret type question should be type of str."
+                "secret prompt argument default should be type of str"
             )
         super().__init__(
             message=message,

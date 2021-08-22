@@ -75,9 +75,7 @@ class InputPrompt(BaseSimplePrompt):
             wrap_lines=wrap_lines,
         )
         if not isinstance(self._default, str):
-            raise InvalidArgument(
-                "default for input type question should be type of str."
-            )
+            raise InvalidArgument("input prompt argument default should be type of str")
         self._completer = None
         if isinstance(completer, dict):
             self._completer = NestedCompleter.from_nested_dict(completer)

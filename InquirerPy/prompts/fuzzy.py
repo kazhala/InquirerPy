@@ -73,7 +73,9 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
     def _format_choices(self) -> None:
         for index, choice in enumerate(self.choices):
             if isinstance(choice["value"], Separator):
-                raise InvalidArgument("fuzzy type prompt does not accept Separator.")
+                raise InvalidArgument(
+                    "fuzzy prompt argument choices should not contain Separator"
+                )
             choice["index"] = index
             choice["indices"] = []
         self._filtered_choices = self.choices

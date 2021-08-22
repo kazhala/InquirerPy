@@ -225,7 +225,7 @@ def calculate_height(
 
     except ValueError:
         raise InvalidArgument(
-            "prompt height needs to be either an int or str representing height percentage."
+            "prompt argument height/max_height needs to be type of an int or str"
         )
 
 

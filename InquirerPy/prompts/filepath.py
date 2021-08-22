@@ -119,7 +119,7 @@ class FilePathPrompt(InputPrompt):
     ) -> None:
         if not isinstance(default, str):
             raise InvalidArgument(
-                "default for filepath type question should be type of str."
+                "filepath prompt argument default should be type of str"
             )
         super().__init__(
             message=message,

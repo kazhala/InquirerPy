@@ -222,7 +222,7 @@ class RawlistPrompt(BaseListPrompt):
             return keybinding
 
         if self.content_control.choice_count >= 10:
-            raise InvalidArgument("rawlist choices cannot exceed 9.")
+            raise InvalidArgument("rawlist argument choices cannot exceed length of 9")
 
         for choice in self.content_control.choices:
             if not isinstance(choice["value"], Separator):

@@ -62,6 +62,7 @@ def prompt(
 
     Raises:
         RequiredKeyNotFound: When the question is missing required keys.
+        InvalidArgument: When the provided `questions` argument is not a type of :class:`list` nor :class:`dictionary`.
 
     Examples:
         >>> from InquirerPy import prompt
@@ -104,7 +105,7 @@ def prompt(
         questions = [questions]
 
     if not isinstance(questions, list):
-        raise InvalidArgument("questions should be type of list.")
+        raise InvalidArgument("argument questions should be type of list or dictionary")
 
     question_style = get_style(style, style_override)
 

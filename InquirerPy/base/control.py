@@ -108,7 +108,7 @@ class InquirerPyUIControl(FormattedTextControl):
                     )
         except KeyError:
             raise RequiredKeyNotFound(
-                "dictionary choice require a name key and a value key."
+                "dictionary type of choice require a name key and a value key"
             )
         return processed_choices
 
@@ -135,7 +135,7 @@ class InquirerPyUIControl(FormattedTextControl):
     def _safety_check(self) -> None:
         """Validate choices, check empty or all Separator."""
         if not self.choices:
-            raise InvalidArgument("choices cannot be empty.")
+            raise InvalidArgument("argument choices cannot be empty")
         should_proceed: bool = False
         for choice in self.choices:
             if not isinstance(choice["value"], Separator):
@@ -143,7 +143,7 @@ class InquirerPyUIControl(FormattedTextControl):
                 break
         if not should_proceed:
             raise InvalidArgument(
-                "choices should contain content other than separator."
+                "argument choices should contain content other than separator"
             )
 
     def _get_formatted_choices(self) -> List[Tuple[str, str]]:

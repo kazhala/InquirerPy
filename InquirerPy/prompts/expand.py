@@ -63,7 +63,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
                     raw_choice, Separator
                 ):
                     raise InvalidArgument(
-                        "expand type prompt require each choice to be a dictionary or Separator."
+                        "expand prompt argument choices requires each choice to be type of dictionary or Separator"
                     )
                 if isinstance(raw_choice, Separator):
                     separator_count += 1
@@ -73,7 +73,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
                 count += 1
         except KeyError:
             raise RequiredKeyNotFound(
-                "each dictionary choice require the dictionary key 'key' to be present."
+                "expand prompt choice requires a key 'key' to exists"
             )
 
         self.choices.append(

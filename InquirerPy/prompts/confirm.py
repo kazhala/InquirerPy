@@ -58,7 +58,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         )
         if not isinstance(self._default, bool):
             raise InvalidArgument(
-                "default for confirm type question should be type of bool."
+                "confirm prompt argument default should be type of bool"
             )
         self._confirm_letter = confirm_letter
         self._reject_letter = reject_letter
