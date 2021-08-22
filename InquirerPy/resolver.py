@@ -1,4 +1,7 @@
-"""This module contains the main prompt entrypoint."""
+"""This module contains the classic entrypoint for creating prompts.
+
+A `PyInquirer <https://github.com/CITGuru/PyInquirer>`_ compatible entrypoint :func:`.prompt`.
+"""
 from typing import Any, Dict, List, Union
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
@@ -38,31 +41,60 @@ def prompt(
     keybindings: Dict[str, List[Dict[str, Any]]] = None,
     style_override: bool = True,
 ) -> SessionResult:
-    """Resolve user provided list of questions and get result.
+    """Classic syntax entrypoint to create a prompt session.
 
-    if "name" param is not present, use the index as the name.
+    Resolve user provided list of questions, display prompts and get the results.
 
-    All param can be controlled via ENV var, if not present, resolver
-    will attempt to resolve the value from ENV var.
+    Args:
+        questions: A list of :ref:`pages/prompt:question` to ask. Refer to documentation for more info.
+        style: A dictionary of :ref:`pages/style:Style`. Refer to documentation for more info.
+        vi_mode: Use vim keybindings for the prompt instead of the default emacs keybindings.
+        raise_keyboard_interrupt: Raise the kbi exception when user hit `ctrl-c`. If false, the result
+            will be `None` and the question is skiped.
+        keybindings: List of custom :ref:`pages/kb:Keybindings` to apply. Refer to documentation for more info.
+        style_override: Override all default styles.
+            When providing any customization, all default styles are cleared when this is True.
 
-    A default style is applied using Atom Onedark color if style is not present.
+    Returns:
+        A dictionary containing all of the question answers. The key is the name of the question and the value is the
+        user answer. If the `name` key is not present as part of the question, then the question index will be used
+        as the key.
 
-    :param questions: list of questions to ask
-        if only one question is needed, providing a single dict is also sufficent
-    :type questions: Union[List[Dict[str, Any]], Dict[str, Any]]
-    :param style: the style to apply to the prompt
-    :type style: Dict[str, str]
-    :param vi_mode: use vi kb for the prompt
-    :type vi_mode: bool
-    :param raise_keyboard_interrupt: raise the kbi exception when user hit c-c
-        If false, store result as None and continue
-    :type raise_keyboard_interrupt: bool
-    :param keybindings: custom keybindings to apply
-    :type keybindings: Dict[str, List[Dict[str, Any]]]
-    :param style_override: override all default styles
-    :type style_override: bool
-    :return: dictionary of answers
-    :rtype: SessionResult
+    Raises:
+        RequiredKeyNotFound: When the question is missing required keys.
+
+    Examples:
+        >>> from InquirerPy import prompt
+        >>> from InquirerPy.validator import NumberValidator
+        >>> questions = [
+        ...     {
+        ...         "type": "input",
+        ...         "message": "Enter your age:",
+        ...         "validate": NumberValidator(),
+        ...         "invalid_message": "Input should be number.",
+        ...         "default": "18",
+        ...         "name": "age",
+        ...         "filter": lambda result: int(result),
+        ...         "transformer": lambda result: "Adult" if int(result) >= 18 else "Youth",
+        ...     },
+        ...     {
+        ...         "type": "rawlist",
+        ...         "message": "What drinks would you like to buy:",
+        ...         "default": 2,
+        ...         "choices": lambda result: ["Soda", "Cidr", "Water", "Milk"]
+        ...         if result["age"] < 18
+        ...         else ["Wine", "Beer"],
+        ...         "name": "drink",
+        ...     },
+        ...     {
+        ...         "type": "list",
+        ...         "message": "Would you like a bag:",
+        ...         "choices": ["Yes", "No"],
+        ...         "when": lambda result: result["drink"] in {"Wine", "Beer"},
+        ...     },
+        ...     {"type": "confirm", "message": "Confirm?", "default": True},
+        ... ]
+        >>> result = prompt(questions=questions)
     """
     result: SessionResult = {}
     if not keybindings:
