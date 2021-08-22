@@ -33,6 +33,11 @@ packages = [
 python = "^3.7"
 prompt-toolkit = "^3.0.1"
 pfzy = "^0.3.1"
+Sphinx = {version = "^4.1.2", optional = true}
+furo = {version = "^2021.8.17-beta.43", optional = true}
+sphinx-copybutton = {version = "^0.4.0", optional = true}
+sphinx-autobuild = {version = "^2021.3.14", optional = true}
+myst-parser = {version = "^0.15.1", optional = true}
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.11.1"
@@ -40,6 +45,9 @@ isort = "^5.9.1"
 black = "^21.6b0"
 pydocstyle = "^6.1.1"
 coveralls = "^3.2.0"
+
+[tool.poetry.extras]
+docs = ["Sphinx", "furo", "myst-parser", "sphinx-autobuild", "sphinx-copybutton"]
 
 [tool.isort]
 profile = "black"
