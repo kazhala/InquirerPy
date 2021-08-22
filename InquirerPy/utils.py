@@ -1,4 +1,4 @@
-"""Module contains shared utility functions."""
+"""Module contains shared utility functions and typing aliases."""
 import asyncio
 import math
 import os
@@ -24,14 +24,28 @@ from prompt_toolkit.styles import Style
 
 from InquirerPy.exceptions import InvalidArgument
 
-__all__ = ["get_style", "calculate_height", "InquirerPyStyle"]
+__all__ = [
+    "get_style",
+    "calculate_height",
+    "InquirerPyStyle",
+    "patched_print",
+    "color_print",
+    "transform_async",
+]
 
 
 class InquirerPyStyle(NamedTuple):
-    """InquirerPy style class.
+    """`InquirerPy` Style class.
 
-    Enforce the method `get_style` to be used, avoiding
-    direct dict passed into prompts.
+    Used as a helper class to enforce the method `get_style` to be used
+    while also avoiding :class:`dict` to be passed into prompts.
+
+    Note:
+        The class is an instance of :class:`typing.NamedTuple`.
+
+    Warning:
+        You should not directly be using this class besides for type hinting
+        purposes. Obtain an instance of this class using :func:`.get_style`.
     """
 
     dict: Dict[str, str]
@@ -46,16 +60,36 @@ ListChoices = Union[
 def get_style(
     style: Dict[str, str] = None, style_override: bool = True
 ) -> InquirerPyStyle:
-    """Get default style if style parameter is missing.
+    """Obtain an :class:`.InquirerPyStyle` instance which can be consumed by the `style` argument in prompts.
 
-    Reads the ENV variable first before apply default one dark theme.
+    Tip:
+        The function itself supports ENV variables. Instead of configuring the colors via the `style` argument
+        of this function, you can configure the style by setting the ENV variables and simply call this function
+        without providing any arguments.
 
-    Priority:
-    style parameter -> ENV variable -> default style
+        This allows the user to easily configure the color to their preference without you having to provide
+        an interface/function to customise the color.
 
-    :param style: style to apply to prompt
-    :param style_override: override all default styles
-    :return: instance of InquirerPyStyle, consume it via `Style.from_dict(InquirerPyStyle.dict)`
+        For all the color ENV variable names, refer to the :ref:`pages/style:Style` documentation.
+
+    Note:
+        If no style is provided, then a default theme based on `one dark <https://github.com/joshdick/onedark.vim#color-reference>`_
+        color palette is applied.
+
+    Note:
+        Priority: style parameter -> ENV variable -> default style
+
+    Args:
+        style: The style dictionry to apply to prompt.
+        style_override: Override all default styles.
+            When providing any customization, all default styles are cleared when this is True.
+
+    Returns:
+        An instance of :class:`.InquirerPyStyle`.
+
+    Examples:
+        >>> get_style()
+        >>> get_style({"answermark": "blue"}, style_override=False)
     """
     if not style_override or style is None:
         if not style:
@@ -119,20 +153,41 @@ def calculate_height(
     offset: int = 2,
     wrap_lines_offset: int = 0,
 ) -> Tuple[Optional[int], int]:
-    """Calculate the height and max_height for the choice window.
+    """Calculate the `height` and `max_height` for the main question contents.
 
-    Allowed height values:
-    * "60%" - percentage height in str
-    * 20 - exact line height in int
+    Tip:
+        The argument `height`/`max_height` can be specified by either a :class:`string` or :class:`int`.
 
-    If max_height is not provided or is None,
-    set it to `60%` for best visual presentation in terminal.
+        When `height`/`max_height` is :class:`str`:
+            It will set the height to a percentage based on the value provided.
+            You can optionally add the '%' sign which will be ignored while processing.
 
-    :param height: The desired height in either percentage form or exact int form.
-    :param max_height: Max acceptable height in either percentage form or exact int form.
-    :param offset: Offset to apply to the height.
-    :param wrap_lines_offset: Additional offset that should be applied when wrapping lines.
-    :return: Tuple of desired height and max height.
+            Example: "60%" or "60" (60% of the current terminal visible lines)
+
+        When `height`/`max_height` is :class:`int`:
+            It will set the height to exact number of lines based on the value provided.
+
+            Example: 20 (20 lines in terminal)
+
+    Note:
+        If `max_height` is not provided or is None, the default `max_height` will be configured to `60%` for
+        best visual presentation in the terminal.
+
+    Args:
+        height: The desired height in either percentage as string or exact value as int.
+        max_height: Maximum acceptable height in either percentage as string or exact value as int.
+        offset: Offset  to apply to the height.
+        wrap_lines_offset: Additional offset that should be applied when wrapping lines.
+
+    Returns:
+        A :class:`tuple` with the first value being the desired height and the second value being
+        the maximum height.
+
+    Raises:
+        InvalidArgument: The provided `height`/`max_height` is not able to to be converted to int.
+
+    Examples:
+        >>> calculate_height(height="60%", max_height="100%")
     """
     try:
         _, term_lines = shutil.get_terminal_size()
@@ -175,7 +230,18 @@ def calculate_height(
 
 
 def patched_print(*values) -> None:
-    """Print the values without interrupting the prompt."""
+    """Patched :func:`print` that can print values without interrupting the prompt.
+
+    References:
+        :func:`print`
+        :func:`~prompt_toolkit.application.run_in_terminal`
+
+    Args:
+        *values: Refer to :func:`print`.
+
+    Examples:
+        >>> patched_print("Hello World")
+    """
 
     def _print():
         print(*values)
@@ -186,17 +252,18 @@ def patched_print(*values) -> None:
 def color_print(
     formatted_text: List[Tuple[str, str]], style: Dict[str, str] = None
 ) -> None:
-    """Print colored text.
+    """Print colored text leveraging :func:`~prompt_toolkit.shortcuts.print_formatted_text`.
 
-    This is a wrapper around `prompt_toolkit` `print_formatted_text`.
-    It automatically handles printing the text without interrupting the
+    This function automatically handles printing the text without interrupting the
     current prompt.
 
-    :param formatted_text: a list of formatted text
-        [("class:aa", "Hello")] or [("#ffffff", "Hello")]
-    :type formatted_text: List[Tuple[str, str]]
-    :param style: a dictionary of style
-    :type style: Dict[str, str]
+    Args:
+        formatted_text: A list of formatted_text.
+        style: Style to apply to `formatted_text` in :class:`dictionary` form.
+
+    Example:
+        >>> color_print(formatted_text=[("class:aa", "hello "), ("class:bb", "world")], style={"aa": "red", "bb": "blue"})
+        >>> color_print([("red", "yes"), ("", " "), ("blue", "no")])
     """
 
     def _print():
