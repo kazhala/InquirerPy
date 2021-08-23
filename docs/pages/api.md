@@ -44,6 +44,13 @@
     :members:
 ```
 
+### complex
+
+```{eval-rst}
+.. automodule:: InquirerPy.base.complex
+    :members:
+```
+
 ## exceptions
 
 ```{eval-rst}

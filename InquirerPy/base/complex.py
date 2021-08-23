@@ -1,4 +1,4 @@
-"""Contains the interface class for list type prompts and the mocked document class `FakeDocument`."""
+"""Contains the interface class :class:`.BaseComplexPrompt` for list type prompts and the mocked document class :class:`.FakeDocument`."""
 import asyncio
 import shutil
 from abc import abstractmethod
@@ -21,22 +21,30 @@ from InquirerPy.utils import InquirerPyStyle, SessionResult
 class FakeDocument(NamedTuple):
     """A fake `prompt_toolkit` document class.
 
-    Work around to allow non buffer type content_control to use the same
-    `Validator` class.
+    Work around to allow non-buffer type :class:`~prompt_toolkit.layout.UIControl` to use
+    :class:`~prompt_toolkit.validation.Validator`.
+
+    Args:
+        text: Content to be validated.
     """
 
     text: str
 
 
 class BaseComplexPrompt(BaseSimplePrompt):
-    """A base class to create a complex prompt using `prompt_toolkit` Application.
+    """A base class to create a more complex prompt that will involve :class:`~prompt_toolkit.application.Application`.
 
-    This class does not create `Layout` nor `Application`, it just contains helper
-    functions to create a more complex prompt than the `BaseSimplePrompt`.
+    Note:
+        This class does not create :class:`~prompt_toolkit.layout.Layout` nor :class:`~prompt_toolkit.application.Application`,
+        it only contains the necessary attributes and helper functions to be consumed.
 
-    Use `BaseListPrompt` to create a complex list prompt.
+    Note:
+        Use :class:`~InquirerPy.base.BaseListPrompt` to create a complex list prompt which involves multiple choices. It has
+        more methods and helper function implemented.
 
-    Reference parameters through `BaseListPrompt` or `FuzzyPrompt`.
+    See Also:
+        :class:`~InquirerPy.base.BaseListPrompt`
+        :class:`~InquirerPy.prompt.fuzzy.FuzzyPrompt`
     """
 
     def __init__(
@@ -61,7 +69,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
-        """Initialise the Application with Layout and keybindings."""
         if not keybindings:
             keybindings = {}
         super().__init__(
@@ -173,8 +180,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
     ) -> Callable[[KeyHandlerCallable], KeyHandlerCallable]:
         """Decorate keybinding registration function.
 
-        Ensure that invalid state is cleared on next
-        keybinding entered.
+        Ensure that the `invalid` state is cleared on next keybinding entered.
         """
 
         def decorator(func: KeyHandlerCallable) -> KeyHandlerCallable:
@@ -189,10 +195,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
         return decorator
 
     def _after_render(self, _) -> None:
-        """Render callable choices.
+        """Run after the :class:`~prompt_toolkit.application.Application` is rendered/updated.
 
-        Forcing a check on `self._rendered` as this event is fired up on each
-        render, we only want this to fire up once.
+        Since this function is fired up on each render, adding a check on `self._rendered` to
+        process logics that should only run once.
         """
         if not self._rendered:
             self._rendered = True
@@ -206,9 +212,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._redraw()
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
-        """Get the prompt message.
+        """Get the prompt message to display.
 
-        :return: List of formatted text.
+        Returns:
+            Formatted text in list of tuple format.
         """
         pre_answer = (
             "class:instruction",
@@ -218,13 +225,20 @@ class BaseComplexPrompt(BaseSimplePrompt):
         return super()._get_prompt_message(pre_answer, post_answer)
 
     def _run(self) -> Any:
+        """Run the application."""
         return self.application.run()
 
     @property
     def content_control(self) -> InquirerPyUIControl:
         """Get the content controller object.
 
-        Needs to be an instance of InquirerPyUIControl.
+        Needs to be an instance of :class:`~InquirerPy.base.control.InquirerPyUIControl`.
+
+        Each :class:`.BaseComplexPrompt` requires a `content_control` to display custom
+        contents for the prompt.
+
+        Raises:
+            NotImplementedError: When `self._content_control` is not found.
         """
         if not self._content_control:
             raise NotImplementedError
@@ -232,12 +246,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     @content_control.setter
     def content_control(self, value: InquirerPyUIControl) -> None:
-        """Setter of content_control."""
         self._content_control = value
 
     @property
     def result_name(self) -> Any:
-        """Get the result name of the application.
+        """Get the result value that should be printed to the terminal.
 
         In multiselect scenario, return result as a list.
         """
@@ -251,7 +264,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     @property
     def result_value(self) -> Any:
-        """Get the result value of the application.
+        """Get the result value that should return to the user.
 
         In multiselect scenario, return result as a list.
         """
@@ -265,10 +278,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     @property
     def selected_choices(self) -> List[Any]:
-        """Get all user selected choices.
-
-        :return: List of selected/enabled choices.
-        """
+        """List[Any]: Get all user selected choices."""
 
         def filter_choice(choice):
             return not isinstance(choice, Separator) and choice["enabled"]
@@ -277,10 +287,13 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     @property
     def application(self) -> Application:
-        """Get application.
+        """Get the application.
 
-        Require `self._application` to be defined since this class
-        doesn't implement `Layout` and `Application`.
+        :class:`.BaseComplexPrompt` requires :attr:`.BaseComplexPrompt._application` to be defined since this class
+        doesn't implement :class:`~prompt_toolkit.layout.Layout` and :class:`~prompt_toolkit.application.Application`.
+
+        Raises:
+            NotImplementedError: When `self._application` is not defined.
         """
         if not self._application:
             raise NotImplementedError
@@ -288,13 +301,13 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     @application.setter
     def application(self, value: Application) -> None:
-        """Setter for `self._application`."""
         self._application = value
 
     def _handle_down(self) -> bool:
-        """Handle event when user attempting to move down.
+        """Handle event when user attempts to move down.
 
-        :return: Boolean indicating if the action hits the cap.
+        Returns:
+            Boolean indicating if the action hits the cap.
         """
         if self._cycle:
             self.content_control.selected_choice_index = (
@@ -314,9 +327,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
             return False
 
     def _handle_up(self) -> bool:
-        """Handle event when user attempting to move down.
+        """Handle event when user attempts to move up.
 
-        :return: Boolean indicating if the action hits the cap.
+        Returns:
+            Boolean indicating if the action hits the cap.
         """
         if self._cycle:
             self.content_control.selected_choice_index = (
@@ -349,7 +363,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def total_message_length(self) -> int:
         """Get total width of the message row.
 
-        :return: Mesage length.
+        Used mainly to calculate how much offset should be applied when getting
+        the height.
+
+        Returns:
+            Total Mesage length.
         """
         total_message_length = 0
         if self._qmark:
@@ -366,7 +384,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def wrap_lines_offset(self) -> int:
         """Get extra offset due to line wrapping.
 
-        :return: Extra offset.
+        Returns:
+            Extra offset should be applied to the height.
         """
         if not self._wrap_lines:
             return 0
@@ -375,7 +394,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     @property
     def loading(self) -> bool:
-        """bool: Indicate if the prompt should be loading."""
+        """bool: Indicate if the prompt is loading."""
         return self.content_control.loading
 
     @loading.setter
