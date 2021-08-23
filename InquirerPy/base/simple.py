@@ -1,4 +1,4 @@
-"""Contains the base class `BaseSimplePrompt` for all types of prompts."""
+"""Contains the base class :class:`.BaseSimplePrompt`."""
 import os
 import re
 from abc import ABC, abstractmethod
@@ -16,28 +16,18 @@ from InquirerPy.utils import InquirerPyStyle, SessionResult, get_style
 
 
 class BaseSimplePrompt(ABC):
-    """The base class for simple prompts.
+    """The base class to create a simple terminal input prompt.
 
-    Inherit this class to create a simple prompt that leverage `prompt_toolkit`
-    PromptSession.
+    Note:
+        No actual :class:`~prompt_toolkit.application.Application` is created by this class.
+        This class only creates some common interface and attributes that can be easily used
+        by `prompt_toolkit`.
 
-    Note: the PromptSession is not initialised in the constructor, require
-    a call of `self.session = PromptSession(...)`.
+        To have a functional prompt, you'll at least have to implement the :meth:`.BaseSimplePrompt._run`
+        and :meth:`.BaseSimplePrompt._get_prompt_message`.
 
-    :param message: The question message to display.
-    :param style: The style dictionary to apply.
-    :param vi_mode: Use vi kb for the prompt.
-    :param qmark: The custom symbol to display infront of the question before its answered.
-    :param amark: The custom symbol to display infront of the question after its answered.
-    :param instruction: Instruction to display after the question message.
-    :param validate: A callable or Validator instance to validate user input.
-    :param invalid_message: The message to display when input is invalid.
-    :param transformer: A callable to transform the result, this is visual effect only.
-    :param filter: A callable to filter the result, updating the user input before returning the result.
-    :param session_result: The current session result, this is used by callable message and choices
-        to generate dynamic values. If using alternate syntax, skip this value.
-    :param default: Default value for the prompt.
-    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+    See Also:
+        :class:`~InquirerPy.prompts.input.InputPrompt`
     """
 
     def __init__(
@@ -56,7 +46,6 @@ class BaseSimplePrompt(ABC):
         wrap_lines: bool = True,
         session_result: SessionResult = None,
     ) -> None:
-        """Construct the base class for simple prompts."""
         self._result = session_result or {}
         self._message = (
             message
@@ -98,31 +87,43 @@ class BaseSimplePrompt(ABC):
 
     @property
     def status(self) -> Dict[str, Any]:
-        """Get status value of the prompt."""
+        """Dict[str, Any]: Get current prompt status.
+
+        The status contains 2 keys: "answered" and "result".
+
+        `answered`: If the current prompt is answered.
+
+        `result`: The result of the user answer.
+        """
         return self._status
 
     @status.setter
     def status(self, value) -> None:
-        """Set status value of the prompt."""
         self._status = value
 
     def register_kb(
         self, *keys: Union[Keys, str], filter: FilterOrBool = True
     ) -> Callable[[KeyHandlerCallable], KeyHandlerCallable]:
-        """Decorate keybinding registration function.
+        """Keybinding registration decorator.
 
-        Format all alt related keybindings.
+        This decorator wraps around the :meth:`prompt_toolkit.key_binding.KeyBindings.add` with
+        added feature to process `alt` realted keybindings.
 
-        Due to `prompt_toolkit` doesn't process alt related keybindings,
-        it requires alt-ANY to "escape" + "ANY".
+        By default, `prompt_toolkit` doesn't process `alt` related keybindings,
+        it requires `alt-ANY` to `escape` + `ANY`.
 
-        Check a list of keys argument if they are alt related, change
-        them to escape.
+        Args:
+            keys: The keys to bind that can trigger the function.
+            filter: :class:`~prompt_toolkit.filter.Condition` to indicate if this keybinding should be active.
 
-        :param keys: The keys to bind into the keybindings
-        :param filter: Condition of whether this keybinding should be active.
-        :return: A decorator that should be applied to the function thats intended
-            to be active when the keys being pressed.
+        Returns:
+            A decorator that should be applied to the function thats intended to be active when the keys
+            are pressed.
+
+        Examples:
+            >>> @self.register_kb("alt-j")
+            ... def test(event):
+            ...     pass
         """
         alt_pattern = re.compile(r"^alt-(.*)")
 
@@ -148,16 +149,22 @@ class BaseSimplePrompt(ABC):
     def _get_prompt_message(
         self, pre_answer: Tuple[str, str], post_answer: Tuple[str, str]
     ) -> List[Tuple[str, str]]:
-        """Return the formatted text to display in the prompt.
+        """Get the question message in formatted text form to display in the prompt.
 
-        Leveraging the nature of Dict in python, we can dynamically update the prompt
-        message of the PromptSession.
+        This function is mainly used to render the question message dynamically based
+        on the current status (answered or not answered) of the prompt.
 
-        This is useful to format/customize user input for better visual.
+        Note:
+            The function requires implementation when inheriting :class:`.BaseSimplePrompt`.
+            You should call `super()._get_prompt_message(pre_answer, post_answer)` in
+            the implemented `_get_prompt_message`.
 
-        :param pre_answer: The information to display before answering the question.
-        :param post_answer: The information to display after answering the question.
-        :return: Formatted text thats ready to be consumed by PromptSession.
+        Args:
+            pre_answer: The message to display before the question is answered.
+            post_answer: The information to display after the question is answered.
+
+        Returns:
+            Formatted text in list of tuple format.
         """
         display_message = []
         if self.status["result"] == INQUIRERPY_KEYBOARD_INTERRUPT:
@@ -195,17 +202,24 @@ class BaseSimplePrompt(ABC):
 
     @abstractmethod
     def _run(self) -> Any:
-        """Abstractmethod to enforce a run function is implemented for eaiser management.
+        """Abstractmethod to enforce a run function is implemented.
 
-        All prompt instance require a run call to initialised the `PromptSession` or `Application`.
+        All prompt instance require a `_run` call to initialise and run an instance of
+        `PromptSession` or `Application`.
         """
         pass
 
     def execute(self, raise_keyboard_interrupt: bool = True) -> Any:
         """Run the prompt and get the result.
 
-        :param raise_keyboard_interrupt: Raise kbi exception when user hit 'c-c'.
-        :return: User entered/selected value.
+        Args:
+            raise_keyboard_interrupt: **Deprecated**. Set this argument on the prompt initialisation instead.
+
+        Returns:
+            Value of the user answer. Types varies depending on the prompt.
+
+        Raises:
+            KeyboardInterrupt: When `ctrl-c` is pressed and `raise_keyboard_interrupt` is True.
         """
         result = self._run()
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
@@ -221,8 +235,5 @@ class BaseSimplePrompt(ABC):
 
     @property
     def instruction(self) -> str:
-        """Instruction to display next to question.
-
-        :return: Instruction text
-        """
+        """str: Instruction to display next to question."""
         return self._instruction

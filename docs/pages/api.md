@@ -35,6 +35,15 @@
     :members:
 ```
 
+## base
+
+### simple
+
+```{eval-rst}
+.. automodule:: InquirerPy.base.simple
+    :members:
+```
+
 ## exceptions
 
 ```{eval-rst}
