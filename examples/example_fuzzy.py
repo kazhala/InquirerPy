@@ -4,7 +4,7 @@ from contextlib import ExitStack
 from pathlib import Path
 
 from InquirerPy import inquirer, prompt
-from InquirerPy.spinner import SPINNERS
+from InquirerPy.containers.spinner import SPINNERS
 
 
 def get_choices(_):

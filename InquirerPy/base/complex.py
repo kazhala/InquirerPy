@@ -13,8 +13,8 @@ from prompt_toolkit.validation import Validator
 
 from InquirerPy.base.control import InquirerPyUIControl
 from InquirerPy.base.simple import BaseSimplePrompt
+from InquirerPy.containers import SpinnerWindow
 from InquirerPy.separator import Separator
-from InquirerPy.spinner import SpinnerWindow
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
