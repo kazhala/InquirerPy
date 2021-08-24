@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
+from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.list import ListPrompt
@@ -289,7 +289,7 @@ class ExpandPrompt(ListPrompt):
         if not self.content_control._expanded:
             return
         while True:
-            cap = BaseComplexPrompt._handle_up(self)
+            cap = BaseListPrompt._handle_up(self)
             if not isinstance(
                 self.content_control.selection["value"], Separator
             ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
@@ -307,7 +307,7 @@ class ExpandPrompt(ListPrompt):
         if not self.content_control._expanded:
             return
         while True:
-            cap = BaseComplexPrompt._handle_down(self)
+            cap = BaseListPrompt._handle_down(self)
             if not isinstance(
                 self.content_control.selection["value"], Separator
             ) and not isinstance(self.content_control.selection["value"], ExpandHelp):

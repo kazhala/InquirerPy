@@ -2,7 +2,7 @@
 import asyncio
 import shutil
 from abc import abstractmethod
-from typing import Any, Callable, Dict, List, NamedTuple, Tuple, Union, cast
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union, cast
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -125,7 +125,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         return decorator
 
-    def _after_render(self, app: Application) -> None:
+    def _after_render(self, app: Optional[Application]) -> None:
         """Run after the :class:`~prompt_toolkit.application.Application` is rendered/updated.
 
         Since this function is fired up on each render, adding a check on `self._rendered` to
@@ -151,7 +151,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
             self._on_rendered(app)
 
-    def _on_rendered(self, _: Application) -> None:
+    def _on_rendered(self, _: Optional[Application]) -> None:
         pass
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:

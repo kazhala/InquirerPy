@@ -1,4 +1,4 @@
-from InquirerPy import prompt, inquirer
+from InquirerPy import inquirer, prompt
 from InquirerPy.separator import Separator
 
 
