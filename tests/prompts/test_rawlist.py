@@ -209,13 +209,6 @@ class TestRawList(unittest.TestCase):
             separator=".",
             instruction="bb",
         )
-        mocked_add.assert_has_calls([call("c-n", filter=ANY)])
-        mocked_add.assert_has_calls([call("c-p", filter=ANY)])
-        try:
-            mocked_add.assert_has_calls([call("1", filter=True)])
-            self.fail("choices kb should be after_render")
-        except:
-            pass
         prompt._choices_callback("")
         mocked_add.assert_has_calls([call("1")])
         mocked_add.assert_has_calls([call("2")])
@@ -225,4 +218,4 @@ class TestRawList(unittest.TestCase):
         prompt = RawlistPrompt(message="", choices=[i for i in range(10)])
         self.assertRaises(InvalidArgument, prompt._choices_callback, "")
         prompt = RawlistPrompt(message="", choices=[i for i in range(9)])
-        prompt._after_render("")
+        prompt._after_render(None)

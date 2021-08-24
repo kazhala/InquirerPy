@@ -177,22 +177,6 @@ class TestCheckbox(unittest.TestCase):
             self.assertEqual(prompt._invalid, True)
             self.assertEqual(prompt._invalid_message, "hello")
 
-    @patch.object(CheckboxPrompt, "_register_kb")
-    def test_kb_register(self, mocked_kb):
-        CheckboxPrompt(
-            message="",
-            choices=self.choices,
-        )
-        mocked_kb.assert_has_calls([call("down", filter=ANY)])
-        mocked_kb.assert_has_calls([call("c-n", filter=ANY)])
-        mocked_kb.assert_has_calls([call("j", filter=ANY)])
-        try:
-            mocked_kb.assert_has_calls([call("alt-r", filter=ANY)])
-            self.fail("keybinding failed to apply multiselect filter")
-        except:
-            pass
-        mocked_kb.assert_has_calls([call("alt-a", filter=ANY)])
-
     def test_kb(self):
         prompt = CheckboxPrompt(message="", choices=self.choices)
         prompt._invalid = True

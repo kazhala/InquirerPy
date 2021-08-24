@@ -291,26 +291,3 @@ class TestExpandPrompt(unittest.TestCase):
                 },
             ],
         )
-
-    def test_expand_cycle(self):
-        prompt = ExpandPrompt(
-            message="",
-            choices=[
-                Separator(),
-                {"name": "hello", "value": "world", "key": "b"},
-                Separator("**********"),
-                {"name": "foo", "value": "boo", "key": "f"},
-                Separator("**********"),
-            ],
-            cycle=False,
-        )
-        prompt.content_control._expanded = True
-        self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_up()
-        self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
-        prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_choice_index, 3)
-        prompt._handle_down()
-        prompt._handle_down()
-        self.assertEqual(prompt.content_control.selected_choice_index, 3)

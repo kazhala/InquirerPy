@@ -8,14 +8,14 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 
 from InquirerPy.base.complex import BaseComplexPrompt
 from InquirerPy.base.control import InquirerPyUIControl
+from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.containers.spinner import SPINNERS
 from InquirerPy.prompts.fuzzy import FuzzyPrompt
 
 
-class TestBaseComples(unittest.TestCase):
-    @patch("InquirerPy.base.simple.BaseSimplePrompt.register_kb")
+class TestBaseComplex(unittest.TestCase):
     @patch("InquirerPy.base.complex.SpinnerWindow")
-    def test_constructor(self, mocked_spinner, mocked_kb) -> None:
+    def test_constructor(self, mocked_spinner) -> None:
         mocked_spinner.return_value = Window(
             content=FormattedTextControl(text=[("", "")])
         )
@@ -27,23 +27,6 @@ class TestBaseComples(unittest.TestCase):
             text="hello",
             delay=0.1,
         )
-
-        mocked_kb.assert_has_calls(
-            [
-                call("down", filter=ANY),
-            ]
-        )
-        mocked_kb.assert_has_calls(
-            [
-                call("c-n", filter=ANY),
-            ]
-        )
-        mocked_kb.assert_has_calls(
-            [
-                call("space", filter=ANY),
-            ]
-        )
-        mocked_kb.assert_called_with("enter", filter=ANY)
 
         fuzzy_prompt = FuzzyPrompt(
             message="hello",
@@ -71,10 +54,11 @@ class TestBaseComples(unittest.TestCase):
         hello("")  # type: ignore
         self.assertFalse(fuzzy_prompt._invalid)
 
+    @patch.object(BaseComplexPrompt, "_register_kb")
     @patch.object(InquirerPyUIControl, "retrieve_choices", new_callable=PropertyMock)
-    @patch.object(BaseComplexPrompt, "loading", new_callable=PropertyMock)
+    @patch.object(BaseListPrompt, "loading", new_callable=PropertyMock)
     @patch("asyncio.create_task")
-    def test_after_render(self, mocked, mocked_loading, mocked_choices):
+    def test_after_render(self, mocked, mocked_loading, mocked_choices, mocked_kb):
         class Task(NamedTuple):
             add_done_callback: Callable
 
@@ -87,6 +71,16 @@ class TestBaseComples(unittest.TestCase):
         mocked_loading.assert_called_once()
         mocked_choices.assert_called_once()
         self.assertEqual(prompt._rendered, True)
+        mocked_kb.assert_has_calls(
+            [
+                call("down", filter=ANY),
+            ]
+        )
+        mocked_kb.assert_has_calls(
+            [
+                call("c-n", filter=ANY),
+            ]
+        )
 
     def test_prompt_message(self):
         prompt = FuzzyPrompt(message="Select one of them", choices=lambda _: [1, 2, 3])

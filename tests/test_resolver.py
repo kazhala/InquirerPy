@@ -1,6 +1,6 @@
 import os
 import unittest
-from unittest.mock import ANY, call, patch
+from unittest.mock import ANY, PropertyMock, call, patch
 
 from prompt_toolkit.shortcuts.prompt import PromptSession
 
@@ -386,14 +386,29 @@ class TestResolver(unittest.TestCase):
 
     @patch.object(ListPrompt, "execute")
     @patch.object(InputPrompt, "execute")
-    @patch.object(BaseComplexPrompt, "_register_kb")
+    @patch.object(BaseComplexPrompt, "kb_maps", new_callable=PropertyMock)
     def test_custom_kb(self, mocked_kb, mocked_execute1, mocked_execute2):
         questions = [{"type": "input", "message": "hello"}]
         prompt(questions, keybindings={"up": [{"key": "up"}]})
         mocked_kb.assert_not_called()
         questions = [{"type": "list", "message": "aasdf", "choices": [1, 2, 3]}]
         prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
-        mocked_kb.assert_has_calls([call("c-p", filter=ANY)])
+        mocked_kb.assert_has_calls(
+            [
+                call(
+                    {
+                        "down": ANY,
+                        "up": [{"key": "c-p"}],
+                        "toggle": ANY,
+                        "toggle-down": ANY,
+                        "toggle-up": ANY,
+                        "toggle-all": ANY,
+                        "toggle-all-true": ANY,
+                        "toggle-all-false": ANY,
+                    }
+                )
+            ]
+        )
         try:
             mocked_kb.assert_has_calls([call("k", filter=ANY)])
             self.fail("should not have called")
@@ -410,7 +425,22 @@ class TestResolver(unittest.TestCase):
             }
         ]
         prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
-        mocked_kb.assert_has_calls([call("c-w", filter=ANY)])
+        mocked_kb.assert_has_calls(
+            [
+                call(
+                    {
+                        "down": ANY,
+                        "up": [{"key": "c-w"}],
+                        "toggle": ANY,
+                        "toggle-down": ANY,
+                        "toggle-up": ANY,
+                        "toggle-all": ANY,
+                        "toggle-all-true": ANY,
+                        "toggle-all-false": ANY,
+                    }
+                )
+            ]
+        )
         try:
             mocked_kb.assert_has_calls([call("c-p", filter=ANY)])
             self.fail("should not have called")
