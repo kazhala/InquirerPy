@@ -23,7 +23,7 @@ from prompt_toolkit.lexers.base import SimpleLexer
 from prompt_toolkit.validation import ValidationError, Validator
 from prompt_toolkit.widgets.base import Frame
 
-from InquirerPy.base import FakeDocument, InquirerPyUIControl
+from InquirerPy.base import FakeDocument, InquirerPyUIListControl
 from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.containers.message import MessageWindow
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
@@ -39,7 +39,7 @@ from InquirerPy.utils import (
 __all__ = ["FuzzyPrompt"]
 
 
-class InquirerPyFuzzyControl(InquirerPyUIControl):
+class InquirerPyFuzzyControl(InquirerPyUIListControl):
     """A UIControl element intended to be used by `prompt_toolkit` Window class.
 
     This UIControl is for listing the available choices based on filtering.

@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.validation import ValidationError, Validator
 
-from InquirerPy.base import FakeDocument, InquirerPyUIControl
+from InquirerPy.base import FakeDocument, InquirerPyUIListControl
 from InquirerPy.enum import (
     INQUIRERPY_EMPTY_HEX_SEQUENCE,
     INQUIRERPY_FILL_HEX_SEQUENCE,
@@ -17,7 +17,7 @@ from InquirerPy.utils import InquirerPyStyle, ListChoices, SessionResult
 __all__ = ["CheckboxPrompt"]
 
 
-class InquirerPyCheckboxControl(InquirerPyUIControl):
+class InquirerPyCheckboxControl(InquirerPyUIListControl):
     """A UIControl class intended to be used by `prompt_toolkit` window.
 
     Used to dynamically update the content and indicate the current user selection

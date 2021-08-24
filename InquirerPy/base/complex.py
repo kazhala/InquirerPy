@@ -1,4 +1,4 @@
-"""Contains the interface class :class:`.BaseComplexPrompt` for list type prompts and the mocked document class :class:`.FakeDocument`."""
+"""Contains the interface class :class:`.BaseComplexPrompt` for more complex prompts and the mocked document class :class:`.FakeDocument`."""
 import asyncio
 import shutil
 from abc import abstractmethod
@@ -42,7 +42,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     See Also:
         :class:`~InquirerPy.base.BaseListPrompt`
-        :class:`~InquirerPy.prompt.fuzzy.FuzzyPrompt`
+        :class:`~InquirerPy.prompts.fuzzy.FuzzyPrompt`
     """
 
     def __init__(
@@ -152,6 +152,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             self._on_rendered(app)
 
     def _on_rendered(self, _: Optional[Application]) -> None:
+        """Run once after the UI is rendered. Acts like `ComponentDidMount`."""
         pass
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:

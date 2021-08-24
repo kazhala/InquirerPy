@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
+from InquirerPy.base import BaseListPrompt, InquirerPyUIListControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.list import ListPrompt
@@ -19,7 +19,7 @@ class ExpandHelp(NamedTuple):
     help_msg: str
 
 
-class InquirerPyExpandControl(InquirerPyUIControl):
+class InquirerPyExpandControl(InquirerPyUIListControl):
     """A content control intended to be used by `prompt_toolkit` window.
 
     All parameter types and purposes, reference `ExpandPrompt`.

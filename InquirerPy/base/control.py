@@ -1,4 +1,4 @@
-"""Contains the content control class `InquirerPyUIControl`."""
+"""Contains the content control class :class:`.InquirerPyUIListControl`."""
 import inspect
 from abc import abstractmethod
 from typing import Any, Awaitable, Callable, Dict, List, Tuple, cast
@@ -10,26 +10,23 @@ from InquirerPy.separator import Separator
 from InquirerPy.utils import ListChoices, SessionResult, transform_async
 
 
-class InquirerPyUIControl(FormattedTextControl):
-    """A UIControl class intended to be consumed by `prompt_toolkit` window.
+class InquirerPyUIListControl(FormattedTextControl):
+    """A base class to create :class:`~prompt_toolkit.layout.UIControl` to display list type contents.
 
-    Dynamically adapt to user input and update formatted text.
-
-    :param choices: List of choices to display as the content.
-        Can be a sync callable or async callale.
-        If its async callable, use `retrieve_choices` in `after_render` otherwise use `retrieve_choices_sync` in `after_render`.
-
-    :param default: Default value, will impact the cursor position.
-    :param session_result: Current session result.
-    :param multiselect: Indicate if the current prompt is multiselect enabled.
+    Args:
+        choices: List of choices to display as the content.
+            Can also be a callable or async callable that returns a list of choices.
+        default: Default value, this will affect the cursor position.
+        multiselect: Indicate if the current prompt has `multiselect` enabled.
+        session_result: Current session result.
     """
 
     def __init__(
         self,
         choices: ListChoices,
         default: Any = None,
-        session_result: SessionResult = None,
         multiselect: bool = False,
+        session_result: SessionResult = None,
     ) -> None:
         self._session_result = session_result or {}
         self._selected_choice_index: int = 0
@@ -60,7 +57,11 @@ class InquirerPyUIControl(FormattedTextControl):
     async def retrieve_choices(self) -> None:
         """Retrieve the callable choices and format them.
 
-        Should be called in the `after_render` call in `Application`.
+        Should be called in the :meth:`~InquirerPy.base.complex.BaseComplexPrompt._on_rendered` method.
+
+        Examples:
+            >>> import asyncio
+            >>> asyncio.create_task(self.retrieve_choices())
         """
         self._raw_choices = await cast(
             Callable[..., Awaitable[Any]], self._choice_func
@@ -73,9 +74,15 @@ class InquirerPyUIControl(FormattedTextControl):
     def _get_choices(self, choices: List[Any], default: Any) -> List[Dict[str, Any]]:
         """Process the raw user input choices and format it into dictionary.
 
-        :param choices: List of choices to display.
-        :param default: The default value, this affect selected_choice_index.
-        :return: Formatted choices.
+        Args:
+            choices: List of chices to display.
+            default: Default value, this will affect the :attr:`.InquirerPyUIListControl.selected_choice_index`
+
+        Returns:
+            List of choices.
+
+        Raises:
+            RequiredKeyNotFound: When the provided choice is missing the `name` or `value` key.
         """
         processed_choices: List[Dict[str, Any]] = []
         try:
@@ -108,32 +115,33 @@ class InquirerPyUIControl(FormattedTextControl):
                     )
         except KeyError:
             raise RequiredKeyNotFound(
-                "dictionary type of choice require a name key and a value key"
+                "dictionary type of choice require a 'name' key and a 'value' key"
             )
         return processed_choices
 
     @property
     def selected_choice_index(self) -> int:
-        """Get current highlighted index."""
+        """int: Current highlighted index."""
         return self._selected_choice_index
 
     @selected_choice_index.setter
-    def selected_choice_index(self, value) -> None:
-        """Set index to highlight."""
+    def selected_choice_index(self, value: int) -> None:
         self._selected_choice_index = value
 
     @property
     def choices(self) -> List[Dict[str, Any]]:
-        """Get all processed choices."""
+        """List[Dict[str, Any]]: Get all processed choices."""
         return self._choices
 
     @choices.setter
-    def choices(self, value) -> None:
-        """Set processed choices."""
+    def choices(self, value: List[Dict[str, Any]]) -> None:
         self._choices = value
 
     def _safety_check(self) -> None:
-        """Validate choices, check empty or all Separator."""
+        """Validate processed choices.
+
+        Check if the choices are empty or if it only contains :class:`~InquirerPy.separator.Separator`.
+        """
         if not self.choices:
             raise InvalidArgument("argument choices cannot be empty")
         should_proceed: bool = False
@@ -149,7 +157,8 @@ class InquirerPyUIControl(FormattedTextControl):
     def _get_formatted_choices(self) -> List[Tuple[str, str]]:
         """Get all choices in formatted text format.
 
-        :return: A list of formatted choices.
+        Returns:
+            List of choices in formatted text form.
         """
         display_choices = []
 
@@ -167,7 +176,7 @@ class InquirerPyUIControl(FormattedTextControl):
     def _format_choices(self) -> None:
         """Perform post processing on the choices.
 
-        Customise the choices after `self._get_choices` call.
+        Additional customisation to the choices after :meth:`.InquirerPyUIListControl._get_choices` call.
         """
         pass
 
@@ -175,7 +184,8 @@ class InquirerPyUIControl(FormattedTextControl):
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         """Generate the formatted text for hovered choice.
 
-        :return: List of formatted text.
+        Returns:
+            Formatted text in list of tuple format.
         """
         pass
 
@@ -183,24 +193,19 @@ class InquirerPyUIControl(FormattedTextControl):
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         """Generate the formatted text for non-hovered choices.
 
-        :return: List of formatted text.
+        Returns:
+            Formatted text in list of tuple format.
         """
         pass
 
     @property
     def choice_count(self) -> int:
-        """Get the choice count.
-
-        :return: The total count of choices.
-        """
+        """int: Total count of choices."""
         return len(self.choices)
 
     @property
     def selection(self) -> Dict[str, Any]:
-        """Get current selection value.
-
-        :return: A dictionary of name and value for the current pointed choice.
-        """
+        """Dict[str, Any]: Current selected choice."""
         return self.choices[self.selected_choice_index]
 
     @property

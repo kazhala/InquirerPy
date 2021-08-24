@@ -7,7 +7,7 @@ from prompt_toolkit.layout.containers import Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 
 from InquirerPy.base.complex import BaseComplexPrompt
-from InquirerPy.base.control import InquirerPyUIControl
+from InquirerPy.base.control import InquirerPyUIListControl
 from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.containers.spinner import SPINNERS
 from InquirerPy.prompts.fuzzy import FuzzyPrompt
@@ -55,7 +55,9 @@ class TestBaseComplex(unittest.TestCase):
         self.assertFalse(fuzzy_prompt._invalid)
 
     @patch.object(BaseComplexPrompt, "_register_kb")
-    @patch.object(InquirerPyUIControl, "retrieve_choices", new_callable=PropertyMock)
+    @patch.object(
+        InquirerPyUIListControl, "retrieve_choices", new_callable=PropertyMock
+    )
     @patch.object(BaseListPrompt, "loading", new_callable=PropertyMock)
     @patch("asyncio.create_task")
     def test_after_render(self, mocked, mocked_loading, mocked_choices, mocked_kb):

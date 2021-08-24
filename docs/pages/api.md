@@ -10,7 +10,7 @@
 ## spinner
 
 ```{eval-rst}
-.. automodule:: InquirerPy.spinner
+.. automodule:: InquirerPy.containers.spinner
     :members:
 ```
 
@@ -48,6 +48,20 @@
 
 ```{eval-rst}
 .. automodule:: InquirerPy.base.complex
+    :members:
+```
+
+### list
+
+```{eval-rst}
+.. automodule:: InquirerPy.base.list
+    :members:
+```
+
+### control
+
+```{eval-rst}
+.. automodule:: InquirerPy.base.control
     :members:
 ```
 

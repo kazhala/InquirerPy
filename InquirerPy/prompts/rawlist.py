@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import InquirerPyUIControl
+from InquirerPy.base import InquirerPyUIListControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.list import ListPrompt
@@ -13,7 +13,7 @@ from InquirerPy.utils import InquirerPyStyle, ListChoices, SessionResult
 __all__ = ["RawlistPrompt"]
 
 
-class InquirerPyRawlistControl(InquirerPyUIControl):
+class InquirerPyRawlistControl(InquirerPyUIListControl):
     """A content control instance intended to used by `prompt_tool_kit` Window.
 
     All parameter types and purposes, reference `RawlistPrompt`.

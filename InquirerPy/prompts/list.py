@@ -17,7 +17,7 @@ from prompt_toolkit.layout.dimension import Dimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.validation import ValidationError, Validator
 
-from InquirerPy.base import InquirerPyUIControl
+from InquirerPy.base import InquirerPyUIListControl
 from InquirerPy.base.complex import FakeDocument
 from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.containers.message import MessageWindow
@@ -33,7 +33,7 @@ from InquirerPy.utils import (
 __all__ = ["ListPrompt"]
 
 
-class InquirerPyListControl(InquirerPyUIControl):
+class InquirerPyListControl(InquirerPyUIListControl):
     """A UIControl class intended to be consumed by prompt_toolkit window.
 
     Used to dynamically render the list and update the content based on input

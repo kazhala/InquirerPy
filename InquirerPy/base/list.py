@@ -1,4 +1,4 @@
-"""Contains the base class for all list type prompts."""
+"""Contains the base class :class:`.BaseListPrompt` which can be used to create a prompt involving choices."""
 import asyncio
 from abc import abstractmethod
 from typing import Any, Callable, Dict, List, Union
@@ -8,40 +8,21 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.base.complex import BaseComplexPrompt
-from InquirerPy.base.control import InquirerPyUIControl
+from InquirerPy.base.control import InquirerPyUIListControl
 from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
 class BaseListPrompt(BaseComplexPrompt):
-    """A base class to create a complex prompt using `prompt_toolkit` Application.
+    """A base class to create a complex prompt involving choice selections (i.e. list) using `prompt_toolkit` Application.
 
-    Consists of 2 horizontally splitted Window with one being the question and the second
-    window responsible to dynamically generate the content.
+    Note:
+        This class does not create :class:`~prompt_toolkit.layout.Layout` nor :class:`~prompt_toolkit.application.Application`,
+        it only contains the necessary attributes and helper functions to be consumed.
 
-    Upon entering the answer, update the first window's formatted text.
-
-    :param message: The question to display to the user.
-    :param style: Style to apply to the prompt.
-    :param vi_mode: Use vi kb for the prompt.
-    :param qmark: The custom symbol to display infront of the question before its answered.
-    :param amark: THe custom symbol to display infront of the question after its answered.
-    :param instruction: Instruction to display after the question message.
-    :param transformer: A callable to transform the result, this is visual effect only.
-    :param filter: A callable to filter the result, updating the user input before returning the result.
-    :param height: The preferred height of the choice window.
-    :param max_height: Max height choice window should reach.
-    :param validate: A callable or Validator instance to validate user selection.
-    :param invalid_message: Message to display when input is invalid.
-    :param multiselect: Enable multiselect mode.
-    :param keybindings: Custom keybindings to apply.
-    :param cycle: Return to top item if hit bottom or vice versa.
-    :param show_cursor: Display cursor at the end of the prompt.
-    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
-    :param spinner_enable: Enable spinner while loading choices.
-    :param spinner_pattern: List of pattern to display as the spinner.
-    :param spinner_delay: Spinner refresh frequency.
-    :param spinner_text: Loading text to display.
+    See Also:
+        :class:`~InquirerPy.prompts.list.ListPrompt`
+        :class:`~InquirerPy.prompts.fuzzy.FuzzyPrompt`
     """
 
     def __init__(
@@ -88,7 +69,7 @@ class BaseListPrompt(BaseComplexPrompt):
         if not keybindings:
             keybindings = {}
 
-        self._content_control: InquirerPyUIControl
+        self._content_control: InquirerPyUIListControl
         self._multiselect = multiselect
         self._is_multiselect = Condition(lambda: self._multiselect)
         self._cycle = cycle
@@ -135,6 +116,7 @@ class BaseListPrompt(BaseComplexPrompt):
         }
 
     def _on_rendered(self, _) -> None:
+        """Fetch all the choices and perform post processing after UI is rendered."""
         if self.content_control._choice_func:
             self.loading = True
             task = asyncio.create_task(self.content_control.retrieve_choices())
@@ -147,10 +129,10 @@ class BaseListPrompt(BaseComplexPrompt):
         self._redraw()
 
     @property
-    def content_control(self) -> InquirerPyUIControl:
+    def content_control(self) -> InquirerPyUIListControl:
         """Get the content controller object.
 
-        Needs to be an instance of :class:`~InquirerPy.base.control.InquirerPyUIControl`.
+        Needs to be an instance of :class:`~InquirerPy.base.control.InquirerPyUIListControl`.
 
         Each :class:`.BaseComplexPrompt` requires a `content_control` to display custom
         contents for the prompt.
@@ -163,7 +145,7 @@ class BaseListPrompt(BaseComplexPrompt):
         return self._content_control
 
     @content_control.setter
-    def content_control(self, value: InquirerPyUIControl) -> None:
+    def content_control(self, value: InquirerPyUIListControl) -> None:
         self._content_control = value
 
     @property
