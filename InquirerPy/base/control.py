@@ -14,7 +14,7 @@ class InquirerPyUIListControl(FormattedTextControl):
     """A base class to create :class:`~prompt_toolkit.layout.UIControl` to display list type contents.
 
     Args:
-        choices: List of choices to display as the content.
+        choices(ListChoices): List of choices to display as the content.
             Can also be a callable or async callable that returns a list of choices.
         default: Default value, this will affect the cursor position.
         multiselect: Indicate if the current prompt has `multiselect` enabled.

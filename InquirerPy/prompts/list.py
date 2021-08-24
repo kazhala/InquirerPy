@@ -12,7 +12,6 @@ from prompt_toolkit.layout.containers import (
     HSplit,
     Window,
 )
-from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.validation import ValidationError, Validator
@@ -21,6 +20,7 @@ from InquirerPy.base import InquirerPyUIListControl
 from InquirerPy.base.complex import FakeDocument
 from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.containers.message import MessageWindow
+from InquirerPy.containers.validation import ValidationWindow
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
@@ -220,18 +220,8 @@ class ListPrompt(BaseListPrompt):
             ),
             floats=[
                 Float(
-                    content=ConditionalContainer(
-                        Window(
-                            FormattedTextControl(
-                                [
-                                    (
-                                        "class:validation-toolbar",
-                                        self._invalid_message,
-                                    )
-                                ]
-                            ),
-                            dont_extend_height=True,
-                        ),
+                    content=ValidationWindow(
+                        invalid_message=self._invalid_message,
                         filter=self._is_invalid & ~IsDone(),
                     ),
                     left=0,

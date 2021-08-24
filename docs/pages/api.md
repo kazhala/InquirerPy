@@ -7,13 +7,6 @@
     :members:
 ```
 
-## spinner
-
-```{eval-rst}
-.. automodule:: InquirerPy.containers.spinner
-    :members:
-```
-
 ## separator
 
 ```{eval-rst}
@@ -32,6 +25,29 @@
 
 ```{eval-rst}
 .. automodule:: InquirerPy.validator
+    :members:
+```
+
+## Containers
+
+### spinner
+
+```{eval-rst}
+.. automodule:: InquirerPy.containers.spinner
+    :members:
+```
+
+### message
+
+```{eval-rst}
+.. automodule:: InquirerPy.containers.message
+    :members:
+```
+
+### validation
+
+```{eval-rst}
+.. automodule:: InquirerPy.containers.validation
     :members:
 ```
 
