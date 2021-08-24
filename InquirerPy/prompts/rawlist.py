@@ -3,9 +3,10 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
+from InquirerPy.base import InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
+from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, ListChoices, SessionResult
 
@@ -102,7 +103,7 @@ class InquirerPyRawlistControl(InquirerPyUIControl):
         return display_choices
 
 
-class RawlistPrompt(BaseListPrompt):
+class RawlistPrompt(ListPrompt):
     """Used to create a rawlist prompt where user can use number to jump to items.
 
     :param message: Message to display as question
@@ -168,7 +169,6 @@ class RawlistPrompt(BaseListPrompt):
         spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
-        """Construct content control and initialise the application while also apply keybindings."""
         self.content_control = InquirerPyRawlistControl(
             choices=choices,
             default=default,
@@ -181,6 +181,7 @@ class RawlistPrompt(BaseListPrompt):
         )
         super().__init__(
             message=message,
+            choices=choices,
             style=style,
             vi_mode=vi_mode,
             qmark=qmark,

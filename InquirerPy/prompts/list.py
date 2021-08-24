@@ -1,13 +1,34 @@
 """Module contains list prompt."""
 
+import shutil
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from prompt_toolkit.validation import Validator
+from prompt_toolkit.application.application import Application
+from prompt_toolkit.filters.cli import IsDone
+from prompt_toolkit.layout.containers import (
+    ConditionalContainer,
+    Float,
+    FloatContainer,
+    HSplit,
+    Window,
+)
+from prompt_toolkit.layout.controls import FormattedTextControl
+from prompt_toolkit.layout.dimension import Dimension
+from prompt_toolkit.layout.layout import Layout
+from prompt_toolkit.validation import ValidationError, Validator
 
-from InquirerPy.base import BaseListPrompt, InquirerPyUIControl
+from InquirerPy.base import InquirerPyUIControl
+from InquirerPy.base.complex import FakeDocument
+from InquirerPy.base.list import BaseListPrompt
+from InquirerPy.containers.message import MessageWindow
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle, ListChoices, SessionResult
+from InquirerPy.utils import (
+    InquirerPyStyle,
+    ListChoices,
+    SessionResult,
+    calculate_height,
+)
 
 __all__ = ["ListPrompt"]
 
@@ -134,16 +155,16 @@ class ListPrompt(BaseListPrompt):
         spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
-        """Initialise the content_control and create Application."""
-        self.content_control = InquirerPyListControl(
-            choices=choices,
-            default=default,
-            pointer=pointer,
-            marker=marker,
-            session_result=session_result,
-            multiselect=multiselect,
-            marker_pl=marker_pl,
-        )
+        if not hasattr(self, "_content_control"):
+            self.content_control = InquirerPyListControl(
+                choices=choices,
+                default=default,
+                pointer=pointer,
+                marker=marker,
+                session_result=session_result,
+                multiselect=multiselect,
+                marker_pl=marker_pl,
+            )
         super().__init__(
             message=message,
             style=style,
@@ -153,13 +174,10 @@ class ListPrompt(BaseListPrompt):
             instruction=instruction,
             transformer=transformer,
             filter=filter,
-            height=height,
-            max_height=max_height,
             validate=validate,
             invalid_message=invalid_message,
             multiselect=multiselect,
             keybindings=keybindings,
-            show_cursor=show_cursor,
             cycle=cycle,
             wrap_lines=wrap_lines,
             spinner_enable=spinner_enable,
@@ -168,3 +186,154 @@ class ListPrompt(BaseListPrompt):
             spinner_text=spinner_text,
             session_result=session_result,
         )
+        self._show_cursor = show_cursor
+        self._dimmension_height, self._dimmension_max_height = calculate_height(
+            height,
+            max_height,
+            wrap_lines_offset=self.wrap_lines_offset,
+        )
+
+        self.layout = FloatContainer(
+            content=HSplit(
+                [
+                    MessageWindow(
+                        message=self._get_prompt_message_with_cursor
+                        if self._show_cursor
+                        else self._get_prompt_message,
+                        filter=~self._is_loading | ~self._is_spinner_enable,
+                        wrap_lines=self._wrap_lines,
+                        show_cursor=self._show_cursor,
+                    ),
+                    self._spinner,
+                    ConditionalContainer(
+                        Window(
+                            content=self.content_control,
+                            height=Dimension(
+                                max=self._dimmension_max_height,
+                                preferred=self._dimmension_height,
+                            ),
+                            dont_extend_height=True,
+                        ),
+                        filter=~IsDone() & ~self._is_loading,
+                    ),
+                ]
+            ),
+            floats=[
+                Float(
+                    content=ConditionalContainer(
+                        Window(
+                            FormattedTextControl(
+                                [
+                                    (
+                                        "class:validation-toolbar",
+                                        self._invalid_message,
+                                    )
+                                ]
+                            ),
+                            dont_extend_height=True,
+                        ),
+                        filter=self._is_invalid & ~IsDone(),
+                    ),
+                    left=0,
+                    bottom=0,
+                )
+            ],
+        )
+
+        self.application = Application(
+            layout=Layout(self.layout),
+            style=self._style,
+            key_bindings=self._kb,
+            after_render=self._after_render,
+        )
+
+    def _get_prompt_message_with_cursor(self) -> List[Tuple[str, str]]:
+        """Obtain the prompt message to display.
+
+        Introduced a new method instead of using the `_get_prompt_message`
+        due to `expand` and `rawlist` make changes after calling `super()._get_prompt_message()`.
+
+        This ensures that cursor is always at the end of the window no matter
+        when the changes is made to the `_get_prompt_message`.
+        """
+        message = self._get_prompt_message()
+        message.append(("[SetCursorPosition]", ""))
+        message.append(("", " "))  # [SetCursorPosition] require char behind it
+        return message
+
+    def _toggle_choice(self) -> None:
+        """Toggle the `enabled` status of the choice."""
+        self.content_control.selection["enabled"] = not self.content_control.selection[
+            "enabled"
+        ]
+
+    def _toggle_all(self, value: bool = None) -> None:
+        """Toggle all choice `enabled` status.
+
+        :param value: Sepcify a value to toggle.
+        """
+        for choice in self.content_control.choices:
+            if isinstance(choice["value"], Separator):
+                continue
+            choice["enabled"] = value if value else not choice["enabled"]
+
+    def _handle_up(self) -> None:
+        """Handle the event when user attempt to move up."""
+        while True:
+            cap = super()._handle_up()
+            if not isinstance(self.content_control.selection["value"], Separator):
+                break
+            else:
+                if cap and not self._cycle:
+                    self._handle_down()
+                    break
+
+    def _handle_down(self) -> None:
+        """Handle the event when user attempt to move down."""
+        while True:
+            cap = super()._handle_down()
+            if not isinstance(self.content_control.selection["value"], Separator):
+                break
+            else:
+                if cap and not self._cycle:
+                    self._handle_up()
+                    break
+
+    def _handle_enter(self, event) -> None:
+        """Handle the event when user hit Enter key.
+
+        * Set the state to answered for an update to the prompt display.
+        * Set the result to user selected choice's name for display purpose.
+        * Let the app exit with the user selected choice's value and return the actual value back to resolver.
+
+        In multiselect scenario, if nothing is selected, return the current highlighted choice.
+        """
+        try:
+            fake_document = FakeDocument(self.result_value)
+            self._validator.validate(fake_document)  # type: ignore
+        except ValidationError:
+            self._invalid = True
+        else:
+            self.status["answered"] = True
+            if self._multiselect and not self.selected_choices:
+                self.status["result"] = [self.content_control.selection["name"]]
+                event.app.exit(result=[self.content_control.selection["value"]])
+            else:
+                self.status["result"] = self.result_name
+                event.app.exit(result=self.result_value)
+
+    @property
+    def wrap_lines_offset(self) -> int:
+        """Get extra offset due to line wrapping.
+
+        Overriding it to count the cursor as well.
+
+        :return: Extra offset.
+        """
+        if not self._wrap_lines:
+            return 0
+        total_message_length = self.total_message_length
+        if self._show_cursor:
+            total_message_length += 1
+        term_width, _ = shutil.get_terminal_size()
+        return total_message_length // term_width

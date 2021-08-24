@@ -4,12 +4,13 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.validation import ValidationError, Validator
 
-from InquirerPy.base import BaseListPrompt, FakeDocument, InquirerPyUIControl
+from InquirerPy.base import FakeDocument, InquirerPyUIControl
 from InquirerPy.enum import (
     INQUIRERPY_EMPTY_HEX_SEQUENCE,
     INQUIRERPY_FILL_HEX_SEQUENCE,
     INQUIRERPY_POINTER_SEQUENCE,
 )
+from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, ListChoices, SessionResult
 
@@ -81,7 +82,7 @@ class InquirerPyCheckboxControl(InquirerPyUIControl):
         return display_choices
 
 
-class CheckboxPrompt(BaseListPrompt):
+class CheckboxPrompt(ListPrompt):
     """A wrapper class around `prompt_toolkit` Application to create a checkbox prompt.
 
     :param message: Message to display.
@@ -151,6 +152,7 @@ class CheckboxPrompt(BaseListPrompt):
         )
         super().__init__(
             message=message,
+            choices=choices,
             style=style,
             vi_mode=vi_mode,
             qmark=qmark,

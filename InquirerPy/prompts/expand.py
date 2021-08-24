@@ -3,9 +3,10 @@ from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.base import BaseComplexPrompt, BaseListPrompt, InquirerPyUIControl
+from InquirerPy.base import BaseComplexPrompt, InquirerPyUIControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
+from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, ListChoices, SessionResult
 
@@ -147,7 +148,7 @@ class InquirerPyExpandControl(InquirerPyUIControl):
         return display_choices
 
 
-class ExpandPrompt(BaseListPrompt):
+class ExpandPrompt(ListPrompt):
     """Create a `prompt_toolkit` application and responsible to render the expand prompt.
 
     Prompt contains 2 state, expanded and not expanded. The visual effect are
@@ -232,6 +233,7 @@ class ExpandPrompt(BaseListPrompt):
         )
         super().__init__(
             message=message,
+            choices=choices,
             style=style,
             vi_mode=vi_mode,
             qmark=qmark,

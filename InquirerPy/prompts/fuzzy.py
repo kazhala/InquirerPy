@@ -8,7 +8,13 @@ from pfzy.types import HAYSTACKS
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters.cli import IsDone
-from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
+from prompt_toolkit.layout.containers import (
+    ConditionalContainer,
+    Float,
+    FloatContainer,
+    HSplit,
+    Window,
+)
 from prompt_toolkit.layout.controls import BufferControl, FormattedTextControl
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
@@ -17,7 +23,9 @@ from prompt_toolkit.lexers.base import SimpleLexer
 from prompt_toolkit.validation import ValidationError, Validator
 from prompt_toolkit.widgets.base import Frame
 
-from InquirerPy.base import BaseComplexPrompt, FakeDocument, InquirerPyUIControl
+from InquirerPy.base import FakeDocument, InquirerPyUIControl
+from InquirerPy.base.list import BaseListPrompt
+from InquirerPy.containers.message import MessageWindow
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.separator import Separator
@@ -224,7 +232,7 @@ class InquirerPyFuzzyControl(InquirerPyUIControl):
         return len(self._filtered_choices)
 
 
-class FuzzyPrompt(BaseComplexPrompt):
+class FuzzyPrompt(BaseListPrompt):
     """A filter prompt that allows user to input value.
 
     Filters the result using fuzzy finding. The fuzzy finding logic
@@ -360,12 +368,6 @@ class FuzzyPrompt(BaseComplexPrompt):
         )
 
         self._buffer = Buffer(on_text_changed=self._on_text_changed)
-        message_window = Window(
-            height=LayoutDimension.exact(1) if not self._wrap_lines else None,
-            content=FormattedTextControl(self._get_prompt_message, show_cursor=False),
-            wrap_lines=self._wrap_lines,
-            dont_extend_height=True,
-        )
         input_window = Window(
             height=LayoutDimension.exact(1),
             content=BufferControl(
@@ -395,35 +397,41 @@ class FuzzyPrompt(BaseComplexPrompt):
         if self._border:
             main_content_window = Frame(main_content_window)
         self._layout = Layout(
-            HSplit(
-                [
-                    ConditionalContainer(
-                        content=message_window,
-                        filter=~self._is_loading | ~self._is_spinner_enable,
-                    ),
-                    self._spinner,
-                    ConditionalContainer(
-                        main_content_window, filter=~IsDone() & ~self._is_loading
-                    ),
-                    ConditionalContainer(
-                        Window(FormattedTextControl([("", "")])),
-                        filter=~IsDone(),  # force validation bar to stay bottom
-                    ),
-                    ConditionalContainer(
-                        Window(
-                            FormattedTextControl(
-                                [
-                                    (
-                                        "class:validation-toolbar",
-                                        self._invalid_message,
-                                    )
-                                ]
-                            ),
-                            dont_extend_height=True,
+            FloatContainer(
+                content=HSplit(
+                    [
+                        MessageWindow(
+                            message=self._get_prompt_message,
+                            filter=~self._is_loading | ~self._is_spinner_enable,
+                            wrap_lines=self._wrap_lines,
+                            show_cursor=True,
                         ),
-                        filter=self._is_invalid & ~IsDone(),
-                    ),
-                ]
+                        self._spinner,
+                        ConditionalContainer(
+                            main_content_window, filter=~IsDone() & ~self._is_loading
+                        ),
+                    ]
+                ),
+                floats=[
+                    Float(
+                        content=ConditionalContainer(
+                            Window(
+                                FormattedTextControl(
+                                    [
+                                        (
+                                            "class:validation-toolbar",
+                                            self._invalid_message,
+                                        )
+                                    ]
+                                ),
+                                dont_extend_height=True,
+                            ),
+                            filter=self._is_invalid & ~IsDone(),
+                        ),
+                        left=0,
+                        bottom=0,
+                    )
+                ],
             )
         )
         self._layout.focus(input_window)

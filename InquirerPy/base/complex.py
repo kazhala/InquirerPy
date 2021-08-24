@@ -11,10 +11,8 @@ from prompt_toolkit.key_binding.key_bindings import KeyHandlerCallable
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.validation import Validator
 
-from InquirerPy.base.control import InquirerPyUIControl
 from InquirerPy.base.simple import BaseSimplePrompt
 from InquirerPy.containers import SpinnerWindow
-from InquirerPy.separator import Separator
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
@@ -59,9 +57,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         filter: Callable[[Any], Any] = None,
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
-        multiselect: bool = False,
-        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
-        cycle: bool = True,
         wrap_lines: bool = True,
         spinner_enable: bool = False,
         spinner_pattern: List[str] = None,
@@ -69,8 +64,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
-        if not keybindings:
-            keybindings = {}
         super().__init__(
             message=message,
             style=style,
@@ -85,19 +78,16 @@ class BaseComplexPrompt(BaseSimplePrompt):
             wrap_lines=wrap_lines,
             session_result=session_result,
         )
-        self._content_control: InquirerPyUIControl
         self._invalid_message = invalid_message
-        self._multiselect = multiselect
         self._rendered = False
         self._invalid = False
+        self._loading = False
         self._application: Application
-        self._cycle = cycle
         self._spinner_enable = spinner_enable
 
-        self._is_multiselect = Condition(lambda: self._multiselect)
         self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
         self._is_invalid = Condition(lambda: self._invalid)
-        self._is_loading = Condition(lambda: self.content_control.loading)
+        self._is_loading = Condition(lambda: self.loading)
         self._is_spinner_enable = Condition(lambda: self._spinner_enable)
 
         self._spinner = SpinnerWindow(
@@ -107,65 +97,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
             text=spinner_text or cast(str, self._message),
             delay=spinner_delay,
         )
-
-        self._kb_maps = {
-            "down": [
-                {"key": "down"},
-                {"key": "c-n", "filter": ~self._is_vim_edit},
-                {"key": "j", "filter": self._is_vim_edit},
-            ],
-            "up": [
-                {"key": "up"},
-                {"key": "c-p", "filter": ~self._is_vim_edit},
-                {"key": "k", "filter": self._is_vim_edit},
-            ],
-            "toggle": [
-                {"key": "space"},
-            ],
-            "toggle-down": [
-                {"key": Keys.Tab},
-            ],
-            "toggle-up": [
-                {"key": Keys.BackTab},
-            ],
-            "toggle-all": [
-                {"key": "alt-r"},
-            ],
-            "toggle-all-true": [
-                {"key": "alt-a"},
-            ],
-            "toggle-all-false": [],
-            **keybindings,
-        }
-
-        self._kb_func_lookup = {
-            "down": [{"func": self._handle_down}],
-            "up": [{"func": self._handle_up}],
-            "toggle": [{"func": self._toggle_choice}],
-            "toggle-down": [{"func": self._toggle_choice}, {"func": self._handle_down}],
-            "toggle-up": [{"func": self._toggle_choice}, {"func": self._handle_up}],
-            "toggle-all": [{"func": self._toggle_all}],
-            "toggle-all-true": [{"func": self._toggle_all, "args": [True]}],
-            "toggle-all-false": [{"func": self._toggle_all, "args": [False]}],
-        }
-        self._non_multiselect_action = {"down", "up"}
-
-        def keybinding_factory(keys, filter, action):
-            if not isinstance(keys, list):
-                keys = [keys]
-            if action not in self._non_multiselect_action:
-                filter = filter & self._is_multiselect
-
-            @self._register_kb(*keys, filter=filter)
-            def _(_):
-                for method in self._kb_func_lookup[action]:
-                    method["func"](*method.get("args", []))
-
-        for key, item in self._kb_maps.items():
-            for kb in item:
-                keybinding_factory(
-                    kb["key"], kb.get("filter", Condition(lambda: True)), key
-                )
 
         @self._register_kb("enter")
         def _(event):
@@ -194,7 +125,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         return decorator
 
-    def _after_render(self, _) -> None:
+    def _after_render(self, app: Application) -> None:
         """Run after the :class:`~prompt_toolkit.application.Application` is rendered/updated.
 
         Since this function is fired up on each render, adding a check on `self._rendered` to
@@ -202,14 +133,26 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """
         if not self._rendered:
             self._rendered = True
-            if self.content_control._choice_func:
-                self.loading = True
-                task = asyncio.create_task(self.content_control.retrieve_choices())
-                task.add_done_callback(self._choices_callback)
 
-    def _choices_callback(self, _) -> None:
-        """Perform actions once all choices are retrieved."""
-        self._redraw()
+            def keybinding_factory(keys, filter, action):
+                if not isinstance(keys, list):
+                    keys = [keys]
+
+                @self._register_kb(*keys, filter=filter)
+                def _(_):
+                    for method in self.kb_func_lookup[action]:
+                        method["func"](*method.get("args", []))
+
+            for key, item in self.kb_maps.items():
+                for kb in item:
+                    keybinding_factory(
+                        kb["key"], kb.get("filter", Condition(lambda: True)), key
+                    )
+
+            self._on_rendered(app)
+
+    def _on_rendered(self, _: Application) -> None:
+        pass
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get the prompt message to display.
@@ -229,63 +172,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         return self.application.run()
 
     @property
-    def content_control(self) -> InquirerPyUIControl:
-        """Get the content controller object.
-
-        Needs to be an instance of :class:`~InquirerPy.base.control.InquirerPyUIControl`.
-
-        Each :class:`.BaseComplexPrompt` requires a `content_control` to display custom
-        contents for the prompt.
-
-        Raises:
-            NotImplementedError: When `self._content_control` is not found.
-        """
-        if not self._content_control:
-            raise NotImplementedError
-        return self._content_control
-
-    @content_control.setter
-    def content_control(self, value: InquirerPyUIControl) -> None:
-        self._content_control = value
-
-    @property
-    def result_name(self) -> Any:
-        """Get the result value that should be printed to the terminal.
-
-        In multiselect scenario, return result as a list.
-        """
-        if self._multiselect:
-            return [choice["name"] for choice in self.selected_choices]
-        else:
-            try:
-                return self.content_control.selection["name"]
-            except IndexError:
-                return ""
-
-    @property
-    def result_value(self) -> Any:
-        """Get the result value that should return to the user.
-
-        In multiselect scenario, return result as a list.
-        """
-        if self._multiselect:
-            return [choice["value"] for choice in self.selected_choices]
-        else:
-            try:
-                return self.content_control.selection["value"]
-            except IndexError:
-                return ""
-
-    @property
-    def selected_choices(self) -> List[Any]:
-        """List[Any]: Get all user selected choices."""
-
-        def filter_choice(choice):
-            return not isinstance(choice, Separator) and choice["enabled"]
-
-        return list(filter(filter_choice, self.content_control.choices))
-
-    @property
     def application(self) -> Application:
         """Get the application.
 
@@ -303,60 +189,9 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def application(self, value: Application) -> None:
         self._application = value
 
-    def _handle_down(self) -> bool:
-        """Handle event when user attempts to move down.
-
-        Returns:
-            Boolean indicating if the action hits the cap.
-        """
-        if self._cycle:
-            self.content_control.selected_choice_index = (
-                self.content_control.selected_choice_index + 1
-            ) % self.content_control.choice_count
-            return False
-        else:
-            self.content_control.selected_choice_index += 1
-            if (
-                self.content_control.selected_choice_index
-                >= self.content_control.choice_count
-            ):
-                self.content_control.selected_choice_index = (
-                    self.content_control.choice_count - 1
-                )
-                return True
-            return False
-
-    def _handle_up(self) -> bool:
-        """Handle event when user attempts to move up.
-
-        Returns:
-            Boolean indicating if the action hits the cap.
-        """
-        if self._cycle:
-            self.content_control.selected_choice_index = (
-                self.content_control.selected_choice_index - 1
-            ) % self.content_control.choice_count
-            return False
-        else:
-            self.content_control.selected_choice_index -= 1
-            if self.content_control.selected_choice_index < 0:
-                self.content_control.selected_choice_index = 0
-                return True
-            return False
-
     @abstractmethod
     def _handle_enter(self, event) -> None:
         """Handle event when user input enter key."""
-        pass
-
-    @abstractmethod
-    def _toggle_choice(self) -> None:
-        """Handle event when user attempting to toggle the state of the chocie."""
-        pass
-
-    @abstractmethod
-    def _toggle_all(self, value: bool) -> None:
-        """Handle event when user attempting to alter the state of all choices."""
         pass
 
     @property
@@ -395,10 +230,32 @@ class BaseComplexPrompt(BaseSimplePrompt):
     @property
     def loading(self) -> bool:
         """bool: Indicate if the prompt is loading."""
-        return self.content_control.loading
+        return self._loading
 
     @loading.setter
     def loading(self, value: bool) -> None:
-        self.content_control.loading = value
+        self._loading = value
         if self.loading:
             asyncio.create_task(self._spinner.start())
+
+    @property
+    def kb_maps(self) -> Dict[str, Any]:
+        """Dict[str, Any]: Keybinding mappings."""
+        if not self._kb_maps:
+            raise NotImplementedError
+        return self._kb_maps
+
+    @kb_maps.setter
+    def kb_maps(self, value: Dict[str, Any]) -> None:
+        self._kb_maps = value
+
+    @property
+    def kb_func_lookup(self) -> Dict[str, Any]:
+        """Dict[str, Any]: Keybinding function lookup mappings.."""
+        if not self._kb_func_lookup:
+            raise NotImplementedError
+        return self._kb_func_lookup
+
+    @kb_func_lookup.setter
+    def kb_func_lookup(self, value: Dict[str, Any]) -> None:
+        self._kb_func_lookup = value

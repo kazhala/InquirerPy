@@ -1,19 +1,16 @@
 """Contains the base class for all list type prompts."""
-import shutil
-from typing import Any, Callable, Dict, List, Tuple, Union
+import asyncio
+from abc import abstractmethod
+from typing import Any, Callable, Dict, List, Union
 
-from prompt_toolkit.application import Application
-from prompt_toolkit.filters import IsDone
-from prompt_toolkit.filters.base import FilterOrBool
-from prompt_toolkit.layout.containers import ConditionalContainer, HSplit, Window
-from prompt_toolkit.layout.controls import FormattedTextControl
-from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
-from prompt_toolkit.layout.layout import Layout
-from prompt_toolkit.validation import ValidationError, Validator
+from prompt_toolkit.filters.base import Condition, FilterOrBool
+from prompt_toolkit.keys import Keys
+from prompt_toolkit.validation import Validator
 
-from InquirerPy.base.complex import BaseComplexPrompt, FakeDocument
+from InquirerPy.base.complex import BaseComplexPrompt
+from InquirerPy.base.control import InquirerPyUIControl
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle, SessionResult, calculate_height
+from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
 class BaseListPrompt(BaseComplexPrompt):
@@ -57,13 +54,10 @@ class BaseListPrompt(BaseComplexPrompt):
         instruction: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
-        height: Union[int, str] = None,
-        max_height: Union[int, str] = None,
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
         keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
-        show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
         spinner_enable: bool = False,
@@ -72,7 +66,6 @@ class BaseListPrompt(BaseComplexPrompt):
         spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
-        """Initialise the Application with Layout and keybindings."""
         super().__init__(
             message=message,
             style=style,
@@ -83,10 +76,7 @@ class BaseListPrompt(BaseComplexPrompt):
             filter=filter,
             invalid_message=invalid_message,
             validate=validate,
-            multiselect=multiselect,
             instruction=instruction,
-            keybindings=keybindings,
-            cycle=cycle,
             wrap_lines=wrap_lines,
             spinner_enable=spinner_enable,
             spinner_pattern=spinner_pattern,
@@ -94,158 +84,183 @@ class BaseListPrompt(BaseComplexPrompt):
             spinner_text=spinner_text,
             session_result=session_result,
         )
-        self._show_cursor = show_cursor
-        self._dimmension_height, self._dimmension_max_height = calculate_height(
-            height,
-            max_height,
-            wrap_lines_offset=self.wrap_lines_offset,
-        )
 
-        self.layout = HSplit(
-            [
-                ConditionalContainer(
-                    Window(
-                        height=LayoutDimension.exact(1)
-                        if not self._wrap_lines
-                        else None,
-                        content=FormattedTextControl(
-                            self._get_prompt_message_with_cursor
-                            if self._show_cursor
-                            else self._get_prompt_message,
-                            show_cursor=self._show_cursor,
-                        ),
-                        wrap_lines=self._wrap_lines,
-                        dont_extend_height=True,
-                    ),
-                    filter=~self._is_loading | ~self._is_spinner_enable,
-                ),
-                self._spinner,
-                ConditionalContainer(
-                    Window(
-                        content=self.content_control,
-                        height=Dimension(
-                            max=self._dimmension_max_height,
-                            preferred=self._dimmension_height,
-                        ),
-                        dont_extend_height=True,
-                    ),
-                    filter=~IsDone() & ~self._is_loading,
-                ),
-                ConditionalContainer(
-                    Window(FormattedTextControl([("", "")])),
-                    filter=~IsDone(),  # force validation bar to stay bottom
-                ),
-                ConditionalContainer(
-                    Window(
-                        FormattedTextControl(
-                            [
-                                (
-                                    "class:validation-toolbar",
-                                    self._invalid_message,
-                                )
-                            ]
-                        ),
-                        dont_extend_height=True,
-                    ),
-                    filter=self._is_invalid & ~IsDone(),
-                ),
-            ]
-        )
+        if not keybindings:
+            keybindings = {}
 
-        self.application = Application(
-            layout=Layout(self.layout),
-            style=self._style,
-            key_bindings=self._kb,
-            after_render=self._after_render,
-        )
+        self._content_control: InquirerPyUIControl
+        self._multiselect = multiselect
+        self._is_multiselect = Condition(lambda: self._multiselect)
+        self._cycle = cycle
 
-    def _get_prompt_message_with_cursor(self) -> List[Tuple[str, str]]:
-        """Obtain the prompt message to display.
+        self.kb_maps = {
+            "down": [
+                {"key": "down"},
+                {"key": "c-n", "filter": ~self._is_vim_edit},
+                {"key": "j", "filter": self._is_vim_edit},
+            ],
+            "up": [
+                {"key": "up"},
+                {"key": "c-p", "filter": ~self._is_vim_edit},
+                {"key": "k", "filter": self._is_vim_edit},
+            ],
+            "toggle": [
+                {"key": "space", "filter": self._is_multiselect},
+            ],
+            "toggle-down": [
+                {"key": Keys.Tab, "filter": self._is_multiselect},
+            ],
+            "toggle-up": [
+                {"key": Keys.BackTab, "filter": self._is_multiselect},
+            ],
+            "toggle-all": [
+                {"key": "alt-r", "filter": self._is_multiselect},
+            ],
+            "toggle-all-true": [
+                {"key": "alt-a", "filter": self._is_multiselect},
+            ],
+            "toggle-all-false": [],
+            **keybindings,
+        }
 
-        Introduced a new method instead of using the `_get_prompt_message`
-        due to `expand` and `rawlist` make changes after calling `super()._get_prompt_message()`.
+        self.kb_func_lookup = {
+            "down": [{"func": self._handle_down}],
+            "up": [{"func": self._handle_up}],
+            "toggle": [{"func": self._toggle_choice}],
+            "toggle-down": [{"func": self._toggle_choice}, {"func": self._handle_down}],
+            "toggle-up": [{"func": self._toggle_choice}, {"func": self._handle_up}],
+            "toggle-all": [{"func": self._toggle_all}],
+            "toggle-all-true": [{"func": self._toggle_all, "args": [True]}],
+            "toggle-all-false": [{"func": self._toggle_all, "args": [False]}],
+        }
 
-        This ensures that cursor is always at the end of the window no matter
-        when the changes is made to the `_get_prompt_message`.
-        """
-        message = self._get_prompt_message()
-        message.append(("[SetCursorPosition]", ""))
-        message.append(("", " "))  # [SetCursorPosition] require char behind it
-        return message
-
-    def _toggle_choice(self) -> None:
-        """Toggle the `enabled` status of the choice."""
-        self.content_control.selection["enabled"] = not self.content_control.selection[
-            "enabled"
-        ]
-
-    def _toggle_all(self, value: bool = None) -> None:
-        """Toggle all choice `enabled` status.
-
-        :param value: Sepcify a value to toggle.
-        """
-        for choice in self.content_control.choices:
-            if isinstance(choice["value"], Separator):
-                continue
-            choice["enabled"] = value if value else not choice["enabled"]
-
-    def _handle_up(self) -> None:
-        """Handle the event when user attempt to move up."""
-        while True:
-            cap = super()._handle_up()
-            if not isinstance(self.content_control.selection["value"], Separator):
-                break
-            else:
-                if cap and not self._cycle:
-                    self._handle_down()
-                    break
-
-    def _handle_down(self) -> None:
-        """Handle the event when user attempt to move down."""
-        while True:
-            cap = super()._handle_down()
-            if not isinstance(self.content_control.selection["value"], Separator):
-                break
-            else:
-                if cap and not self._cycle:
-                    self._handle_up()
-                    break
-
-    def _handle_enter(self, event) -> None:
-        """Handle the event when user hit Enter key.
-
-        * Set the state to answered for an update to the prompt display.
-        * Set the result to user selected choice's name for display purpose.
-        * Let the app exit with the user selected choice's value and return the actual value back to resolver.
-
-        In multiselect scenario, if nothing is selected, return the current highlighted choice.
-        """
-        try:
-            fake_document = FakeDocument(self.result_value)
-            self._validator.validate(fake_document)  # type: ignore
-        except ValidationError:
-            self._invalid = True
+    def _on_rendered(self, _) -> None:
+        if self.content_control._choice_func:
+            self.loading = True
+            task = asyncio.create_task(self.content_control.retrieve_choices())
+            task.add_done_callback(self._choices_callback)
         else:
-            self.status["answered"] = True
-            if self._multiselect and not self.selected_choices:
-                self.status["result"] = [self.content_control.selection["name"]]
-                event.app.exit(result=[self.content_control.selection["value"]])
-            else:
-                self.status["result"] = self.result_name
-                event.app.exit(result=self.result_value)
+            self._choices_callback(None)
+
+    def _choices_callback(self, _) -> None:
+        """Perform actions once all choices are retrieved."""
+        self._redraw()
 
     @property
-    def wrap_lines_offset(self) -> int:
-        """Get extra offset due to line wrapping.
+    def content_control(self) -> InquirerPyUIControl:
+        """Get the content controller object.
 
-        Overriding it to count the cursor as well.
+        Needs to be an instance of :class:`~InquirerPy.base.control.InquirerPyUIControl`.
 
-        :return: Extra offset.
+        Each :class:`.BaseComplexPrompt` requires a `content_control` to display custom
+        contents for the prompt.
+
+        Raises:
+            NotImplementedError: When `self._content_control` is not found.
         """
-        if not self._wrap_lines:
-            return 0
-        total_message_length = self.total_message_length
-        if self._show_cursor:
-            total_message_length += 1
-        term_width, _ = shutil.get_terminal_size()
-        return total_message_length // term_width
+        if not self._content_control:
+            raise NotImplementedError
+        return self._content_control
+
+    @content_control.setter
+    def content_control(self, value: InquirerPyUIControl) -> None:
+        self._content_control = value
+
+    @property
+    def loading(self) -> bool:
+        """bool: Indicate if the prompt is loading."""
+        return self.content_control.loading
+
+    @loading.setter
+    def loading(self, value: bool) -> None:
+        self.content_control.loading = value
+        if self.loading:
+            asyncio.create_task(self._spinner.start())
+
+    @property
+    def result_name(self) -> Any:
+        """Get the result value that should be printed to the terminal.
+
+        In multiselect scenario, return result as a list.
+        """
+        if self._multiselect:
+            return [choice["name"] for choice in self.selected_choices]
+        else:
+            try:
+                return self.content_control.selection["name"]
+            except IndexError:
+                return ""
+
+    @property
+    def result_value(self) -> Any:
+        """Get the result value that should return to the user.
+
+        In multiselect scenario, return result as a list.
+        """
+        if self._multiselect:
+            return [choice["value"] for choice in self.selected_choices]
+        else:
+            try:
+                return self.content_control.selection["value"]
+            except IndexError:
+                return ""
+
+    @property
+    def selected_choices(self) -> List[Any]:
+        """List[Any]: Get all user selected choices."""
+
+        def filter_choice(choice):
+            return not isinstance(choice, Separator) and choice["enabled"]
+
+        return list(filter(filter_choice, self.content_control.choices))
+
+    def _handle_down(self) -> bool:
+        """Handle event when user attempts to move down.
+
+        Returns:
+            Boolean indicating if the action hits the cap.
+        """
+        if self._cycle:
+            self.content_control.selected_choice_index = (
+                self.content_control.selected_choice_index + 1
+            ) % self.content_control.choice_count
+            return False
+        else:
+            self.content_control.selected_choice_index += 1
+            if (
+                self.content_control.selected_choice_index
+                >= self.content_control.choice_count
+            ):
+                self.content_control.selected_choice_index = (
+                    self.content_control.choice_count - 1
+                )
+                return True
+            return False
+
+    def _handle_up(self) -> bool:
+        """Handle event when user attempts to move up.
+
+        Returns:
+            Boolean indicating if the action hits the cap.
+        """
+        if self._cycle:
+            self.content_control.selected_choice_index = (
+                self.content_control.selected_choice_index - 1
+            ) % self.content_control.choice_count
+            return False
+        else:
+            self.content_control.selected_choice_index -= 1
+            if self.content_control.selected_choice_index < 0:
+                self.content_control.selected_choice_index = 0
+                return True
+            return False
+
+    @abstractmethod
+    def _toggle_choice(self) -> None:
+        """Handle event when user attempting to toggle the state of the chocie."""
+        pass
+
+    @abstractmethod
+    def _toggle_all(self, value: bool) -> None:
+        """Handle event when user attempting to alter the state of all choices."""
+        pass
