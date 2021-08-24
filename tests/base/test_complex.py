@@ -334,3 +334,25 @@ class TestBaseComplex(unittest.TestCase):
         prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
         asyncio.run(run_spinner(prompt))
         self.assertFalse(prompt.loading)
+
+    def test_kb_maps(self):
+        prompt = FuzzyPrompt(message="", choices=[1, 2, 3])
+        prompt.kb_maps
+        prompt._kb_maps = None
+
+        try:
+            prompt.kb_maps
+            self.fail("NotImplementedError not raised")
+        except NotImplementedError:
+            pass
+
+    def test_kb_func_lookup(self):
+        prompt = FuzzyPrompt(message="", choices=[1, 2, 3])
+        prompt.kb_func_lookup
+        prompt._kb_func_lookup = None
+
+        try:
+            prompt.kb_func_lookup
+            self.fail("NotImplementedError not raised")
+        except NotImplementedError:
+            pass
