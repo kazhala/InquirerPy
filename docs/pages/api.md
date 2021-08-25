@@ -7,6 +7,69 @@
     :members:
 ```
 
+### input
+
+```{eval-rst}
+.. automodule:: InquirerPy.prompts.input
+    :members:
+```
+
+### secret
+
+```{eval-rst}
+.. automodule:: InquirerPy.prompts.secret
+    :members:
+```
+
+### filepath
+
+```{eval-rst}
+.. automodule:: InquirerPy.prompts.filepath
+    :members:
+```
+
+### confirm
+
+```{eval-rst}
+.. automodule:: InquirerPy.prompts.confirm
+    :members:
+```
+
+### list
+
+```{eval-rst}
+.. automodule:: InquirerPy.prompts.list
+    :members:
+```
+
+### rawlist
+
+```{eval-rst}
+.. automodule:: InquirerPy.prompts.rawlist
+    :members:
+```
+
+### expand
+
+```{eval-rst}
+.. automodule:: InquirerPy.prompts.expand
+    :members:
+```
+
+### checkbox
+
+```{eval-rst}
+.. automodule:: InquirerPy.prompts.checkbox
+    :members:
+```
+
+### fuzzy
+
+```{eval-rst}
+.. automodule:: InquirerPy.prompts.fuzzy
+    :members:
+```
+
 ## separator
 
 ```{eval-rst}

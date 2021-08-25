@@ -33,4 +33,5 @@ autodoc_member_order = "bysource"
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "prompt_toolkit": ("https://python-prompt-toolkit.readthedocs.io/en/master/", None),
+    "pfzy": ("https://pfzy.readthedocs.io/en/latest/", None),
 }
