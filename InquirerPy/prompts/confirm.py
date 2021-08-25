@@ -1,5 +1,5 @@
-"""Module contains the main question function to create a confirm prompt."""
-from typing import Any, Callable, Dict, List, Tuple, Union
+"""Module contains the class to create a confirm prompt."""
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Union
 
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
@@ -8,23 +8,39 @@ from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+if TYPE_CHECKING:
+    from prompt_toolkit.input.base import Input
+    from prompt_toolkit.output.base import Output
+
+
 __all__ = ["ConfirmPrompt"]
 
 
 class ConfirmPrompt(BaseSimplePrompt):
-    """A wrapper class around PromptSession.
+    """A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
 
-    This class is used for confirm prompt.
+    Create a prompt that provide 2 options (confirm/deny).
 
-    :param message: The question message to display.
-    :param style: The style dictionary to apply.
-    :param default: Set default answer value.
-    :param qmark: The custom symbol to display infront of the question before its answered.
-    :param amark: THe custom symbol to display infront of the question after its answered.
-    :param instruction: Instruction to display after the question message.
-    :param transformer: A callable to transform the result, this is visual effect only.
-    :param filter: A callable to filter the result, updating the user input before returning the result.
-    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+    Args:
+        message: The question to ask the user.
+        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+        default: The default value when user hit `enter`. A boolean value of either `True` or `False`.
+        vi_mode: Used for compatibility, ignore this argument.
+        qmark: Custom symbol that will be displayed infront of the question before its answered.
+        amark: Custom symbol that will be displayed infront of the question after its answered.
+        instruction: Short instruction to display next to the `message`.
+        transformer: A callable to transform the result that gets printed in the terminal.
+            This is visual effect only.
+        filter: A callable to filter the result that gets returned.
+        wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+        confirm_letter: Letter used to confirm the prompt. A keybinding will be created for this letter.
+        reject_letter: Letter used to reject the prompt. A keybinding will be created for this letter.
+        session_result: Used for `classic syntax`, ignore this argument.
+        input: Used for testing, ignore this argument.
+        output: Used for testing, ignore this argument.
+
+    Examples:
+        >>> result = ConfirmPrompt(message="Confirm?").execute()
     """
 
     def __init__(
@@ -32,6 +48,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         message: Union[str, Callable[[SessionResult], str]],
         style: InquirerPyStyle = None,
         default: Union[bool, Callable[[Dict[str, Any]], bool]] = False,
+        vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
@@ -41,12 +58,14 @@ class ConfirmPrompt(BaseSimplePrompt):
         confirm_letter: str = "y",
         reject_letter: str = "n",
         session_result: SessionResult = None,
-        **kwargs
+        input: "Input" = None,
+        output: "Output" = None,
     ) -> None:
+        vi_mode = False
         super().__init__(
             message=message,
             style=style,
-            vi_mode=False,
+            vi_mode=vi_mode,
             qmark=qmark,
             amark=amark,
             instruction=instruction,
@@ -66,7 +85,6 @@ class ConfirmPrompt(BaseSimplePrompt):
         @self._kb.add(self._confirm_letter)
         @self._kb.add(self._confirm_letter.upper())
         def confirm(event) -> None:
-            """Bind y and Y to accept confirmation."""
             self._session.default_buffer.text = ""
             self.status["answered"] = True
             self.status["result"] = True
@@ -75,7 +93,6 @@ class ConfirmPrompt(BaseSimplePrompt):
         @self._kb.add(self._reject_letter)
         @self._kb.add(self._reject_letter.upper())
         def reject(event) -> None:
-            """Bind n and N to reject confirmation."""
             self._session.default_buffer.text = ""
             self.status["answered"] = True
             self.status["result"] = False
@@ -88,7 +105,6 @@ class ConfirmPrompt(BaseSimplePrompt):
 
         @self._kb.add(Keys.Enter)
         def enter(event) -> None:
-            """Bind enter to use the default answer."""
             self.status["answered"] = True
             self.status["result"] = self._default
             event.app.exit(result=self._default)
@@ -98,17 +114,15 @@ class ConfirmPrompt(BaseSimplePrompt):
             key_bindings=self._kb,
             style=self._style,
             wrap_lines=self._wrap_lines,
-            input=kwargs.pop("input", None),
-            output=kwargs.pop("output", None),
+            input=input,
+            output=output,
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
-        """Dynamically update the prompt message.
+        """Get message to display infront of the input buffer.
 
-        After user select an answer, remove (Y/n) or (y/N) and inject
-        the pretty answer.
-
-        :return: A list of formatted message to be consumed by PromptSession.
+        Returns:
+            Formatted text in list of tuple format.
         """
         if not self.instruction:
             pre_answer = (

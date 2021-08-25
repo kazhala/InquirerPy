@@ -1,5 +1,5 @@
 """Module contains the class to create an input prompt."""
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.completion.base import Completer
@@ -14,29 +14,42 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+if TYPE_CHECKING:
+    from prompt_toolkit.input.base import Input
+    from prompt_toolkit.output.base import Output
+
 __all__ = ["InputPrompt"]
 
 
 class InputPrompt(BaseSimplePrompt):
-    """A wrapper class around PromptSession.
+    """A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
 
-    This class is used for input prompt.
+    Create a text prompt that accepts user input.
 
-    :param message: The question to ask.
-    :param style: A dictionary of style to apply.
-    :param vi_mode: Use vi kb for the prompt.
-    :param default: The default result.
-    :param qmark: The custom symbol to display infront of the question before its answered.
-    :param amark: The custom symbol to display infront of the question after its answered.
-    :param instruction: Instruction to display after the question message.
-    :param completer: Add auto completer to user input.
-    :param multicolumn_complete: Complete in multi column.
-    :param multiline: Enable multiline mode.
-    :param validate: A callable or a validation class to validate user input.
-    :param invalid_message: The error message to display when input is invalid.
-    :param transformer: A callable to transform the result, this is visual effect only.
-    :param filter: A callable to filter the result, updating the user input before returning the result.
-    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+    Args:
+        message: The question to ask the user.
+        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+        vi_mode: Use vim keybinding for the prompt.
+        default: The default text value to add to the input.
+        qmark: Custom symbol that will be displayed infront of the question before its answered.
+        amark: Custom symbol that will be displayed infront of the question after its answered.
+        instruction: Short instruction to display next to the `message`.
+        completer: Auto completer to add to the input prompt.
+        multicolumn_complete: Complete in multi column.
+        multiline: Enable multiline mode.
+        validate: Validation callable or class to validate user input.
+        invalid_message: Error message to display when input is invalid.
+        transformer: A callable to transform the result that gets printed in the terminal.
+            This is visual effect only.
+        filter: A callable to filter the result that gets returned.
+        wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+        is_password: Used by :class:`~InquirerPy.prompts.secret.SecretPrompt`, ignore this argument.
+        session_result: Used for `classic syntax`, ignore this argument.
+        input: Used for testing, ignore this argument.
+        output: Used for testing, ignore this argument.
+
+    Examples:
+        >>> result = InputPrompt(message="Enter your name:").execute()
     """
 
     def __init__(
@@ -56,8 +69,10 @@ class InputPrompt(BaseSimplePrompt):
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
         wrap_lines: bool = True,
+        is_password: bool = False,
         session_result: SessionResult = None,
-        **kwargs,
+        input: "Input" = None,
+        output: "Output" = None,
     ) -> None:
         super().__init__(
             message,
@@ -135,11 +150,11 @@ class InputPrompt(BaseSimplePrompt):
             completer=self._completer,
             validator=self._validator,
             validate_while_typing=False,
-            input=kwargs.pop("input", None),
-            output=kwargs.pop("output", None),
+            input=input,
+            output=output,
             editing_mode=self._editing_mode,
             lexer=SimpleLexer(self._lexer),
-            is_password=kwargs.pop("is_password", False),
+            is_password=is_password,
             multiline=self._multiline,
             complete_style=self._complete_style,
             wrap_lines=wrap_lines,
@@ -150,13 +165,14 @@ class InputPrompt(BaseSimplePrompt):
         pre_answer: Optional[Tuple[str, str]] = None,
         post_answer: Optional[Tuple[str, str]] = None,
     ) -> List[Tuple[str, str]]:
-        """Dynamically update the prompt message.
+        """Get message to display infront of the input buffer.
 
-        Change the user input path to the 'answer' color in style.
+        Args:
+            pre_answer: The formatted text to display before answering the question.
+            post_answer: The formatted text to display after answering the question.
 
-        :param pre_answer: The formatted text to display before answering the question.
-        :param post_answer: The formatted text to display after answering the question.
-        :return: The formatted text for PromptSession.
+        Returns:
+            Formatted text in list of tuple format.
         """
         if not pre_answer:
             if self._multiline and not self._instruction:

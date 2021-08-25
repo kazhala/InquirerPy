@@ -1,7 +1,7 @@
-"""Module contains the filepath prompt and its completer class."""
+"""Module contains the class to create filepath prompt and filepath completer class."""
 import os
 from pathlib import Path
-from typing import Any, Callable, Generator, Union
+from typing import TYPE_CHECKING, Any, Callable, Generator, Union
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
@@ -11,15 +11,22 @@ from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+if TYPE_CHECKING:
+    from prompt_toolkit.input.base import Input
+    from prompt_toolkit.output.base import Output
+
 __all__ = ["FilePathPrompt"]
 
 
 class FilePathCompleter(Completer):
-    """An auto completion class used for prompt session.
+    """An auto completion class which generates system filepath.
 
-    The class structure is defined by prompt_toolkit and is only intended to be used by PromptSession.
+    See Also:
+        :class:`~prompt_toolkit.completion.Completer`
 
-    :param only_directories: Complete directories only.
+    Args:
+        only_directories: Only complete directories.
+        only_files: Only complete files.
     """
 
     def __init__(self, only_directories: bool = False, only_files: bool = False):
@@ -29,7 +36,7 @@ class FilePathCompleter(Completer):
     def get_completions(
         self, document, complete_event
     ) -> Generator[Completion, None, None]:
-        """Return a completion item (valid file path)."""
+        """Get a list of valid system paths."""
         if document.text == "~":
             return
 
@@ -55,7 +62,6 @@ class FilePathCompleter(Completer):
     def _get_completion(
         self, document, path, validation
     ) -> Generator[Completion, None, None]:
-        """Return filepaths based on user input path."""
         if not path.is_dir():
             return
         for file in path.iterdir():
@@ -76,25 +82,34 @@ class FilePathCompleter(Completer):
 
 
 class FilePathPrompt(InputPrompt):
-    """A wrapper class around PromptSession.
+    """A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
 
-    This class is used for filepath prompt.
+    Create a prompt that provides auto completion for system filepaths.
 
-    :param message: The question to ask.
-    :param style: A dictionary of style to apply.
-    :param vi_mode: Use vi kb for the prompt.
-    :param default: The default result.
-    :param qmark: The custom symbol to display infront of the question before its answered.
-    :param amark: The custom symbol to display infront of the question after its answered.
-    :param instruction: Instruction to display after the question message.
-    :param multicolumn_complete: Complete in multi column.
-    :param validate: A callable or a validation class to validate user input.
-    :param invalid_message: The error message to display when input is invalid.
-    :param only_directories: Only complete directories.
-    :param only_files: Only complete files.
-    :param transformer: A callable to transform the result, this is visual effect only.
-    :param filter: A callable to filter the result, updating the user input before returning the result.
-    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+    Args:
+        message: The question to ask the user.
+        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+        vi_mode: Use vim keybinding for the prompt.
+        default: The default text value to add to the input.
+        qmark: Custom symbol that will be displayed infront of the question before its answered.
+        amark: Custom symbol that will be displayed infront of the question after its answered.
+        instruction: Short instruction to display next to the `message`.
+        completer: Auto completer to add to the input prompt.
+        multicolumn_complete: Complete in multi column.
+        validate: Validation callable or class to validate user input.
+        invalid_message: Error message to display when input is invalid.
+        transformer: A callable to transform the result that gets printed in the terminal.
+            This is visual effect only.
+        filter: A callable to filter the result that gets returned.
+        wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+        only_directories: Only complete directories.
+        only_files: Only complete files.
+        session_result: Used for `classic syntax`, ignore this argument.
+        input: Used for testing, ignore this argument.
+        output: Used for testing, ignore this argument.
+
+    Examples:
+        >>> result = FilePathPrompt(message="Enter a path:").execute()
     """
 
     def __init__(
@@ -115,7 +130,8 @@ class FilePathPrompt(InputPrompt):
         filter: Callable[[str], Any] = None,
         wrap_lines: bool = True,
         session_result: SessionResult = None,
-        **kwargs,
+        input: "Input" = None,
+        output: "Output" = None,
     ) -> None:
         if not isinstance(default, str):
             raise InvalidArgument(
@@ -141,5 +157,6 @@ class FilePathPrompt(InputPrompt):
             filter=filter,
             wrap_lines=wrap_lines,
             session_result=session_result,
-            **kwargs,
+            input=input,
+            output=output,
         )

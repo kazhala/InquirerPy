@@ -1,5 +1,5 @@
 """Module contains the class to create a secret prompt."""
-from typing import Any, Callable, List, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple, Union
 
 from prompt_toolkit.validation import Validator
 
@@ -7,24 +7,41 @@ from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
+if TYPE_CHECKING:
+    from prompt_toolkit.input.base import Input
+    from prompt_toolkit.output.base import Output
+
 __all__ = ["SecretPrompt"]
 
 
 class SecretPrompt(InputPrompt):
-    """A wrapper class around PromptSession to create a secret prompt.
+    """A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
 
-    :param message: The message to display in the prompt.
-    :param style: The style to apply to the prompt.
-    :param default: The default value.
-    :param qmark: The custom symbol to display infront of the question before its answered.
-    :param amark: The custom symbol to display infront of the question after its answered.
-    :param instruction: Instruction to display after the question message.
-    :param vi_mode: Use vi kb for the prompt.
-    :param validate: A callable to validate the user input.
-    :param invalid_message: The error message to display when validator failed.
-    :param transformer: A callable to transform the result, this is visual effect only.
-    :param filter: A callable to filter the result, updating the user input before returning the result.
-    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+    Create a prompt that accepts user input while transforming the text to asterisks.
+
+    Args:
+        message: The question to ask the user.
+        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+        vi_mode: Use vim keybinding for the prompt.
+        default: The default text value to add to the input.
+        qmark: Custom symbol that will be displayed infront of the question before its answered.
+        amark: Custom symbol that will be displayed infront of the question after its answered.
+        instruction: Short instruction to display next to the `message`.
+        completer: Auto completer to add to the input prompt.
+        multicolumn_complete: Complete in multi column.
+        multiline: Enable multiline mode.
+        validate: Validation callable or class to validate user input.
+        invalid_message: Error message to display when input is invalid.
+        transformer: A callable to transform the result that gets printed in the terminal.
+            This is visual effect only.
+        filter: A callable to filter the result that gets returned.
+        wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+        session_result: Used for `classic syntax`, ignore this argument.
+        input: Used for testing, ignore this argument.
+        output: Used for testing, ignore this argument.
+
+    Examples:
+        >>> result = SecretPrompt(message="Password:").execute()
     """
 
     def __init__(
@@ -42,9 +59,9 @@ class SecretPrompt(InputPrompt):
         filter: Callable[[str], Any] = None,
         wrap_lines: bool = True,
         session_result: SessionResult = None,
-        **kwargs
+        input: "Input" = None,
+        output: "Output" = None,
     ) -> None:
-        """Construct the prompt session."""
         if not isinstance(default, str):
             raise InvalidArgument(
                 "secret prompt argument default should be type of str"
@@ -64,13 +81,19 @@ class SecretPrompt(InputPrompt):
             filter=filter,
             wrap_lines=wrap_lines,
             session_result=session_result,
-            **kwargs
+            input=input,
+            output=output,
         )
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
-        """Get formatted message to display in prompt.
+        """Get message to display infront of the input buffer.
 
-        :return: A list of formatted message.
+        Args:
+            pre_answer: The formatted text to display before answering the question.
+            post_answer: The formatted text to display after answering the question.
+
+        Returns:
+            Formatted text in list of tuple format.
         """
         pre_answer = (
             "class:instruction",
