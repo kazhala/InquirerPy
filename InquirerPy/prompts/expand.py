@@ -1,4 +1,4 @@
-"""Module contains the expand prompt and its related helper classes."""
+"""Module contains the class to create an expand prompt."""
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
 
 from prompt_toolkit.validation import Validator
@@ -14,15 +14,15 @@ __all__ = ["ExpandPrompt"]
 
 
 class ExpandHelp(NamedTuple):
-    """A struct class to identify if user selected the help choice."""
+    """A :class:`typing.NamedTuple` to use as the help choice."""
 
     help_msg: str
 
 
 class InquirerPyExpandControl(InquirerPyUIListControl):
-    """A content control intended to be used by `prompt_toolkit` window.
+    """An :class:`~prompt_toolkit.layout.UIControl` class that displays a list of choices.
 
-    All parameter types and purposes, reference `ExpandPrompt`.
+    Reference the parameter definition in :class:`.ExpandPrompt`.
     """
 
     def __init__(
@@ -38,7 +38,6 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
         multiselect: bool,
         marker_pl: str = " ",
     ) -> None:
-        """Construct content control object and initialise choices."""
         self._pointer = pointer
         self._separator = separator
         self._expanded = False
@@ -101,8 +100,9 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
     def _get_formatted_choices(self) -> List[Tuple[str, str]]:
         """Override this parent class method as expand require visual switch of content.
 
-        1. non expand mode
-        2. expand mode
+        Two types of mode:
+            * non expand mode
+            * expand mode
         """
         if self._expanded:
             return super()._get_formatted_choices()
@@ -149,40 +149,46 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
 
 
 class ExpandPrompt(ListPrompt):
-    """Create a `prompt_toolkit` application and responsible to render the expand prompt.
+    """A wrapper class around :class:`~prompt_toolkit.application.Application`.
 
-    Prompt contains 2 state, expanded and not expanded. The visual effect are
-    all controled via InquirerPyExpandControl under one window.
+    Create a compact prompt with a list of chocies identified with a single letter.
+    The prompt can be expanded using `h` key.
 
-    :param message: Message to ask user.
-    :param choices: List of choices to display.
-    :param default: Default value, can be a key of the choices or a value.
-    :param style: Style dict to apply to the prompt.
-    :param vi_mode: Use vi keybindings for the prompt.
-    :param qmark: The custom symbol to display infront of the question before its answered.
-    :param amark: THe custom symbol to display infront of the question after its answered.
-    :param pointer: Pointer symbol to indicate current selected line.
-    :param separator: Separator symbol to display between the shortcut key and the content.
-    :param help_msg: Help message to display to the user.
-    :param expand_pointer: Visual pointer before expansion of the prompt.
-    :param instruction: Override the default instruction e.g. (Yabh).
-    :param transformer: A callable to transform the result, this is visual effect only.
-    :param filter: A callable to filter the result, updating the user input before returning the result.
-    :param height: Preferred height of the choice window.
-    :param max_height: Max height choice window should reach.
-    :param multiselect: Enable multiselectiion.
-    :param marker: Marker symbol to indicate selected choice in multiselect mode
-    :param marker_pl: Marker place holder for non selected choices.
-    :param validate: A callable or Validator instance to validate user selection.
-    :param invalid_message: Message to display when input is invalid.
-    :param keybindings: Custom keybindings to apply.
-    :param show_cursor: Display cursor at the end of the prompt.
-    :param cycle: Return to top item if hit bottom or vice versa.
-    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
-    :param spinner_enable: Enable spinner while loading choices.
-    :param spinner_pattern: List of pattern to display as the spinner.
-    :param spinner_delay: Spinner refresh frequency.
-    :param spinner_text: Loading text to display.
+    Args:
+        message: The question to ask the user.
+        choices (ListChoices): List of choices to display.
+        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+        vi_mode: Use vim keybinding for the prompt.
+        default: The default value. This will affect where the cursor starts from. Should be one of the choice value.
+        separator: The separator between the choice letter and the choices.
+        help_msg: The help message to display.
+        expand_pointer: Pointer to display before the prompt is expanded.
+        qmark: Custom symbol that will be displayed infront of the question before its answered.
+        amark: Custom symbol that will be displayed infront of the question after its answered.
+        pointer: Custom symbol that will be used to indicate the current choice selection.
+        instruction: Short instruction to display next to the `message`.
+        validate: Validation callable or class to validate user input.
+        invalid_message: Error message to display when input is invalid.
+        transformer: A callable to transform the result that gets printed in the terminal.
+            This is visual effect only.
+        filter: A callable to filter the result that gets returned.
+        height: Preferred height of the choice window.
+        max_height: Max height of the choice window.
+        multiselect: Enable multi-selection on choices.
+        marker: Custom symbol to indicate if a choice is selected.
+        marker_pl: Marker place holder when the choice is not selected.
+        keybindings: Custom keybindings to apply. Refer to :ref:`pages/kb:Keybindings`.
+        show_cursor: Display cursor at the end of the prompt.
+        cycle: Return to top item if hit bottom or vice versa.
+        wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+        spinner_pattern: List of pattern to display as the spinner.
+        spinner_delay: Spinner refresh frequency.
+        spinner_text: Loading text to display.
+        spinner_enable: Enable spinner when loading choices.
+        session_result: Used for `classic syntax`, ignore this argument.
+
+    Examples:
+        >>> result = ExpandPrompt(message="Select one:", choices=[{"name": "1", "value": "1", "key": "a"}]).execute()
     """
 
     def __init__(
@@ -218,7 +224,6 @@ class ExpandPrompt(ListPrompt):
         spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
-        """Create the application and apply keybindings."""
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
             choices=choices,
             default=default,

@@ -1,4 +1,4 @@
-"""Module contains checkbox prompt."""
+"""Module contains the class to create a checkbox prompt."""
 
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
@@ -18,11 +18,9 @@ __all__ = ["CheckboxPrompt"]
 
 
 class InquirerPyCheckboxControl(InquirerPyUIListControl):
-    """A UIControl class intended to be used by `prompt_toolkit` window.
+    """An :class:`~prompt_toolkit.layout.UIControl` class that displays a list of choices.
 
-    Used to dynamically update the content and indicate the current user selection
-
-    Reference the param definition in `CheckboxPrompt`.
+    Reference the parameter definition in :class:`.CheckboxPrompt`.
     """
 
     def __init__(
@@ -83,33 +81,44 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
 
 
 class CheckboxPrompt(ListPrompt):
-    """A wrapper class around `prompt_toolkit` Application to create a checkbox prompt.
+    """A wrapper class around :class:`~prompt_toolkit.application.Application`.
 
-    :param message: Message to display.
-    :param choices: List of choices to display.
-    :param default: Default value.
-    :param style: A dictionary of style.
-    :param vi_mode: Use vi kb for the prompt.
-    :param qmark: The custom symbol to display infront of the question before its answered.
-    :param amark: The custom symbol to display infront of the question after its answered.
-    :param pointer: The pointer qmark to display.
-    :param enabled_symbol: Qmark indicating enabled box.
-    :param disabled_symbol: Qmark indicating not selected qmark.
-    :param instruction: Instruction to display after the message.
-    :param transformer: A callable to transform the result, this is visual effect only.
-    :param filter: A callable to filter the result, updating the user input before returning the result.
-    :param height: Preferred height of the choice window.
-    :param max_height: Max height choice window should reach.
-    :param validate: A callable or Validator instance to validate user selection.
-    :param invalid_message: Message to display when input is invalid.
-    :param keybindings: Custom keybindings to apply.
-    :param show_cursor: Display cursor at the end of the prompt.
-    :param cycle: Return to top item if hit bottom or vice versa.
-    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
-    :param spinner_enable: Enable spinner while loading choices.
-    :param spinner_pattern: List of pattern to display as the spinner.
-    :param spinner_delay: Spinner refresh frequency.
-    :param spinner_text: Loading text to display.
+    Create a prompt which displays a list of checkboxes. User can toggle
+    on/off on each checkbox.
+
+    Args:
+        message: The question to ask the user.
+        choices (ListChoices): List of choices to display.
+        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+        vi_mode: Use vim keybinding for the prompt.
+        default: The default value. This will affect where the cursor starts from. Should be one of the choice value.
+        separator: The separator between the choice letter and the choices.
+        qmark: Custom symbol that will be displayed infront of the question before its answered.
+        amark: Custom symbol that will be displayed infront of the question after its answered.
+        pointer: Custom symbol that will be used to indicate the current choice selection.
+        enabled_symbol: Custom symbol which indicate the checkbox is ticked.
+        disabled_symbol: Custom symbol which indicate the checkbox is not ticked.
+        instruction: Short instruction to display next to the `message`.
+        validate: Validation callable or class to validate user input.
+        invalid_message: Error message to display when input is invalid.
+        transformer: A callable to transform the result that gets printed in the terminal.
+            This is visual effect only.
+        filter: A callable to filter the result that gets returned.
+        height: Preferred height of the choice window.
+        max_height: Max height of the choice window.
+        multiselect: Enable multi-selection on choices.
+        keybindings: Custom keybindings to apply. Refer to :ref:`pages/kb:Keybindings`.
+        show_cursor: Display cursor at the end of the prompt.
+        cycle: Return to top item if hit bottom or vice versa.
+        wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+        spinner_pattern: List of pattern to display as the spinner.
+        spinner_delay: Spinner refresh frequency.
+        spinner_text: Loading text to display.
+        spinner_enable: Enable spinner when loading choices.
+        session_result: Used for `classic syntax`, ignore this argument.
+
+    Examples:
+        >>> result = CheckboxPrompt(message="Select:", choices=[1, 2, 3]).execute()
     """
 
     def __init__(
@@ -141,7 +150,6 @@ class CheckboxPrompt(ListPrompt):
         spinner_delay: float = 0.1,
         session_result: SessionResult = None,
     ) -> None:
-        """Initialise the content_control and create Application."""
         self.content_control = InquirerPyCheckboxControl(
             choices=choices,
             default=default,
@@ -180,6 +188,9 @@ class CheckboxPrompt(ListPrompt):
         """Override this method to force empty array result.
 
         When user does not select anything, exit with empty list.
+
+        Args:
+            event: Keypress event.
         """
         try:
             fake_document = FakeDocument(self.result_value)
