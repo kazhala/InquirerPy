@@ -172,7 +172,6 @@ class InquirerPyUIListControl(FormattedTextControl):
             display_choices.pop()
         return display_choices
 
-    @abstractmethod
     def _format_choices(self) -> None:
         """Perform post processing on the choices.
 
