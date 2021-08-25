@@ -7,6 +7,7 @@ from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.layout import Layout
 
+from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
 
@@ -706,3 +707,14 @@ class TestFuzzy(unittest.TestCase):
 
         event = Event(App(exit=lambda result: True))
         self.prompt._handle_enter(event)
+
+    @patch.object(FuzzyPrompt, "_on_text_changed")
+    @patch.object(BaseListPrompt, "_on_rendered")
+    def test_on_rendered(self, mocked, mocked_change):
+        prompt = FuzzyPrompt(message="", choices=[1, 2, 3], default="yes")
+        self.assertEqual(prompt._buffer.text, "")
+        self.assertEqual(prompt._buffer.cursor_position, 0)
+        prompt._on_rendered(None)
+        mocked.assert_called_once()
+        self.assertEqual(prompt._buffer.text, "yes")
+        self.assertEqual(prompt._buffer.cursor_position, 3)

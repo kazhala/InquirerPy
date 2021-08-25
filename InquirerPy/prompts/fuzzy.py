@@ -1,4 +1,4 @@
-"""Module contains the class to construct fuzzyfinder prompt."""
+"""Module contains the class to create a fuzzy prompt."""
 import asyncio
 import math
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union, cast
@@ -41,19 +41,12 @@ __all__ = ["FuzzyPrompt"]
 
 
 class InquirerPyFuzzyControl(InquirerPyUIListControl):
-    """A UIControl element intended to be used by `prompt_toolkit` Window class.
+    """An :class:`~prompt_toolkit.layout.UIControl` class that displays a list of choices.
 
-    This UIControl is for listing the available choices based on filtering.
-    The actual input buffer will be handled by a separate BufferControl.
+    This only displays the chocies. The actual input buffer will be handled by a separate
+    :class:`~prompt_toolkit.layout.BufferControl`.
 
-    :param choices: List of choices to display.
-    :param pointer: The pointer symbol.
-    :param marker: Marker symbol for the selected choice in the case of multiselect.
-    :param current_text: Current buffer text.
-    :param max_lines: Maximum height.
-    :param session_result: Current session result.
-    :param multiselect: Enable multiselect.
-    :param marker_pl: Marker place holder for non selected choices.
+    Reference the parameter definition in :class:`.FuzzyPrompt`.
     """
 
     def __init__(
@@ -93,12 +86,13 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
         self._height = self._last_line - self._first_line
 
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
-        """Get the current highlighted line of text in `FormattedText`.
+        """Get the current highlighted line of text.
 
         If in the middle of filtering, loop through the char and color
-        indices matched char into `class:fuzzy_match`.
+        indices matched char into style class `class:fuzzy_match`.
 
-        :return: List of formatted text.
+        Returns:
+            FormattedText in list of tuple format.
         """
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
@@ -130,7 +124,8 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
 
         Calculate spaces of pointer to make the choice equally align.
 
-        :return: List of formatted text.
+        Returns:
+            FormattedText in list of tuple format.
         """
         display_choices = []
         display_choices.append(("class:pointer", len(self._pointer) * " "))
@@ -160,7 +155,8 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
         full choice list. Using `self.filtered_choice` to get
         a list of choice based on current_text.
 
-        :return: List of formatted choices.
+        Returns:
+            FormattedText in list of tuple format.
         """
         display_choices = []
         if self.choice_count == 0:
@@ -203,8 +199,11 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
     async def _filter_choices(self, wait_time: float) -> List[Dict[str, Any]]:
         """Call to filter choices using fzy fuzzy match.
 
-        :param wait_time: Delay time for this task.
-        :return: Filtered result.
+        Args:
+            wait_time: Additional time to wait before filtering the choice.
+
+        Returns:
+            Filtered choices.
         """
         if not self._current_text():
             choices = self.choices
@@ -223,7 +222,8 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
 
         `self.filtered_choice` is the up to date choice displayed.
 
-        :return: A dictionary of name and value for the current pointed choice
+        Returns:
+            A dictionary of name and value for the current pointed choice.
         """
         return self._filtered_choices[self.selected_choice_index]
 
@@ -234,54 +234,50 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
 
 
 class FuzzyPrompt(BaseListPrompt):
-    """A filter prompt that allows user to input value.
+    """A wrapper class around :class:`~prompt_toolkit.application.Application`.
 
-    Filters the result using fuzzy finding. The fuzzy finding logic
-    is contains in the file fzy.py which is copied from `vim-clap`
-    python provider.
+    Create a prompt that displays a list of options and allow user to filter the choices
+    by entering search texts.
 
-    The Application have mainly 3 layers.
-    1. question
-    2. input
-    3. choices
+    Fuzzy search using :func:`~pfzy.match.fuzzy_match` function.
 
-    The content of choices content_control is bounded by the input buffer content_control
-    on_text_changed event.
-
-    Once Enter is pressed, hide both input buffer and choices buffer as well as
-    updating the question buffer with user selection.
-
-    Override the default keybindings as j/k cannot be bind even if editing_mode is vim
+    Override the default keybindings for up/down as j/k cannot be bind even if `editing_mode` is vim
     due to the input buffer.
 
-    :param message: Message to display to the user.
-    :param choices: List of choices available to select.
-    :param default: Default value to insert into buffer.
-    :param pointer: Pointer symbol.
-    :param style: Style dict to apply.
-    :param vi_mode: Use vi kb for the prompt.
-    :param qmark: The custom symbol to display infront of the question before its answered.
-    :param amark: The custom symbol to display infront of the question after its answered.
-    :param transformer: Transform the result to output, this is only visual effect.
-    :param filter: A callable to filter the result, updating the user input before returning the result.
-    :param instruction: Instruction to display after the message.
-    :param multiselect: Enable multi selection of the choices.
-    :param prompt: Prompt symbol for buffer.
-    :param marker: Marker symbol for the selected choice in the case of multiselect.
-    :param marker_pl: Marker place holder for non selected choices.
-    :param border: Enable border around the fuzzy prompt.
-    :param info: Display info as virtual text after input.
-    :param height: Preferred height of the choice window.
-    :param max_height: Max height choice window should reach.
-    :param validate: A callable or Validator instance to validate user selection.
-    :param invalid_message: Message to display when input is invalid.
-    :param keybindings: Custom keybindings to apply.
-    :param cycle: Return to top item if hit bottom or vice versa.
-    :param wrap_lines: Soft wrap question lines when question exceeds the terminal width.
-    :param spinner_enable: Enable spinner while loading choices.
-    :param spinner_pattern: List of pattern to display as the spinner.
-    :param spinner_delay: Spinner refresh frequency.
-    :param spinner_text: Loading text to display.
+    Args:
+        message: The question to ask the user.
+        choices (ListChoices): List of choices to display.
+        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+        vi_mode: Use vim keybinding for the prompt.
+        default: The default value. This will affect where the cursor starts from. Should be one of the choice value.
+        qmark: Custom symbol that will be displayed infront of the question before its answered.
+        amark: Custom symbol that will be displayed infront of the question after its answered.
+        pointer: Custom symbol that will be used to indicate the current choice selection.
+        instruction: Short instruction to display next to the `message`.
+        validate: Validation callable or class to validate user input.
+        invalid_message: Error message to display when input is invalid.
+        transformer: A callable to transform the result that gets printed in the terminal.
+            This is visual effect only.
+        filter: A callable to filter the result that gets returned.
+        height: Preferred height of the choice window.
+        max_height: Max height of the choice window.
+        multiselect: Enable multi-selection on choices.
+        prompt: Custom symbol to display infront of the input buffer.
+        border: Create border around the choice window.
+        info: Display choice information next to the prompt.
+        marker: Custom symbol to indicate if a choice is selected.
+        marker_pl: Marker place holder when the choice is not selected.
+        keybindings: Custom keybindings to apply. Refer to :ref:`pages/kb:Keybindings`.
+        cycle: Return to top item if hit bottom or vice versa.
+        wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+        spinner_pattern: List of pattern to display as the spinner.
+        spinner_delay: Spinner refresh frequency.
+        spinner_text: Loading text to display.
+        spinner_enable: Enable spinner when loading choices.
+        session_result: Used for `classic syntax`, ignore this argument.
+
+    Examples:
+        >>> result = ListPrompt(message="Select one:", choices=[1, 2, 3]).execute()
     """
 
     def __init__(
@@ -435,26 +431,26 @@ class FuzzyPrompt(BaseListPrompt):
             after_render=self._after_render,
         )
 
-    def _after_render(self, application) -> None:
+    def _on_rendered(self, application) -> None:
         """Render callable choices and set the buffer default text.
 
-        Setting buffer default text has to be after application is rendered,
+        Setting buffer default text has to be after application is rendered and choice are loaded,
         because `self._filter_choices` will use the event loop from `Application`.
 
-        Forcing a check on `self._rendered` as this event is fired up on each
-        render, we only want this to fire up once.
+        Args:
+            application: The current application.
         """
-        if not self._rendered:
-            super()._after_render(application)
-            if self._default:
-                default_text = str(self._default)
-                self._buffer.text = default_text
-                self._buffer.cursor_position = len(default_text)
+        super()._on_rendered(application)
+        if self._default:
+            default_text = str(self._default)
+            self._buffer.text = default_text
+            self._buffer.cursor_position = len(default_text)
 
     def _toggle_all(self, value: bool = None) -> None:
         """Toggle all choice `enabled` status.
 
-        :param value: Specify a value to toggle.
+        Args:
+            value: Specify the value to toggle.
         """
         for choice in self.content_control.choices:
             if isinstance(choice["value"], Separator):
@@ -501,7 +497,8 @@ class FuzzyPrompt(BaseListPrompt):
         Using digit of the choices lengeth to get wait time.
         For digit greater than 6, using formula 2^(digit - 5) * 0.3 to increase the wait_time.
 
-        Still experimenting, require improvement.
+        Returns:
+            Desired wait time before running the filter.
         """
         wait_table = {
             2: 0.05,
