@@ -222,7 +222,7 @@ class ListPrompt(BaseListPrompt):
             floats=[
                 Float(
                     content=ValidationWindow(
-                        invalid_message=self._invalid_message,
+                        invalid_message=self._get_error_message,
                         filter=self._is_invalid & ~IsDone(),
                     ),
                     left=0,
@@ -299,7 +299,8 @@ class ListPrompt(BaseListPrompt):
         try:
             fake_document = FakeDocument(self.result_value)
             self._validator.validate(fake_document)  # type: ignore
-        except ValidationError:
+        except ValidationError as e:
+            self._invalid_message = str(e)
             self._invalid = True
         else:
             self.status["answered"] = True

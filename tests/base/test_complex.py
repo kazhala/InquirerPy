@@ -5,6 +5,7 @@ from unittest.mock import ANY, PropertyMock, call, patch
 
 from prompt_toolkit.layout.containers import Window
 from prompt_toolkit.layout.controls import FormattedTextControl
+from prompt_toolkit.validation import ValidationError, Validator
 
 from InquirerPy.base.complex import BaseComplexPrompt
 from InquirerPy.base.control import InquirerPyUIListControl
@@ -358,3 +359,26 @@ class TestBaseComplex(unittest.TestCase):
             self.fail("NotImplementedError not raised")
         except NotImplementedError:
             pass
+
+    def test_get_error_message(self):
+        class SelectionValidator(Validator):
+            def validate(self, document) -> None:
+                if document.text == 1:
+                    raise ValidationError(
+                        message="hello", cursor_position=document.cursor_position
+                    )
+
+        prompt = FuzzyPrompt(
+            message="",
+            choices=[1, 2, 3],
+            validate=SelectionValidator(),
+            invalid_message="minimum 2 selections",
+        )
+        self.assertEqual(prompt._invalid_message, "minimum 2 selections")
+        self.assertFalse(prompt._invalid)
+        prompt._handle_enter(None)
+        self.assertEqual(prompt._invalid_message, "hello")
+        self.assertTrue(prompt._invalid)
+        self.assertEqual(
+            prompt._get_error_message(), [("class:validation-toolbar", "hello")]
+        )

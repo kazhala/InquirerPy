@@ -412,7 +412,7 @@ class FuzzyPrompt(BaseListPrompt):
                 floats=[
                     Float(
                         content=ValidationWindow(
-                            invalid_message=self._invalid_message,
+                            invalid_message=self._get_error_message,
                             filter=self._is_invalid & ~IsDone(),
                         ),
                         left=0,
@@ -579,7 +579,8 @@ class FuzzyPrompt(BaseListPrompt):
                 self.status["answered"] = True
                 self.status["result"] = self.content_control.selection["name"]
                 event.app.exit(result=self.content_control.selection["value"])
-        except ValidationError:
+        except ValidationError as e:
+            self._invalid_message = str(e)
             self._invalid = True
         except IndexError:
             self.status["answered"] = True

@@ -2,7 +2,8 @@
 import asyncio
 import shutil
 from abc import abstractmethod
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union, cast
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union, cast
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -16,7 +17,8 @@ from InquirerPy.containers import SpinnerWindow
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
-class FakeDocument(NamedTuple):
+@dataclass
+class FakeDocument:
     """A fake `prompt_toolkit` document class.
 
     Work around to allow non-buffer type :class:`~prompt_toolkit.layout.UIControl` to use
@@ -24,9 +26,11 @@ class FakeDocument(NamedTuple):
 
     Args:
         text: Content to be validated.
+        cursor_position: Fake cursor position.
     """
 
     text: str
+    cursor_position: int = 0
 
 
 class BaseComplexPrompt(BaseSimplePrompt):
@@ -151,6 +155,19 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
             self._on_rendered(app)
 
+    def _get_error_message(self) -> List[Tuple[str, str]]:
+        """Obtain the error message dynamically.
+
+        Returns:
+            FormattedText in list of tuple format.
+        """
+        return [
+            (
+                "class:validation-toolbar",
+                self._invalid_message,
+            )
+        ]
+
     def _on_rendered(self, _: Optional[Application]) -> None:
         """Run once after the UI is rendered. Acts like `ComponentDidMount`."""
         pass
@@ -192,7 +209,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     @abstractmethod
     def _handle_enter(self, event) -> None:
-        """Handle event when user input enter key."""
+        """Handle event when user input enter key.
+
+        Make sure to use the :class:`.FakeDocument` class to validate
+        the user choice in the function implmentation.
+        """
         pass
 
     @property
