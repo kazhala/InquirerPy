@@ -1,6 +1,8 @@
+# NOTE: Following example requires boto3 package.
 import boto3
 
 from InquirerPy import prompt
+from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.validator import PathValidator
 
 client = boto3.client("s3")
@@ -41,6 +43,7 @@ questions = [
         "type": "fuzzy",
         "choices": get_bucket,
         "name": "bucket",
+        "spinner_enable": True,
     },
     {
         "message": "Select files to download:",
@@ -48,6 +51,7 @@ questions = [
         "when": lambda _: not is_upload(_),
         "choices": walk_s3_bucket,
         "multiselect": True,
+        "spinner_enable": True,
     },
     {
         "message": "Enter destination folder:",
@@ -59,6 +63,9 @@ questions = [
     {"message": "Confirm?", "type": "confirm", "default": False},
 ]
 
-result = prompt(questions, vi_mode=True)
+try:
+    result = prompt(questions, vi_mode=True)
+except InvalidArgument:
+    print("No available choices")
 
 # Download or Upload the file based on result ...

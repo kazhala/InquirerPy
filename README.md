@@ -18,6 +18,8 @@ as well as more customization options.
 
 ↓↓↓ Simple AWS S3 uploader/downloader prompt.
 
+> Note: [boto3](https://github.com/boto/boto3) package is required for the following example.
+
 ![Demo](https://github.com/kazhala/gif/blob/master/InquirerPy-demo.gif)
 
 <details>
@@ -25,13 +27,17 @@ as well as more customization options.
 
 ```python
 import boto3
+
 from InquirerPy import prompt
+from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.validator import PathValidator
 
 client = boto3.client("s3")
 
+
 def get_bucket(_):
     return [bucket["Name"] for bucket in client.list_buckets()["Buckets"]]
+
 
 def walk_s3_bucket(result):
     response = []
@@ -41,8 +47,10 @@ def walk_s3_bucket(result):
             response.append(file["Key"])
     return response
 
+
 def is_upload(result):
     return result[0] == "Upload"
+
 
 questions = [
     {
@@ -62,6 +70,7 @@ questions = [
         "type": "fuzzy",
         "choices": get_bucket,
         "name": "bucket",
+        "spinner_enable": True,
     },
     {
         "message": "Select files to download:",
@@ -69,6 +78,7 @@ questions = [
         "when": lambda _: not is_upload(_),
         "choices": walk_s3_bucket,
         "multiselect": True,
+        "spinner_enable": True,
     },
     {
         "message": "Enter destination folder:",
@@ -80,7 +90,10 @@ questions = [
     {"message": "Confirm?", "type": "confirm", "default": False},
 ]
 
-result = prompt(questions, vi_mode=True)
+try:
+    result = prompt(questions, vi_mode=True)
+except InvalidArgument:
+    print("No available choices")
 
 # Download or Upload the file based on result ...
 ```
@@ -92,15 +105,20 @@ result = prompt(questions, vi_mode=True)
 
 ```python
 import os
+
 import boto3
+
 from InquirerPy import inquirer
+from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.validator import PathValidator
 
 client = boto3.client("s3")
-os.environ["INQUIRERPY_VI_MODE"] = 'true'
+os.environ["INQUIRERPY_VI_MODE"] = "true"
+
 
 def get_bucket(_):
     return [bucket["Name"] for bucket in client.list_buckets()["Buckets"]]
+
 
 def walk_s3_bucket(bucket):
     response = []
@@ -110,31 +128,40 @@ def walk_s3_bucket(bucket):
             response.append(file["Key"])
     return response
 
-action = inquirer.select(
-    message="Select an S3 action:", choices=["Upload", "Download"]
-).execute()
 
-if action == "Upload":
-    file_to_upload = inquirer.filepath(
-        message="Enter the filepath to upload:",
-        validate=PathValidator(),
-        only_files=True,
-    ).execute()
-    bucket = inquirer.fuzzy(message="Select a bucket:", choices=get_bucket).execute()
-else:
-    bucket = inquirer.fuzzy(message="Select a bucket:", choices=get_bucket).execute()
-    file_to_download = inquirer.fuzzy(
-        message="Select files to download:",
-        choices=lambda _: walk_s3_bucket(bucket),
-        multiselect=True,
-    ).execute()
-    destination = inquirer.filepath(
-        message="Enter destination folder:",
-        only_directories=True,
-        validate=PathValidator(),
+try:
+    action = inquirer.select(
+        message="Select an S3 action:", choices=["Upload", "Download"]
     ).execute()
 
-confirm = inquirer.confirm(message="Confirm?").execute()
+    if action == "Upload":
+        file_to_upload = inquirer.filepath(
+            message="Enter the filepath to upload:",
+            validate=PathValidator(),
+            only_files=True,
+        ).execute()
+        bucket = inquirer.fuzzy(
+            message="Select a bucket:", choices=get_bucket, spinner_enable=True
+        ).execute()
+    else:
+        bucket = inquirer.fuzzy(
+            message="Select a bucket:", choices=get_bucket, spinner_enable=True
+        ).execute()
+        file_to_download = inquirer.fuzzy(
+            message="Select files to download:",
+            choices=lambda _: walk_s3_bucket(bucket),
+            multiselect=True,
+            spinner_enable=True,
+        ).execute()
+        destination = inquirer.filepath(
+            message="Enter destination folder:",
+            only_directories=True,
+            validate=PathValidator(),
+        ).execute()
+
+    confirm = inquirer.confirm(message="Confirm?").execute()
+except InvalidArgument:
+    print("No available choices")
 
 # Download or Upload the file based on result ...
 ```
@@ -149,11 +176,11 @@ could not proceed due to the limitations.
 
 Some noticeable ones that bother me the most:
 
-- hard limit on `prompt_toolkit` version 1.0.3 (current release)
-- color issues (unreleased)
-- cursor issues (unreleased)
+- hard limit on `prompt_toolkit` version 1.0.3
+- various color issues
+- various cursor issues
 - No options for VI/Emacs navigation key bindings
-- Pagination options don't work
+- Pagination option doesn't work
 
 This project uses python3.7+ type hinting with focus on resolving above issues while providing greater customization options.
 
@@ -165,7 +192,9 @@ Leveraging `prompt_toolkit`, `InquirerPy` works cross platform for all OS. Altho
 
 ### Python
 
-`InquirerPy` requires Python3.7+.
+```
+python >= 3.7
+```
 
 ## Getting Started
 
@@ -205,7 +234,7 @@ confirm = inquirer.confirm(message="Confirm?").execute()
 ## Migrating from PyInquirer
 
 Most APIs from `PyInquirer` should be compatible with `InquirerPy`. If you discovered any more incompatible APIs, please
-let me know via issues or directly update README via pull request.
+create an issue or directly update README via a pull request.
 
 ### EditorPrompt
 
@@ -213,7 +242,7 @@ let me know via issues or directly update README via pull request.
 
 ### CheckboxPrompt
 
-The following table containing the mapping of the incompatible parameters.
+The following table contains the mapping of incompatible parameters.
 
 | PyInquirer      | InquirerPy      |
 | --------------- | --------------- |
@@ -223,7 +252,7 @@ The following table containing the mapping of the incompatible parameters.
 
 ### Style
 
-Every style keys from `PyInquirer` is present in `InquirerPy` except the once in the following table.
+Every style keys from `PyInquirer` is present in `InquirerPy` except the ones in the following table.
 
 | PyInquirer | InquirerPy |
 | ---------- | ---------- |
@@ -235,16 +264,11 @@ Although `InquirerPy` support all the keys from `PyInquirer`, the styling works 
 
 ### questionary
 
-While developing this project, I've discovered there's already another re-implementation of [PyInquirer](https://github.com/CITGuru/PyInquirer) called [questionary](https://github.com/tmbo/questionary).
-It's a fantastic fork which supports `prompt_toolkit` 3.0.0+ with performance improvement and more customization options. It's already a well established and stable library.
-
-_Unfortunately, the discovery of this project is a little too late since I really believe this is a great project and brings just what I needed to solve my issues with `PyInquirer` and
-I may not proceed to develop `InquirerPy`._
+[questionary](https://github.com/tmbo/questionary) is a fantastic fork which supports `prompt_toolkit` 3.0.0+ with performance improvement and more customization options.
+It's already a well established and stable library.
 
 Comparing with [questionary](https://github.com/tmbo/questionary), `InquirerPy` offers even more customization options in styles, UI as well as key bindings. `InquirerPy` also provides a new
 and powerful [fuzzy](https://github.com/kazhala/InquirerPy/wiki/FuzzyPrompt) prompt.
-
-If you are already using questionary, I do not suggest using `InquirerPy` unless you require more customization or wanna try out the [fuzzy](https://github.com/kazhala/InquirerPy/wiki/FuzzyPrompt) prompt as both library is not API compatible.
 
 ### python-inquirer
 
@@ -263,10 +287,7 @@ This project is based on the great work done by the following projects & their a
 
 - [PyInquirer](https://github.com/CITGuru/PyInquirer)
 - [prompt_toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit)
-- [sweep.py](https://github.com/aslpavel/sweep.py)
 
 ## License
 
-This project is licensed under [MIT](https://github.com/kazhala/InquirerPy/blob/master/LICENSE). Copyright (c) 2020 Kevin Zhuang
-
-The [fuzzy search logic](https://github.com/kazhala/InquirerPy/blob/master/InquirerPy/prompts/fuzzy/fzy.py) is licensed under [MIT](https://github.com/aslpavel/sweep.py/blob/master/LICENSE). Copyright (c) 2018 Pavel Aslanov
+This project is licensed under [MIT](https://github.com/kazhala/InquirerPy/blob/master/LICENSE).
