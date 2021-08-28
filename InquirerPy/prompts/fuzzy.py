@@ -329,6 +329,7 @@ class FuzzyPrompt(BaseListPrompt):
         keybindings = {
             "up": [{"key": "up"}, {"key": "c-p"}],
             "down": [{"key": "down"}, {"key": "c-n"}],
+            "toggle": [],
             **keybindings,
         }
         super().__init__(
