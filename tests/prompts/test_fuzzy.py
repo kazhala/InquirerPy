@@ -1,7 +1,8 @@
+from InquirerPy.base.complex import BaseComplexPrompt
 import asyncio
 import unittest
 from typing import Callable, NamedTuple
-from unittest.mock import ANY, MagicMock, patch
+from unittest.mock import ANY, MagicMock, call, patch
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -718,3 +719,17 @@ class TestFuzzy(unittest.TestCase):
         mocked.assert_called_once()
         self.assertEqual(prompt._buffer.text, "yes")
         self.assertEqual(prompt._buffer.cursor_position, 3)
+
+    @patch.object(FuzzyPrompt, "_on_rendered")
+    @patch.object(BaseComplexPrompt, "_register_kb")
+    def test_constructor_keybindings(self, mocked_kb, mocked_rendered):
+        prompt = FuzzyPrompt(message="", choices=[1, 2, 3])
+        prompt._after_render(None)
+        try:
+            mocked_kb.assert_has_calls([call("space", filter=ANY)])
+            mocked_kb.assert_has_calls([call("j", filter=ANY)])
+            mocked_kb.assert_has_calls([call("k", filter=ANY)])
+        except AssertionError:
+            pass
+        else:
+            self.fail("space/j/k kb was registered")
