@@ -20,7 +20,7 @@ def get_sample_style(val=None) -> Dict[str, str]:
         "marker": "#e5c07b",
         "validator": "",
         "fuzzy_prompt": "#c678dd",
-        "fuzzy_info": "#56b6c2",
+        "fuzzy_info": "#abb2bf",
         "frame.border": "#4b5263",
         "fuzzy_match": "#c678dd",
         "spinner_pattern": "#e5c07b",
