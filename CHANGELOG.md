@@ -9,13 +9,17 @@ Notable changes are documented in this file.
 - Added optional spinner to display while loading choices for list prompts.
 - Added argument `border` for list prompts to display a border around the choices.
 - Added argument `tips` to display longer instructions such as keybinding instructions at the bottom [#7](https://github.com/kazhala/InquirerPy/issues/7).
-  - Use `alt-t` or `escpa + t` to toggle the instruction.
+  - Use `alt-t` or `escape + t` to toggle the instruction.
+
+### Fixed
+
+- Fixed fuzzy prompt cannot type space [#20](https://github.com/kazhala/InquirerPy/issues/20).
 
 ### Changed
 
-- changed fuzzy prompt `border` default to `False`.
+- Changed fuzzy prompt `border` default to `False`.
   - It was `True` by default, changing this to keep it consistent with other prompts.
-- changed style `fuzzy_info` and `instruction` default color to `#abb2bf`.
+- Changed style `fuzzy_info` and `instruction` default color to `#abb2bf`.
 
 ## 0.2.4 (12/08/2021)
 
