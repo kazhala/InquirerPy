@@ -281,3 +281,16 @@ class TestBaseList(unittest.TestCase):
         )
         prompt._wrap_lines = False
         self.assertEqual(prompt.wrap_lines_offset, 0)
+
+    def test_tips(self):
+        prompt = ListPrompt(message="", choices=[1, 2, 3])
+        self.assertEqual(prompt._tips, "")
+        self.assertFalse(prompt._display_tips)
+        prompt._toggle_tips()
+        self.assertFalse(prompt._display_tips)
+
+        prompt = ListPrompt(message="", choices=[1, 2, 3], tips="asdfa")
+        self.assertEqual(prompt._tips, "asdfa")
+        self.assertTrue(prompt._display_tips)
+        prompt._toggle_tips()
+        self.assertFalse(prompt._display_tips)
