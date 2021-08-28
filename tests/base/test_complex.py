@@ -3,6 +3,7 @@ import unittest
 from typing import Callable, NamedTuple
 from unittest.mock import ANY, PropertyMock, call, patch
 
+from prompt_toolkit.application.application import Application
 from prompt_toolkit.layout.containers import Window
 from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.validation import ValidationError, Validator
@@ -11,6 +12,7 @@ from InquirerPy.base.complex import BaseComplexPrompt
 from InquirerPy.base.control import InquirerPyUIListControl
 from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.containers.spinner import SPINNERS
+from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.prompts.fuzzy import FuzzyPrompt
 
 
@@ -382,3 +384,19 @@ class TestBaseComplex(unittest.TestCase):
         self.assertEqual(
             prompt._get_error_message(), [("class:validation-toolbar", "hello")]
         )
+
+    @patch.object(Application, "exit")
+    def test_exception_handler(self, mocked):
+        async def test_async():
+            prompt = FuzzyPrompt(message="", choices=[1, 2, 3])
+            prompt._after_render(None)
+            loop = asyncio.get_event_loop()
+            self.assertEqual(prompt._status, {"answered": False, "result": None})
+            self.assertEqual(loop.get_exception_handler(), prompt._exception_handler)
+            prompt._exception_handler(None, {"exception": KeyboardInterrupt})
+            self.assertEqual(
+                prompt._status,
+                {"answered": True, "result": INQUIRERPY_KEYBOARD_INTERRUPT},
+            )
+
+        asyncio.run(test_async())
