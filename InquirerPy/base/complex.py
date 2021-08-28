@@ -14,6 +14,7 @@ from prompt_toolkit.validation import Validator
 
 from InquirerPy.base.simple import BaseSimplePrompt
 from InquirerPy.containers import SpinnerWindow
+from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.utils import InquirerPyStyle, SessionResult
 
 
@@ -66,6 +67,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         spinner_pattern: List[str] = None,
         spinner_text: str = "",
         spinner_delay: float = 0.1,
+        set_exception_handler: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         super().__init__(
@@ -88,6 +90,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._loading = False
         self._application: Application
         self._spinner_enable = spinner_enable
+        self._set_exception_handler = set_exception_handler
 
         self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
         self._is_invalid = Condition(lambda: self._invalid)
@@ -129,14 +132,37 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         return decorator
 
+    def _exception_handler(self, _, context) -> None:
+        """Set exception handler for the event loop.
+
+        Skip the question and raise exception.
+
+        Args:
+            loop: Current event loop.
+            context: Exception context.
+        """
+        self._status["answered"] = True
+        self._status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
+        self._application.exit(exception=context["exception"])
+
     def _after_render(self, app: Optional[Application]) -> None:
         """Run after the :class:`~prompt_toolkit.application.Application` is rendered/updated.
 
         Since this function is fired up on each render, adding a check on `self._rendered` to
         process logics that should only run once.
+
+        Set event loop exception handler here, since its guaranteed that the event loop is running
+        in `_after_render`.
         """
         if not self._rendered:
             self._rendered = True
+
+            try:
+                if self._set_exception_handler:
+                    loop = asyncio.get_running_loop()
+                    loop.set_exception_handler(self._exception_handler)
+            except RuntimeError:
+                pass
 
             def keybinding_factory(keys, filter, action):
                 if not isinstance(keys, list):
@@ -154,6 +180,15 @@ class BaseComplexPrompt(BaseSimplePrompt):
                     )
 
             self._on_rendered(app)
+
+    def _set_error(self, message: str) -> None:
+        """Set error message and set invalid state.
+
+        Args:
+            message: Error message to display.
+        """
+        self._invalid_message = message
+        self._invalid = True
 
     def _get_error_message(self) -> List[Tuple[str, str]]:
         """Obtain the error message dynamically.

@@ -274,6 +274,9 @@ class FuzzyPrompt(BaseListPrompt):
         spinner_delay: Spinner refresh frequency.
         spinner_text: Loading text to display.
         spinner_enable: Enable spinner when loading choices.
+        set_exception_handler: Set exception handler for the event loop.
+            If any exception is raised while the `prompt` is visible, the question will enter the `skipped` state and exception will be raised.
+            If you have custom exception handler want to set, set this value to `False`.
         session_result: Used for `classic syntax`, ignore this argument.
 
     Examples:
@@ -310,6 +313,7 @@ class FuzzyPrompt(BaseListPrompt):
         spinner_pattern: List[str] = None,
         spinner_text: str = "",
         spinner_delay: float = 0.1,
+        set_exception_handler: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         if not keybindings:
@@ -344,6 +348,7 @@ class FuzzyPrompt(BaseListPrompt):
             spinner_pattern=spinner_pattern,
             spinner_delay=spinner_delay,
             spinner_text=spinner_text,
+            set_exception_handler=set_exception_handler,
             session_result=session_result,
         )
         self._default = default if not isinstance(default, Callable) else default(self._result)  # type: ignore
@@ -580,8 +585,7 @@ class FuzzyPrompt(BaseListPrompt):
                 self.status["result"] = self.content_control.selection["name"]
                 event.app.exit(result=self.content_control.selection["value"])
         except ValidationError as e:
-            self._invalid_message = str(e)
-            self._invalid = True
+            self._set_error(str(e))
         except IndexError:
             self.status["answered"] = True
             self.status["result"] = None if not self._multiselect else []

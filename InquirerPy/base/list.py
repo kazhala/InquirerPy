@@ -45,6 +45,7 @@ class BaseListPrompt(BaseComplexPrompt):
         spinner_pattern: List[str] = None,
         spinner_text: str = "",
         spinner_delay: float = 0.1,
+        set_exception_handler: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         super().__init__(
@@ -63,6 +64,7 @@ class BaseListPrompt(BaseComplexPrompt):
             spinner_pattern=spinner_pattern,
             spinner_delay=spinner_delay,
             spinner_text=spinner_text,
+            set_exception_handler=set_exception_handler,
             session_result=session_result,
         )
 

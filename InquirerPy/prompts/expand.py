@@ -185,6 +185,9 @@ class ExpandPrompt(ListPrompt):
         spinner_delay: Spinner refresh frequency.
         spinner_text: Loading text to display.
         spinner_enable: Enable spinner when loading choices.
+        set_exception_handler: Set exception handler for the event loop.
+            If any exception is raised while the `prompt` is visible, the question will enter the `skipped` state and exception will be raised.
+            If you have custom exception handler want to set, set this value to `False`.
         session_result: Used for `classic syntax`, ignore this argument.
 
     Examples:
@@ -222,6 +225,7 @@ class ExpandPrompt(ListPrompt):
         spinner_pattern: List[str] = None,
         spinner_text: str = "",
         spinner_delay: float = 0.1,
+        set_exception_handler: bool = True,
         session_result: SessionResult = None,
     ) -> None:
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
@@ -259,6 +263,7 @@ class ExpandPrompt(ListPrompt):
             spinner_pattern=spinner_pattern,
             spinner_delay=spinner_delay,
             spinner_text=spinner_text,
+            set_exception_handler=set_exception_handler,
             session_result=session_result,
         )
 
