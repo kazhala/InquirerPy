@@ -98,6 +98,7 @@ class CheckboxPrompt(ListPrompt):
         pointer: Custom symbol that will be used to indicate the current choice selection.
         enabled_symbol: Custom symbol which indicate the checkbox is ticked.
         disabled_symbol: Custom symbol which indicate the checkbox is not ticked.
+        border: Create border around the choice window.
         instruction: Short instruction to display next to the `message`.
         tips: Long instructions or tips to display in a floating window at the bottom.
         validate: Validation callable or class to validate user input.
@@ -137,6 +138,7 @@ class CheckboxPrompt(ListPrompt):
         pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = "%s " % INQUIRERPY_FILL_HEX_SEQUENCE,
         disabled_symbol: str = "%s " % INQUIRERPY_EMPTY_HEX_SEQUENCE,
+        border: bool = False,
         instruction: str = "",
         tips: str = "",
         transformer: Callable[[Any], Any] = None,
@@ -168,6 +170,7 @@ class CheckboxPrompt(ListPrompt):
             message=message,
             choices=choices,
             style=style,
+            border=border,
             vi_mode=vi_mode,
             qmark=qmark,
             amark=amark,

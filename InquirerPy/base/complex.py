@@ -54,6 +54,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self,
         message: Union[str, Callable[[SessionResult], str]],
         style: InquirerPyStyle = None,
+        border: bool = False,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
@@ -94,6 +95,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._set_exception_handler = set_exception_handler
         self._tips = tips
         self._display_tips = True if tips else False
+        self._border = border
 
         self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
         self._is_invalid = Condition(lambda: self._invalid)

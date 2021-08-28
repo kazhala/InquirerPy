@@ -34,6 +34,7 @@ class TestBaseList(unittest.TestCase):
             instruction=instruction,
             show_cursor=True,
             wrap_lines=True,
+            border=True,
         )
         self.assertEqual(prompt._editing_mode, EditingMode.VI)
         self.assertIsInstance(prompt.content_control, InquirerPyListControl)
@@ -42,6 +43,7 @@ class TestBaseList(unittest.TestCase):
         self.assertEqual(prompt._message, message)
         self.assertEqual(prompt._qmark, qmark)
         self.assertEqual(prompt.instruction, instruction)
+        self.assertTrue(prompt._border, True)
 
     def test_prompt_message_with_cursor(self):
         prompt = ListPrompt(message="Select one:", choices=[1, 2, 3])

@@ -14,6 +14,7 @@ from prompt_toolkit.layout.containers import (
 from prompt_toolkit.layout.dimension import Dimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.validation import ValidationError, Validator
+from prompt_toolkit.widgets.base import Frame
 
 from InquirerPy.base import InquirerPyUIListControl
 from InquirerPy.base.complex import FakeDocument
@@ -114,6 +115,7 @@ class ListPrompt(BaseListPrompt):
         multiselect: Enable multi-selection on choices.
         marker: Custom symbol to indicate if a choice is selected.
         marker_pl: Marker place holder when the choice is not selected.
+        border: Create border around the choice window.
         keybindings: Custom keybindings to apply. Refer to :ref:`pages/kb:Keybindings`.
         show_cursor: Display cursor at the end of the prompt.
         cycle: Return to top item if hit bottom or vice versa.
@@ -150,6 +152,7 @@ class ListPrompt(BaseListPrompt):
         multiselect: bool = False,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
+        border: bool = False,
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
@@ -176,6 +179,7 @@ class ListPrompt(BaseListPrompt):
         super().__init__(
             message=message,
             style=style,
+            border=border,
             vi_mode=vi_mode,
             qmark=qmark,
             amark=amark,
@@ -202,6 +206,19 @@ class ListPrompt(BaseListPrompt):
             max_height,
             wrap_lines_offset=self.wrap_lines_offset,
         )
+        main_content_window = Window(
+            content=self.content_control,
+            height=Dimension(
+                max=self._dimmension_max_height
+                if not self._border
+                else self._dimmension_max_height - 2,
+                preferred=self._dimmension_height,
+            ),
+            dont_extend_height=True,
+        )
+
+        if self._border:
+            main_content_window = Frame(main_content_window)
 
         self.layout = FloatContainer(
             content=HSplit(
@@ -216,14 +233,7 @@ class ListPrompt(BaseListPrompt):
                     ),
                     self._spinner,
                     ConditionalContainer(
-                        Window(
-                            content=self.content_control,
-                            height=Dimension(
-                                max=self._dimmension_max_height,
-                                preferred=self._dimmension_height,
-                            ),
-                            dont_extend_height=True,
-                        ),
+                        main_content_window,
                         filter=~IsDone() & ~self._is_loading,
                     ),
                 ]

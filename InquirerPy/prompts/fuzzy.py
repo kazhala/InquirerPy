@@ -322,7 +322,6 @@ class FuzzyPrompt(BaseListPrompt):
         if not keybindings:
             keybindings = {}
         self._prompt = prompt
-        self._border = border
         self._info = info
         self._task = None
         self._rendered = False
@@ -335,6 +334,7 @@ class FuzzyPrompt(BaseListPrompt):
         super().__init__(
             message=message,
             style=style,
+            border=border,
             vi_mode=vi_mode,
             qmark=qmark,
             amark=amark,
@@ -355,7 +355,11 @@ class FuzzyPrompt(BaseListPrompt):
             set_exception_handler=set_exception_handler,
             session_result=session_result,
         )
-        self._default = default if not isinstance(default, Callable) else default(self._result)  # type: ignore
+        self._default = (
+            default
+            if not isinstance(default, Callable)
+            else cast(Callable, default)(self._result)
+        )
         self._dimmension_height, self._dimmension_max_height = calculate_height(
             height, max_height, offset=3, wrap_lines_offset=self.wrap_lines_offset
         )

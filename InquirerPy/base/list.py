@@ -34,6 +34,7 @@ class BaseListPrompt(BaseComplexPrompt):
         amark: str = "?",
         instruction: str = "",
         tips: str = "",
+        border: bool = False,
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         validate: Union[Callable[[Any], bool], Validator] = None,
@@ -52,6 +53,7 @@ class BaseListPrompt(BaseComplexPrompt):
         super().__init__(
             message=message,
             style=style,
+            border=border,
             vi_mode=vi_mode,
             qmark=qmark,
             amark=amark,

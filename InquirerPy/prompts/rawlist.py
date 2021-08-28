@@ -132,6 +132,7 @@ class RawlistPrompt(ListPrompt):
         multiselect: Enable multi-selection on choices.
         marker: Custom symbol to indicate if a choice is selected.
         marker_pl: Marker place holder when the choice is not selected.
+        border: Create border around the choice window.
         keybindings: Custom keybindings to apply. Refer to :ref:`pages/kb:Keybindings`.
         show_cursor: Display cursor at the end of the prompt.
         cycle: Return to top item if hit bottom or vice versa.
@@ -169,6 +170,7 @@ class RawlistPrompt(ListPrompt):
         multiselect: bool = False,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
+        border: bool = False,
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
@@ -196,6 +198,7 @@ class RawlistPrompt(ListPrompt):
             message=message,
             choices=choices,
             style=style,
+            border=border,
             vi_mode=vi_mode,
             qmark=qmark,
             amark=amark,
