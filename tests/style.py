@@ -12,7 +12,7 @@ def get_sample_style(val=None) -> Dict[str, str]:
         "input": "#98c379",
         "question": "",
         "answered_question": "",
-        "instruction": "",
+        "instruction": "#abb2bf",
         "pointer": "#61afef",
         "checkbox": "#98c379",
         "separator": "",

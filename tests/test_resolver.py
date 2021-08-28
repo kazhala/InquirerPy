@@ -393,22 +393,18 @@ class TestResolver(unittest.TestCase):
         mocked_kb.assert_not_called()
         questions = [{"type": "list", "message": "aasdf", "choices": [1, 2, 3]}]
         prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
-        mocked_kb.assert_has_calls(
-            [
-                call(
-                    {
-                        "down": ANY,
-                        "up": [{"key": "c-p"}],
-                        "toggle": ANY,
-                        "toggle-down": ANY,
-                        "toggle-up": ANY,
-                        "toggle-all": ANY,
-                        "toggle-all-true": ANY,
-                        "toggle-all-false": ANY,
-                    }
-                )
-            ]
-        )
+        key_called = {
+            "down": ANY,
+            "up": ANY,
+            "toggle-tips": ANY,
+            "toggle": ANY,
+            "toggle-down": ANY,
+            "toggle-up": ANY,
+            "toggle-all": ANY,
+            "toggle-all-true": ANY,
+            "toggle-all-false": ANY,
+        }
+        mocked_kb.assert_has_calls([call({**key_called, "up": [{"key": "c-p"}]})])
         try:
             mocked_kb.assert_has_calls([call("k", filter=ANY)])
             self.fail("should not have called")
@@ -425,22 +421,7 @@ class TestResolver(unittest.TestCase):
             }
         ]
         prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
-        mocked_kb.assert_has_calls(
-            [
-                call(
-                    {
-                        "down": ANY,
-                        "up": [{"key": "c-w"}],
-                        "toggle": ANY,
-                        "toggle-down": ANY,
-                        "toggle-up": ANY,
-                        "toggle-all": ANY,
-                        "toggle-all-true": ANY,
-                        "toggle-all-false": ANY,
-                    }
-                )
-            ]
-        )
+        mocked_kb.assert_has_calls([call({**key_called, "up": [{"key": "c-w"}]})])
         try:
             mocked_kb.assert_has_calls([call("c-p", filter=ANY)])
             self.fail("should not have called")
