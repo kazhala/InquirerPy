@@ -305,7 +305,7 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(prompt._instruction, instruction)
         self.assertEqual(prompt._multiselect, False)
         self.assertEqual(prompt._prompt, INQUIRERPY_POINTER_SEQUENCE)
-        self.assertEqual(prompt._border, True)
+        self.assertFalse(prompt._border)
         self.assertEqual(prompt._info, True)
         self.assertIsInstance(prompt._buffer, Buffer)
         self.assertIsInstance(prompt._layout, Layout)
@@ -321,7 +321,7 @@ class TestFuzzy(unittest.TestCase):
             pointer=INQUIRERPY_POINTER_SEQUENCE,
             marker=INQUIRERPY_POINTER_SEQUENCE,
             current_text=ANY,
-            max_lines=78,
+            max_lines=80,
             session_result=None,
             multiselect=False,
             marker_pl=" ",
@@ -338,7 +338,7 @@ class TestFuzzy(unittest.TestCase):
                 "waht",
                 {"name": "weaht", "value": "weaht", "enabled": True},
             ],
-            border=False,
+            border=True,
         )
         mocked_control.assert_called_with(
             choices=[
@@ -351,7 +351,7 @@ class TestFuzzy(unittest.TestCase):
             pointer=INQUIRERPY_POINTER_SEQUENCE,
             marker=INQUIRERPY_POINTER_SEQUENCE,
             current_text=ANY,
-            max_lines=80,
+            max_lines=78,
             session_result=None,
             multiselect=False,
             marker_pl=" ",

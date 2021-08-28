@@ -303,7 +303,7 @@ class FuzzyPrompt(BaseListPrompt):
         prompt: str = INQUIRERPY_POINTER_SEQUENCE,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
-        border: bool = True,
+        border: bool = False,
         info: bool = True,
         height: Union[str, int] = None,
         max_height: Union[str, int] = None,
