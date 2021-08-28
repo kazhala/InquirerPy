@@ -58,7 +58,6 @@ def alternate():
         choices=["hello", "weather", "what", "whoa", "hey", "yo"],
         default="he",
         max_height="70%",
-        tips="hello",
     ).execute()
     words = inquirer.fuzzy(
         message="Select preferred words:",

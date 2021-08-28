@@ -6,19 +6,28 @@ Notable changes are documented in this file.
 
 ### Added
 
-- Optional spinner to display while loading choices for list prompts.
+- Added optional spinner to display while loading choices for list prompts.
+- Added argument `border` for list prompts to display a border around the choices.
+- Added argument `tips` to display longer instructions such as keybinding instructions at the bottom [#7](https://github.com/kazhala/InquirerPy/issues/7).
+  - Use `alt-t` or `escpa + t` to toggle the instruction.
+
+### Changed
+
+- changed fuzzy prompt `border` default to `False`.
+  - It was `True` by default, changing this to keep it consistent with other prompts.
+- changed style `fuzzy_info` and `instruction` default color to `#abb2bf`.
 
 ## 0.2.4 (12/08/2021)
 
 ### Fixed
 
-- fuzzy prompt choices are centered
+- Fixed fuzzy prompt choices are centered.
 
 ## 0.2.3 (04/08/2021)
 
 ### Added
 
-- Added option `wrap_lines` to all prompts to configure line wrapping
+- Added option `wrap_lines` to all prompts to configure line wrapping.
 - Added option `instruction` for non-list type prompts. This is already supported in all list type prompts previously.
 - Added option `confirm_letter` and `reject_letter` to confirm prompts. Use the 2 value to change from the default "y/n".
   - For updating the result value, please use the `transformer` arguments. By default, no matter what confirm_letter or
@@ -38,11 +47,11 @@ inquirer.confirm(
 
 ### Fixed
 
-- Line wrapping [#11](https://github.com/kazhala/InquirerPy/issues/11)
+- Line wrapping [#11](https://github.com/kazhala/InquirerPy/issues/11).
 
 ### Changed
 
-- Answered question prefix spacing now depends on `amark` arguments instead of `qmark`
+- Answered question prefix spacing now depends on `amark` arguments instead of `qmark`.
   - If you previously disable the `qmark` by setting it to empty string, please also set `amark` to empty string.
 
 ## 0.2.2 (03/07/2021)
@@ -53,7 +62,7 @@ N/A
 
 ### Added
 
-- Added option to disable cycle behavior in list type prompts [#9](https://github.com/kazhala/InquirerPy/issues/9)
+- Added option to disable cycle behavior in list type prompts [#9](https://github.com/kazhala/InquirerPy/issues/9).
 - Added parameter `amark`. You can use this value to change the `qmark` after the question is answered.
 - Added some more style customization option.
   - `answermark`: Used to change the color and style of `amark`.
@@ -63,15 +72,15 @@ N/A
 
 ### Added
 
-- Defaults for multi-select list [#2](https://github.com/kazhala/InquirerPy/issues/2)
-- Disable qmark [#3](https://github.com/kazhala/InquirerPy/issues/3)
-- Configure `marker_pl`
+- Defaults for multi-select list [#2](https://github.com/kazhala/InquirerPy/issues/2).
+- Disable qmark [#3](https://github.com/kazhala/InquirerPy/issues/3).
+- Configure `marker_pl`.
   - This value exists in all list type prompts which by default is an empty space.
     This space is replaced when the choice is selected in multiselect scenario.
 
 ### Changed
 
-- Spacing in `checkbox` prompt `enabled_symbol` and `disabled_symbol`
+- Spacing in `checkbox` prompt `enabled_symbol` and `disabled_symbol`.
   - If you have customised these values, add an empty space at the end.
 - Spacing in `expand` prompt `separator`.
   - If you have customised these values, add an empty space at the end.
