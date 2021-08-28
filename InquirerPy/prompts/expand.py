@@ -167,6 +167,7 @@ class ExpandPrompt(ListPrompt):
         amark: Custom symbol that will be displayed infront of the question after its answered.
         pointer: Custom symbol that will be used to indicate the current choice selection.
         instruction: Short instruction to display next to the `message`.
+        tips: Long instructions or tips to display in a floating window at the bottom.
         validate: Validation callable or class to validate user input.
         invalid_message: Error message to display when input is invalid.
         transformer: A callable to transform the result that gets printed in the terminal.
@@ -208,6 +209,7 @@ class ExpandPrompt(ListPrompt):
         help_msg: str = "Help, list all choices",
         expand_pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
+        tips: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         height: Union[int, str] = None,
@@ -248,6 +250,7 @@ class ExpandPrompt(ListPrompt):
             qmark=qmark,
             amark=amark,
             instruction=instruction,
+            tips=tips,
             transformer=transformer,
             filter=filter,
             height=height,

@@ -33,6 +33,7 @@ class BaseListPrompt(BaseComplexPrompt):
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
+        tips: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         validate: Union[Callable[[Any], bool], Validator] = None,
@@ -59,6 +60,7 @@ class BaseListPrompt(BaseComplexPrompt):
             invalid_message=invalid_message,
             validate=validate,
             instruction=instruction,
+            tips=tips,
             wrap_lines=wrap_lines,
             spinner_enable=spinner_enable,
             spinner_pattern=spinner_pattern,
@@ -87,6 +89,7 @@ class BaseListPrompt(BaseComplexPrompt):
                 {"key": "c-p", "filter": ~self._is_vim_edit},
                 {"key": "k", "filter": self._is_vim_edit},
             ],
+            "toggle-tips": [{"key": "alt-t"}],
             "toggle": [
                 {"key": "space", "filter": self._is_multiselect},
             ],
@@ -109,6 +112,7 @@ class BaseListPrompt(BaseComplexPrompt):
         self.kb_func_lookup = {
             "down": [{"func": self._handle_down}],
             "up": [{"func": self._handle_up}],
+            "toggle-tips": [{"func": self._toggle_tips}],
             "toggle": [{"func": self._toggle_choice}],
             "toggle-down": [{"func": self._toggle_choice}, {"func": self._handle_down}],
             "toggle-up": [{"func": self._toggle_choice}, {"func": self._handle_up}],
@@ -238,6 +242,11 @@ class BaseListPrompt(BaseComplexPrompt):
                 self.content_control.selected_choice_index = 0
                 return True
             return False
+
+    def _toggle_tips(self) -> None:
+        """Toggle tips display."""
+        if self._tips:
+            self._display_tips = not self._display_tips
 
     @abstractmethod
     def _toggle_choice(self) -> None:

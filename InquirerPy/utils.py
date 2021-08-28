@@ -101,7 +101,7 @@ def get_style(
             "input": os.getenv("INQUIRERPY_STYLE_INPUT", "#98c379"),
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
             "answered_question": os.getenv("INQUIRERPY_STYLE_ANSWERED_QUESTION", ""),
-            "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
+            "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", "#abb2bf"),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
             "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
             "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),

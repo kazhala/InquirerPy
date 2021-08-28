@@ -121,6 +121,7 @@ class RawlistPrompt(ListPrompt):
         amark: Custom symbol that will be displayed infront of the question after its answered.
         pointer: Custom symbol that will be used to indicate the current choice selection.
         instruction: Short instruction to display next to the `message`.
+        tips: Long instructions or tips to display in a floating window at the bottom.
         validate: Validation callable or class to validate user input.
         invalid_message: Error message to display when input is invalid.
         transformer: A callable to transform the result that gets printed in the terminal.
@@ -160,6 +161,7 @@ class RawlistPrompt(ListPrompt):
         amark: str = "?",
         pointer: str = " ",
         instruction: str = "",
+        tips: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         height: Union[int, str] = None,
@@ -198,6 +200,7 @@ class RawlistPrompt(ListPrompt):
             qmark=qmark,
             amark=amark,
             instruction=instruction,
+            tips=tips,
             transformer=transformer,
             filter=filter,
             height=height,

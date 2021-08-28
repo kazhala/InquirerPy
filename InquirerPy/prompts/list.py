@@ -19,6 +19,7 @@ from InquirerPy.base import InquirerPyUIListControl
 from InquirerPy.base.complex import FakeDocument
 from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.containers.message import MessageWindow
+from InquirerPy.containers.tips import TipsWindow
 from InquirerPy.containers.validation import ValidationWindow
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
@@ -102,6 +103,7 @@ class ListPrompt(BaseListPrompt):
         amark: Custom symbol that will be displayed infront of the question after its answered.
         pointer: Custom symbol that will be used to indicate the current choice selection.
         instruction: Short instruction to display next to the `message`.
+        tips: Long instructions or tips to display in a floating window at the bottom.
         validate: Validation callable or class to validate user input.
         invalid_message: Error message to display when input is invalid.
         transformer: A callable to transform the result that gets printed in the terminal.
@@ -140,6 +142,7 @@ class ListPrompt(BaseListPrompt):
         amark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
+        tips: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         height: Union[int, str] = None,
@@ -177,6 +180,7 @@ class ListPrompt(BaseListPrompt):
             qmark=qmark,
             amark=amark,
             instruction=instruction,
+            tips=tips,
             transformer=transformer,
             filter=filter,
             validate=validate,
@@ -226,13 +230,21 @@ class ListPrompt(BaseListPrompt):
             ),
             floats=[
                 Float(
+                    content=TipsWindow(
+                        message=self._tips,
+                        filter=self._is_displaying_tips & ~IsDone(),
+                    ),
+                    left=0,
+                    bottom=0,
+                ),
+                Float(
                     content=ValidationWindow(
                         invalid_message=self._get_error_message,
                         filter=self._is_invalid & ~IsDone(),
                     ),
                     left=0,
                     bottom=0,
-                )
+                ),
             ],
         )
 

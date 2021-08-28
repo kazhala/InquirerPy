@@ -58,6 +58,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
+        tips: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         validate: Union[Callable[[Any], bool], Validator] = None,
@@ -91,11 +92,14 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._application: Application
         self._spinner_enable = spinner_enable
         self._set_exception_handler = set_exception_handler
+        self._tips = tips
+        self._display_tips = True if tips else False
 
         self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
         self._is_invalid = Condition(lambda: self._invalid)
         self._is_loading = Condition(lambda: self.loading)
         self._is_spinner_enable = Condition(lambda: self._spinner_enable)
+        self._is_displaying_tips = Condition(lambda: self._display_tips)
 
         self._spinner = SpinnerWindow(
             loading=self._is_loading & self._is_spinner_enable,
