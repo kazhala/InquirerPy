@@ -100,7 +100,7 @@ class CheckboxPrompt(ListPrompt):
         disabled_symbol: Custom symbol which indicate the checkbox is not ticked.
         border: Create border around the choice window.
         instruction: Short instruction to display next to the `message`.
-        tips: Long instructions or tips to display in a floating window at the bottom.
+        long_instruction: Long instructions to display at the bottom of the prompt.
         validate: Validation callable or class to validate user input.
         invalid_message: Error message to display when input is invalid.
         transformer: A callable to transform the result that gets printed in the terminal.
@@ -140,7 +140,7 @@ class CheckboxPrompt(ListPrompt):
         disabled_symbol: str = "%s " % INQUIRERPY_EMPTY_HEX_SEQUENCE,
         border: bool = False,
         instruction: str = "",
-        tips: str = "",
+        long_instruction: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         height: Union[int, str] = None,
@@ -175,7 +175,7 @@ class CheckboxPrompt(ListPrompt):
             qmark=qmark,
             amark=amark,
             instruction=instruction,
-            tips=tips,
+            long_instruction=long_instruction,
             transformer=transformer,
             filter=filter,
             height=height,

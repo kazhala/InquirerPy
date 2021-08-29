@@ -59,7 +59,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
-        tips: str = "",
+        long_instruction: str = "",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
         validate: Union[Callable[[Any], bool], Validator] = None,
@@ -93,20 +93,21 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._application: Application
         self._spinner_enable = spinner_enable
         self._set_exception_handler = set_exception_handler
-        self._tips = tips
-        self._display_tips = True if tips else False
+        self._long_instruction = long_instruction
         self._border = border
         self._height_offset = 2  # prev prompt result + current prompt question
         if self._border:
             self._height_offset += 2
-        if self._tips:
+        if self._long_instruction:
             self._height_offset += 1
 
         self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
         self._is_invalid = Condition(lambda: self._invalid)
         self._is_loading = Condition(lambda: self.loading)
         self._is_spinner_enable = Condition(lambda: self._spinner_enable)
-        self._is_displaying_tips = Condition(lambda: self._display_tips)
+        self._is_displaying_long_instruction = Condition(
+            lambda: self._long_instruction != ""
+        )
 
         self._spinner = SpinnerWindow(
             loading=self._is_loading & self._is_spinner_enable,
@@ -299,7 +300,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         # message wrap
         result += self.total_message_length // term_width
         # long instruction wrap
-        result += len(self._tips) // term_width
+        result += len(self._long_instruction) // term_width
 
         return result
 
