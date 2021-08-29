@@ -1,4 +1,3 @@
-from InquirerPy.base.complex import BaseComplexPrompt
 import asyncio
 import unittest
 from typing import Callable, NamedTuple
@@ -8,6 +7,7 @@ from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.layout import Layout
 
+from InquirerPy.base.complex import BaseComplexPrompt
 from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
@@ -352,7 +352,7 @@ class TestFuzzy(unittest.TestCase):
             pointer=INQUIRERPY_POINTER_SEQUENCE,
             marker=INQUIRERPY_POINTER_SEQUENCE,
             current_text=ANY,
-            max_lines=78,
+            max_lines=80,
             session_result=None,
             multiselect=False,
             marker_pl=" ",

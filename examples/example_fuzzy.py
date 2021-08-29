@@ -57,7 +57,6 @@ def alternate():
         message="Select actions:",
         choices=["hello", "weather", "what", "whoa", "hey", "yo"],
         default="he",
-        max_height="70%",
     ).execute()
     words = inquirer.fuzzy(
         message="Select preferred words:",
@@ -65,7 +64,6 @@ def alternate():
         multiselect=True,
         validate=lambda result: len(result) > 1,
         invalid_message="minimum 2 selections",
-        max_height="70%",
         spinner_enable=True,
         spinner_pattern=SPINNERS.line,
         spinner_text="Fetching sample texts ...",

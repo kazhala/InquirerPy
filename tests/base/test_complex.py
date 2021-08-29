@@ -287,9 +287,11 @@ class TestBaseComplex(unittest.TestCase):
             cycle=False,
         )
 
+    @patch("InquirerPy.base.complex.shutil.get_terminal_size")
     @patch("InquirerPy.utils.shutil.get_terminal_size")
-    def test_wrap_lines_offset(self, mocked_term):
+    def test_extra_lines_due_to_offset(self, mocked_term, mocked_term2):
         mocked_term.return_value = (24, 80)
+        mocked_term2.return_value = (24, 80)
         message = 15 * "i"
         qmark = "[?]"
         instruction = 2 * "i"
@@ -306,7 +308,7 @@ class TestBaseComplex(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            prompt.wrap_lines_offset,
+            prompt.extra_lines_due_to_wrapping,
             (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1) // 24,
         )
 
@@ -324,11 +326,31 @@ class TestBaseComplex(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            prompt.wrap_lines_offset,
+            prompt.extra_lines_due_to_wrapping,
             (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1) // 24,
         )
+
+    @patch("InquirerPy.base.complex.shutil.get_terminal_size")
+    def test_height_offset(self, mocked_term) -> None:
+        mocked_term.return_value = (24, 80)
+        message = 15 * "i"
+        qmark = "[?]"
+        instruction = 3 * "i"
+        prompt = FuzzyPrompt(
+            message=message, qmark=qmark, instruction=instruction, choices=[1, 2, 3]
+        )
+        self.assertEqual(prompt.height_offset, 4)
         prompt._wrap_lines = False
-        self.assertEqual(prompt.wrap_lines_offset, 0)
+        self.assertEqual(prompt.height_offset, 3)
+
+        prompt = FuzzyPrompt(
+            message=message,
+            qmark=qmark,
+            instruction=instruction,
+            choices=[1, 2, 3],
+            border=True,
+        )
+        self.assertEqual(prompt.height_offset, 6)
 
     def test_loading(self):
         async def run_spinner(prompt) -> None:
