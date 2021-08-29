@@ -11,6 +11,7 @@ from prompt_toolkit.layout.containers import (
     HSplit,
     Window,
 )
+from prompt_toolkit.layout.controls import DummyControl
 from prompt_toolkit.layout.dimension import Dimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.validation import ValidationError, Validator
@@ -202,16 +203,12 @@ class ListPrompt(BaseListPrompt):
         )
         self._show_cursor = show_cursor
         self._dimmension_height, self._dimmension_max_height = calculate_height(
-            height,
-            max_height,
-            wrap_lines_offset=self.wrap_lines_offset,
+            height, max_height, height_offset=self.height_offset
         )
         main_content_window = Window(
             content=self.content_control,
             height=Dimension(
-                max=self._dimmension_max_height
-                if not self._border
-                else self._dimmension_max_height - 2,
+                max=self._dimmension_max_height,
                 preferred=self._dimmension_height,
             ),
             dont_extend_height=True,
@@ -236,17 +233,18 @@ class ListPrompt(BaseListPrompt):
                         main_content_window,
                         filter=~IsDone() & ~self._is_loading,
                     ),
+                    ConditionalContainer(
+                        Window(content=DummyControl()),
+                        filter=~IsDone() & self._is_displaying_tips,
+                    ),
+                    TipsWindow(
+                        message=self._tips,
+                        filter=self._is_displaying_tips & ~IsDone(),
+                        wrap_lines=self._wrap_lines,
+                    ),
                 ]
             ),
             floats=[
-                Float(
-                    content=TipsWindow(
-                        message=self._tips,
-                        filter=self._is_displaying_tips & ~IsDone(),
-                    ),
-                    left=0,
-                    bottom=0,
-                ),
                 Float(
                     content=ValidationWindow(
                         invalid_message=self._get_error_message,

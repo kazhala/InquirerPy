@@ -96,6 +96,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._tips = tips
         self._display_tips = True if tips else False
         self._border = border
+        self._height_offset = 2  # prev prompt result + current prompt question
+        if self._border:
+            self._height_offset += 2
+        if self._tips:
+            self._height_offset += 1
 
         self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
         self._is_invalid = Condition(lambda: self._invalid)
@@ -258,15 +263,15 @@ class BaseComplexPrompt(BaseSimplePrompt):
         pass
 
     @property
+    def height_offset(self) -> int:
+        """int: Height offset to apply."""
+        if not self._wrap_lines:
+            return self._height_offset
+        return self.extra_lines_due_to_wrapping + self._height_offset
+
+    @property
     def total_message_length(self) -> int:
-        """Get total width of the message row.
-
-        Used mainly to calculate how much offset should be applied when getting
-        the height.
-
-        Returns:
-            Total Mesage length.
-        """
+        """int: Total length of the message."""
         total_message_length = 0
         if self._qmark:
             total_message_length += len(self._qmark)
@@ -279,16 +284,24 @@ class BaseComplexPrompt(BaseSimplePrompt):
         return total_message_length
 
     @property
-    def wrap_lines_offset(self) -> int:
-        """Get extra offset due to line wrapping.
+    def extra_lines_due_to_wrapping(self) -> int:
+        """Get the extra lines created caused by line wrapping.
+
+        Used mainly to calculate how much offset should be applied when getting
+        the height.
 
         Returns:
-            Extra offset should be applied to the height.
+            Total extra lines created due to line wrapping.
         """
-        if not self._wrap_lines:
-            return 0
+        result = 0
         term_width, _ = shutil.get_terminal_size()
-        return self.total_message_length // term_width
+
+        # message wrap
+        result += self.total_message_length // term_width
+        # long instruction wrap
+        result += len(self._tips) // term_width
+
+        return result
 
     @property
     def loading(self) -> bool:

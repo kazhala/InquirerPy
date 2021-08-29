@@ -18,11 +18,13 @@ class TipsWindow(ConditionalContainer):
         filter: Condition to display the tips window.
     """
 
-    def __init__(self, message: str, filter: "FilterOrBool") -> None:
+    def __init__(self, message: str, filter: "FilterOrBool", wrap_lines: bool) -> None:
         self._message = message
         super().__init__(
             Window(
-                FormattedTextControl(text=self._get_message), dont_extend_height=True
+                FormattedTextControl(text=self._get_message),
+                dont_extend_height=True,
+                wrap_lines=wrap_lines,
             ),
             filter=filter,
         )

@@ -150,8 +150,7 @@ def get_style(
 def calculate_height(
     height: Optional[Union[int, str]],
     max_height: Optional[Union[int, str]],
-    offset: int = 2,
-    wrap_lines_offset: int = 0,
+    height_offset: int = 2,
 ) -> Tuple[Optional[int], int]:
     """Calculate the `height` and `max_height` for the main question contents.
 
@@ -170,14 +169,13 @@ def calculate_height(
             Example: 20 (20 lines in terminal)
 
     Note:
-        If `max_height` is not provided or is None, the default `max_height` will be configured to `60%` for
+        If `max_height` is not provided or is None, the default `max_height` will be configured to `70%` for
         best visual presentation in the terminal.
 
     Args:
         height: The desired height in either percentage as string or exact value as int.
         max_height: Maximum acceptable height in either percentage as string or exact value as int.
-        offset: Offset  to apply to the height.
-        wrap_lines_offset: Additional offset that should be applied when wrapping lines.
+        height_offset: Height offset to apply to the height.
 
     Returns:
         A :class:`tuple` with the first value being the desired height and the second value being
@@ -199,18 +197,18 @@ def calculate_height(
                 height = height.replace("%", "")
                 height = int(height)
                 dimmension_height = (
-                    math.floor(term_lines * (height / 100)) - offset - wrap_lines_offset
+                    math.floor(term_lines * (height / 100)) - height_offset
                 )
             else:
                 dimmension_height = height
 
         if not max_height:
-            max_height = "60%" if not height else "100%"
+            max_height = "70%" if not height else "100%"
         if isinstance(max_height, str):
             max_height = max_height.replace("%", "")
             max_height = int(max_height)
             dimmension_max_height = (
-                math.floor(term_lines * (max_height / 100)) - offset - wrap_lines_offset
+                math.floor(term_lines * (max_height / 100)) - height_offset
             )
         else:
             dimmension_max_height = max_height

@@ -15,7 +15,7 @@ from prompt_toolkit.layout.containers import (
     HSplit,
     Window,
 )
-from prompt_toolkit.layout.controls import BufferControl
+from prompt_toolkit.layout.controls import BufferControl, DummyControl
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.layout.processors import AfterInput, BeforeInput
@@ -361,8 +361,9 @@ class FuzzyPrompt(BaseListPrompt):
             if not isinstance(default, Callable)
             else cast(Callable, default)(self._result)
         )
+        self._height_offset += 1  # search input
         self._dimmension_height, self._dimmension_max_height = calculate_height(
-            height, max_height, offset=3, wrap_lines_offset=self.wrap_lines_offset
+            height, max_height, height_offset=self.height_offset
         )
 
         self._content_control: InquirerPyFuzzyControl = InquirerPyFuzzyControl(
@@ -370,9 +371,7 @@ class FuzzyPrompt(BaseListPrompt):
             pointer=pointer,
             marker=marker,
             current_text=self._get_current_text,
-            max_lines=self._dimmension_max_height
-            if not self._border
-            else self._dimmension_max_height - 2,
+            max_lines=self._dimmension_max_height,
             session_result=session_result,
             multiselect=multiselect,
             marker_pl=marker_pl,
@@ -392,9 +391,7 @@ class FuzzyPrompt(BaseListPrompt):
         )
 
         choice_height_dimmension = lambda: Dimension(
-            max=self._dimmension_max_height
-            if not self._border
-            else self._dimmension_max_height - 2,
+            max=self._dimmension_max_height,
             preferred=self._dimmension_height,
             min=self.content_control._height if self.content_control._height > 0 else 1,
         )
@@ -421,17 +418,18 @@ class FuzzyPrompt(BaseListPrompt):
                         ConditionalContainer(
                             main_content_window, filter=~IsDone() & ~self._is_loading
                         ),
+                        ConditionalContainer(
+                            Window(content=DummyControl()),
+                            filter=~IsDone() & self._is_displaying_tips,
+                        ),
+                        TipsWindow(
+                            message=self._tips,
+                            filter=self._is_displaying_tips & ~IsDone(),
+                            wrap_lines=self._wrap_lines,
+                        ),
                     ]
                 ),
                 floats=[
-                    Float(
-                        content=TipsWindow(
-                            message=self._tips,
-                            filter=self._is_displaying_tips & ~IsDone(),
-                        ),
-                        left=0,
-                        bottom=0,
-                    ),
                     Float(
                         content=ValidationWindow(
                             invalid_message=self._get_error_message,
