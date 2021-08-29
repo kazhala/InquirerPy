@@ -396,7 +396,6 @@ class TestResolver(unittest.TestCase):
         key_called = {
             "down": ANY,
             "up": ANY,
-            "toggle-tips": ANY,
             "toggle": ANY,
             "toggle-down": ANY,
             "toggle-up": ANY,
