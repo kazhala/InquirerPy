@@ -28,7 +28,7 @@ pip3 install InquirerPy
 
 ## Basic Usage
 
-[InquirerPy](https://github.com/kazhala/InquirerPy) provides two types of syntax that you can choose to use: [Classic syntax](#classic-syntax-pyinquirer) and [Alternate Syntax](#alternate-syntax).
+`InquirerPy` provides two types of syntax that you can choose to use: [Classic syntax](#classic-syntax-pyinquirer) and [Alternate Syntax](#alternate-syntax).
 
 ```{Tip}
 For any new users, [Alternate Syntax](#alternate-syntax) is recommended as its more flexible and extensible.
@@ -99,7 +99,7 @@ Please visit the sidebar on the left.
 
 ## Running Examples
 
-[InquirerPy](https://github.com/kazhala/InquirerPy) provides several examples that you can run and play around.
+`InquirerPy` provides several examples that you can run and play around.
 
 1. Clone the repository
 
@@ -147,8 +147,8 @@ python examples/example_pizza
 ```{toctree}
 :hidden:
 
-pages/prompt.md
 pages/style.md
+pages/prompt.md
 pages/kb.md
 pages/api.md
 GitHub Repository <https://github.com/kazhala/InquirerPy>

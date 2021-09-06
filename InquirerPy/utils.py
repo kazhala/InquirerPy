@@ -80,16 +80,18 @@ def get_style(
         Priority: style parameter -> ENV variable -> default style
 
     Args:
-        style: The style dictionry to apply to prompt.
-        style_override: Override all default styles.
-            When providing any customization, all default styles are cleared when this is True.
+        style: The dictionary of style classes and their colors, If nothing is passed, the style will be resolved to the :ref:`pages/style:Default Style`.
+        style_override: A boolean to determine if the supplied `style` parameter should be merged with the :ref:`pages/style:Default Style` or override them.
+            By default, the supplied style will overwrite the :ref:`pages/style:Default Style`.
 
     Returns:
         An instance of :class:`.InquirerPyStyle`.
 
     Examples:
-        >>> get_style()
-        >>> get_style({"answermark": "blue"}, style_override=False)
+        >>> from InquirerPy import get_style
+        >>> from InquirerPy import inquirer
+        >>> style = get_style({"questionmark": "#ffffff", "answer": "#000000"}, style_override=False)
+        >>> result = inquirer.confirm(message="Confirm?", style=style)
     """
     if not style_override or style is None:
         if not style:
