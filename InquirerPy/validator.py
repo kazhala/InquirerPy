@@ -17,7 +17,7 @@ class NumberValidator(Validator):
 
     Args:
         message: Error message to display in the validatation toolbar when validation failed.
-        float_allowed: Allow input to contain floaing number (with decimal).
+        float_allowed: Allow input to contain floating number (with decimal).
     """
 
     def __init__(

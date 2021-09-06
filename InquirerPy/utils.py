@@ -21,6 +21,7 @@ from prompt_toolkit.application import run_in_terminal
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.formatted_text import FormattedText
 from prompt_toolkit.styles import Style
+from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument
 
@@ -55,6 +56,7 @@ SessionResult = Dict[Union[str, int], Optional[Union[str, bool, List[Any]]]]
 ListChoices = Union[
     Callable[[SessionResult], Union[Awaitable[List[Any]], List[Any]]], List[Any]
 ]
+Validate = Union[Callable[[Any], bool], Validator]
 
 
 def get_style(

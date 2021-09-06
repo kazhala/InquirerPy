@@ -148,6 +148,7 @@ python examples/example_pizza
 :hidden:
 
 pages/style.md
+pages/validator.md
 pages/prompt.md
 pages/kb.md
 pages/api.md
