@@ -114,6 +114,13 @@
     :members:
 ```
 
+### instruction
+
+```{eval-rst}
+.. automodule:: InquirerPy.containers.instruction
+    :members:
+```
+
 ## base
 
 ### simple

@@ -10,17 +10,23 @@
 
 Documentation: https://github.com/kazhala/InquirerPy/wiki
 
+<!-- start intro -->
+
 ## Introduction
 
 `InquirerPy` is a Python port of the famous [Inquirer.js](https://github.com/SBoudrias/Inquirer.js/) (A collection of common interactive command line user interfaces).
 This project is a re-implementation of the [PyInquirer](https://github.com/CITGuru/PyInquirer) project, with bug fixes of known issues, new prompts, backward compatible APIs
 as well as more customization options.
 
+<!-- end intro -->
+
 ↓↓↓ Simple AWS S3 uploader/downloader prompt.
 
-> Note: [boto3](https://github.com/boto/boto3) package is required for the following example.
+> Note: [boto3](https://github.com/boto/boto3) package and configured AWS credentials is required for the following example.
 
 ![Demo](https://github.com/kazhala/gif/blob/master/InquirerPy-demo.gif)
+
+<!-- start example -->
 
 <details>
   <summary>Classic Syntax (PyInquirer)</summary>
@@ -168,6 +174,8 @@ except InvalidArgument:
 
 </details>
 
+<!-- end example -->
+
 ## Motivation
 
 [PyInquirer](https://github.com/CITGuru/PyInquirer) is a great Python port of [Inquirer.js](https://github.com/SBoudrias/Inquirer.js/), however, the project is slowly reaching
@@ -188,7 +196,7 @@ This project uses python3.7+ type hinting with focus on resolving above issues w
 
 ### OS
 
-Leveraging `prompt_toolkit`, `InquirerPy` works cross platform for all OS. Although Unix platform may have a better experience than Windows.
+Leveraging [prompt_toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit), `InquirerPy` works cross platform for all OS. Although Unix platform may have a better experience than Windows.
 
 ### Python
 
@@ -231,14 +239,16 @@ name = inquirer.text(message="What's your name:").execute()
 confirm = inquirer.confirm(message="Confirm?").execute()
 ```
 
+<!-- start migration -->
+
 ## Migrating from PyInquirer
 
-Most APIs from `PyInquirer` should be compatible with `InquirerPy`. If you discovered any more incompatible APIs, please
+Most APIs from [PyInquirer](https://github.com/CITGuru/PyInquirer) should be compatible with `InquirerPy`. If you have discovered more incompatible APIs, please
 create an issue or directly update README via a pull request.
 
 ### EditorPrompt
 
-`InquirerPy` does not support `editor` prompt as of now.
+`InquirerPy` does not support [editor](https://github.com/CITGuru/PyInquirer#editor---type-editor) prompt as of now.
 
 ### CheckboxPrompt
 
@@ -252,13 +262,16 @@ The following table contains the mapping of incompatible parameters.
 
 ### Style
 
-Every style keys from `PyInquirer` is present in `InquirerPy` except the ones in the following table.
+Every style keys from [PyInquirer](https://github.com/CITGuru/PyInquirer) is present in `InquirerPy` except the ones in the following table.
 
 | PyInquirer | InquirerPy |
 | ---------- | ---------- |
 | selected   | pointer    |
 
-Although `InquirerPy` support all the keys from `PyInquirer`, the styling works slightly different. Please refer to the [Style](https://github.com/kazhala/InquirerPy/wiki/Style) documentation for detailed information.
+Although `InquirerPy` support all the keys from [PyInquirer](https://github.com/CITGuru/PyInquirer), the styling works slightly different.
+Please refer to the [Style](https://github.com/kazhala/InquirerPy/wiki/Style) documentation for detailed information.
+
+<!-- end migration -->
 
 ## Similar projects
 
