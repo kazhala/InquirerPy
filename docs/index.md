@@ -149,8 +149,8 @@ python examples/example_pizza
 
 pages/style.md
 pages/validator.md
-pages/prompt.md
 pages/kb.md
+pages/prompt.md
 pages/api.md
 GitHub Repository <https://github.com/kazhala/InquirerPy>
 ```

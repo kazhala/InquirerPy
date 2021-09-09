@@ -88,6 +88,7 @@ result = inquirer.checkbox(
 
 ```{eval-rst}
 .. autodata:: InquirerPy.utils.Validate
+    :noindex:
 ```
 
 Validation callable or class to validate user input.
@@ -141,6 +142,7 @@ There's a few pre-built common validator ready to use.
 
 ```{eval-rst}
 .. autoclass:: InquirerPy.validator.PathValidator
+    :noindex:
 ```
 
 <details>
@@ -179,6 +181,7 @@ result = inquirer.filepath(message="Enter path:", validate=PathValidator())
 
 ```{eval-rst}
 .. autoclass:: InquirerPy.validator.EmptyInputValidator
+    :noindex:
 ```
 
 <details>
@@ -213,6 +216,7 @@ result = inquirer.text(
 
 ```{eval-rst}
 .. autoclass:: InquirerPy.validator.PasswordValidator
+    :noindex:
 ```
 
 <details>
@@ -266,6 +270,7 @@ result = inquirer.secret(
 
 ```{eval-rst}
 .. autoclass:: InquirerPy.validator.NumberValidator
+    :noindex:
 ```
 
 <details>

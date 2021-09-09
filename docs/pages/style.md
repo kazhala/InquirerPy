@@ -19,6 +19,7 @@ When using the :ref:`index:Alternate Syntax`, each `prompt` class requires a :cl
 this object by using :func:`~InquirerPy.utils.get_style`.
 
 .. autofunction:: InquirerPy.utils.get_style
+  :noindex:
 ```
 
 ### Default Style
