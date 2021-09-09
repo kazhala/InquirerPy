@@ -25,7 +25,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         message: The question to ask the user.
         style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
         default: The default value when user hit `enter`. A boolean value of either `True` or `False`.
-        vi_mode: Used for compatibility, ignore this argument.
+        vi_mode: Used for compatibility, ignore this parameter.
         qmark: Custom symbol that will be displayed infront of the question before its answered.
         amark: Custom symbol that will be displayed infront of the question after its answered.
         instruction: Short instruction to display next to the `message`.
@@ -35,9 +35,9 @@ class ConfirmPrompt(BaseSimplePrompt):
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         confirm_letter: Letter used to confirm the prompt. A keybinding will be created for this letter.
         reject_letter: Letter used to reject the prompt. A keybinding will be created for this letter.
-        session_result: Used for `classic syntax`, ignore this argument.
-        input: Used for testing, ignore this argument.
-        output: Used for testing, ignore this argument.
+        session_result: Used for `classic syntax`, ignore this parameter.
+        input: Used for testing, ignore this parameter.
+        output: Used for testing, ignore this parameter.
 
     Examples:
         >>> result = ConfirmPrompt(message="Confirm?").execute()

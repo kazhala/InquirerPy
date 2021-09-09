@@ -2,7 +2,7 @@
 
 
 class Separator:
-    """A non selectable choice that can be used as part of the choies argument in list type prompts.
+    """A non selectable choice that can be used as part of the choices argument in list type prompts.
 
     It can be used to create some visual separations between choices in list type prompts.
 

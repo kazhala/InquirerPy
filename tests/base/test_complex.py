@@ -412,7 +412,7 @@ class TestBaseComplex(unittest.TestCase):
         async def test_async():
             prompt = FuzzyPrompt(message="", choices=[1, 2, 3])
             prompt._after_render(None)
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             self.assertEqual(prompt._status, {"answered": False, "result": None})
             self.assertEqual(loop.get_exception_handler(), prompt._exception_handler)
             prompt._exception_handler(None, {"exception": KeyboardInterrupt})

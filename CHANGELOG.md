@@ -7,8 +7,8 @@ Notable changes are documented in this file.
 ### Added
 
 - Added optional spinner to display while loading choices for list prompts.
-- Added argument `border` for list prompts to display a border around the choices.
-- Added argument `long_instruction` to display longer instructions such as keybinding instructions at the bottom [#7](https://github.com/kazhala/InquirerPy/issues/7).
+- Added parameter `border` for list prompts to display a border around the choices.
+- Added parameter `long_instruction` to display longer instructions such as keybinding instructions at the bottom [#7](https://github.com/kazhala/InquirerPy/issues/7).
 
 ### Fixed
 
@@ -33,7 +33,7 @@ Notable changes are documented in this file.
 - Added option `wrap_lines` to all prompts to configure line wrapping.
 - Added option `instruction` for non-list type prompts. This is already supported in all list type prompts previously.
 - Added option `confirm_letter` and `reject_letter` to confirm prompts. Use the 2 value to change from the default "y/n".
-  - For updating the result value, please use the `transformer` arguments. By default, no matter what confirm_letter or
+  - For updating the result value, please use the `transformer` parameter. By default, no matter what confirm_letter or
     reject letter you set, it will always be Yes or No.
 
 ```python
@@ -54,7 +54,7 @@ inquirer.confirm(
 
 ### Changed
 
-- Answered question prefix spacing now depends on `amark` arguments instead of `qmark`.
+- Answered question prefix spacing now depends on `amark` parameter instead of `qmark`.
   - If you previously disable the `qmark` by setting it to empty string, please also set `amark` to empty string.
 
 ## 0.2.2 (03/07/2021)

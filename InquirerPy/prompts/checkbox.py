@@ -120,7 +120,7 @@ class CheckboxPrompt(ListPrompt):
         set_exception_handler: Set exception handler for the event loop.
             If any exception is raised while the `prompt` is visible, the question will enter the `skipped` state and exception will be raised.
             If you have custom exception handler want to set, set this value to `False`.
-        session_result: Used for `classic syntax`, ignore this argument.
+        session_result: Used for `classic syntax`, ignore this parameter.
 
     Examples:
         >>> result = CheckboxPrompt(message="Select:", choices=[1, 2, 3]).execute()

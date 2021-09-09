@@ -62,10 +62,10 @@ Validate = Union[Callable[[Any], bool], Validator]
 def get_style(
     style: Dict[str, str] = None, style_override: bool = True
 ) -> InquirerPyStyle:
-    """Obtain an :class:`.InquirerPyStyle` instance which can be consumed by the `style` argument in prompts.
+    """Obtain an :class:`.InquirerPyStyle` instance which can be consumed by the `style` parameter in prompts.
 
     Tip:
-        The function itself supports ENV variables. Instead of configuring the colors via the `style` argument
+        The function itself supports ENV variables. Instead of configuring the colors via the `style` parameter
         of this function, you can configure the style by setting the ENV variables and simply call this function
         without providing any arguments.
 
@@ -159,7 +159,7 @@ def calculate_height(
     """Calculate the `height` and `max_height` for the main question contents.
 
     Tip:
-        The argument `height`/`max_height` can be specified by either a :class:`string` or :class:`int`.
+        The parameter `height`/`max_height` can be specified by either a :class:`string` or :class:`int`.
 
         When `height`/`max_height` is :class:`str`:
             It will set the height to a percentage based on the value provided.

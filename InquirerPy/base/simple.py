@@ -213,7 +213,7 @@ class BaseSimplePrompt(ABC):
         """Run the prompt and get the result.
 
         Args:
-            raise_keyboard_interrupt: **Deprecated**. Set this argument on the prompt initialisation instead.
+            raise_keyboard_interrupt: **Deprecated**. Set this parameter on the prompt initialisation instead.
 
         Returns:
             Value of the user answer. Types varies depending on the prompt.

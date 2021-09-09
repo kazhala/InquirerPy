@@ -104,9 +104,9 @@ class FilePathPrompt(InputPrompt):
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         only_directories: Only complete directories.
         only_files: Only complete files.
-        session_result: Used for `classic syntax`, ignore this argument.
-        input: Used for testing, ignore this argument.
-        output: Used for testing, ignore this argument.
+        session_result: Used for `classic syntax`, ignore this parameter.
+        input: Used for testing, ignore this parameter.
+        output: Used for testing, ignore this parameter.
 
     Examples:
         >>> result = FilePathPrompt(message="Enter a path:").execute()

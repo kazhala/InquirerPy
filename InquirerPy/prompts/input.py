@@ -43,10 +43,10 @@ class InputPrompt(BaseSimplePrompt):
             This is visual effect only.
         filter: A callable to filter the result that gets returned.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
-        is_password: Used by :class:`~InquirerPy.prompts.secret.SecretPrompt`, ignore this argument.
-        session_result: Used for `classic syntax`, ignore this argument.
-        input: Used for testing, ignore this argument.
-        output: Used for testing, ignore this argument.
+        is_password: Used by :class:`~InquirerPy.prompts.secret.SecretPrompt`, ignore this parameter.
+        session_result: Used for `classic syntax`, ignore this parameter.
+        input: Used for testing, ignore this parameter.
+        output: Used for testing, ignore this parameter.
 
     Examples:
         >>> result = InputPrompt(message="Enter your name:").execute()
