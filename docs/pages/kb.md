@@ -1,129 +1,106 @@
 # Keybindings
 
-One of the issues `PyInquirer` was facing is the lack of keybinding customization,
-especially the highly requested `vim` navigation. `InquirerPy` offers a parameter
-`vi_mode` which will automatically apply `vim` keybindings to input buffer as well
-as list type prompts navigations.
+By default, `InquirerPy` will use most of the standard EMACS navigation keybindings. You
+can easily switch to `vim` keybindings by setting the parameter [vi_mode](#using-vim-keybindings) to `True`.
 
-`InquirerPy` takes the keybindings customization to another level where you can also
-customize any supported keybindings with your own keys and filter.
+You can customize the keybindings even further by utilising the parameter [keybindings](#customizing-keybindings), this page
+will explain how to change the keybindings in detail.
 
 ## Default Keybindings
 
-The default keybindings is a classic `emacs` keybindings.
+The default keybinding uses the classic `emacs` keybindings.
 
-> This is done because on most operating systems, also the Bash shell uses Emacs bindings by default, and that is more intuitive. If however, Vi binding are required, just pass vi_mode=True
-
-### Input Buffer
-
-You can use the regular `emacs` cursor shortcuts to move between words such as `alt-b` and `alt-f` in any input buffer
-such as `input`, `secret`, `filepath` and `fuzzy`.
-
-You can reference keybindings through `emacs` [documentation](http://ergoemacs.org/emacs/emacs_keys_basics.html).
-
-### Available Actions and Keybindings
-
-The following dictionary contains the default keybindings that applies to all list type prompts. Only
-`down` and `up` will be active at all time, other actions are only active when the list type prompt is
-`multiselect` prompt or `checkbox`.
-
-```python
-{
-    "down": [
-        {"key": "down"},
-        {"key": "c-n"},  # ctrl-n
-    ],
-    "up": [
-        {"key": "up"},
-        {"key": "c-p"}, # ctrl-p
-    ],
-    "toggle": [
-        {"key": "space"},
-    ],
-    "toggle-down": [
-        {"key": "c-i"}, # tab
-    ],
-    "toggle-up": [
-        {"key": "s-tab"}, # shift + tab
-    ],
-    "toggle-all": [
-        {"key": "alt-r"},
-    ],
-    "toggle-all-true": [
-        {"key": "alt-a"},
-    ],
-    "toggle-all-false": [],
-}
+```{tip}
+This is done because on most operating systems, also the Bash shell uses Emacs bindings by default, and that is more intuitive.
 ```
 
-## `vi_mode`
+### Input Buffer (Text Fields)
 
-All `InquirerPy` prompts accepts a boolean parameter `vi_mode` which will set both the keybinding of input buffer and
-list navigation to `vim` keybindings.
+You can use the regular `emacs` shortcuts to move between words such as `alt-b` and `alt-f` in any input buffer
+such as `input`, `secret`, `filepath` and `fuzzy`.
+
+You can reference keybindings through `emacs` [documentation](https://www.gnu.org/software/emacs/refcards/).
+
+### Prompt Specific Keybindings
+
+```{tip}
+Keybindings in different types of prompt can have different sets of available actions and sometimes different default bindings.
+```
+
+Each keybinding consists of 2 parts, an **action** and **bindings**.
+Please checkout the individual prompt documentation for the available actions and default bindings for specific prompts.
+
+## Using VIM Keybindings
+
+```{note}
+All `InquirerPy` prompts accepts a boolean parameter `vi_mode`.
+```
+
+`InquirerPy` comes with `vim` keybinding preset. After enabling it, the input buffer (text fields) will behave the same as
+if you enable the `vi` mode in [readline/bash](https://www.gnu.org/software/bash/manual/html_node/Readline-vi-Mode.html).
+Other keybinding will also have different effects (e.g. "up/down" will change from "ctrl-n/ctrl-p" to "j/k"), refer to individual
+prompt documentation for more information.
+
+<details>
+  <summary>Classic Syntax</summary>
 
 ```python
 from InquirerPy import prompt
-from InquirerPy import inquirer
 
 result = prompt(
     questions=[
-        {"type": "input", "message": "Name:"},
-        {"type": "input", "message": "Address:"},
+        {
+            "type": "list",
+            "message": "Select one:",
+            "choices": ["Fruit", "Meat", "Drinks", "Vegetable"],
+        },
     ],
     vi_mode=True,
 )
-result = inquirer.text(message="Name:", vi_mode=True)
 ```
 
-The input buffer will behave the same as if you enable the `vi` mode in [readline/bash](https://www.gnu.org/software/bash/manual/html_node/Readline-vi-Mode.html). The
-navigation `up` and `down` will replace the `emacs` keybindings to `vim`.
+</details>
+
+<details open>
+  <summary>Alternate Syntax</summary>
 
 ```python
-{
-    "down": [
-        {"key": "down"},
-        {"key": "j"}, # ctrl-n is removed
-    ],
-    "up": [
-        {"key": "up"},
-        {"key": "k"}, # ctrl-p is removed
-    ],
-    # ....
-}
+from InquirerPy import inquirer
+
+result = inquirer.select(
+    message="Select one:",
+    choices=["Fruit", "Meat", "Drinks", "Vegetable"],
+    vi_mode=True,
+).execute()
 ```
+
+</details>
 
 ## Customizing Keybindings
 
-All the actions/keybinding in the [Available actions and keybindings](#available-actions-and-keybindings) are customizable. Each `InquirerPy` prompt
-takes an additional parameter called `keybindings`.
+Each prompt takes an additional parameter called `keybindings`.
 
-Available keys/syntax:
+### keybindings: `Dict[str, List[Dict[str, Any]]]`
 
-| Name               | Possible keys                                           |
-| ------------------ | ------------------------------------------------------- |
-| Escape             | `escape`                                                |
-| Arrows             | `left`, `right`, `up`, `down`                           |
-| Navigation         | `home`, `end`, `delete`, `pageup`, `pagedown`, `insert` |
-| Control+lowercase  | `c-a`, `c-b` ... `c-y`, `c-z`                           |
-| Control+uppercase  | `c-A`, `c-B` ... `c-Y`, `c-Z`                           |
-| Control + arrow    | `c-left`, `c-right`, `c-up`, `c-down`                   |
-| Other control keys | `c-@`, `c-\`, `c-]`, `c-^`, `c-\_`, `c-delete`          |
-| Shift + arrow      | s-left, s-right, s-up, s-down                           |
-| Other shift keys   | `s-delete`, `s-tab`                                     |
-| F-keys             | `f1`, `f2`, .... `f23`, `f24`                           |
-| Alt+lowercase      | `alt-a`, `alt-b` ... `alt-y`, `alt-z`                   |
-| Alt+uppercase      | `alt-A`, `alt-B` ... `alt-Y`, `alt-Z`                   |
+`keybindings` should be a {class}`dict` where the `key` is the **action** and the `value` should be a list of keys that
+will be the **bindings** to trigger it.
 
-Visit `prompt_toolkit` [documentation](https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/key_bindings.html#list-of-special-keys)
-for more information about limitations and other advanced topics.
+```{admonition} action
+You can find the available actions via individual prompt documentation.
+```
 
-### keybindings: Dict[str, List[Dict[str, Any]]]
+```{admonition} bindings
+Each `binding` is another {class}`dict` which contains the following key:
 
-The provided `keybindings` will be merged with the default `keybindings`, the structure of this dictionary is exactly the same as the dictionary
-in the [Available actions and keybindings](#available-actions-and-keybindings) section.
+- [key](#key-union-str-list-str)
+- [filter](#filter-union-filter-bool)
+```
+
+#### key: `Union[str, List[str]]`
 
 The `key` can be either a list or a string. If you require multiple keys to be pressed in sequence, provide the `key` with a list of keys.
-The following example maps the action `toggle-all` to press `c-a` and then press `space`.
+
+When providing the following {class}`dict` as an argument, pressing `c-a` followed by `space` will trigger the action `toggle-all`.
 
 ```python
 keybindings = {
@@ -139,9 +116,11 @@ keybindings = {
 The following example enabled `vim` keybindings for input buffer, but still uses `c-n` and `c-p` for list navigations. It also enabled
 the shortcut `alt-x` to deselect all choices/checkbox.
 
+<details>
+  <summary>Classic Syntax</summary>
+
 ```python
 from InquirerPy import prompt
-from InquirerPy import inquirer
 
 keybindings = {
     "down": [
@@ -164,17 +143,59 @@ result = prompt(
     vi_mode=True,
     keybindings=keybindings,
 )
+```
+
+</details>
+
+<details open>
+  <summary>Alternate Syntax</summary>
+
+```python
+from InquirerPy import inquirer
+
+keybindings = {
+    "down": [
+        {"key": "c-n"},
+    ],
+    "up": [
+        {"key": "c-p"},
+    ],
+    "toggle-all-false": [{"key": "alt-x"}],
+}
+
 result = inquirer.select(
     message="Select one:",
     choices=["Fruit", "Meat", "Drinks", "Vegetable"],
     vi_mode=True,
     keybindings=keybindings,
-)
+).execute()
 ```
 
-#### filter: Union[Filter, bool]
+</details>
 
-Each keybinding also takes another key called `filter` which can be used to determine if certain keys should be enabled/disabled.
+Available keys/syntax:
+
+| Name               | Possible keys                                           |
+| ------------------ | ------------------------------------------------------- |
+| Escape             | `escape`                                                |
+| Arrows             | `left`, `right`, `up`, `down`                           |
+| Navigation         | `home`, `end`, `delete`, `pageup`, `pagedown`, `insert` |
+| Control+lowercase  | `c-a`, `c-b` ... `c-y`, `c-z`                           |
+| Control+uppercase  | `c-A`, `c-B` ... `c-Y`, `c-Z`                           |
+| Control + arrow    | `c-left`, `c-right`, `c-up`, `c-down`                   |
+| Other control keys | `c-@`, `c-\`, `c-]`, `c-^`, `c-\_`, `c-delete`          |
+| Shift + arrow      | s-left, s-right, s-up, s-down                           |
+| Other shift keys   | `s-delete`, `s-tab`                                     |
+| F-keys             | `f1`, `f2`, .... `f23`, `f24`                           |
+| Alt+lowercase      | `alt-a`, `alt-b` ... `alt-y`, `alt-z`                   |
+| Alt+uppercase      | `alt-A`, `alt-B` ... `alt-Y`, `alt-Z`                   |
+
+Visit `prompt_toolkit` [documentation](https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/key_bindings.html#list-of-special-keys)
+for more information about limitations and other advanced topics.
+
+#### filter: `Union[Filter, bool]`
+
+Each keybinding also takes another **optional** key called `filter` which can be used to determine if certain keys should be enabled/disabled.
 The `filter` key can be either a boolean or a `prompt_toolkit` [Conditon](https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/filters.html#filters).
 
 ##### bool
@@ -220,17 +241,22 @@ keybindings = {
 
 ## Binding Custom Functions
 
-> This is only available for `Alternate Syntax` (i.e. using `inquirer`).
+```{note}
+This is only available for `Alternate Syntax`.
+```
 
 You can also create your own keybindings/actions. When creating a prompt via `inquirer`, instead of running
-the `execute` function immediately, you can bind keys to your custom functions before running the prompt.
+the `execute` function immediately, you can bind keys to your custom functions before running `execute` on the prompt.
 
 ### `register_kb`
 
-`register_kb` is a decorator function thats available to use once the prompt is created.
-The function that are being binded will be provided by a parameter `event`. The `event` can give
-you access to the `application` (`event.app`). It's more of a `prompt_toolkit`
-, if you don't plan to use it, simply provide a dummy parameter `_`.
+{meth}`~InquirerPy.base.simple.BaseSimplePrompt.register_kb` is a decorator function that's available to use once the prompt is created.
+The function that are being bounded will be provided with an object {class}`~prompt_toolkit.key_binding.key_processor.KeyPressEvent` as an argument.
+The {class}`~prompt_toolkit.key_binding.key_processor.KeyPressEvent` can give you access to the {class}`~prompt_toolkit.application.Application`.
+
+```{tip}
+It's more of a `prompt_toolkit` concept and if you don't plan to use it, simply provide a dummy parameter `_`.
+```
 
 The following example will print "Hello World" on top of the prompt when pressing `alt-a`.
 
@@ -251,7 +277,7 @@ name = name_prompt.execute()
 
 #### keys and filter
 
-You can bind multiple keys and also have the ability to apply [filter](#filter-unionfilter-bool).
+You can bind multiple keys and also have the ability to apply [filter](#filter-union-filter-bool).
 
 ```python
 from prompt_toolkit.filters.base import Condition
