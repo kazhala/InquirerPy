@@ -102,7 +102,7 @@ class BaseSimplePrompt(ABC):
         self._status = value
 
     def register_kb(
-        self, *keys: Union[Keys, str], filter: FilterOrBool = True
+        self, *keys: Union[Keys, str], filter: FilterOrBool = True, **kwargs
     ) -> Callable[[KeyHandlerCallable], KeyHandlerCallable]:
         """Keybinding registration decorator.
 
@@ -137,7 +137,7 @@ class BaseSimplePrompt(ABC):
                 else:
                     formatted_keys.append(key)
 
-            @self._kb.add(*formatted_keys, filter=filter)
+            @self._kb.add(*formatted_keys, filter=filter, **kwargs)
             def executable(event) -> None:
                 func(event)
 
