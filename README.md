@@ -16,7 +16,7 @@ Documentation: https://github.com/kazhala/InquirerPy/wiki
 
 `InquirerPy` is a Python port of the famous [Inquirer.js](https://github.com/SBoudrias/Inquirer.js/) (A collection of common interactive command line user interfaces).
 This project is a re-implementation of the [PyInquirer](https://github.com/CITGuru/PyInquirer) project, with bug fixes of known issues, new prompts, backward compatible APIs
-as well as more customization options.
+as well as more customisation options.
 
 <!-- end intro -->
 
@@ -190,7 +190,7 @@ Some noticeable ones that bother me the most:
 - No options for VI/Emacs navigation key bindings
 - Pagination option doesn't work
 
-This project uses python3.7+ type hinting with focus on resolving above issues while providing greater customization options.
+This project uses python3.7+ type hinting with focus on resolving above issues while providing greater customisation options.
 
 ## Requirements
 
@@ -277,10 +277,10 @@ Please refer to the [Style](https://github.com/kazhala/InquirerPy/wiki/Style) do
 
 ### questionary
 
-[questionary](https://github.com/tmbo/questionary) is a fantastic fork which supports `prompt_toolkit` 3.0.0+ with performance improvement and more customization options.
+[questionary](https://github.com/tmbo/questionary) is a fantastic fork which supports `prompt_toolkit` 3.0.0+ with performance improvement and more customisation options.
 It's already a well established and stable library.
 
-Comparing with [questionary](https://github.com/tmbo/questionary), `InquirerPy` offers even more customization options in styles, UI as well as key bindings. `InquirerPy` also provides a new
+Comparing with [questionary](https://github.com/tmbo/questionary), `InquirerPy` offers even more customisation options in styles, UI as well as key bindings. `InquirerPy` also provides a new
 and powerful [fuzzy](https://github.com/kazhala/InquirerPy/wiki/FuzzyPrompt) prompt.
 
 ### python-inquirer
@@ -289,10 +289,10 @@ and powerful [fuzzy](https://github.com/kazhala/InquirerPy/wiki/FuzzyPrompt) pro
 leverages the library `blessed` to implement the UI.
 
 Before implementing `InquirerPy`, this library came up as an alternative. It's a more stable library comparing to the original [PyInquirer](https://github.com/CITGuru/PyInquirer), however
-it has a rather limited customization options and an older UI which did not solve the issues I was facing described in the [Motivation](#Motivation) section.
+it has a rather limited customisation options and an older UI which did not solve the issues I was facing described in the [Motivation](#Motivation) section.
 
 Comparing with [python-inquirer](https://github.com/magmax/python-inquirer), `InquirerPy` offers a slightly better UI,
-more customization options in key bindings and styles, providing pagination as well as more prompts.
+more customisation options in key bindings and styles, providing pagination as well as more prompts.
 
 ## Credit
 

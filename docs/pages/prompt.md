@@ -87,7 +87,7 @@ A question object is a Python dictionary consisting of the following keys:
 - qmark: (str) The question mark symbol to display in the prompt. Reference [Style](https://github.com/kazhala/InquirerPy/wiki/Style) documentation
   for detailed information.
 
-Above are the basic keys that are common across all of the prompts. More advanced customization is also available via more key options, reference them in prompt specific documentation.
+Above are the basic keys that are common across all of the prompts. More advanced customisation is also available via more key options, reference them in prompt specific documentation.
 
 They are available on the sidebar ⟶ ⟶ ⟶
 
@@ -121,7 +121,7 @@ Default style:
 
 A boolean to determine if the entire style should be overrided when specifying the `style` parameter.
 
-When `style_override` is `False`, the customized style is merged with the default style:
+When `style_override` is `False`, the customised style is merged with the default style:
 
 ```python
  before
@@ -172,9 +172,9 @@ style = {
 ### vi_mode: bool
 
 A boolean to set the keybindings to vi keybindings. This includes the up/down navigation as well as the input editing mode.
-This is mainly a shortcut for vim users to enable the vi keybindings without requiring too much customization.
+This is mainly a shortcut for vim users to enable the vi keybindings without requiring too much customisation.
 
-Advanced keybinding customization is documentated [here](https://github.com/kazhala/InquirerPy/wiki/Keybinding).
+Advanced keybinding customisation is documentated [here](https://github.com/kazhala/InquirerPy/wiki/Keybinding).
 
 ### raise_keyboard_interrupt: bool
 
@@ -193,7 +193,7 @@ When set to `True`:
 
 ### keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]]
 
-Besides the vi_mode keybinding, you can customize the keybindings even further by specifying a dictionary mapping with the pre-defined keybindings.
+Besides the vi_mode keybinding, you can customise the keybindings even further by specifying a dictionary mapping with the pre-defined keybindings.
 
 Reference [Keybinding](https://github.com/kazhala/InquirerPy/wiki/Keybinding) for the detailed explanation.
 

@@ -53,7 +53,7 @@ def prompt(
             will be `None` and the question is skiped.
         keybindings: List of custom :ref:`pages/kb:Keybindings` to apply. Refer to documentation for more info.
         style_override: Override all default styles.
-            When providing any customization, all default styles are cleared when this is True.
+            When providing any customisation, all default styles are cleared when this is True.
 
     Returns:
         A dictionary containing all of the question answers. The key is the name of the question and the value is the

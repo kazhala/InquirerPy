@@ -77,7 +77,7 @@ confirm = result[2]
 
 ### Alternate Syntax
 
-Alternate syntax directly interact with individual `prompt` classes. It's more flexible, easier to customize
+Alternate syntax directly interact with individual `prompt` classes. It's more flexible, easier to customise
 and also provides IDE type hintings/completions.
 
 ```python
@@ -150,6 +150,7 @@ python examples/example_pizza
 pages/style.md
 pages/validator.md
 pages/kb.md
+pages/misc.md
 pages/prompt.md
 pages/api.md
 GitHub Repository <https://github.com/kazhala/InquirerPy>

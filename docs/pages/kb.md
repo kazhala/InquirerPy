@@ -3,7 +3,7 @@
 By default, `InquirerPy` will use most of the standard EMACS navigation keybindings. You
 can easily switch to `vim` keybindings by setting the parameter [vi_mode](#using-vim-keybindings) to `True`.
 
-You can customize the keybindings even further by utilising the parameter [keybindings](#customizing-keybindings), this page
+You can customise the keybindings even further by utilising the parameter [keybindings](#customizing-keybindings), this page
 will explain how to change the keybindings in detail.
 
 ## Default Keybindings
@@ -76,7 +76,7 @@ result = inquirer.select(
 
 </details>
 
-## Customizing Keybindings
+## Customising Keybindings
 
 Each prompt takes an additional parameter called `keybindings`.
 

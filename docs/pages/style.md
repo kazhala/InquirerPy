@@ -1,9 +1,9 @@
 # Style
 
 Each `InquirerPy` prompt contains several [components](#components) which you can
-[customize](#customizing-style) the style.
+[customise](#customising-style) the style.
 
-## Customizing Style
+## Customising Style
 
 ### `get_style`
 
