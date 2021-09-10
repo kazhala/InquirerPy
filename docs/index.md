@@ -150,6 +150,7 @@ python examples/example_pizza
 pages/style.md
 pages/validator.md
 pages/kb.md
+pages/env.md
 pages/misc.md
 pages/prompt.md
 pages/api.md
