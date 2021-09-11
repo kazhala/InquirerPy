@@ -5,14 +5,43 @@ Each `InquirerPy` prompt contains several [components](#components) which you ca
 
 ## Customising Style
 
-### `get_style`
-
-````{note}
-```{eval-rst}
-Skip this section if you are using :ref:`index:Classic Syntax (PyInquirer)`.
+```{seealso}
+Checkout [Default Style](#default-style) for all available style classes to customise.
 ```
 
-````
+### Classic Syntax (PyInquirer)
+
+```{tip}
+`InquirerPy` also supports style customisation via ENV variables. Checkout {ref}`ENV <pages/env:Style>` documentation.
+```
+
+The entry point function {ref}`pages/prompt:prompt` has a parameter `style` which you can use to apply custom styling using {class}`dict`.
+
+```
+from InquirerPy import prompt
+
+result = prompt(
+    {"message": "Confirm order?", "type": "confirm", "default": False},
+    style={"questionmark": "#ff9d00 bold"},
+    vi_mode=True,
+    style_override=False,
+)
+```
+
+The parameter `style_override` can be used to remove all [Default Style](#default-style). Value is `True` by default.
+
+```
+from InquirerPy import prompt
+
+result = prompt(
+    {"message": "Confirm order?", "type": "confirm", "default": False},
+    style={"questionmark": "#ff9d00 bold"},
+    vi_mode=True,
+    style_override=True,
+)
+```
+
+### Alternate Syntax
 
 ```{eval-rst}
 When using the :ref:`index:Alternate Syntax`, each `prompt` class requires a :class:`~InquirerPy.utils.InquirerPyStyle` instance instead of a dictionary. You can get
@@ -22,7 +51,7 @@ this object by using :func:`~InquirerPy.utils.get_style`.
   :noindex:
 ```
 
-### Default Style
+## Default Style
 
 ```{note}
 The default style is based on [onedark](https://github.com/joshdick/onedark.vim/blob/master/colors/onedark.vim) color palette.
@@ -54,7 +83,7 @@ Checkout [Components](#components) to see how the following styles are applied t
 }
 ```
 
-### Color Syntax
+## Color Syntax
 
 Applying basic style.
 
@@ -80,15 +109,15 @@ Adding additional styles to text.
 }
 ```
 
-### Available Options
+## Available Options
 
-#### Colors
+### Colors
 
 - [ANSI color palette](https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#8-colors): `ansired`
 - Named color: `red`
 - Hexadecimal notation: `#ffffff`
 
-#### Text
+### Text
 
 - `underline`
 - `italic`
@@ -97,7 +126,7 @@ Adding additional styles to text.
 - `hidden`
 - `blink`
 
-##### Negative Variants
+### Negative Variants
 
 - `noblink`
 - `nobold`
@@ -106,7 +135,7 @@ Adding additional styles to text.
 - `nohidden`
 - `noitalic`
 
-### Support
+## Support
 
 The styling functionality leverages [prompt_toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit).
 For more reference of the styling options, visit `prompt_toolkit` [documentation](https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/styling.html).

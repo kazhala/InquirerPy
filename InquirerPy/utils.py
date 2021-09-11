@@ -57,6 +57,7 @@ ListChoices = Union[
     Callable[[SessionResult], Union[Awaitable[List[Any]], List[Any]]], List[Any]
 ]
 Validate = Union[Callable[[Any], bool], Validator]
+Questions = Union[List[Dict[str, Any]], Dict[str, Any]]
 
 
 def get_style(
@@ -65,14 +66,9 @@ def get_style(
     """Obtain an :class:`.InquirerPyStyle` instance which can be consumed by the `style` parameter in prompts.
 
     Tip:
-        The function itself supports ENV variables. Instead of configuring the colors via the `style` parameter
-        of this function, you can configure the style by setting the ENV variables and simply call this function
-        without providing any arguments.
+        This function supports ENV variables.
 
-        This allows the user to easily configure the color to their preference without you having to provide
-        an interface/function to customise the color.
-
-        For all the color ENV variable names, refer to the :ref:`pages/style:Style` documentation.
+        For all the color ENV variable names, refer to the :ref:`ENV <pages/env:Style>` documentation.
 
     Note:
         If no style is provided, then a default theme based on `one dark <https://github.com/joshdick/onedark.vim#color-reference>`_

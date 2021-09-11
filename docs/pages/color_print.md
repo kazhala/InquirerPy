@@ -1,4 +1,4 @@
-# `color_print`
+# color_print
 
 ```{note}
 This is a standalone feature and will work regardless if the prompt is running or not.

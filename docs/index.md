@@ -148,6 +148,7 @@ python examples/example_pizza
 :caption: API
 :hidden:
 
+pages/inquirer.md
 pages/prompt.md
 pages/validator.md
 pages/separator.md

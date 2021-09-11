@@ -1,12 +1,12 @@
-# `Separator`
+# Separator
 
 You can use {class}`~InquirerPy.separator.Separator` to effectively group choices visually in the
 following types of prompts which involves list of choices:
 
-- {class}`~InquirerPy.prompts.list.ListPrompt`
-- {class}`~InquirerPy.prompts.rawlist.RawlistPrompt`
-- {class}`~InquirerPy.prompts.expand.ExpandPrompt`
-- {class}`~InquirerPy.prompts.checkbox.CheckboxPrompt`
+- {ref}`pages/prompts/list:list`
+- {ref}`pages/prompts/rawlist:rawlist`
+- {ref}`pages/prompts/expand:expand`
+- {ref}`pages/prompts/checkbox:checkbox`
 
 ```{eval-rst}
 .. autoclass:: InquirerPy.separator.Separator

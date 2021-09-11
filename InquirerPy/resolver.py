@@ -2,7 +2,7 @@
 
 A `PyInquirer <https://github.com/CITGuru/PyInquirer>`_ compatible entrypoint :func:`.prompt`.
 """
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
@@ -14,7 +14,7 @@ from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.rawlist import RawlistPrompt
 from InquirerPy.prompts.secret import SecretPrompt
-from InquirerPy.utils import SessionResult, get_style
+from InquirerPy.utils import Questions, SessionResult, get_style
 
 __all__ = ["prompt"]
 
@@ -34,7 +34,7 @@ list_prompts = {"list", "checkbox", "rawlist", "expand", "fuzzy"}
 
 
 def prompt(
-    questions: Union[List[Dict[str, Any]], Dict[str, Any]],
+    questions: Questions,
     style: Dict[str, str] = None,
     vi_mode: bool = False,
     raise_keyboard_interrupt: bool = True,
@@ -47,13 +47,13 @@ def prompt(
 
     Args:
         questions: A list of :ref:`pages/prompt:question` to ask. Refer to documentation for more info.
-        style: A dictionary of :ref:`pages/style:Style`. Refer to documentation for more info.
+        style: A :class:`dict` containing the style specification for the prompt. Refer to :ref:`pages/style:Style` for more info.
         vi_mode: Use vim keybindings for the prompt instead of the default emacs keybindings.
-        raise_keyboard_interrupt: Raise the kbi exception when user hit `ctrl-c`. If false, the result
+            Refer to :ref:`pages/kb:Keybindings` for more info.
+        raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
             will be `None` and the question is skiped.
         keybindings: List of custom :ref:`pages/kb:Keybindings` to apply. Refer to documentation for more info.
-        style_override: Override all default styles.
-            When providing any customisation, all default styles are cleared when this is True.
+        style_override: Override all default styles. When providing any style customisation, all default styles are removed when this is True.
 
     Returns:
         A dictionary containing all of the question answers. The key is the name of the question and the value is the

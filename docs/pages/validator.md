@@ -1,4 +1,4 @@
-# `Validator`
+# Validator
 
 All `InquirerPy` prompts can validate user input and display an error toolbar when the input or selection is invalid.
 
@@ -108,7 +108,7 @@ def validator(result) -> bool:
     return len(result) > 0
 ```
 
-#### Validator
+#### prompt_toolkit.validation.Validator
 
 ```{note}
 To maintain API compatibility, for prompts that doesn't have a {class}`string` type result such as `checkbox`, you'll still need to access the result via `document.text`.

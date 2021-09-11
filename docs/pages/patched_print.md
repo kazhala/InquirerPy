@@ -1,4 +1,4 @@
-# `patched_print`
+# patched_print
 
 ```{note}
 Printing values while the prompt is running can cause various side effects. Using the patched print function from
