@@ -1,4 +1,4 @@
-# Validator
+# `Validator`
 
 All `InquirerPy` prompts can validate user input and display an error toolbar when the input or selection is invalid.
 

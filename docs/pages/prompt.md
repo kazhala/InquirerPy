@@ -1,4 +1,4 @@
-# prompt
+# `prompt`
 
 This page documents the param and usage of the `prompt` function.
 Skip this page if you intend to use the alternate syntax `inquirer`.

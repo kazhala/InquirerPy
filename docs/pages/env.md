@@ -12,7 +12,7 @@ Several options can be configured via ENV variables.
 Checkout {ref}`pages/style:Style` for more information about style customisation.
 ```
 
-```{admonition} priority
+```{admonition} Priority
 ENV -> `style` parameter -> default style
 ```
 
@@ -84,7 +84,7 @@ result = inquirer.confirm(message="Confirm?").execute()
 Checkout {ref}`pages/kb:Keybindings` for more information about customising keybindings.
 ```
 
-```{admonition} priority
+```{admonition} Priority
 ENV -> `vi_mode` parameter
 ```
 
@@ -140,7 +140,7 @@ The value of `INQUIRERPY_VI_MODE` does not matter, as long as its a string longe
 Checkout {ref}`pages/misc:Keyboard Interrupt` section for more information.
 ```
 
-```{admonition} priority
+```{admonition} Priority
 ENV -> `raise_keyboard_interrupt` parameter
 ```
 

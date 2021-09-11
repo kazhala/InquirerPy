@@ -18,7 +18,7 @@
 
 ## Install
 
-```{admonition} requirements
+```{admonition} Requirements
 python >= 3.7
 ```
 
@@ -145,14 +145,29 @@ python examples/example_pizza
 ```
 
 ```{toctree}
+:caption: API
+:hidden:
+
+pages/prompt.md
+pages/validator.md
+pages/separator.md
+pages/patched_print.md
+pages/color_print.md
+```
+
+```{toctree}
+:caption: Customisation
 :hidden:
 
 pages/style.md
-pages/validator.md
 pages/kb.md
 pages/env.md
-pages/misc.md
-pages/prompt.md
+```
+
+```{toctree}
+:caption: Reference
+:hidden:
+
 pages/api.md
 GitHub Repository <https://github.com/kazhala/InquirerPy>
 ```
