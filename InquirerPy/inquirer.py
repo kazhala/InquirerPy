@@ -1,7 +1,9 @@
-"""Module contains import of other prompts.
+"""Servers as another entry point for `InquirerPy`.
 
-Servers as another entrypoint of constructing a prompt providing
-proper type hinting and completions.
+See Also:
+    :ref:`index:Alternate Syntax`.
+
+`inquirer` directly interact with individual prompt classes. It’s more flexible, easier to customise and also provides IDE type hintings/completions.
 """
 from InquirerPy.prompts import CheckboxPrompt as checkbox
 from InquirerPy.prompts import ConfirmPrompt as confirm
