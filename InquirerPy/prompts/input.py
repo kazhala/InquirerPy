@@ -13,6 +13,7 @@ from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.utils import (
+    InquirerPyDefault,
     InquirerPyMessage,
     InquirerPySessionResult,
     InquirerPyStyle,
@@ -33,22 +34,28 @@ class InputPrompt(BaseSimplePrompt):
 
     Args:
         message: The question to ask the user.
-            Refer to :ref:`pages/dynamic:message` documentation for more details.
-        style: A dictionary of style to apply.
-            Refer to :ref:`pages/style:Style` documentation for more details.
+            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+        style: An :class:`InquirerPyStyle` instance.
+            Refer to :ref:`Style <pages/style:Alternate Syntax>` documentation for more details.
         vi_mode: Use vim keybinding for the prompt.
-        default: The default text value to add to the input.
-        qmark: Custom symbol that will be displayed infront of the question before its answered.
-        amark: Custom symbol that will be displayed infront of the question after its answered.
-        instruction: Short instruction to display next to the `message`.
-        completer: Auto completer to add to the input prompt.
-        multicolumn_complete: Complete in multi column.
-        multiline: Enable multiline mode.
-        validate: Validation callable or class to validate user input.
-        invalid_message: Error message to display when input is invalid.
-        transformer: A callable to transform the result that gets printed in the terminal.
-            This is visual effect only.
-        filter: A callable to filter the result that gets returned.
+            Refer to :ref:`pages/kb:Keybindings` documentation for more details.
+        default: Set the default text value of the prompt.
+            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+        qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
+        amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
+        instruction: Short instruction to display next to the question.
+        completer: Add auto completion to the prompt.
+            Refer to :ref:`pages/prompts/input:Auto Completion` documentation for more details.
+        multicolumn_complete: Change the auto-completion UI to a multi column display.
+        multiline: Enable multiline edit. During this mode, pressing Enter won't finish the answer, it will only create a new line. Use `ESC+Enter` to finish answering the question.
+        validate: Add validation to user input.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        invalid_message: Error message to display when user input is invalid.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        transformer: A function which performs additional transformation on the value that gets printed to the terminal.
+            Different than `filter` parameter, this is only visual effect and won’t affect the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+        filter: A function which performs additional transformation on the result.
+            This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         is_password: Used by :class:`~InquirerPy.prompts.secret.SecretPrompt`, ignore this parameter.
         session_result: Used for `classic syntax`, ignore this parameter.
@@ -64,11 +71,11 @@ class InputPrompt(BaseSimplePrompt):
         message: InquirerPyMessage,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
-        default: Union[str, Callable[[InquirerPySessionResult], str]] = "",
+        default: InquirerPyDefault = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
-        completer: Union[Dict[str, Optional[str]], Completer] = None,
+        completer: Union[Dict[str, Optional[str]], "Completer"] = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
         validate: InquirerPyValidate = None,

@@ -157,12 +157,20 @@ pages/color_print.md
 ```
 
 ```{toctree}
+:caption: prompts
+:hidden:
+
+pages/prompts/input.md
+```
+
+```{toctree}
 :caption: Customisation
 :hidden:
 
 pages/style.md
 pages/kb.md
 pages/env.md
+pages/dynamic.md
 ```
 
 ```{toctree}

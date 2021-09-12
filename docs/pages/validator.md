@@ -35,11 +35,10 @@ result = prompt(
 from InquirerPy import inquirer
 
 result = inquirer.text(
-message="Name:",
-validate=lambda result: len(result) > 0,
-invalid_message="Input cannot be empty.",
+    message="Name:",
+    validate=lambda result: len(result) > 0,
+    invalid_message="Input cannot be empty.",
 ).execute()
-
 ```
 
 </details>

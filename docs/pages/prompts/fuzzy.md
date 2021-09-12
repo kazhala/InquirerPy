@@ -1,1 +1,1 @@
-# fuzzy
+# FuzzyPrompt

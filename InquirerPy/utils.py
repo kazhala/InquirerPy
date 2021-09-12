@@ -57,7 +57,7 @@ InquirerPyListChoices = Union[
     Callable[["InquirerPySessionResult"], Union[Awaitable[List[Any]], List[Any]]],
     List[Any],
 ]
-InquirerPyValidate = Union[Callable[[Any], bool], Validator]
+InquirerPyValidate = Union[Callable[[Any], bool], "Validator"]
 InquirerPyQuestions = Union[List[Dict[str, Any]], Dict[str, Any]]
 InquirerPyMessage = Union[str, Callable[["InquirerPySessionResult"], str]]
 InquirerPyDefault = Union[Any, Callable[["InquirerPySessionResult"], Any]]

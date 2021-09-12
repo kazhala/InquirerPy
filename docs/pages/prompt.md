@@ -76,15 +76,15 @@ for their specific options/parameters.
 - type: (`str`) Type of the prompt.
 
   ```{seealso}
-  {ref}`pages/prompts/input:input`,
-  {ref}`pages/prompts/password:password`,
-  {ref}`pages/prompts/filepath:filepath`,
-  {ref}`pages/prompts/confirm:confirm`,
-  {ref}`pages/prompts/list:list`,
-  {ref}`pages/prompts/rawlist:rawlist`,
-  {ref}`pages/prompts/expand:expand`,
-  {ref}`pages/prompts/checkbox:checkbox`,
-  {ref}`pages/prompts/fuzzy:fuzzy`
+  {ref}`pages/prompts/input:InputPrompt`,
+  {ref}`pages/prompts/password:SecretPrompt`,
+  {ref}`pages/prompts/filepath:FilePathPrompt`,
+  {ref}`pages/prompts/confirm:ConfirmPrompt`,
+  {ref}`pages/prompts/list:ListPrompt`,
+  {ref}`pages/prompts/rawlist:RawlistPrompt`,
+  {ref}`pages/prompts/expand:ExpandPrompt`,
+  {ref}`pages/prompts/checkbox:CheckboxPrompt`,
+  {ref}`pages/prompts/fuzzy:FuzzyPrompt`
   ```
 
 - name: (`Optional[str]`) The key name to use when storing into the result. If not present, the question index within the list of questions will be used as the key name.
@@ -103,7 +103,7 @@ for their specific options/parameters.
 - transformer: (`Callable[[str], Any]`) A function which performs additional transformation on the value that gets printed to the terminal. Different than the `filter` key, this
   is only visual effect and won't affect the final result.
 
-  ```{note}
+  ```{tip}
   `filter` and `transformer` key run separately and won't have side effects when running both.
   ```
 
