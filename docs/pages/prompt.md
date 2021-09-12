@@ -33,7 +33,7 @@ An example using `prompt` which incorporate multiple different types of prompts:
 ## questions
 
 ```{eval-rst}
-.. autodata:: InquirerPy.utils.Questions
+.. autodata:: InquirerPy.utils.InquirerPyQuestions
     :noindex:
 ```
 

@@ -14,7 +14,7 @@ from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.rawlist import RawlistPrompt
 from InquirerPy.prompts.secret import SecretPrompt
-from InquirerPy.utils import Questions, SessionResult, get_style
+from InquirerPy.utils import InquirerPyQuestions, InquirerPySessionResult, get_style
 
 __all__ = ["prompt"]
 
@@ -34,13 +34,13 @@ list_prompts = {"list", "checkbox", "rawlist", "expand", "fuzzy"}
 
 
 def prompt(
-    questions: Questions,
+    questions: InquirerPyQuestions,
     style: Dict[str, str] = None,
     vi_mode: bool = False,
     raise_keyboard_interrupt: bool = True,
     keybindings: Dict[str, List[Dict[str, Any]]] = None,
     style_override: bool = True,
-) -> SessionResult:
+) -> InquirerPySessionResult:
     """Classic syntax entrypoint to create a prompt session.
 
     Resolve user provided list of questions, display prompts and get the results.
@@ -97,7 +97,7 @@ def prompt(
         ... ]
         >>> result = prompt(questions=questions)
     """
-    result: SessionResult = {}
+    result: InquirerPySessionResult = {}
     if not keybindings:
         keybindings = {}
 

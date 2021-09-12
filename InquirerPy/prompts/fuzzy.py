@@ -32,9 +32,9 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
+    InquirerPyListChoices,
+    InquirerPySessionResult,
     InquirerPyStyle,
-    ListChoices,
-    SessionResult,
     calculate_height,
 )
 
@@ -52,12 +52,12 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
 
     def __init__(
         self,
-        choices: ListChoices,
+        choices: InquirerPyListChoices,
         pointer: str,
         marker: str,
         current_text: Callable[[], str],
         max_lines: int,
-        session_result: Optional[SessionResult],
+        session_result: Optional[InquirerPySessionResult],
         multiselect: bool,
         marker_pl: str = " ",
     ) -> None:
@@ -247,7 +247,7 @@ class FuzzyPrompt(BaseListPrompt):
 
     Args:
         message: The question to ask the user.
-        choices (ListChoices): List of choices to display.
+        choices (InquirerPyListChoices): List of choices to display.
         style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
         vi_mode: Use vim keybinding for the prompt.
         default: The default value. This will affect where the cursor starts from. Should be one of the choice value.
@@ -287,9 +287,9 @@ class FuzzyPrompt(BaseListPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[SessionResult], str]],
-        choices: ListChoices,
-        default: Union[str, Callable[[SessionResult], str]] = "",
+        message: Union[str, Callable[[InquirerPySessionResult], str]],
+        choices: InquirerPyListChoices,
+        default: Union[str, Callable[[InquirerPySessionResult], str]] = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
@@ -317,7 +317,7 @@ class FuzzyPrompt(BaseListPrompt):
         spinner_text: str = "",
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
-        session_result: SessionResult = None,
+        session_result: InquirerPySessionResult = None,
     ) -> None:
         if not keybindings:
             keybindings = {}

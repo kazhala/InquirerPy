@@ -15,7 +15,7 @@ from prompt_toolkit.validation import Validator
 from InquirerPy.base.simple import BaseSimplePrompt
 from InquirerPy.containers import SpinnerWindow
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
-from InquirerPy.utils import InquirerPyStyle, SessionResult
+from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle
 
 
 @dataclass
@@ -52,7 +52,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[SessionResult], str]],
+        message: Union[str, Callable[[InquirerPySessionResult], str]],
         style: InquirerPyStyle = None,
         border: bool = False,
         vi_mode: bool = False,
@@ -70,7 +70,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         spinner_text: str = "",
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
-        session_result: SessionResult = None,
+        session_result: InquirerPySessionResult = None,
     ) -> None:
         super().__init__(
             message=message,

@@ -8,7 +8,11 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle, ListChoices, SessionResult
+from InquirerPy.utils import (
+    InquirerPyListChoices,
+    InquirerPySessionResult,
+    InquirerPyStyle,
+)
 
 __all__ = ["ExpandPrompt"]
 
@@ -27,14 +31,14 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
 
     def __init__(
         self,
-        choices: ListChoices,
+        choices: InquirerPyListChoices,
         default: Any,
         pointer: str,
         separator: str,
         help_msg: str,
         expand_pointer: str,
         marker: str,
-        session_result: Optional[SessionResult],
+        session_result: Optional[InquirerPySessionResult],
         multiselect: bool,
         marker_pl: str = " ",
     ) -> None:
@@ -156,7 +160,7 @@ class ExpandPrompt(ListPrompt):
 
     Args:
         message: The question to ask the user.
-        choices (ListChoices): List of choices to display.
+        choices (InquirerPyListChoices): List of choices to display.
         style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
         vi_mode: Use vim keybinding for the prompt.
         default: The default value. This will affect where the cursor starts from. Should be one of the choice value.
@@ -198,8 +202,8 @@ class ExpandPrompt(ListPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[SessionResult], str]],
-        choices: ListChoices,
+        message: Union[str, Callable[[InquirerPySessionResult], str]],
+        choices: InquirerPyListChoices,
         default: Any = "",
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
@@ -230,7 +234,7 @@ class ExpandPrompt(ListPrompt):
         spinner_text: str = "",
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
-        session_result: SessionResult = None,
+        session_result: InquirerPySessionResult = None,
     ) -> None:
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
             choices=choices,

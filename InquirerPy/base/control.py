@@ -7,14 +7,18 @@ from prompt_toolkit.layout.controls import FormattedTextControl
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
-from InquirerPy.utils import ListChoices, SessionResult, transform_async
+from InquirerPy.utils import (
+    InquirerPyListChoices,
+    InquirerPySessionResult,
+    transform_async,
+)
 
 
 class InquirerPyUIListControl(FormattedTextControl):
     """A base class to create :class:`~prompt_toolkit.layout.UIControl` to display list type contents.
 
     Args:
-        choices(ListChoices): List of choices to display as the content.
+        choices(InquirerPyListChoices): List of choices to display as the content.
             Can also be a callable or async callable that returns a list of choices.
         default: Default value, this will affect the cursor position.
         multiselect: Indicate if the current prompt has `multiselect` enabled.
@@ -23,10 +27,10 @@ class InquirerPyUIListControl(FormattedTextControl):
 
     def __init__(
         self,
-        choices: ListChoices,
+        choices: InquirerPyListChoices,
         default: Any = None,
         multiselect: bool = False,
-        session_result: SessionResult = None,
+        session_result: InquirerPySessionResult = None,
     ) -> None:
         self._session_result = session_result or {}
         self._selected_choice_index: int = 0

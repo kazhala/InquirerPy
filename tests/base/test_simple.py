@@ -14,7 +14,7 @@ from tests.style import get_sample_style
 
 class TestBaseSimple(unittest.TestCase):
     @patch("InquirerPy.base.simple.KeyBindings.add")
-    @patch("InquirerPy.prompts.input.Validator.from_callable")
+    @patch("InquirerPy.base.simple.Validator.from_callable")
     @patch("InquirerPy.base.simple.Style.from_dict")
     def test_constructor_default(self, mocked_style, mocked_validator, mocked_kb):
         input_prompt = InputPrompt(message="Enter your name", style=None, default="1")
@@ -29,7 +29,7 @@ class TestBaseSimple(unittest.TestCase):
         )
         mocked_kb.assert_has_calls([call("c-c")])
 
-    @patch("InquirerPy.prompts.input.Validator.from_callable")
+    @patch("InquirerPy.base.simple.Validator.from_callable")
     @patch("InquirerPy.base.simple.Style.from_dict")
     def test_constructor_custom(self, mocked_style, mocked_validator):
         input_prompt = InputPrompt(

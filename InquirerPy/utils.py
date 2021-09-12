@@ -52,12 +52,15 @@ class InquirerPyStyle(NamedTuple):
     dict: Dict[str, str]
 
 
-SessionResult = Dict[Union[str, int], Optional[Union[str, bool, List[Any]]]]
-ListChoices = Union[
-    Callable[[SessionResult], Union[Awaitable[List[Any]], List[Any]]], List[Any]
+InquirerPySessionResult = Dict[Union[str, int], Optional[Union[str, bool, List[Any]]]]
+InquirerPyListChoices = Union[
+    Callable[["InquirerPySessionResult"], Union[Awaitable[List[Any]], List[Any]]],
+    List[Any],
 ]
-Validate = Union[Callable[[Any], bool], Validator]
-Questions = Union[List[Dict[str, Any]], Dict[str, Any]]
+InquirerPyValidate = Union[Callable[[Any], bool], Validator]
+InquirerPyQuestions = Union[List[Dict[str, Any]], Dict[str, Any]]
+InquirerPyMessage = Union[str, Callable[["InquirerPySessionResult"], str]]
+InquirerPyDefault = Union[Any, Callable[["InquirerPySessionResult"], Any]]
 
 
 def get_style(

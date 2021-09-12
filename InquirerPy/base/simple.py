@@ -12,7 +12,7 @@ from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
-from InquirerPy.utils import InquirerPyStyle, SessionResult, get_style
+from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle, get_style
 
 
 class BaseSimplePrompt(ABC):
@@ -32,7 +32,7 @@ class BaseSimplePrompt(ABC):
 
     def __init__(
         self,
-        message: Union[str, Callable[[SessionResult], str]],
+        message: Union[str, Callable[[InquirerPySessionResult], str]],
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -44,7 +44,7 @@ class BaseSimplePrompt(ABC):
         filter: Callable[[Any], Any] = None,
         default: Any = "",
         wrap_lines: bool = True,
-        session_result: SessionResult = None,
+        session_result: InquirerPySessionResult = None,
     ) -> None:
         self._result = session_result or {}
         self._message = (

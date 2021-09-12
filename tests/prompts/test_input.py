@@ -1,5 +1,6 @@
 import unittest
-from unittest.mock import call, patch
+from typing import NamedTuple
+from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.completion.base import CompleteEvent
 from prompt_toolkit.document import Document
@@ -7,9 +8,11 @@ from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 from prompt_toolkit.shortcuts.prompt import CompleteStyle
+from prompt_toolkit.validation import Validator
 
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.input import InputPrompt
+from InquirerPy.validator import NumberValidator
 
 
 class TestInputPrompt(unittest.TestCase):
@@ -175,7 +178,6 @@ class TestInputPrompt(unittest.TestCase):
             ],
         )
 
-    @patch("InquirerPy.prompts.input.Validator.from_callable")
     @patch("InquirerPy.prompts.input.NestedCompleter.from_nested_dict")
     @patch("InquirerPy.prompts.input.SimpleLexer")
     @patch("InquirerPy.prompts.input.InputPrompt._get_prompt_message")
@@ -190,10 +192,8 @@ class TestInputPrompt(unittest.TestCase):
         mocked_message,
         MockedLexer,
         mocked_completer,
-        mocked_validator,
     ):
         completer = mocked_completer()
-        validate = mocked_validator()
         kb = MockedKeyBindings()
         style = MockedStyle()
         lexer = MockedLexer()
@@ -211,7 +211,7 @@ class TestInputPrompt(unittest.TestCase):
             key_bindings=kb,
             style=style,
             completer=completer,
-            validator=validate,
+            validator=ANY,
             validate_while_typing=False,
             input=None,
             output=None,

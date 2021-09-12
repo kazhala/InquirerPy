@@ -87,7 +87,7 @@ result = inquirer.checkbox(
 ### `validate`
 
 ```{eval-rst}
-.. autodata:: InquirerPy.utils.Validate
+.. autodata:: InquirerPy.utils.InquirerPyValidate
     :noindex:
 ```
 

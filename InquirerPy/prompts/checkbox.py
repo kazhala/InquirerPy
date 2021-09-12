@@ -12,7 +12,11 @@ from InquirerPy.enum import (
 )
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle, ListChoices, SessionResult
+from InquirerPy.utils import (
+    InquirerPyListChoices,
+    InquirerPySessionResult,
+    InquirerPyStyle,
+)
 
 __all__ = ["CheckboxPrompt"]
 
@@ -25,12 +29,12 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
 
     def __init__(
         self,
-        choices: ListChoices,
+        choices: InquirerPyListChoices,
         default: Any = None,
         pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
         enabled_symbol: str = "%s " % INQUIRERPY_FILL_HEX_SEQUENCE,
         disabled_symbol: str = "%s " % INQUIRERPY_EMPTY_HEX_SEQUENCE,
-        session_result: Optional[SessionResult] = None,
+        session_result: Optional[InquirerPySessionResult] = None,
     ) -> None:
         """Initialise required attributes and call base class."""
         self._pointer = pointer
@@ -88,7 +92,7 @@ class CheckboxPrompt(ListPrompt):
 
     Args:
         message: The question to ask the user.
-        choices (ListChoices): List of choices to display.
+        choices (InquirerPyListChoices): List of choices to display.
         style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
         vi_mode: Use vim keybinding for the prompt.
         default: The default value. This will affect where the cursor starts from. Should be one of the choice value.
@@ -128,8 +132,8 @@ class CheckboxPrompt(ListPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[SessionResult], str]],
-        choices: ListChoices,
+        message: Union[str, Callable[[InquirerPySessionResult], str]],
+        choices: InquirerPyListChoices,
         default: Any = None,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
@@ -156,7 +160,7 @@ class CheckboxPrompt(ListPrompt):
         spinner_text: str = "",
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
-        session_result: SessionResult = None,
+        session_result: InquirerPySessionResult = None,
     ) -> None:
         self.content_control = InquirerPyCheckboxControl(
             choices=choices,

@@ -10,7 +10,7 @@ from prompt_toolkit.validation import Validator
 from InquirerPy.base.complex import BaseComplexPrompt
 from InquirerPy.base.control import InquirerPyUIListControl
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPyStyle, SessionResult
+from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle
 
 
 class BaseListPrompt(BaseComplexPrompt):
@@ -27,7 +27,7 @@ class BaseListPrompt(BaseComplexPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[SessionResult], str]],
+        message: Union[str, Callable[[InquirerPySessionResult], str]],
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -48,7 +48,7 @@ class BaseListPrompt(BaseComplexPrompt):
         spinner_text: str = "",
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
-        session_result: SessionResult = None,
+        session_result: InquirerPySessionResult = None,
     ) -> None:
         super().__init__(
             message=message,

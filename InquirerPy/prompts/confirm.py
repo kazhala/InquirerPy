@@ -6,7 +6,7 @@ from prompt_toolkit.shortcuts import PromptSession
 
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.utils import InquirerPyStyle, SessionResult
+from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle
 
 if TYPE_CHECKING:
     from prompt_toolkit.input.base import Input
@@ -45,7 +45,7 @@ class ConfirmPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[SessionResult], str]],
+        message: Union[str, Callable[[InquirerPySessionResult], str]],
         style: InquirerPyStyle = None,
         default: Union[bool, Callable[[Dict[str, Any]], bool]] = False,
         vi_mode: bool = False,
@@ -57,7 +57,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         wrap_lines: bool = True,
         confirm_letter: str = "y",
         reject_letter: str = "n",
-        session_result: SessionResult = None,
+        session_result: InquirerPySessionResult = None,
         input: "Input" = None,
         output: "Output" = None,
     ) -> None:

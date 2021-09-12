@@ -9,7 +9,7 @@ from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
-from InquirerPy.utils import InquirerPyStyle, SessionResult
+from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle
 
 if TYPE_CHECKING:
     from prompt_toolkit.input.base import Input
@@ -114,10 +114,10 @@ class FilePathPrompt(InputPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[SessionResult], str]],
+        message: Union[str, Callable[[InquirerPySessionResult], str]],
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
-        default: Union[str, Callable[[SessionResult], str]] = "",
+        default: Union[str, Callable[[InquirerPySessionResult], str]] = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
@@ -129,7 +129,7 @@ class FilePathPrompt(InputPrompt):
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
         wrap_lines: bool = True,
-        session_result: SessionResult = None,
+        session_result: InquirerPySessionResult = None,
         input: "Input" = None,
         output: "Output" = None,
     ) -> None:

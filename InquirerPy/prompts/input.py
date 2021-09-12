@@ -7,12 +7,17 @@ from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.lexers import SimpleLexer
 from prompt_toolkit.shortcuts.prompt import CompleteStyle, PromptSession
-from prompt_toolkit.validation import ValidationError, Validator
+from prompt_toolkit.validation import ValidationError
 
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.utils import InquirerPyStyle, SessionResult
+from InquirerPy.utils import (
+    InquirerPyMessage,
+    InquirerPySessionResult,
+    InquirerPyStyle,
+    InquirerPyValidate,
+)
 
 if TYPE_CHECKING:
     from prompt_toolkit.input.base import Input
@@ -28,7 +33,9 @@ class InputPrompt(BaseSimplePrompt):
 
     Args:
         message: The question to ask the user.
-        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+            Refer to :ref:`pages/dynamic:message` documentation for more details.
+        style: A dictionary of style to apply.
+            Refer to :ref:`pages/style:Style` documentation for more details.
         vi_mode: Use vim keybinding for the prompt.
         default: The default text value to add to the input.
         qmark: Custom symbol that will be displayed infront of the question before its answered.
@@ -54,23 +61,23 @@ class InputPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[SessionResult], str]],
+        message: InquirerPyMessage,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
-        default: Union[str, Callable[[SessionResult], str]] = "",
+        default: Union[str, Callable[[InquirerPySessionResult], str]] = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         completer: Union[Dict[str, Optional[str]], Completer] = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
-        validate: Union[Callable[[str], bool], Validator] = None,
+        validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
         wrap_lines: bool = True,
         is_password: bool = False,
-        session_result: SessionResult = None,
+        session_result: InquirerPySessionResult = None,
         input: "Input" = None,
         output: "Output" = None,
     ) -> None:
