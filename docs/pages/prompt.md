@@ -114,17 +114,23 @@ for their specific options/parameters.
 - instruction: (`str`) Short instruction to display next to the question message.
 - wrap_lines: (`bool`) Soft wrap question line when question message exceeds the terminal width.
 
+<!-- start raise -->
+
 ## Keyboard Interrupt
 
 `InquirerPy` will raise exception {class}`KeyboardInterrupt` when `ctrl-c` is pressed by default.
 
 If you prefer to not raise the exception and simply just skip the question, you can do the following:
 
+<!-- end raise -->
+
 ```python
 from InquirerPy import prompt
 
 result = prompt({"type": "input", "message": "Name:"}, raise_keyboard_interrupt=False)
 ```
+
+<!-- start raise continue -->
 
 When `raise_keyboard_interrupt` is set to `False`:
 
@@ -136,3 +142,5 @@ When `raise_keyboard_interrupt` is set to `True`:
 
 - the exception will be raised
 - the prompt will end
+
+<!-- end raise continue -->
