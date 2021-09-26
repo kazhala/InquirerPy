@@ -12,17 +12,18 @@ from prompt_toolkit.validation import ValidationError
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.utils import (
-    InquirerPyDefault,
-    InquirerPyMessage,
-    InquirerPySessionResult,
-    InquirerPyStyle,
-    InquirerPyValidate,
-)
 
 if TYPE_CHECKING:
     from prompt_toolkit.input.base import Input
     from prompt_toolkit.output.base import Output
+
+    from InquirerPy.utils import (
+        InquirerPyDefault,
+        InquirerPyMessage,
+        InquirerPySessionResult,
+        InquirerPyStyle,
+        InquirerPyValidate,
+    )
 
 __all__ = ["InputPrompt"]
 
@@ -47,7 +48,8 @@ class InputPrompt(BaseSimplePrompt):
         completer: Add auto completion to the prompt.
             Refer to :ref:`pages/prompts/input:Auto Completion` documentation for more details.
         multicolumn_complete: Change the auto-completion UI to a multi column display.
-        multiline: Enable multiline edit. During this mode, pressing Enter won't finish the answer, it will only create a new line. Use `ESC+Enter` to finish answering the question.
+        multiline: Enable multiline edit. While multiline edit is active, pressing `enter` won't complete the answer.
+            and will create a new line. Use `esc` followd by `enter` to complete the question.
         validate: Add validation to user input.
             Refer to :ref:`pages/validator:Validator` documentation for more details.
         invalid_message: Error message to display when user input is invalid.
@@ -57,34 +59,37 @@ class InputPrompt(BaseSimplePrompt):
         filter: A function which performs additional transformation on the result.
             This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
-        is_password: Used by :class:`~InquirerPy.prompts.secret.SecretPrompt`, ignore this parameter.
-        session_result: Used for `classic syntax`, ignore this parameter.
-        input: Used for testing, ignore this parameter.
-        output: Used for testing, ignore this parameter.
+        is_password: Used internally for :class:`~InquirerPy.prompts.secret.SecretPrompt`.
+        session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
+        input: Used internally and will be removed in future updates.
+        output: Used internally and will be removed in future updates.
 
     Examples:
-        >>> result = InputPrompt(message="Enter your name:").execute()
+        >>> from InquirerPy import inquirer
+        >>> result = inquirer.text(message="Enter your name:").execute()
+        >>> print(f"Name: {result}")
+        Name: Michael
     """
 
     def __init__(
         self,
-        message: InquirerPyMessage,
-        style: InquirerPyStyle = None,
+        message: "InquirerPyMessage",
+        style: "InquirerPyStyle" = None,
         vi_mode: bool = False,
-        default: InquirerPyDefault = "",
+        default: "InquirerPyDefault" = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         completer: Union[Dict[str, Optional[str]], "Completer"] = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
-        validate: InquirerPyValidate = None,
+        validate: "InquirerPyValidate" = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
         wrap_lines: bool = True,
         is_password: bool = False,
-        session_result: InquirerPySessionResult = None,
+        session_result: "InquirerPySessionResult" = None,
         input: "Input" = None,
         output: "Output" = None,
     ) -> None:
@@ -104,7 +109,7 @@ class InputPrompt(BaseSimplePrompt):
             wrap_lines=wrap_lines,
         )
         if not isinstance(self._default, str):
-            raise InvalidArgument("input prompt argument default should be type of str")
+            raise InvalidArgument("argument 'default' should be type of str")
         self._completer = None
         if isinstance(completer, dict):
             self._completer = NestedCompleter.from_nested_dict(completer)
