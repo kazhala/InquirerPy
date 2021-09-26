@@ -161,6 +161,7 @@ pages/color_print.md
 :hidden:
 
 pages/prompts/input.md
+pages/prompts/secret.md
 ```
 
 ```{toctree}

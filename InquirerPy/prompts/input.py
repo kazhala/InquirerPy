@@ -29,9 +29,12 @@ __all__ = ["InputPrompt"]
 
 
 class InputPrompt(BaseSimplePrompt):
-    """A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
+    """Create a text prompt that accepts user input.
 
-    Create a text prompt that accepts user input.
+    A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
+
+    TODO:
+        Refactor and use Application over PromptSession.
 
     Args:
         message: The question to ask the user.
@@ -109,7 +112,9 @@ class InputPrompt(BaseSimplePrompt):
             wrap_lines=wrap_lines,
         )
         if not isinstance(self._default, str):
-            raise InvalidArgument("argument 'default' should be type of str")
+            raise InvalidArgument(
+                "input prompt argument 'default' should be type of str"
+            )
         self._completer = None
         if isinstance(completer, dict):
             self._completer = NestedCompleter.from_nested_dict(completer)

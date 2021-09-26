@@ -1,10 +1,10 @@
-from InquirerPy import inquirer, prompt
+from InquirerPy import prompt
 from InquirerPy.validator import PasswordValidator
 
 original_password = "InquirerPy45@"
 
 
-def classic():
+def main():
     questions = [
         {
             "type": "password",
@@ -27,21 +27,5 @@ def classic():
     result = prompt(questions)
 
 
-def alternate():
-    old_password = inquirer.secret(
-        message="Old password:",
-        transformer=lambda _: "[hidden]",
-        validate=lambda text: text == original_password,
-        invalid_message="Wrong password",
-        instruction="(abc)",
-    ).execute()
-    new_password = inquirer.secret(
-        message="New password:",
-        validate=PasswordValidator(length=8, cap=True, special=True, number=True),
-        transformer=lambda _: "[hidden]",
-    ).execute()
-    confirm = inquirer.confirm(message="Confirm?", default=True).execute()
-
-
-alternate()
-# classic()
+if __name__ == "__main__":
+    main()

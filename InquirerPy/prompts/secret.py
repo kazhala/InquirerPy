@@ -1,70 +1,85 @@
 """Module contains the class to create a secret prompt."""
-from typing import TYPE_CHECKING, Any, Callable, List, Tuple, Union
-
-from prompt_toolkit.validation import Validator
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple
 
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
-from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle
 
 if TYPE_CHECKING:
     from prompt_toolkit.input.base import Input
     from prompt_toolkit.output.base import Output
 
+    from InquirerPy.utils import (
+        InquirerPyDefault,
+        InquirerPyMessage,
+        InquirerPySessionResult,
+        InquirerPyStyle,
+        InquirerPyValidate,
+    )
+
 __all__ = ["SecretPrompt"]
 
 
 class SecretPrompt(InputPrompt):
-    """A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
+    """Create a text prompt which transforms the input to asterisks while typing.
 
-    Create a prompt that accepts user input while transforming the text to asterisks.
+    A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
+
+    TODO:
+        Refactor and use Application over PromptSession.
 
     Args:
         message: The question to ask the user.
-        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+        style: An :class:`InquirerPyStyle` instance.
+            Refer to :ref:`Style <pages/style:Alternate Syntax>` documentation for more details.
         vi_mode: Use vim keybinding for the prompt.
-        default: The default text value to add to the input.
-        qmark: Custom symbol that will be displayed infront of the question before its answered.
-        amark: Custom symbol that will be displayed infront of the question after its answered.
-        instruction: Short instruction to display next to the `message`.
-        completer: Auto completer to add to the input prompt.
-        multicolumn_complete: Complete in multi column.
-        multiline: Enable multiline mode.
-        validate: Validation callable or class to validate user input.
-        invalid_message: Error message to display when input is invalid.
-        transformer: A callable to transform the result that gets printed in the terminal.
-            This is visual effect only.
-        filter: A callable to filter the result that gets returned.
+            Refer to :ref:`pages/kb:Keybindings` documentation for more details.
+        default: Set the default text value of the prompt.
+            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+        qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
+        amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
+        instruction: Short instruction to display next to the question.
+        validate: Add validation to user input.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        invalid_message: Error message to display when user input is invalid.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        transformer: A function which performs additional transformation on the value that gets printed to the terminal.
+            Different than `filter` parameter, this is only visual effect and won’t affect the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+        filter: A function which performs additional transformation on the result.
+            This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
-        session_result: Used for `classic syntax`, ignore this parameter.
-        input: Used for testing, ignore this parameter.
-        output: Used for testing, ignore this parameter.
+        session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
+        input: Used internally and will be removed in future updates.
+        output: Used internally and will be removed in future updates.
 
     Examples:
-        >>> result = SecretPrompt(message="Password:").execute()
+        >>> from InquirerPy import inquirer
+        >>> result = inquirer.secret(message="Password:").execute()
+        >>> print(f"Password: {result}")
+        Password: asdf123
     """
 
     def __init__(
         self,
-        message: Union[str, Callable[[InquirerPySessionResult], str]],
-        style: InquirerPyStyle = None,
-        default: Union[str, Callable[[InquirerPySessionResult], str]] = "",
+        message: "InquirerPyMessage",
+        style: "InquirerPyStyle" = None,
+        default: "InquirerPyDefault" = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         vi_mode: bool = False,
-        validate: Union[Validator, Callable[[str], bool]] = None,
+        validate: "InquirerPyValidate" = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
         wrap_lines: bool = True,
-        session_result: InquirerPySessionResult = None,
+        session_result: "InquirerPySessionResult" = None,
         input: "Input" = None,
         output: "Output" = None,
     ) -> None:
         if not isinstance(default, str):
             raise InvalidArgument(
-                "secret prompt argument default should be type of str"
+                "secret prompt argument 'default' should be type of str"
             )
         super().__init__(
             message=message,
