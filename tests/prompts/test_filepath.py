@@ -209,7 +209,6 @@ class TestFilePath(unittest.TestCase):
         )
 
     @patch("InquirerPy.prompts.input.SimpleLexer")
-    @patch("InquirerPy.prompts.filepath.Validator.from_callable")
     @patch("InquirerPy.prompts.filepath.FilePathPrompt._get_prompt_message")
     @patch("InquirerPy.base.simple.Style.from_dict")
     @patch("InquirerPy.base.simple.KeyBindings")
@@ -220,7 +219,6 @@ class TestFilePath(unittest.TestCase):
         MockedKeyBindings,
         MockedStyle,
         mocked_message,
-        mocked_validator,
         MockedLexer,
     ):
         def _validation(_):
@@ -244,7 +242,7 @@ class TestFilePath(unittest.TestCase):
             key_bindings=kb,
             style=style,
             completer=ANY,
-            validator=mocked_validator(),
+            validator=ANY,
             validate_while_typing=False,
             input=None,
             output=None,
@@ -257,6 +255,3 @@ class TestFilePath(unittest.TestCase):
         )
 
         MockedStyle.assert_has_calls([call({"yes": ""})])
-        mocked_validator.assert_has_calls(
-            [call(_validation, "Invalid input", move_cursor_to_end=True)]
-        )

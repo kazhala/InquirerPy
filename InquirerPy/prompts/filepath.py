@@ -1,15 +1,20 @@
 """Module contains the class to create filepath prompt and filepath completer class."""
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Generator, Union
+from typing import TYPE_CHECKING, Any, Callable, Generator
 
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
-from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
-from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle
+from InquirerPy.utils import (
+    InquirerPyDefault,
+    InquirerPyMessage,
+    InquirerPySessionResult,
+    InquirerPyStyle,
+    InquirerPyValidate,
+)
 
 if TYPE_CHECKING:
     from prompt_toolkit.input.base import Input
@@ -128,15 +133,15 @@ class FilePathPrompt(InputPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[InquirerPySessionResult], str]],
+        message: InquirerPyMessage,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
-        default: Union[str, Callable[[InquirerPySessionResult], str]] = "",
+        default: InquirerPyDefault = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         multicolumn_complete: bool = False,
-        validate: Union[Callable[[str], bool], Validator] = None,
+        validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
         only_directories: bool = False,
         only_files: bool = False,
