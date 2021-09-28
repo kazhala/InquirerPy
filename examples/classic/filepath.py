@@ -1,10 +1,10 @@
 from pathlib import Path
 
-from InquirerPy import prompt, inquirer
+from InquirerPy import prompt
 from InquirerPy.validator import PathValidator
 
 
-def classic():
+def main():
     questions = [
         {
             "type": "filepath",
@@ -26,19 +26,5 @@ def classic():
     result = prompt(questions)
 
 
-def alternate():
-    src_path = inquirer.filepath(
-        message="Enter file to upload:",
-        default=str(Path.cwd()),
-        validate=PathValidator(is_file=True, message="Input is not a file"),
-        only_files=True,
-    ).execute()
-    dest_path = inquirer.filepath(
-        message="Enter path to download:",
-        validate=PathValidator(is_dir=True, message="Input is not a directory"),
-        only_directories=True,
-    ).execute()
-
-
-alternate()
-# classic()
+if __name__ == "__main__":
+    main()

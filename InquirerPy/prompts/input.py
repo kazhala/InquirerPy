@@ -12,18 +12,17 @@ from prompt_toolkit.validation import ValidationError
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
+from InquirerPy.utils import (
+    InquirerPyDefault,
+    InquirerPyMessage,
+    InquirerPySessionResult,
+    InquirerPyStyle,
+    InquirerPyValidate,
+)
 
 if TYPE_CHECKING:
     from prompt_toolkit.input.base import Input
     from prompt_toolkit.output.base import Output
-
-    from InquirerPy.utils import (
-        InquirerPyDefault,
-        InquirerPyMessage,
-        InquirerPySessionResult,
-        InquirerPyStyle,
-        InquirerPyValidate,
-    )
 
 __all__ = ["InputPrompt"]
 
@@ -59,8 +58,10 @@ class InputPrompt(BaseSimplePrompt):
             Refer to :ref:`pages/validator:Validator` documentation for more details.
         transformer: A function which performs additional transformation on the value that gets printed to the terminal.
             Different than `filter` parameter, this is only visual effect and won’t affect the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
         filter: A function which performs additional transformation on the result.
             This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         is_password: Used internally for :class:`~InquirerPy.prompts.secret.SecretPrompt`.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
@@ -76,23 +77,23 @@ class InputPrompt(BaseSimplePrompt):
 
     def __init__(
         self,
-        message: "InquirerPyMessage",
-        style: "InquirerPyStyle" = None,
+        message: InquirerPyMessage,
+        style: InquirerPyStyle = None,
         vi_mode: bool = False,
-        default: "InquirerPyDefault" = "",
+        default: InquirerPyDefault = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         completer: Union[Dict[str, Optional[str]], "Completer"] = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
-        validate: "InquirerPyValidate" = None,
+        validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
         wrap_lines: bool = True,
         is_password: bool = False,
-        session_result: "InquirerPySessionResult" = None,
+        session_result: InquirerPySessionResult = None,
         input: "Input" = None,
         output: "Output" = None,
     ) -> None:

@@ -77,7 +77,7 @@ for their specific options/parameters.
 
   ```{seealso}
   {ref}`pages/prompts/input:InputPrompt`,
-  {ref}`pages/prompts/password:SecretPrompt`,
+  {ref}`pages/prompts/secret:SecretPrompt`,
   {ref}`pages/prompts/filepath:FilePathPrompt`,
   {ref}`pages/prompts/confirm:ConfirmPrompt`,
   {ref}`pages/prompts/list:ListPrompt`,
