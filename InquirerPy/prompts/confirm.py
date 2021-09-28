@@ -1,53 +1,71 @@
 """Module contains the class to create a confirm prompt."""
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple
 
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
 
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle
+from InquirerPy.utils import (
+    InquirerPyDefault,
+    InquirerPyMessage,
+    InquirerPySessionResult,
+    InquirerPyStyle,
+)
 
 if TYPE_CHECKING:
     from prompt_toolkit.input.base import Input
     from prompt_toolkit.output.base import Output
 
-
 __all__ = ["ConfirmPrompt"]
 
 
 class ConfirmPrompt(BaseSimplePrompt):
-    """A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
+    """Create a prompt that provides 2 options (confirm/deny) and controlled via single keypress.
 
-    Create a prompt that provide 2 options (confirm/deny).
+    A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
+
+    TODO:
+        Refactor and use Application over PromptSession.
 
     Args:
         message: The question to ask the user.
-        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
-        default: The default value when user hit `enter`. A boolean value of either `True` or `False`.
-        vi_mode: Used for compatibility, ignore this parameter.
-        qmark: Custom symbol that will be displayed infront of the question before its answered.
-        amark: Custom symbol that will be displayed infront of the question after its answered.
-        instruction: Short instruction to display next to the `message`.
-        transformer: A callable to transform the result that gets printed in the terminal.
-            This is visual effect only.
-        filter: A callable to filter the result that gets returned.
+            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+        style: An :class:`InquirerPyStyle` instance.
+            Refer to :ref:`Style <pages/style:Alternate Syntax>` documentation for more details.
+        vi_mode: Used for compatibility .
+        default: Set the default text value of the prompt.
+            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+        qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
+        amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
+        instruction: Short instruction to display next to the question.
+        transformer: A function which performs additional transformation on the value that gets printed to the terminal.
+            Different than `filter` parameter, this is only visual effect and won’t affect the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+        filter: A function which performs additional transformation on the result.
+            This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         confirm_letter: Letter used to confirm the prompt. A keybinding will be created for this letter.
+            Default is `y` and pressing `y` will answer the prompt with value `True`.
         reject_letter: Letter used to reject the prompt. A keybinding will be created for this letter.
-        session_result: Used for `classic syntax`, ignore this parameter.
-        input: Used for testing, ignore this parameter.
-        output: Used for testing, ignore this parameter.
+            Default is `n` and pressing `n` will answer the prompt with value `False`.
+        session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
+        input: Used internally and will be removed in future updates.
+        output: Used internally and will be removed in future updates.
 
     Examples:
-        >>> result = ConfirmPrompt(message="Confirm?").execute()
+        >>> from InquirerPy import inquirer
+        >>> result = inquirer.confirm(message="Confirm?").execute()
+        >>> print(result)
+        True
     """
 
     def __init__(
         self,
-        message: Union[str, Callable[[InquirerPySessionResult], str]],
+        message: InquirerPyMessage,
         style: InquirerPyStyle = None,
-        default: Union[bool, Callable[[Dict[str, Any]], bool]] = False,
+        default: InquirerPyDefault = False,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",

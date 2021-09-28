@@ -1,5 +1,4 @@
 import unittest
-from typing import NamedTuple
 from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.completion.base import CompleteEvent
@@ -8,11 +7,9 @@ from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 from prompt_toolkit.shortcuts.prompt import CompleteStyle
-from prompt_toolkit.validation import Validator
 
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.input import InputPrompt
-from InquirerPy.validator import NumberValidator
 
 
 class TestInputPrompt(unittest.TestCase):

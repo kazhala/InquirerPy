@@ -1,7 +1,7 @@
-from InquirerPy import inquirer, prompt
+from InquirerPy import prompt
 
 
-def classic():
+def main():
     questions = [
         {
             "type": "confirm",
@@ -24,14 +24,5 @@ def classic():
     result = prompt(questions)
 
 
-def alternate():
-    proceed, service, confirm = False, False, False
-    proceed = inquirer.confirm(message="Proceed?", default=True).execute()
-    if proceed:
-        service = inquirer.confirm(message="Require 1 on 1?").execute()
-    if service:
-        confirm = inquirer.confirm(message="Confirm?").execute()
-
-
-alternate()
-# classic()
+if __name__ == "__main__":
+    main()

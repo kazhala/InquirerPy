@@ -163,6 +163,7 @@ pages/color_print.md
 pages/prompts/input.md
 pages/prompts/secret.md
 pages/prompts/filepath.md
+pages/prompts/confirm.md
 ```
 
 ```{toctree}
