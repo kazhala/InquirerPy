@@ -120,7 +120,7 @@ The `message` parameter/key can either be a simple {class}`string` or a function
 [Before Rendered](#before-rendered)
 ```
 
-```{note}
+```{attention}
 The `default` parameter/key typing can vary between different types of prompt.
 ```
 
@@ -131,6 +131,91 @@ The `default` parameter/key typing can vary between different types of prompt.
 ```
 
 The `default` parameter/key can either be a simple value or a function which returns the `default` value.
+
+#### choices
+
+```{eval-rst}
+.. autodata:: InquirerPy.utils.InquirerPyListChoices
+    :noindex:
+```
+
+```{admonition} Category
+[Before Rendered](#before-rendered)
+```
+
+```{attention}
+This variable only exists in the following prompts:
+
+* {ref}`pages/prompts/list:ListPrompt`,
+* {ref}`pages/prompts/rawlist:RawlistPrompt`,
+* {ref}`pages/prompts/expand:ExpandPrompt`,
+* {ref}`pages/prompts/checkbox:CheckboxPrompt`,
+* {ref}`pages/prompts/fuzzy:FuzzyPrompt`
+```
+
+```{note}
+The required keys for choices vary between prompts. There may be additional keys required which is documented
+in individual prompt documentation.
+```
+
+Each choice can be either any value that have a string representation (e.g. can `str(value)`), or it can be a
+dictionary which consists at least the following keys:
+
+- name (Any): The display name of the choice, user will be able to see this value as the choice.
+- value (Any): The value of the choice, can be different than the `name` key, user will not be able to see this value.
+
+Choice can also be instances of {ref}`pages/separator:Separator`.
+
+<details>
+  <summary>Classic Syntax (PyInquirer)</summary>
+
+```{code-block} python
+from InquirerPy import prompt
+from InquirerPy.separator import Separator
+
+questions = [
+    {
+        "type": "list",
+        "message": "Select regions:",
+        "choices": [
+            {"name": "Sydney", "value": "ap-southeast-2"},
+            {"name": "Singapore", "value": "ap-southeast-1"},
+            Separator(),
+            "us-east-1",
+            "us-east-2",
+        ],
+        "multiselect": True,
+        "transformer": lambda result: f"{len(result)} region{'s' if len(result) > 1 else ''} selected",
+    },
+]
+
+result = prompt(questions=questions)
+```
+
+</details>
+
+<details open>
+  <summary>Alternate Syntax</summary>
+
+```{code-block} python
+from InquirerPy import inquirer
+from InquirerPy.separator import Separator
+
+region = inquirer.select(
+    message="Select regions:",
+    choices=[
+        {"name": "Sydney", "value": "ap-southeast-2"},
+        {"name": "Singapore", "value": "ap-southeast-1"},
+        Separator(),
+        "us-east-1",
+        "us-east-2",
+    ],
+    multiselect=True,
+    transformer=lambda result: f"{len(result)} region{'s' if len(result) > 1 else ''} selected",
+).execute()
+```
+
+</details>
 
 ## After Answered
 
