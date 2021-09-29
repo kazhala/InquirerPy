@@ -14,7 +14,7 @@ from prompt_toolkit.layout.containers import (
 from prompt_toolkit.layout.controls import DummyControl
 from prompt_toolkit.layout.dimension import Dimension
 from prompt_toolkit.layout.layout import Layout
-from prompt_toolkit.validation import ValidationError, Validator
+from prompt_toolkit.validation import ValidationError
 from prompt_toolkit.widgets.base import Frame
 
 from InquirerPy.base import InquirerPyUIListControl
@@ -26,9 +26,12 @@ from InquirerPy.containers.validation import ValidationWindow
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
+    InquirerPyDefault,
     InquirerPyListChoices,
+    InquirerPyMessage,
     InquirerPySessionResult,
     InquirerPyStyle,
+    InquirerPyValidate,
     calculate_height,
 )
 
@@ -91,54 +94,71 @@ class InquirerPyListControl(InquirerPyUIListControl):
 
 
 class ListPrompt(BaseListPrompt):
-    """A wrapper class around :class:`~prompt_toolkit.application.Application`.
+    """Create a prompt that displays a list of choices to select.
 
-    Create a prompt that displays a list of options.
+    A wrapper class around :class:`~prompt_toolkit.application.Application`.
 
     Args:
         message: The question to ask the user.
-        choices (InquirerPyListChoices): List of choices to display.
-        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+            Refer to :ref:`pages/dynamic:message` documentation for more details.
+        choices: List of choices to display and select.
+            Refer to :ref:`pages/dynamic:choices` documentation for more details.
+        style: An :class:`InquirerPyStyle` instance.
+            Refer to :ref:`Style <pages/style:Alternate Syntax>` documentation for more details.
         vi_mode: Use vim keybinding for the prompt.
-        default: The default value. This will affect where the cursor starts from. Should be one of the choice value.
-        qmark: Custom symbol that will be displayed infront of the question before its answered.
-        amark: Custom symbol that will be displayed infront of the question after its answered.
-        pointer: Custom symbol that will be used to indicate the current choice selection.
-        instruction: Short instruction to display next to the `message`.
+            Refer to :ref:`pages/kb:Keybindings` documentation for more details.
+        default: Set the default value of the prompt.
+            This will be used to determine which choice is highlighted (current selection),
+            The default value should be either one of the choices or it should be one of the `choice["value"]` if choice is an instance of :class:`dict`.
+            Refer to :ref:`pages/dynamic:default` documentation for more details.
+        qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
+        amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
+        pointer: Pointer symbol. Customer symbol that will be used to indicate the current choice selection.
+        instruction: Short instruction to display next to the question.
         long_instruction: Long instructions to display at the bottom of the prompt.
-        validate: Validation callable or class to validate user input.
-        invalid_message: Error message to display when input is invalid.
-        transformer: A callable to transform the result that gets printed in the terminal.
-            This is visual effect only.
-        filter: A callable to filter the result that gets returned.
-        height: Preferred height of the choice window.
-        max_height: Max height of the choice window.
+        validate: Add validation to user input.
+            The main use case for this prompt would be when `multiselect` is True, you can enforce a min/max selection.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        invalid_message: Error message to display when user input is invalid.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        transformer: A function which performs additional transformation on the value that gets printed to the terminal.
+            Different than `filter` parameter, this is only visual effect and won’t affect the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:transformer` documentation for more details.
+        filter: A function which performs additional transformation on the result.
+            This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:filter` documentation for more details.
+        height: Preferred height of the prompt.
+            It's recommended to use `max_height` over `height`.
+        max_height: Max height of the prompt.
+            It's recommended to use `max_height` over `height`.
         multiselect: Enable multi-selection on choices.
-        marker: Custom symbol to indicate if a choice is selected.
+            You can use `validate` parameter to control min/max selections.
+            Setting to True will also change the result from a single value to a list of values.
+        marker: Marker Symbol. Custom symbol to indicate if a choice is selected.
+            This will take effects when `multiselect` is True.
         marker_pl: Marker place holder when the choice is not selected.
+            This will take effects when `multiselect` is True.
         border: Create border around the choice window.
-        keybindings: Custom keybindings to apply. Refer to :ref:`pages/kb:Keybindings`.
+        keybindings: Customise the builtin keybindings.
+            Refer to :ref:`pages/kb:Keybindings` for more details.
         show_cursor: Display cursor at the end of the prompt.
-        cycle: Return to top item if hit bottom or vice versa.
+            Set to False to hide the cursor.
+        cycle: Return to top item if hit bottom during navigation or vice versa.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
-        spinner_pattern: List of pattern to display as the spinner.
-        spinner_delay: Spinner refresh frequency.
-        spinner_text: Loading text to display.
-        spinner_enable: Enable spinner when loading choices.
-        set_exception_handler: Set exception handler for the event loop.
-            If any exception is raised while the `prompt` is visible, the question will enter the `skipped` state and exception will be raised.
-            If you have custom exception handler want to set, set this value to `False`.
-        session_result: Used for `classic syntax`, ignore this parameter.
+        session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
 
     Examples:
-        >>> result = ListPrompt(message="Select one:", choices=[1, 2, 3]).execute()
+        >>> from InquirerPy import inquirer
+        >>> result = inquirer.select(message="Select one:", choices=[1, 2, 3]).execute()
+        >>> print(result)
+        1
     """
 
     def __init__(
         self,
-        message: Union[str, Callable[[InquirerPySessionResult], str]],
+        message: InquirerPyMessage,
         choices: InquirerPyListChoices,
-        default: Any = None,
+        default: InquirerPyDefault = None,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
@@ -154,7 +174,7 @@ class ListPrompt(BaseListPrompt):
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
         border: bool = False,
-        validate: Union[Callable[[Any], bool], Validator] = None,
+        validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
         show_cursor: bool = True,

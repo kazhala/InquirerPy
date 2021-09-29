@@ -234,6 +234,11 @@ Callable[[Any], Any]
 [After Answered](#after-answered)
 ```
 
+```{tip}
+For prompts that accepts parameter `choices`, the value provided to the filter function will be the value
+of the selected choice (`choice["value"]`) or a list of values of the selected choices.
+```
+
 A function which performs additional transformation on the result. This affects the actual value returned by {meth}`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
 
 Leveraging this parameter/key can potentially shorten the code and create a cleaner code base. Given a scenario you want to obtain the age from the user, however the result
@@ -284,8 +289,17 @@ Callable[[Any], str]
 [After Answered](#after-answered)
 ```
 
+```{note}
+The value received by `transformer` will always by type of {class}`str`.
+```
+
 ```{tip}
 `filter` and `transformer` run separately and won't have side effects when running both.
+```
+
+```{tip}
+For prompts that accepts parameter `choices`, the value provided to the transformer function will be the name
+of the selected choice (`choice["name"]`) or a list of names of the selected choices.
 ```
 
 A function which performs additional transformation on the value that gets printed to the terminal.

@@ -1,8 +1,8 @@
 # ConfirmPrompt
 
 ```{eval-rst}
-.. automodule:: InquirerPy.prompts.confirm
-    :members:
+.. autoclass:: InquirerPy.prompts.confirm.ConfirmPrompt
+    :noindex:
 ```
 
 ## Example
@@ -83,3 +83,23 @@ inquirer.confirm(
 ```
 
 </details>
+
+## Default Value
+
+The parameter `default` controls 2 behaviors for the prompt.
+
+It affects how the instruction is displayed, whether the `confirm_letter` is capitalised or `reject_letter` is capitalised.
+
+It affects what value to be returned when user directly hit the key `enter` instead of the `confirm_letter` or `reject_letter`.
+
+By default, since `default` value is `False`, the `reject_letter` is capitalised.
+
+```
+? Proceed? (y/N)
+```
+
+If `default` is `True`, the `confirm_letter` is capitalised.
+
+```
+? Proceed? (Y/n)
+```

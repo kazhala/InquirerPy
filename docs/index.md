@@ -164,12 +164,14 @@ pages/prompts/input.md
 pages/prompts/secret.md
 pages/prompts/filepath.md
 pages/prompts/confirm.md
+pages/prompts/list.md
 ```
 
 ```{toctree}
 :caption: Customisation
 :hidden:
 
+pages/components.md
 pages/style.md
 pages/kb.md
 pages/env.md

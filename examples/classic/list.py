@@ -1,0 +1,33 @@
+from InquirerPy import prompt
+from InquirerPy.separator import Separator
+
+
+def main():
+    questions = [
+        {
+            "type": "list",
+            "message": "Select an action:",
+            "choices": ["Upload", "Download", {"name": "Exit", "value": None}],
+            "default": None,
+        },
+        {
+            "type": "list",
+            "message": "Select regions:",
+            "choices": [
+                {"name": "Sydney", "value": "ap-southeast-2"},
+                {"name": "Singapore", "value": "ap-southeast-1"},
+                Separator(),
+                "us-east-1",
+                "us-east-2",
+            ],
+            "multiselect": True,
+            "transformer": lambda result: f"{len(result)} region{'s' if len(result) > 1 else ''} selected",
+            "when": lambda result: result[0] is not None,
+        },
+    ]
+
+    result = prompt(questions=questions)
+
+
+if __name__ == "__main__":
+    main()

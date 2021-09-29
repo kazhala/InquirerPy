@@ -1,6 +1,6 @@
 # Separator
 
-You can use {class}`~InquirerPy.separator.Separator` to effectively group choices visually in the
+You can use {class}`~InquirerPy.separator.Separator` to effectively group {ref}`pages/dynamic:choices` visually in the
 following types of prompts which involves list of choices:
 
 - {ref}`pages/prompts/list:ListPrompt`
