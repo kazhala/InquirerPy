@@ -96,13 +96,13 @@ class FilePathPrompt(InputPrompt):
 
     Args:
         message: The question to ask the user.
-            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+            Refer to :ref:`pages/dynamic:message` documentation for more details.
         style: An :class:`InquirerPyStyle` instance.
             Refer to :ref:`Style <pages/style:Alternate Syntax>` documentation for more details.
         vi_mode: Use vim keybinding for the prompt.
             Refer to :ref:`pages/kb:Keybindings` documentation for more details.
         default: Set the default text value of the prompt.
-            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+            Refer to :ref:`pages/dynamic:default` documentation for more details.
         qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
         amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
         instruction: Short instruction to display next to the question.
@@ -113,10 +113,10 @@ class FilePathPrompt(InputPrompt):
             Refer to :ref:`pages/validator:Validator` documentation for more details.
         transformer: A function which performs additional transformation on the value that gets printed to the terminal.
             Different than `filter` parameter, this is only visual effect and won’t affect the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
-            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+            Refer to :ref:`pages/dynamic:transformer` documentation for more details.
         filter: A function which performs additional transformation on the result.
             This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
-            Refer to :ref:`pages/dynamic:Dynamic Values` documentation for more details.
+            Refer to :ref:`pages/dynamic:filter` documentation for more details.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         only_directories: Only complete directories.
         only_files: Only complete files.
