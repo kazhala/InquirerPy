@@ -290,7 +290,7 @@ Callable[[Any], str]
 ```
 
 ```{note}
-The value received by `transformer` will always by type of {class}`str`.
+The value received by `transformer` will always be either type of {class}`str` or {class}`list` of {class}`str` depending on the prompt types.
 ```
 
 ```{tip}

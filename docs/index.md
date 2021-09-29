@@ -171,7 +171,6 @@ pages/prompts/list.md
 :caption: Customisation
 :hidden:
 
-pages/components.md
 pages/style.md
 pages/kb.md
 pages/env.md
@@ -182,6 +181,7 @@ pages/dynamic.md
 :caption: Reference
 :hidden:
 
+pages/faq.md
 pages/api.md
 GitHub Repository <https://github.com/kazhala/InquirerPy>
 ```

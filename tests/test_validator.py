@@ -1,7 +1,7 @@
-from contextlib import contextmanager
 import os
-from pathlib import Path
 import unittest
+from contextlib import contextmanager
+from pathlib import Path
 
 from prompt_toolkit.document import Document
 from prompt_toolkit.validation import ValidationError

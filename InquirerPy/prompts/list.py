@@ -137,7 +137,7 @@ class ListPrompt(BaseListPrompt):
         marker: Marker Symbol. Custom symbol to indicate if a choice is selected.
             This will take effects when `multiselect` is True.
         marker_pl: Marker place holder when the choice is not selected.
-            This will take effects when `multiselect` is True.
+            This is empty space by default.
         border: Create border around the choice window.
         keybindings: Customise the builtin keybindings.
             Refer to :ref:`pages/kb:Keybindings` for more details.
