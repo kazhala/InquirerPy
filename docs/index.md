@@ -165,6 +165,7 @@ pages/prompts/secret.md
 pages/prompts/filepath.md
 pages/prompts/confirm.md
 pages/prompts/list.md
+pages/prompts/rawlist.md
 ```
 
 ```{toctree}
@@ -173,6 +174,7 @@ pages/prompts/list.md
 
 pages/style.md
 pages/kb.md
+pages/height.md
 pages/env.md
 pages/dynamic.md
 ```

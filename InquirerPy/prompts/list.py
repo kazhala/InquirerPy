@@ -128,9 +128,9 @@ class ListPrompt(BaseListPrompt):
             This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
             Refer to :ref:`pages/dynamic:filter` documentation for more details.
         height: Preferred height of the prompt.
-            It's recommended to use `max_height` over `height`.
+            Refer to :ref:`pages/height:Height` documentation for more details.
         max_height: Max height of the prompt.
-            It's recommended to use `max_height` over `height`.
+            Refer to :ref:`pages/height:Height` documentation for more details.
         multiselect: Enable multi-selection on choices.
             You can use `validate` parameter to control min/max selections.
             Setting to True will also change the result from a single value to a list of values.
