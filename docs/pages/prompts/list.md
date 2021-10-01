@@ -29,6 +29,12 @@
 
 </details>
 
+## Choices
+
+```{seealso}
+{ref}`pages/dynamic:choices`
+```
+
 ## Keybindings
 
 ```{seealso}
