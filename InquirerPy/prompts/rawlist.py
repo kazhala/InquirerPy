@@ -1,17 +1,18 @@
 """Module contains the class to create a rawlist prompt."""
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from prompt_toolkit.validation import Validator
-
 from InquirerPy.base import InquirerPyUIListControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
+    InquirerPyDefault,
     InquirerPyListChoices,
+    InquirerPyMessage,
     InquirerPySessionResult,
     InquirerPyStyle,
+    InquirerPyValidate,
 )
 
 __all__ = ["RawlistPrompt"]
@@ -175,9 +176,9 @@ class RawlistPrompt(ListPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[InquirerPySessionResult], str]],
+        message: InquirerPyMessage,
         choices: InquirerPyListChoices,
-        default: Any = None,
+        default: InquirerPyDefault = None,
         separator: str = ") ",
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
@@ -194,7 +195,7 @@ class RawlistPrompt(ListPrompt):
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
         border: bool = False,
-        validate: Union[Callable[[Any], bool], Validator] = None,
+        validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
         show_cursor: bool = True,
