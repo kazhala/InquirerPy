@@ -28,7 +28,7 @@ An example using `inquirer` which incorporate multiple different types of prompt
 ## Usage
 
 ```{note}
-The `inquirer` module only servers as an entry point to each prompt classes. Refer to
+The `inquirer` module serves as an entry point to each prompt classes. Refer to
 individual prompt documentation for prompt specific usage.
 ```
 
