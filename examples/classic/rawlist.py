@@ -1,4 +1,5 @@
 from InquirerPy import prompt
+from InquirerPy.base.control import Choice
 from InquirerPy.separator import Separator
 
 
@@ -25,11 +26,11 @@ def main():
         {
             "type": "rawlist",
             "choices": [
-                {"name": "Delivery", "value": "dl"},
-                {"name": "Pick Up", "value": "pk"},
+                Choice(name="Delivery", value="dl"),
+                Choice(name="Pick Up", value="pk"),
                 Separator(line=15 * "*"),
-                {"name": "Car Park", "value": "cp"},
-                {"name": "Third Party", "value": "tp"},
+                Choice(name="Car Park", value="cp"),
+                Choice(name="Third Party", value="tp"),
             ],
             "message": "Select your preferred method:",
         },
