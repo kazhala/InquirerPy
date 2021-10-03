@@ -81,3 +81,55 @@ The `default` parameter for expand prompt can be two types of values:
 
 - shortcut char (str): one of the `key` assigned to the choice.
 - choice["value"] (Any): default value could be the value key for one of the choice.
+
+## Expand and Help
+
+By default, the expand shortcut is bonded to `h` char and the help message is `Help, List all choices.`.
+
+If you would like to have a different key for expansion or help message, you can change this behavior via `expand_help` parameter.
+
+The `expand_help` parameter accepts value that's an instance of `ExpandHelp`.
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.expand.ExpandHelp
+    :noindex:
+```
+
+The following example will change the expansion key to `o` and the help message to `Help`.
+
+<details>
+  <summary>Classic Syntax (PyInquirer)</summary>
+
+```{code-block} python
+from InquirerPy import prompt
+from InquirerPy.prompts.expand import ExpandHelp
+
+questions = [
+    {
+        "type": "expand",
+        "message": "Select one:",
+        "choices": [{"key": "a", "value": "1", "name": "1"}],
+        "expand_help": ExpandHelp(key="o", message="Help"),
+    }
+]
+
+result = prompt(questions=questions)
+```
+
+</details>
+
+<details open>
+  <summary>Alternate Syntax</summary>
+
+```{code-block} python
+from InquirerPy import inquirer
+from InquirerPy.prompts.expand import ExpandHelp
+
+result = inquirer.expand(
+    message="Select one:",
+    choices=[{"key": "a", "value": "1", "name": "1"}],
+    expand_help=ExpandHelp(key="o", message="Help"),
+).execute()
+```
+
+</details>
