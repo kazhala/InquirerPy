@@ -10,6 +10,9 @@ Notable changes are documented in this file.
 - Added parameter `border` for list prompts to display a border around the choices.
 - Added parameter `long_instruction` to display longer instructions such as keybinding instructions at the bottom [#7](https://github.com/kazhala/InquirerPy/issues/7).
 - Added parameter `expand_help` for `expand` prompt to customise the help message and expansion key.
+  - `help_msg` parameter is deprecated and should use `expand_help`.
+- Added alternate way of creating choices. Introduced a new class `Choice` as an alternate option for dictionary choice.
+  - Added `ExpandChoice` for `expand` prompt as well,
 
 ### Fixed
 
