@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from InquirerPy.base import BaseListPrompt, InquirerPyUIListControl
+from InquirerPy.base.control import Choice
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.list import ListPrompt
@@ -25,6 +26,29 @@ class ExpandHelp:
 
     key: str = "h"
     message: str = "Help, list all choices"
+
+
+@dataclass
+class ExpandChoice(Choice):
+    """Choice class for :class:`.ExpandPrompt`.
+
+    See Also:
+        :class:`~InquirerPy.base.control.Choice`
+
+    Args:
+        value: The value of the choice when user selects this value.
+        name: The value that should be presented to the user prior/after selection of the choice.
+        enabled: Indicates if the choice should be pre-selected.
+            This only has effects when the prompt has `multiselect` enabled.
+        key: Char to bind to the choice. Pressing this value will jump to the choice,
+    """
+
+    key: Optional[str] = None
+
+    def __post_init__(self):
+        super().__post_init__()
+        if self.key is None:
+            self.key = str(self.value)[0].lower()
 
 
 class InquirerPyExpandControl(InquirerPyUIListControl):
@@ -66,16 +90,22 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
             count = 0
             separator_count = 0
             for raw_choice, choice in zip(self._raw_choices, self.choices):  # type: ignore
-                if not isinstance(raw_choice, dict) and not isinstance(
-                    raw_choice, Separator
+                if (
+                    not isinstance(raw_choice, dict)
+                    and not isinstance(raw_choice, Separator)
+                    and not isinstance(raw_choice, ExpandChoice)
                 ):
                     raise InvalidArgument(
-                        "expand prompt argument choices requires each choice to be type of dictionary or Separator"
+                        "expand prompt argument choices requires each choice to be type of dictionary or Separator or ExpandChoice"
                     )
                 if isinstance(raw_choice, Separator):
                     separator_count += 1
                 else:
-                    choice["key"] = raw_choice["key"]
+                    choice["key"] = (
+                        raw_choice.key
+                        if isinstance(raw_choice, ExpandChoice)
+                        else raw_choice["key"]
+                    )
                     self._key_maps[choice["key"]] = count
                 count += 1
         except KeyError:

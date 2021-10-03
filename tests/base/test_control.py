@@ -1,6 +1,7 @@
 import asyncio
 import unittest
 
+from InquirerPy.base.control import Choice
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.list import InquirerPyListControl
@@ -255,3 +256,49 @@ class TestBaseControl(unittest.TestCase):
             marker_pl=" ",
         )
         self.assertEqual(control.selection, {"name": "2", "value": 2, "enabled": False})
+
+    def test_choice(self):
+        choice = [Choice(1), Choice(2), Choice(3, None, True)]
+
+        default = 2
+        control = InquirerPyListControl(
+            choices=choice,
+            default=default,
+            pointer=INQUIRERPY_POINTER_SEQUENCE,
+            marker=INQUIRERPY_POINTER_SEQUENCE,
+            session_result=None,
+            multiselect=False,
+            marker_pl=" ",
+        )
+        self.assertEqual(control.selection, {"name": "2", "value": 2, "enabled": False})
+        self.assertEqual(
+            control.choices,
+            [
+                {"enabled": False, "name": "1", "value": 1},
+                {"enabled": False, "name": "2", "value": 2},
+                {"enabled": False, "name": "3", "value": 3},
+            ],
+        )
+
+    def test_choice_multi(self):
+        choice = [Choice(1), Choice(2), Choice(3, None, True)]
+
+        default = 4
+        control = InquirerPyListControl(
+            choices=choice,
+            default=default,
+            pointer=INQUIRERPY_POINTER_SEQUENCE,
+            marker=INQUIRERPY_POINTER_SEQUENCE,
+            session_result=None,
+            multiselect=True,
+            marker_pl=" ",
+        )
+        self.assertEqual(control.selection, {"name": "1", "value": 1, "enabled": False})
+        self.assertEqual(
+            control.choices,
+            [
+                {"enabled": False, "name": "1", "value": 1},
+                {"enabled": False, "name": "2", "value": 2},
+                {"enabled": True, "name": "3", "value": 3},
+            ],
+        )

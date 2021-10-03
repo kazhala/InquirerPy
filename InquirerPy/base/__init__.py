@@ -10,6 +10,6 @@ ListPrompt ← ExpandPrompt ...
 """
 
 from .complex import BaseComplexPrompt, FakeDocument
-from .control import InquirerPyUIListControl
+from .control import Choice, InquirerPyUIListControl
 from .list import BaseListPrompt
 from .simple import BaseSimplePrompt

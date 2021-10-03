@@ -3,7 +3,12 @@ from unittest.mock import ANY, call, patch
 
 from InquirerPy.base import BaseComplexPrompt
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
-from InquirerPy.prompts.expand import ExpandHelp, ExpandPrompt, InquirerPyExpandControl
+from InquirerPy.prompts.expand import (
+    ExpandChoice,
+    ExpandHelp,
+    ExpandPrompt,
+    InquirerPyExpandControl,
+)
 from InquirerPy.separator import Separator
 
 
@@ -12,7 +17,7 @@ class TestExpandPrompt(unittest.TestCase):
         Separator(),
         {"name": "hello", "value": "world", "key": "b"},
         Separator("**********"),
-        {"name": "foo", "value": "boo", "key": "f"},
+        ExpandChoice(name="foo", value="boo", key="f"),
     ]
 
     def test_content_control(self):
@@ -286,6 +291,35 @@ class TestExpandPrompt(unittest.TestCase):
                 {"enabled": False, "key": "b", "name": "hello", "value": "world"},
                 {"enabled": False, "name": "**********", "value": ANY},
                 {"enabled": False, "key": "f", "name": "foo", "value": "boo"},
+                {
+                    "enabled": False,
+                    "key": "h",
+                    "name": "Help, list all choices",
+                    "value": expand_help,
+                },
+            ],
+        )
+
+    def test_choice_missing_key(self):
+        expand_help = ExpandHelp()
+        choices = [
+            ExpandChoice(1),
+            ExpandChoice(2),
+            ExpandChoice("ava"),
+            ExpandChoice("Bva"),
+        ]
+
+        prompt = ExpandPrompt(
+            message="Select one:", choices=choices, expand_help=expand_help
+        )
+
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "key": "1", "name": "1", "value": 1},
+                {"enabled": False, "key": "2", "name": "2", "value": 2},
+                {"enabled": False, "key": "a", "name": "ava", "value": "ava"},
+                {"enabled": False, "key": "b", "name": "Bva", "value": "Bva"},
                 {
                     "enabled": False,
                     "key": "h",

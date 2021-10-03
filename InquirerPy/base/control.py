@@ -1,7 +1,8 @@
 """Contains the content control class :class:`.InquirerPyUIListControl`."""
 import inspect
 from abc import abstractmethod
-from typing import Any, Awaitable, Callable, Dict, List, Tuple, cast
+from dataclasses import asdict, dataclass
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, cast
 
 from prompt_toolkit.layout.controls import FormattedTextControl
 
@@ -12,6 +13,31 @@ from InquirerPy.utils import (
     InquirerPySessionResult,
     transform_async,
 )
+
+__all__ = ["Choice", "InquirerPyUIListControl"]
+
+
+@dataclass
+class Choice:
+    """Class to create choices for list type prompts.
+
+    A simple dataclass that can be used as an alternate to using :class:`dict`
+    when working with choices.
+
+    Args:
+        value: The value of the choice when user selects this value.
+        name: The value that should be presented to the user prior/after selection of the choice.
+        enabled: Indicates if the choice should be pre-selected.
+            This only has effects when the prompt has `multiselect` enabled.
+    """
+
+    value: Any
+    name: Optional[str] = None
+    enabled: bool = False
+
+    def __post_init__(self):
+        if self.name is None:
+            self.name = str(self.value)
 
 
 class InquirerPyUIListControl(FormattedTextControl):
@@ -111,6 +137,13 @@ class InquirerPyUIListControl(FormattedTextControl):
                     processed_choices.append(
                         {"name": str(choice), "value": choice, "enabled": False}
                     )
+                elif isinstance(choice, Choice):
+                    dict_choice = asdict(choice)
+                    if dict_choice["value"] == default:
+                        self.selected_choice_index = index
+                    if not self._multiselect:
+                        dict_choice["enabled"] = False
+                    processed_choices.append(dict_choice)
                 else:
                     if choice == default:
                         self.selected_choice_index = index
