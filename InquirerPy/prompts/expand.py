@@ -1,5 +1,6 @@
 """Module contains the class to create an expand prompt."""
-from typing import Any, Callable, Dict, List, NamedTuple, Optional, Tuple, Union
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from InquirerPy.base import BaseListPrompt, InquirerPyUIListControl
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
@@ -15,13 +16,15 @@ from InquirerPy.utils import (
     InquirerPyValidate,
 )
 
-__all__ = ["ExpandPrompt"]
+__all__ = ["ExpandPrompt", "ExpandHelp"]
 
 
-class ExpandHelp(NamedTuple):
-    """A :class:`typing.NamedTuple` to use as the help choice."""
+@dataclass
+class ExpandHelp:
+    """Help choice for the :class:`.ExpandPrompt`."""
 
-    help_msg: str
+    key: str = "h"
+    message: str = "Help, list all choices"
 
 
 class InquirerPyExpandControl(InquirerPyUIListControl):
@@ -36,7 +39,7 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
         default: Any,
         pointer: str,
         separator: str,
-        help_msg: str,
+        expand_help: ExpandHelp,
         expand_pointer: str,
         marker: str,
         session_result: Optional[InquirerPySessionResult],
@@ -46,11 +49,10 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
         self._pointer = pointer
         self._separator = separator
         self._expanded = False
-        self._key_maps = {}
         self._expand_pointer = expand_pointer
         self._marker = marker
         self._marker_pl = marker_pl
-        self._help_msg = help_msg
+        self._expand_help = expand_help
         super().__init__(
             choices=choices,
             default=default,
@@ -83,13 +85,13 @@ class InquirerPyExpandControl(InquirerPyUIListControl):
 
         self.choices.append(
             {
-                "key": "h",
-                "value": ExpandHelp(self._help_msg),
-                "name": self._help_msg,
+                "key": self._expand_help.key,
+                "value": self._expand_help,
+                "name": self._expand_help.message,
                 "enabled": False,
             }
         )
-        self._key_maps["h"] = len(self.choices) - 1
+        self._key_maps[self._expand_help.key] = len(self.choices) - 1
 
         first_valid_choice_index = 0
         while isinstance(self.choices[first_valid_choice_index]["value"], Separator):
@@ -176,8 +178,10 @@ class ExpandPrompt(ListPrompt):
             For :class:`.ExpandPrompt` specifically, default value can also be a `choice["key"]` which is the shortcut key for the choice.
             Refer to :ref:`pages/dynamic:default` documentation for more details.
         separator: Separator symbol. Custom symbol that will be used as a separator between the choice index number and the choices.
-        help_msg: The help message to display.
-            Default is "Help, list all choices".
+        help_msg: This parameter is DEPRECATED. Use expand_help instead.
+        expand_help: The help configuration for the prompt. Must be an instance of :class:`.ExpandHelp`.
+            If this value is None, the default help key will be binded to `h` and the default help message would be
+            "Help, List all choices."
         expand_pointer: Pointer symbol before prompt expansion. Custom symbol that will be displayed to indicate the prompt is not expanded.
         qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
         amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
@@ -234,6 +238,7 @@ class ExpandPrompt(ListPrompt):
         pointer: str = " ",
         separator: str = ") ",
         help_msg: str = "Help, list all choices",
+        expand_help: ExpandHelp = None,
         expand_pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
         long_instruction: str = "",
@@ -258,12 +263,15 @@ class ExpandPrompt(ListPrompt):
         set_exception_handler: bool = True,
         session_result: InquirerPySessionResult = None,
     ) -> None:
+        if expand_help is None:
+            expand_help = ExpandHelp(message=help_msg)
+        self._expand_help = expand_help
         self.content_control: InquirerPyExpandControl = InquirerPyExpandControl(
             choices=choices,
             default=default,
             pointer=pointer,
             separator=separator,
-            help_msg=help_msg,
+            expand_help=expand_help,
             expand_pointer=expand_pointer,
             marker=marker,
             marker_pl=marker_pl,
@@ -310,7 +318,7 @@ class ExpandPrompt(ListPrompt):
         def keybinding_factory(key):
             @self._register_kb(key.lower())
             def keybinding(_) -> None:
-                if key == "h":
+                if key == self._expand_help.key:
                     self.content_control._expanded = not self.content_control._expanded
                 else:
                     self.content_control.selected_choice_index = (

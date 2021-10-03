@@ -9,6 +9,7 @@ Notable changes are documented in this file.
 - Added optional spinner to display while loading choices for list prompts.
 - Added parameter `border` for list prompts to display a border around the choices.
 - Added parameter `long_instruction` to display longer instructions such as keybinding instructions at the bottom [#7](https://github.com/kazhala/InquirerPy/issues/7).
+- Added parameter `expand_help` for `expand` prompt to customise the help message and expansion key.
 
 ### Fixed
 

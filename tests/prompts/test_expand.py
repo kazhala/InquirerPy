@@ -16,10 +16,11 @@ class TestExpandPrompt(unittest.TestCase):
     ]
 
     def test_content_control(self):
+        expand_help = ExpandHelp(message="(haha)")
         content_control = InquirerPyExpandControl(
             choices=self.choices,
             default="f",
-            help_msg="(haha)",
+            expand_help=expand_help,
             expand_pointer=">> ",
             pointer=" ",
             separator=") ",
@@ -43,7 +44,7 @@ class TestExpandPrompt(unittest.TestCase):
                 {
                     "key": "h",
                     "name": "(haha)",
-                    "value": ExpandHelp(help_msg="(haha)"),
+                    "value": expand_help,
                     "enabled": False,
                 },
             ],
@@ -202,7 +203,8 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(prompt.status, {"result": "foo", "answered": True})
 
     def test_key_not_expand(self):
-        prompt = ExpandPrompt(message="", choices=self.choices)
+        expand_help = ExpandHelp()
+        prompt = ExpandPrompt(message="", choices=self.choices, expand_help=expand_help)
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -214,7 +216,7 @@ class TestExpandPrompt(unittest.TestCase):
                     "enabled": False,
                     "key": "h",
                     "name": "Help, list all choices",
-                    "value": ExpandHelp(help_msg="Help, list all choices"),
+                    "value": expand_help,
                 },
             ],
         )
@@ -240,13 +242,14 @@ class TestExpandPrompt(unittest.TestCase):
                     "enabled": False,
                     "key": "h",
                     "name": "Help, list all choices",
-                    "value": ExpandHelp(help_msg="Help, list all choices"),
+                    "value": expand_help,
                 },
             ],
         )
 
     def test_key_expand(self):
-        prompt = ExpandPrompt(message="", choices=self.choices)
+        expand_help = ExpandHelp()
+        prompt = ExpandPrompt(message="", choices=self.choices, expand_help=expand_help)
         prompt.content_control._expanded = True
         prompt._toggle_choice()
         self.assertEqual(
@@ -270,7 +273,7 @@ class TestExpandPrompt(unittest.TestCase):
                     "enabled": False,
                     "key": "h",
                     "name": "Help, list all choices",
-                    "value": ExpandHelp(help_msg="Help, list all choices"),
+                    "value": expand_help,
                 },
             ],
         )
@@ -287,7 +290,7 @@ class TestExpandPrompt(unittest.TestCase):
                     "enabled": False,
                     "key": "h",
                     "name": "Help, list all choices",
-                    "value": ExpandHelp(help_msg="Help, list all choices"),
+                    "value": expand_help,
                 },
             ],
         )
