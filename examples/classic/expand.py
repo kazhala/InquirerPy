@@ -1,4 +1,4 @@
-from InquirerPy import inquirer, prompt
+from InquirerPy import prompt
 from InquirerPy.separator import Separator
 
 
@@ -24,7 +24,7 @@ def question2_choice(_):
     ]
 
 
-def classic():
+def main():
     questions = [
         {
             "type": "expand",
@@ -43,14 +43,5 @@ def classic():
     result = prompt(questions)
 
 
-def alternate():
-    fruit = inquirer.expand(
-        message="Pick your favourite:", choices=question1_choice, default="o"
-    ).execute()
-    method = inquirer.expand(
-        message="Select your preferred method:", choices=question2_choice
-    ).execute()
-
-
-# alternate()
-classic()
+if __name__ == "__main__":
+    main()

@@ -20,7 +20,7 @@ The value of both parameters can be either a {class}`int` or a {class}`str`. An 
 lines in the terminal the prompt should take (e.g. setting `height=1` will cause the prompt to only display 1 choice at a time).
 A {class}`str` indicates a percentile in respect tot he entire visible terminal.
 
-### `height`
+## `height`
 
 The `height` parameter will set the prompt height to a fixed value no matter how much space the content requires.
 The following example will only display 2 choices at a time, meaning only the choice 1 and 2 will be visible. The choice 3
@@ -102,7 +102,7 @@ result = inquirer.select(
 
 </details>
 
-### `max_height`
+## `max_height`
 
 ```{tip}
 The default value for `max_height` is configured to be "70%" if not specified.

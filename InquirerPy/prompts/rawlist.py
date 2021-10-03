@@ -120,7 +120,7 @@ class RawlistPrompt(ListPrompt):
         message: The question to ask the user.
             Refer to :ref:`pages/dynamic:message` documentation for more details.
         choices: List of choices to display and select.
-            Refer to :ref:`pages/dynamic:choices` documentation for more details.
+            Refer to :ref:`pages/prompts/rawlist:Choices` documentation for more details.
         style: An :class:`InquirerPyStyle` instance.
             Refer to :ref:`Style <pages/style:Alternate Syntax>` documentation for more details.
         vi_mode: Use vim keybinding for the prompt.
