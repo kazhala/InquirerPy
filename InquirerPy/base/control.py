@@ -36,6 +36,7 @@ class Choice:
     enabled: bool = False
 
     def __post_init__(self):
+        """Assign strinify value to name if not present."""
         if self.name is None:
             self.name = str(self.value)
 

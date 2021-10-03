@@ -46,6 +46,7 @@ class ExpandChoice(Choice):
     key: Optional[str] = None
 
     def __post_init__(self):
+        """Assign stringify value to name and also create key using the first char of the value if not present."""
         super().__post_init__()
         if self.key is None:
             self.key = str(self.value)[0].lower()
