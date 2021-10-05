@@ -154,23 +154,39 @@ This variable only exists in the following prompts:
 ```
 
 ```{note}
-The required keys for choices vary between prompts. There may be additional keys required which is documented
-in individual prompt documentation.
+The required keys for choices may vary between prompts. There may be additional keys required which would be documented
+in individual prompt documentation with additional customised Choice classes.
 ```
 
-Each choice can be either any value that have a string representation (e.g. can `str(value)`), or it can be a
-dictionary which consists at least the following keys:
+```{seealso}
+{ref}`pages/separator:Separator`
+```
 
-- name (Any): The display name of the choice, user will be able to see this value as the choice.
-- value (Any): The value of the choice, can be different than the `name` key, user will not be able to see this value.
+```{tip}
+It is recommended to use the {class}`~InquirerPy.base.control.Choice` class over using {class}`dict`.
+```
 
-Choice can also be instances of {ref}`pages/separator:Separator`.
+Each choice can be the following types:
+
+- **Any**: Any value that have a string representation (e.g. can `str(value)`).
+- {ref}`pages/separator:Separator`: An instance of the `Separator` class.
+- {class}`dict`: Dictionary with the following keys:
+  - value (Any): The value of the choice when user selects this choice.
+  - name (str): The value that should be presented to the user prior/after selection of the choice.
+  - enabled (bool): Indicates if the choice should be pre-selected. This only has effects when the prompt has `multiselect` enabled.
+- **{class}`~InquirerPy.base.control.Choice`**: An instance of the `Choice` class.
+
+  ```{eval-rst}
+  .. autoclass:: InquirerPy.base.control.Choice
+      :noindex:
+  ```
 
 <details>
   <summary>Classic Syntax (PyInquirer)</summary>
 
 ```{code-block} python
 from InquirerPy import prompt
+from InquirerPy.base.control import Choice
 from InquirerPy.separator import Separator
 
 questions = [
@@ -178,8 +194,8 @@ questions = [
         "type": "list",
         "message": "Select regions:",
         "choices": [
-            {"name": "Sydney", "value": "ap-southeast-2"},
-            {"name": "Singapore", "value": "ap-southeast-1"},
+            Choice("ap-southeast-2", name="Sydney"),
+            Choice("ap-southeast-1", name="Singapore"),
             Separator(),
             "us-east-1",
             "us-east-2",
@@ -199,13 +215,14 @@ result = prompt(questions=questions)
 
 ```{code-block} python
 from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
 from InquirerPy.separator import Separator
 
 region = inquirer.select(
     message="Select regions:",
     choices=[
-        {"name": "Sydney", "value": "ap-southeast-2"},
-        {"name": "Singapore", "value": "ap-southeast-1"},
+        Choice("ap-southeast-2", name="Sydney"),
+        Choice("ap-southeast-1", name="Singapore"),
         Separator(),
         "us-east-1",
         "us-east-2",
@@ -317,12 +334,13 @@ Without transformer: ? Select regions: ["us-east-1", "us-west-1"]
 With transformer: ? Select regions: 2 regions selected
 """
 from InquirerPy import prompt
+from InquirerPy.base.control import Choice
 
 choices = [
-    {"name": "Sydney", "value": "ap-southeast-2", "enabled": True},
-    {"name": "Singapore", "value": "ap-southeast-1", "enabled": False},
+    Choice("ap-southeast-2", name="Sydney", enabled=True),
+    Choice("ap-southeast-1", name="Singapore", enabled=False),
     "us-east-1",
-    "us-west-1",
+    "us-east-2",
 ]
 
 questions = [
@@ -349,12 +367,13 @@ Without transformer: ? Select regions: ["us-east-1", "us-west-1"]
 With transformer: ? Select regions: 2 regions selected
 """
 from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
 
 choices = [
-    {"name": "Sydney", "value": "ap-southeast-2", "enabled": True},
-    {"name": "Singapore", "value": "ap-southeast-1", "enabled": False},
+    Choice("ap-southeast-2", name="Sydney", enabled=True),
+    Choice("ap-southeast-1", name="Singapore", enabled=False),
     "us-east-1",
-    "us-west-1",
+    "us-east-2",
 ]
 
 regions = inquirer.checkbox(

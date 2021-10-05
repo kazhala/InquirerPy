@@ -100,17 +100,18 @@ When `vi_mode` is True, the "up" and "down" navigation key will be changed.
 
 You can enable multiple selection on the prompt by configuring the parameter `multiselect` to `True`.
 
-You can also have certain choices pre-selected during the mode. The choices to be pre-selected requires to be an instance
-of {class}`dict` with an additional key called `enabled`.
+You can also have certain choices pre-selected during the mode. The choices to be pre-selected requires to be either an instance
+of {class}`~InquirerPy.base.control.Choice` or {class}`dict`.
 
 The following example will have `1` and `2` pre-selected.
 
 ```{code-block} python
 from InquirerPy import inquirer
+from InquirerPy.base.control import Choice
 
 choices = [
-    {"name": "1", "value": 1, "enabled": True},
-    {"name": "2", "value": 1, "enabled": True},
+    Choice(1, enabled=True),
+    Choice(2, enabled=True),
     3,
     4,
 ]

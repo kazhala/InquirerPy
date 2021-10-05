@@ -25,8 +25,9 @@ class Choice:
     when working with choices.
 
     Args:
-        value: The value of the choice when user selects this value.
+        value: The value of the choice when user selects this choice.
         name: The value that should be presented to the user prior/after selection of the choice.
+            This value is optional, if not provided, it will fallback to the string representation of `value`.
         enabled: Indicates if the choice should be pre-selected.
             This only has effects when the prompt has `multiselect` enabled.
     """

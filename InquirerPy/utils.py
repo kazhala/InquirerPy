@@ -5,6 +5,7 @@ import os
 import shutil
 from functools import partial
 from typing import (
+    TYPE_CHECKING,
     Any,
     Awaitable,
     Callable,
@@ -24,6 +25,9 @@ from prompt_toolkit.styles import Style
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.exceptions import InvalidArgument
+
+if TYPE_CHECKING:
+    from InquirerPy.base.control import Choice
 
 __all__ = [
     "get_style",
@@ -53,9 +57,12 @@ class InquirerPyStyle(NamedTuple):
 
 
 InquirerPySessionResult = Dict[Union[str, int], Optional[Union[str, bool, List[Any]]]]
+InquirerPyChoice = Union[List[Any], List["Choice"], List[Dict[str, Any]]]
 InquirerPyListChoices = Union[
-    Callable[["InquirerPySessionResult"], Union[Awaitable[List[Any]], List[Any]]],
-    List[Any],
+    Callable[
+        ["InquirerPySessionResult"], Union[Awaitable[List[Any]], InquirerPyChoice]
+    ],
+    InquirerPyChoice,
 ]
 InquirerPyValidate = Union[Callable[[Any], bool], "Validator"]
 InquirerPyQuestions = Union[List[Dict[str, Any]], Dict[str, Any]]
