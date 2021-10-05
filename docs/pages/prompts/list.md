@@ -120,3 +120,13 @@ result = inquirer.select(
     message="Selct one:", choices=choices, multiselect=True
 ).execute()
 ```
+
+## Default Value
+
+```{seealso}
+{ref}`pages/dynamic:default`
+```
+
+The `default` parameter will be used to determine which choice is highlighted by default.
+
+It should be the value of one of the choices.
