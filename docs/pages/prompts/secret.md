@@ -29,6 +29,16 @@
 
 </details>
 
+## Keybindings
+
+```{seealso}
+{ref}`pages/kb:Default Keybindings`
+
+{ref}`pages/kb:Input Buffer (Text Fields)`
+```
+
+There are no additional keybindings created for this prompt besides the default keybindings and input buffer keybindings.
+
 ## Password Validation
 
 ```{seealso}

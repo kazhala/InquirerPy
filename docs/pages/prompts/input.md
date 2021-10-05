@@ -29,6 +29,17 @@
 
 </details>
 
+## Keybindings
+
+```{seealso}
+{ref}`pages/kb:Default Keybindings`
+
+{ref}`pages/kb:Input Buffer (Text Fields)`
+```
+
+Besides the default keybindings and input buffer keybindings, if you have autocompletion enabled, you can use
+`ctrl-space` to trigger completion window popup.
+
 ## Auto Completion
 
 ```{tip}

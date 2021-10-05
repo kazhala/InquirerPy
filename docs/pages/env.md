@@ -137,7 +137,7 @@ The value of `INQUIRERPY_VI_MODE` does not matter, as long as its a string longe
 ## Keyboard Interrupt
 
 ```{note}
-Checkout {ref}`pages/misc:Keyboard Interrupt` section for more information.
+Checkout {ref}`pages/kbi:Keyboard Interrupt` section for more information.
 ```
 
 ```{admonition} Priority

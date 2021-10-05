@@ -29,6 +29,17 @@
 
 </details>
 
+## Keybindings
+
+```{seealso}
+{ref}`pages/kb:Default Keybindings`
+```
+
+Besides the default keybindings, keybindings will be created for the parameter `confirm_letter` and `reject_letter` which
+by default are `y` and `n` respectively.
+
+Pressing `y` will answer the prompt with the value True and `n` will answer the prompt with the value False.
+
 ## Using Different Letters For Confirm/Deny
 
 In certain scenarios using `Y/y` for "yes" and `N/n` for "no" may not
@@ -43,6 +54,11 @@ You can change this behavior by customising the following parameters:
 ```{hint}
 Changing the `transformer` is also necessary as the default behavior will print `Yes` for `True`
 value and `No` for `False` value.
+```
+
+```{note}
+This have effects on keybindings, new keybindings will be created based on the value of `confirm_letter` and `reject_letter`
+to answer the question with True/False.
 ```
 
 <details>

@@ -29,6 +29,12 @@
 
 </details>
 
+## Keybindings
+
+```{seealso}
+{ref}`pages/prompts/input:Keybindings`
+```
+
 ## Symbols and ENV Variables
 
 The auto completion can handle `~` and will start triggering completion for the home directory. However it does not handle ENV variable

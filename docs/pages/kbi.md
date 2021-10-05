@@ -1,10 +1,9 @@
-# Misc
-
-## Keyboard Interrupt
+# Keyboard Interrupt
 
 `InquirerPy` will raise exception {class}`KeyboardInterrupt` when `ctrl-c` is pressed by default.
 
-If you prefer to not raise the exception and simply just skip the question, you can do the following:
+If you prefer to not raise the exception and let `InquirerPy` manage the exception (which simply just skip the question),
+you can do the following:
 
 <details>
   <summary>Classic Syntax</summary>

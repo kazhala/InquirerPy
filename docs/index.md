@@ -145,18 +145,6 @@ python examples/example_pizza
 ```
 
 ```{toctree}
-:caption: API
-:hidden:
-
-pages/inquirer.md
-pages/prompt.md
-pages/validator.md
-pages/separator.md
-pages/patched_print.md
-pages/color_print.md
-```
-
-```{toctree}
 :caption: prompts
 :hidden:
 
@@ -180,6 +168,19 @@ pages/kb.md
 pages/height.md
 pages/env.md
 pages/dynamic.md
+pages/kbi.md
+```
+
+```{toctree}
+:caption: API
+:hidden:
+
+pages/inquirer.md
+pages/prompt.md
+pages/validator.md
+pages/separator.md
+pages/patched_print.md
+pages/color_print.md
 ```
 
 ```{toctree}

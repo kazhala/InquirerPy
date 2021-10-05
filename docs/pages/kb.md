@@ -14,6 +14,11 @@ The default keybinding uses the classic `emacs` keybindings.
 This is done because on most operating systems, also the Bash shell uses Emacs bindings by default, and that is more intuitive.
 ```
 
+All prompt have the following keybindings created:
+
+- `enter`: Confirm and answer the prompt.
+- `ctrl-c`: Raise {class}`KeyboardInterrupt`. If you wish to change this behavior, checkout {ref}`pages/kbi:Keyboard Interrupt`.
+
 ### Input Buffer (Text Fields)
 
 You can use the regular `emacs` shortcuts to move between words such as `alt-b` and `alt-f` in any input buffer
