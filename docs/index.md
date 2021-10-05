@@ -168,6 +168,7 @@ pages/prompts/list.md
 pages/prompts/rawlist.md
 pages/prompts/expand.md
 pages/prompts/checkbox.md
+pages/prompts/fuzzy.md
 ```
 
 ```{toctree}

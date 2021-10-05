@@ -57,5 +57,20 @@ choices = [
 ## Default Value
 
 ```{seealso}
-{ref}`pages/prompts/list:Default Value`
+{ref}`pages/dynamic:default`
+```
+
+The `default` parameter will be used to determine which choice is highlighted by default.
+
+It should be the value of one of the choices.
+
+If you wish to pre-select certain choices, you can leverage the `enabled` parameter/key of each choice.
+
+```{code-block} python
+from InquirerPy.base import Choice
+
+choices = [
+    Choice(1, enabled=True),  # enabled by default
+    Choice(2)  # not enabled
+]
 ```

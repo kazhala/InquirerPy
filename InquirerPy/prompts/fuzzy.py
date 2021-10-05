@@ -20,7 +20,7 @@ from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.layout.processors import AfterInput, BeforeInput
 from prompt_toolkit.lexers.base import SimpleLexer
-from prompt_toolkit.validation import ValidationError, Validator
+from prompt_toolkit.validation import ValidationError
 from prompt_toolkit.widgets.base import Frame
 
 from InquirerPy.base import FakeDocument, InquirerPyUIListControl
@@ -32,9 +32,12 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
+    InquirerPyDefault,
     InquirerPyListChoices,
+    InquirerPyMessage,
     InquirerPySessionResult,
     InquirerPyStyle,
+    InquirerPyValidate,
     calculate_height,
 )
 
@@ -235,61 +238,76 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
 
 
 class FuzzyPrompt(BaseListPrompt):
-    """A wrapper class around :class:`~prompt_toolkit.application.Application`.
+    """Create a prompt that lists options while also allowing fuzzy search like fzf.
 
-    Create a prompt that displays a list of options and allow user to filter the choices
-    by entering search texts.
+    A wrapper class around :class:`~prompt_toolkit.application.Application`.
 
-    Fuzzy search using :func:`~pfzy.match.fuzzy_match` function.
+    Fuzzy search using :func:`pfzy.match.fuzzy_match` function.
 
     Override the default keybindings for up/down as j/k cannot be bind even if `editing_mode` is vim
     due to the input buffer.
 
     Args:
         message: The question to ask the user.
-        choices (InquirerPyListChoices): List of choices to display.
-        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+            Refer to :ref:`pages/dynamic:message` documentation for more details.
+        choices: List of choices to display and select.
+            Refer to :ref:`pages/dynamic:choices` documentation for more details.
+        style: An :class:`InquirerPyStyle` instance.
+            Refer to :ref:`Style <pages/style:Alternate Syntax>` documentation for more details.
         vi_mode: Use vim keybinding for the prompt.
-        default: The default value. This will affect where the cursor starts from. Should be one of the choice value.
-        qmark: Custom symbol that will be displayed infront of the question before its answered.
-        amark: Custom symbol that will be displayed infront of the question after its answered.
-        pointer: Custom symbol that will be used to indicate the current choice selection.
-        instruction: Short instruction to display next to the `message`.
+            Refer to :ref:`pages/kb:Keybindings` documentation for more details.
+        default: Set the default value in the search buffer.
+            Different than other list type prompts, the `default` parameter tries to replicate what fzf does and
+            add the value in `default` to search buffer so it starts searching immediatelly.
+            Refer to :ref:`pages/dynamic:default` documentation for more details.
+        qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
+        amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
+        pointer: Pointer symbol. Customer symbol that will be used to indicate the current choice selection.
+        instruction: Short instruction to display next to the question.
         long_instruction: Long instructions to display at the bottom of the prompt.
-        validate: Validation callable or class to validate user input.
-        invalid_message: Error message to display when input is invalid.
-        transformer: A callable to transform the result that gets printed in the terminal.
-            This is visual effect only.
-        filter: A callable to filter the result that gets returned.
-        height: Preferred height of the choice window.
-        max_height: Max height of the choice window.
+        validate: Add validation to user input.
+            The main use case for this prompt would be when `multiselect` is True, you can enforce a min/max selection.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        invalid_message: Error message to display when user input is invalid.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        transformer: A function which performs additional transformation on the value that gets printed to the terminal.
+            Different than `filter` parameter, this is only visual effect and won’t affect the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:transformer` documentation for more details.
+        filter: A function which performs additional transformation on the result.
+            This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:filter` documentation for more details.
+        height: Preferred height of the prompt.
+            Refer to :ref:`pages/height:Height` documentation for more details.
+        max_height: Max height of the prompt.
+            Refer to :ref:`pages/height:Height` documentation for more details.
         multiselect: Enable multi-selection on choices.
-        prompt: Custom symbol to display infront of the input buffer.
+            You can use `validate` parameter to control min/max selections.
+            Setting to True will also change the result from a single value to a list of values.
+        prompt: Input prompt symbol. Custom symbol to display infront of the input buffer to indicate for input.
         border: Create border around the choice window.
-        info: Display choice information next to the prompt.
-        marker: Custom symbol to indicate if a choice is selected.
+        info: Display choice information similar to fzf --info=inline next tot he prompt.
+        marker: Marker Symbol. Custom symbol to indicate if a choice is selected.
+            This will take effects when `multiselect` is True.
         marker_pl: Marker place holder when the choice is not selected.
-        keybindings: Custom keybindings to apply. Refer to :ref:`pages/kb:Keybindings`.
-        cycle: Return to top item if hit bottom or vice versa.
+            This is empty space by default.
+        keybindings: Customise the builtin keybindings.
+            Refer to :ref:`pages/kb:Keybindings` for more details.
+        cycle: Return to top item if hit bottom during navigation or vice versa.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
-        spinner_pattern: List of pattern to display as the spinner.
-        spinner_delay: Spinner refresh frequency.
-        spinner_text: Loading text to display.
-        spinner_enable: Enable spinner when loading choices.
-        set_exception_handler: Set exception handler for the event loop.
-            If any exception is raised while the `prompt` is visible, the question will enter the `skipped` state and exception will be raised.
-            If you have custom exception handler want to set, set this value to `False`.
-        session_result: Used for `classic syntax`, ignore this parameter.
+        session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
 
     Examples:
-        >>> result = ListPrompt(message="Select one:", choices=[1, 2, 3]).execute()
+        >>> from InquirerPy import inquirer
+        >>> result = inquirer.fuzzy(message="Select one:", choices=[1, 2, 3]).execute()
+        >>> print(result)
+        1
     """
 
     def __init__(
         self,
-        message: Union[str, Callable[[InquirerPySessionResult], str]],
+        message: InquirerPyMessage,
         choices: InquirerPyListChoices,
-        default: Union[str, Callable[[InquirerPySessionResult], str]] = "",
+        default: InquirerPyDefault = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
@@ -307,7 +325,7 @@ class FuzzyPrompt(BaseListPrompt):
         info: bool = True,
         height: Union[str, int] = None,
         max_height: Union[str, int] = None,
-        validate: Union[Callable[[Any], bool], Validator] = None,
+        validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
         cycle: bool = True,

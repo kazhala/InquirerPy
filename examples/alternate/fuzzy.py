@@ -1,16 +1,13 @@
-import time
 import urllib.request
 from contextlib import ExitStack
 from pathlib import Path
 
-from InquirerPy import inquirer, prompt
-from InquirerPy.containers.spinner import SPINNERS
+from InquirerPy import inquirer
 
 
 def get_choices(_):
     p = Path(__file__).resolve().parent.joinpath("sample.txt")
     choices = []
-    time.sleep(1)
 
     with ExitStack() as stack:
         if not p.exists():
@@ -29,30 +26,7 @@ def get_choices(_):
     return choices
 
 
-def classic():
-    questions = [
-        {
-            "type": "fuzzy",
-            "message": "Select actions:",
-            "choices": ["hello", "weather", "what", "whoa", "hey", "yo"],
-            "default": "he",
-            "max_height": "70%",
-        },
-        {
-            "type": "fuzzy",
-            "message": "Select preferred words:",
-            "choices": get_choices,
-            "multiselect": True,
-            "validate": lambda result: len(result) > 1,
-            "invalid_message": "minimum 2 selection",
-            "max_height": "70%",
-        },
-    ]
-
-    result = prompt(questions=questions)
-
-
-def alternate():
+def main():
     action = inquirer.fuzzy(
         message="Select actions:",
         choices=["hello", "weather", "what", "whoa", "hey", "yo"],
@@ -64,11 +38,8 @@ def alternate():
         multiselect=True,
         validate=lambda result: len(result) > 1,
         invalid_message="minimum 2 selections",
-        spinner_enable=True,
-        spinner_pattern=SPINNERS.line,
-        spinner_text="Fetching sample texts ...",
     ).execute()
 
 
-alternate()
-# classic()
+if __name__ == "__main__":
+    main()

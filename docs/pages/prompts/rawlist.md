@@ -54,11 +54,11 @@ to jump to the target index choices.
 
 ## Default Value
 
+```{seealso}
+{ref}`pages/prompts/list:Default Value`
+```
+
 The `default` parameter for rawlist can be three types of values:
 
-
 - shortcut index (int): an {class}`int` value between 1-9 and the default value index choice will be highlighted.
-
-- choice (Any): one of the choice value if the choice is not an instance of {class}`dict`.
-
-- choice["value"] (Any): if choice is a {class}`dict`, default value could be the value key of the choice.
+- choice value (Any): default value could the value of one of the choices.

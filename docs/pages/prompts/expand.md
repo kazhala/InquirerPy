@@ -86,10 +86,14 @@ In addition to the keybindings mentioned {ref}`here <pages/prompts/list:keybindi
 
 ## Default Value
 
+```{seealso}
+{ref}`pages/prompts/list:Default Value`
+```
+
 The `default` parameter for expand prompt can be two types of values:
 
 - shortcut char (str): one of the `key` assigned to the choice.
-- choice["value"] (Any): default value could be the value key for one of the choice.
+- choice value (Any): default value could the value of one of the choices.
 
 ## Expand and Help
 
