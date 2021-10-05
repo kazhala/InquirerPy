@@ -1,21 +1,22 @@
 """Module contains the class to create a checkbox prompt."""
-
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-from prompt_toolkit.validation import ValidationError, Validator
+from prompt_toolkit.validation import ValidationError
 
 from InquirerPy.base import FakeDocument, InquirerPyUIListControl
 from InquirerPy.enum import (
-    INQUIRERPY_EMPTY_HEX_SEQUENCE,
-    INQUIRERPY_FILL_HEX_SEQUENCE,
+    INQUIRERPY_EMPTY_CIRCLE_SEQUENCE,
+    INQUIRERPY_FILL_CIRCLE_SEQUENCE,
     INQUIRERPY_POINTER_SEQUENCE,
 )
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
     InquirerPyListChoices,
+    InquirerPyMessage,
     InquirerPySessionResult,
     InquirerPyStyle,
+    InquirerPyValidate,
 )
 
 __all__ = ["CheckboxPrompt"]
@@ -30,11 +31,11 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
     def __init__(
         self,
         choices: InquirerPyListChoices,
-        default: Any = None,
-        pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
-        enabled_symbol: str = "%s " % INQUIRERPY_FILL_HEX_SEQUENCE,
-        disabled_symbol: str = "%s " % INQUIRERPY_EMPTY_HEX_SEQUENCE,
-        session_result: Optional[InquirerPySessionResult] = None,
+        default: Any,
+        pointer: str,
+        enabled_symbol: str,
+        disabled_symbol: str,
+        session_result: Optional[InquirerPySessionResult],
     ) -> None:
         """Initialise required attributes and call base class."""
         self._pointer = pointer
@@ -53,6 +54,8 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
     def _get_hover_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
         display_choices.append(("class:pointer", self._pointer))
+        if self._pointer:
+            display_choices.append(("", " "))
         if not isinstance(choice["value"], Separator):
             display_choices.append(
                 (
@@ -62,6 +65,8 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
                     else self._disabled_symbol,
                 )
             )
+            if self._enabled_symbol and self._disabled_symbol:
+                display_choices.append(("", " "))
         display_choices.append(("[SetCursorPosition]", ""))
         display_choices.append(("class:pointer", choice["name"]))
         return display_choices
@@ -69,6 +74,8 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:
         display_choices = []
         display_choices.append(("", len(self._pointer) * " "))
+        if self._pointer:
+            display_choices.append(("", " "))
         if not isinstance(choice["value"], Separator):
             display_choices.append(
                 (
@@ -78,6 +85,8 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
                     else self._disabled_symbol,
                 )
             )
+            if self._enabled_symbol and self._disabled_symbol:
+                display_choices.append(("", " "))
             display_choices.append(("", choice["name"]))
         else:
             display_choices.append(("class:separator", choice["name"]))
@@ -85,63 +94,79 @@ class InquirerPyCheckboxControl(InquirerPyUIListControl):
 
 
 class CheckboxPrompt(ListPrompt):
-    """A wrapper class around :class:`~prompt_toolkit.application.Application`.
+    """Create a prompt which displays a list of checkboxes to toggle.
 
-    Create a prompt which displays a list of checkboxes. User can toggle
-    on/off on each checkbox.
+    A wrapper class around :class:`~prompt_toolkit.application.Application`.
+
+    User can toggle on/off on each checkbox.
+
+    Works very similar to :class:`~InquirerPy.prompts.list.ListPrompt` with `multiselect` enabled,
+    the main difference is visual/UI and also when not toggling anything, the result will be empty.
 
     Args:
         message: The question to ask the user.
-        choices (InquirerPyListChoices): List of choices to display.
-        style: A dictionary of style to apply. Refer to :ref:`pages/style:Style`.
+            Refer to :ref:`pages/dynamic:message` documentation for more details.
+        choices: List of choices to display and select.
+            Refer to :ref:`pages/dynamic:choices` documentation for more details.
+        style: An :class:`InquirerPyStyle` instance.
+            Refer to :ref:`Style <pages/style:Alternate Syntax>` documentation for more details.
         vi_mode: Use vim keybinding for the prompt.
-        default: The default value. This will affect where the cursor starts from. Should be one of the choice value.
-        separator: The separator between the choice letter and the choices.
-        qmark: Custom symbol that will be displayed infront of the question before its answered.
-        amark: Custom symbol that will be displayed infront of the question after its answered.
-        pointer: Custom symbol that will be used to indicate the current choice selection.
-        enabled_symbol: Custom symbol which indicate the checkbox is ticked.
-        disabled_symbol: Custom symbol which indicate the checkbox is not ticked.
-        border: Create border around the choice window.
-        instruction: Short instruction to display next to the `message`.
+            Refer to :ref:`pages/kb:Keybindings` documentation for more details.
+        default: Set the default value of the prompt.
+            This will be used to determine which choice is highlighted (current selection),
+            The default value should be the value of one of the choices.
+            Refer to :ref:`pages/dynamic:default` documentation for more details.
+        separator: Separator symbol. Custom symbol that will be used as a separator between the choice index number and the choices.
+        qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
+        amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
+        pointer: Pointer symbol. Customer symbol that will be used to indicate the current choice selection.
+        enabled_symbol: Checkbox ticked symbol. Custom symbol which indicate the checkbox is ticked.
+        disabled_symbol: Checkbox not ticked symbol. Custom symbol which indicate the checkbox is not ticked.
+        instruction: Short instruction to display next to the question.
         long_instruction: Long instructions to display at the bottom of the prompt.
-        validate: Validation callable or class to validate user input.
-        invalid_message: Error message to display when input is invalid.
-        transformer: A callable to transform the result that gets printed in the terminal.
-            This is visual effect only.
-        filter: A callable to filter the result that gets returned.
-        height: Preferred height of the choice window.
-        max_height: Max height of the choice window.
-        multiselect: Enable multi-selection on choices.
-        keybindings: Custom keybindings to apply. Refer to :ref:`pages/kb:Keybindings`.
+        validate: Add validation to user input.
+            The main use case for this prompt would be when `multiselect` is True, you can enforce a min/max selection.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        invalid_message: Error message to display when user input is invalid.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        transformer: A function which performs additional transformation on the value that gets printed to the terminal.
+            Different than `filter` parameter, this is only visual effect and won’t affect the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:transformer` documentation for more details.
+        filter: A function which performs additional transformation on the result.
+            This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:filter` documentation for more details.
+        height: Preferred height of the prompt.
+            Refer to :ref:`pages/height:Height` documentation for more details.
+        max_height: Max height of the prompt.
+            Refer to :ref:`pages/height:Height` documentation for more details.
+        border: Create border around the choice window.
+        keybindings: Customise the builtin keybindings.
+            Refer to :ref:`pages/kb:Keybindings` for more details.
         show_cursor: Display cursor at the end of the prompt.
-        cycle: Return to top item if hit bottom or vice versa.
+            Set to False to hide the cursor.
+        cycle: Return to top item if hit bottom during navigation or vice versa.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
-        spinner_pattern: List of pattern to display as the spinner.
-        spinner_delay: Spinner refresh frequency.
-        spinner_text: Loading text to display.
-        spinner_enable: Enable spinner when loading choices.
-        set_exception_handler: Set exception handler for the event loop.
-            If any exception is raised while the `prompt` is visible, the question will enter the `skipped` state and exception will be raised.
-            If you have custom exception handler want to set, set this value to `False`.
-        session_result: Used for `classic syntax`, ignore this parameter.
+        session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
 
     Examples:
-        >>> result = CheckboxPrompt(message="Select:", choices=[1, 2, 3]).execute()
+        >>> from InquirerPy import inquirer
+        >>> result = inquirer.checkbox(message="Select:", choices=[1, 2, 3]).execute()
+        >>> print(result)
+        [1]
     """
 
     def __init__(
         self,
-        message: Union[str, Callable[[InquirerPySessionResult], str]],
+        message: InquirerPyMessage,
         choices: InquirerPyListChoices,
         default: Any = None,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
-        pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
-        enabled_symbol: str = "%s " % INQUIRERPY_FILL_HEX_SEQUENCE,
-        disabled_symbol: str = "%s " % INQUIRERPY_EMPTY_HEX_SEQUENCE,
+        pointer: str = INQUIRERPY_POINTER_SEQUENCE,
+        enabled_symbol: str = INQUIRERPY_FILL_CIRCLE_SEQUENCE,
+        disabled_symbol: str = INQUIRERPY_EMPTY_CIRCLE_SEQUENCE,
         border: bool = False,
         instruction: str = "",
         long_instruction: str = "",
@@ -149,7 +174,7 @@ class CheckboxPrompt(ListPrompt):
         filter: Callable[[Any], Any] = None,
         height: Union[int, str] = None,
         max_height: Union[int, str] = None,
-        validate: Union[Callable[[Any], bool], Validator] = None,
+        validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
         keybindings: Dict[str, List[Dict[str, Any]]] = None,
         show_cursor: bool = True,
