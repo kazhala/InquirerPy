@@ -21,13 +21,13 @@ An example using `inquirer` which incorporate multiple different types of prompt
 ![demo](https://assets.kazhala.me/InquirerPy/InquirerPy-prompt.gif)
 
 ```{eval-rst}
-.. literalinclude :: ../../examples/example_inquirer.py
+.. literalinclude :: ../../examples/inquirer.py
    :language: python
 ```
 
 ## Usage
 
-```{note}
+```{important}
 The `inquirer` module serves as an entry point to each prompt classes. Refer to
 individual prompt documentation for prompt specific usage.
 ```

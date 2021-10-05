@@ -26,7 +26,7 @@ An example using `prompt` which incorporate multiple different types of prompts:
 ![demo](https://assets.kazhala.me/InquirerPy/InquirerPy-prompt.gif)
 
 ```{eval-rst}
-.. literalinclude :: ../../examples/example_prompt.py
+.. literalinclude :: ../../examples/prompt.py
    :language: python
 ```
 

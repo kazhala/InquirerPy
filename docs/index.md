@@ -111,32 +111,34 @@ cd InquirerPy
 2. Create a Virtual Environment (Recommended)
 
 ```
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 ```
 
 3. Install dependencies
 
 ```
-pip install -r examples/requirements.txt
+pip3 install -r examples/requirements.txt
 ```
 
 4. View all available examples
 
 ```{Warning}
-`example_demo_new.py` and `example_demo_classic.py` requires [boto3](https://github.com/boto/boto3) package and setup AWS credentials.
+`demo_alternate.py` and `demo_classci.py` requires [boto3](https://github.com/boto/boto3) package and setup AWS credentials.
 ```
 
 ```
-ls examples/example_*.py
+ls examples/*.py
+ls examples/classic/*.py
+ls examples/alternate/*.py
 ```
 
 5. Edit and run any examples of your choice
 
 ```
-python -m examples.example_rawlist
+python3 -m examples.classic.rawlist
 # or
-python examples/example_pizza
+python3 examples/classic/rawlist
 ```
 
 ```{include} ../README.md
@@ -168,7 +170,6 @@ pages/kb.md
 pages/height.md
 pages/env.md
 pages/dynamic.md
-pages/kbi.md
 ```
 
 ```{toctree}

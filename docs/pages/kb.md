@@ -17,7 +17,9 @@ This is done because on most operating systems, also the Bash shell uses Emacs b
 All prompt have the following keybindings created:
 
 - `enter`: Confirm and answer the prompt.
-- `ctrl-c`: Raise {class}`KeyboardInterrupt`. If you wish to change this behavior, checkout {ref}`pages/kbi:Keyboard Interrupt`.
+- `ctrl-c`: Raise {class}`KeyboardInterrupt`.
+  - Classic Syntax: If you wish to change this behavior, checkout {ref}`pages/prompt:Keyboard Interrupt`.
+  - Alternate Syntax: If you wish to change this behavior, checkout {ref}`pages/inquirer:Keyboard Interrupt`.
 
 ### Input Buffer (Text Fields)
 

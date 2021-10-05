@@ -137,7 +137,8 @@ The value of `INQUIRERPY_VI_MODE` does not matter, as long as its a string longe
 ## Keyboard Interrupt
 
 ```{note}
-Checkout {ref}`pages/kbi:Keyboard Interrupt` section for more information.
+Classic Syntax: Checkout {ref}`pages/prompt:Keyboard Interrupt` section for more information.
+Alternate Syntax: Checkout {ref}`pages/inquirer:Keyboard Interrupt` section for more information.
 ```
 
 ```{admonition} Priority
