@@ -21,7 +21,9 @@ class TestCheckbox(unittest.TestCase):
     ]
 
     def test_checkbox_control(self):
-        checkbox_control = InquirerPyCheckboxControl(self.choices, "boy&girl")
+        checkbox_control = InquirerPyCheckboxControl(
+            self.choices, "boy&girl", "1", "2", "3", None
+        )
         self.assertEqual(
             checkbox_control.choices,
             [
@@ -35,19 +37,26 @@ class TestCheckbox(unittest.TestCase):
         self.assertEqual(
             checkbox_control._get_formatted_choices(),
             [
-                ("", "  "),
-                ("class:checkbox", "⬡ "),
+                ("", " "),
+                ("", " "),
+                ("class:checkbox", "3"),
+                ("", " "),
                 ("", "boy"),
                 ("", "\n"),
-                ("", "  "),
-                ("class:checkbox", "⬡ "),
+                ("", " "),
+                ("", " "),
+                ("class:checkbox", "3"),
+                ("", " "),
                 ("", "girl"),
                 ("", "\n"),
-                ("", "  "),
+                ("", " "),
+                ("", " "),
                 ("class:separator", "---------------"),
                 ("", "\n"),
-                ("class:pointer", "❯ "),
-                ("class:checkbox", "⬢ "),
+                ("class:pointer", "1"),
+                ("", " "),
+                ("class:checkbox", "2"),
+                ("", " "),
                 ("[SetCursorPosition]", ""),
                 ("class:pointer", "mix"),
             ],
@@ -67,10 +76,23 @@ class TestCheckbox(unittest.TestCase):
                 "pear",
             ],
             "watermelon",
+            "",
+            "",
+            "",
+            None,
         )
-        self.assertRaises(InvalidArgument, InquirerPyCheckboxControl, [])
         self.assertRaises(
-            InvalidArgument, InquirerPyCheckboxControl, "", [Separator(), Separator()]
+            InvalidArgument, InquirerPyCheckboxControl, [], None, "", "", "", None
+        )
+        self.assertRaises(
+            InvalidArgument,
+            InquirerPyCheckboxControl,
+            [Separator(), Separator()],
+            None,
+            "",
+            "",
+            "",
+            None,
         )
 
     def test_checkbox_prompt(self):
