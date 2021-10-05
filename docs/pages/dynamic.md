@@ -95,6 +95,7 @@ age = inquirer.text(
 ```{eval-rst}
 .. autodata:: InquirerPy.utils.InquirerPyMessage
     :noindex:
+    :no-value:
 ```
 
 ```{admonition} Category
@@ -114,6 +115,7 @@ The `message` parameter/key can either be a simple {class}`string` or a function
 ```{eval-rst}
 .. autodata:: InquirerPy.utils.InquirerPyDefault
     :noindex:
+    :no-value:
 ```
 
 ```{admonition} Category
@@ -137,6 +139,7 @@ The `default` parameter/key can either be a simple value or a function which ret
 ```{eval-rst}
 .. autodata:: InquirerPy.utils.InquirerPyListChoices
     :noindex:
+    :no-value:
 ```
 
 ```{admonition} Category
