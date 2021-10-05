@@ -8,7 +8,7 @@
 [![PyPi](https://img.shields.io/pypi/v/InquirerPy)](https://pypi.org/project/InquirerPy/)
 [![License](https://img.shields.io/pypi/l/InquirerPy)](https://github.com/kazhala/InquirerPy/blob/master/LICENSE)
 
-Documentation: https://github.com/kazhala/InquirerPy/wiki
+Documentation: [inquirerpy.readthedocs.io](https://inquirerpy.readthedocs.io/)
 
 <!-- start intro -->
 
@@ -206,7 +206,7 @@ python >= 3.7
 
 ## Getting Started
 
-Checkout full documentation **[here](https://github.com/kazhala/InquirerPy/wiki)**.
+Checkout full documentation **[here](https://inquirerpy.readthedocs.io/)**.
 
 ### Install
 
@@ -269,7 +269,7 @@ Every style keys from [PyInquirer](https://github.com/CITGuru/PyInquirer) is pre
 | selected   | pointer    |
 
 Although `InquirerPy` support all the keys from [PyInquirer](https://github.com/CITGuru/PyInquirer), the styling works slightly different.
-Please refer to the [Style](https://github.com/kazhala/InquirerPy/wiki/Style) documentation for detailed information.
+Please refer to the [Style](https://inquirerpy.readthedocs.io/en/latest/pages/style.html) documentation for detailed information.
 
 <!-- end migration -->
 
@@ -281,7 +281,7 @@ Please refer to the [Style](https://github.com/kazhala/InquirerPy/wiki/Style) do
 It's already a well established and stable library.
 
 Comparing with [questionary](https://github.com/tmbo/questionary), `InquirerPy` offers even more customisation options in styles, UI as well as key bindings. `InquirerPy` also provides a new
-and powerful [fuzzy](https://github.com/kazhala/InquirerPy/wiki/FuzzyPrompt) prompt.
+and powerful [fuzzy](https://inquirerpy.readthedocs.io/en/latest/pages/prompts/fuzzy.html) prompt.
 
 ### python-inquirer
 
