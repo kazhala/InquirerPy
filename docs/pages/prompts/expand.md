@@ -35,28 +35,37 @@
 {ref}`pages/dynamic:choices`
 ```
 
-```{attention}
-Each choice for {ref}`pages/prompts/expand:ExpandPrompt` is required to be either an instance {class}`dict` or {ref}`pages/separator:Separator`.
+```{tip}
+Avoid using character such as `h`, `j` and `k` as the key of choices since they are already taken and used as the default
+expansion key or navigation key.
 ```
 
 ```{tip}
-Do not specify the `h` key, since its already taken and used as the expand key. Also avoid specifying keys such as `j`
-and `k` as they are used for navigation for `vi_mode`.
+It is recommended to use {class}`~InquirerPy.prompts.expand.ExpandChoice` to create choices for expand prompt.
+
+However if you prefer {class}`dict` chocies, in addition to the 2 required keys `name` and `value`, an additional
+key called `key` is also required. The value from `key` should be a single char and will be binded to the choice. Pressing
+the value will jump to the choice.
 ```
 
-For this specific prompt, in addition to the 2 required keys `name` and `value`, the `key` is also required.
-The `key` is the char to bind to the choice. On prompt creation, a keybinding will be created for the char and then
-pressing the char can jump to the choice.
+For this specific prompt, a dedicated class {class}`~InquirerPy.prompts.expand.ExpandChoice` is created.
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.expand.ExpandChoice
+    :noindex:
+```
 
 ```{code-block}
+from InquirerPy.prompts.expand import ExpandChoice
+
 choices = [
-    {"key": "a", "name": "Apple", "value": "Apple"},
-    {"key": "c", "name": "Cherry", "value": "Cherry"},
-    {"key": "o", "name": "Orange", "value": "Orange"},
-    {"key": "p", "name": "Peach", "value": "Peach"},
-    {"key": "m", "name": "Melon", "value": "Melon"},
-    {"key": "s", "name": "Strawberry", "value": "Strawberry"},
-    {"key": "g", "name": "Grapes", "value": "Grapes"},
+    ExpandChoice("Apple", key="a"),
+    ExpandChoice("Cherry", key="c"),
+    ExpandChoice("Orange", key="o"),
+    ExpandChoice("Peach", key="p"),
+    ExpandChoice("Melon", key="m"),
+    ExpandChoice("Strawberry", key="s"),
+    ExpandChoice("Grapes", key="g"),
 ]
 ```
 

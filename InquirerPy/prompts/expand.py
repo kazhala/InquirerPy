@@ -17,7 +17,7 @@ from InquirerPy.utils import (
     InquirerPyValidate,
 )
 
-__all__ = ["ExpandPrompt", "ExpandHelp"]
+__all__ = ["ExpandPrompt", "ExpandHelp", "ExpandChoice"]
 
 
 @dataclass
@@ -42,6 +42,7 @@ class ExpandChoice(Choice):
         enabled: Indicates if the choice should be pre-selected.
             This only has effects when the prompt has `multiselect` enabled.
         key: Char to bind to the choice. Pressing this value will jump to the choice,
+            If this value is missing, the first char of the `str(value)` will be used as the key.
     """
 
     key: Optional[str] = None
