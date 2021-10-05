@@ -52,7 +52,7 @@ class InquirerPyListControl(InquirerPyUIListControl):
         marker: str,
         session_result: Optional[InquirerPySessionResult],
         multiselect: bool,
-        marker_pl: str = " ",
+        marker_pl: str,
     ) -> None:
         self._pointer: str = pointer
         self._marker: str = marker
@@ -109,7 +109,7 @@ class ListPrompt(BaseListPrompt):
             Refer to :ref:`pages/kb:Keybindings` documentation for more details.
         default: Set the default value of the prompt.
             This will be used to determine which choice is highlighted (current selection),
-            The default value should be either one of the choices or it should be one of the `choice["value"]` if choice is an instance of :class:`dict`.
+            The default value should be the value of one of the choices.
             Refer to :ref:`pages/dynamic:default` documentation for more details.
         qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
         amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.

@@ -183,6 +183,7 @@ class TestBaseControl(unittest.TestCase):
             ">",
             None,
             True,
+            " ",
         )
         self.assertEqual(
             list_control._get_formatted_choices(),

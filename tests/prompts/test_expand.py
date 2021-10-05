@@ -32,6 +32,7 @@ class TestExpandPrompt(unittest.TestCase):
             marker=">",
             session_result=None,
             multiselect=True,
+            marker_pl=" ",
         )
         self.assertEqual(content_control._pointer, " ")
         self.assertEqual(content_control._marker, ">")
@@ -88,6 +89,7 @@ class TestExpandPrompt(unittest.TestCase):
             "",
             None,
             False,
+            " ",
         )
 
         self.assertRaises(
@@ -105,6 +107,7 @@ class TestExpandPrompt(unittest.TestCase):
             "",
             None,
             False,
+            " ",
         )
 
     def test_prompt(self):

@@ -17,7 +17,7 @@ class TestRawList(unittest.TestCase):
 
     def test_content_control(self):
         content_control = InquirerPyRawlistControl(
-            self.choices, "yes", " ", ") ", ">", None, True
+            self.choices, "yes", " ", ") ", ">", None, True, " "
         )
         self.assertEqual(content_control._pointer, " ")
         self.assertEqual(content_control._separator, ") ")
@@ -90,7 +90,7 @@ class TestRawList(unittest.TestCase):
         )
 
         content_control = InquirerPyRawlistControl(
-            self.choices, 2, " ", ")", ">", None, False
+            self.choices, 2, " ", ")", ">", None, False, " "
         )
         self.assertEqual(content_control.selected_choice_index, 1)
 
@@ -106,6 +106,7 @@ class TestRawList(unittest.TestCase):
             "",
             None,
             False,
+            " ",
         )
 
         choices = [Separator(), Separator()]
@@ -119,6 +120,7 @@ class TestRawList(unittest.TestCase):
             "",
             None,
             True,
+            " ",
         )
 
         choices = []
@@ -132,6 +134,7 @@ class TestRawList(unittest.TestCase):
             "",
             None,
             False,
+            " ",
         )
 
     def test_prompt(self):

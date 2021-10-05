@@ -28,6 +28,7 @@ class TestListPrompt(unittest.TestCase):
             ">",
             None,
             True,
+            " ",
         )
         self.assertEqual(
             list_control.choices,
@@ -51,9 +52,10 @@ class TestListPrompt(unittest.TestCase):
             "",
             None,
             False,
+            " ",
         )
         self.assertRaises(
-            InvalidArgument, InquirerPyListControl, [], "", "", "", None, False
+            InvalidArgument, InquirerPyListControl, [], "", "", "", None, False, " "
         )
 
     def test_choice_combination(self):

@@ -33,7 +33,7 @@ class InquirerPyRawlistControl(InquirerPyUIListControl):
         marker: str,
         session_result: Optional[InquirerPySessionResult],
         multiselect: bool,
-        marker_pl: str = " ",
+        marker_pl: str,
     ) -> None:
         self._pointer = pointer
         self._separator = separator
@@ -127,7 +127,7 @@ class RawlistPrompt(ListPrompt):
             Refer to :ref:`pages/kb:Keybindings` documentation for more details.
         default: Set the default value of the prompt.
             This will be used to determine which choice is highlighted (current selection),
-            The default value should be either one of the choices or it should be one of the `choice["value"]` if choice is an instance of :class:`dict`.
+            The default value should be the value of one of the choices.
             For :class:`.RawlistPrompt` specifically, default value can also be value between 0-9.
             Refer to :ref:`pages/dynamic:default` documentation for more details.
         separator: Separator symbol. Custom symbol that will be used as a separator between the choice index number and the choices.
