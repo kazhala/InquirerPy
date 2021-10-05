@@ -23,6 +23,8 @@ Notable changes are documented in this file.
 - Changed fuzzy prompt `border` default to `False`.
   - It was `True` by default, changing this to keep it consistent with other prompts.
 - Changed style `fuzzy_info` and `instruction` default color to `#abb2bf`.
+- Automatic spacing added for checkbox prompt, if you have customised the prompt using `enabled_symbol` and `disabled_symbol`,
+  you may need to remove the extra space you have previously added. The change here is to align with other prompts current behavior.
 
 ## 0.2.4 (12/08/2021)
 
