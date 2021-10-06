@@ -87,7 +87,7 @@ result = inquirer.select(
 
 Each prompt takes an additional parameter called `keybindings`.
 
-### keybindings: `Dict[str, List[Dict[str, Any]]]`
+### keybindings
 
 `keybindings` should be a {class}`dict` where the `key` is the **action** and the `value` should be a list of keys that
 will be the **bindings** to trigger it.
@@ -103,7 +103,7 @@ Each `binding` is another {class}`dict` which contains the following key:
 - [filter](#filter-union-filter-bool)
 ```
 
-#### key: `Union[str, List[str]]`
+#### key
 
 The `key` can be either a list or a string. If you require multiple keys to be pressed in sequence, provide the `key` with a list of keys.
 
@@ -200,7 +200,7 @@ Available keys/syntax:
 Visit `prompt_toolkit` [documentation](https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/key_bindings.html#list-of-special-keys)
 for more information about limitations and other advanced topics.
 
-#### filter: `Union[Filter, bool]`
+#### filter
 
 Each keybinding also takes another **optional** key called `filter` which can be used to determine if certain keys should be enabled/disabled.
 The `filter` key can be either a boolean or a `prompt_toolkit` [Conditon](https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/filters.html#filters).
@@ -255,7 +255,7 @@ This is only available for `Alternate Syntax`.
 You can also create your own keybindings/actions. When creating a prompt via `inquirer`, instead of running
 the `execute` function immediately, you can bind keys to your custom functions before running `execute` on the prompt.
 
-### `register_kb`
+### register_kb
 
 {meth}`~InquirerPy.base.simple.BaseSimplePrompt.register_kb` is a decorator function that's available to use once the prompt is created.
 The function that are being bounded will be provided with an object {class}`~prompt_toolkit.key_binding.key_processor.KeyPressEvent` as an argument.

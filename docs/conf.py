@@ -29,7 +29,7 @@ html_title = "InquirerPy"
 
 napoleon_include_init_with_doc = True
 autosectionlabel_prefix_document = True
-autodoc_typehints = "signature"
+autodoc_typehints = "description"
 autodoc_member_order = "bysource"
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),

@@ -83,12 +83,7 @@ result = inquirer.checkbox(
 
 </details>
 
-### `validate`
-
-```{eval-rst}
-.. autodata:: InquirerPy.utils.InquirerPyValidate
-    :noindex:
-```
+### validate
 
 Validation callable or class to validate user input.
 
@@ -129,7 +124,7 @@ class EmptyInputValidator(Validator):
             )
 ```
 
-### `invalid_message`
+### invalid_message
 
 The error message you would like to display to user when the input is invalid.
 

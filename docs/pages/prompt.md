@@ -32,11 +32,6 @@ An example using `prompt` which incorporate multiple different types of prompts:
 
 ## questions
 
-```{eval-rst}
-.. autodata:: InquirerPy.utils.InquirerPyQuestions
-    :noindex:
-```
-
 A {class}`list` of question to ask.
 
 ```python
@@ -93,11 +88,11 @@ for their specific options/parameters.
   Default values can have different meanings across different types of prompt, checkout individual prompt documentation for more info.
 - validate: (`Union[Callable[[Any], bool], Validator]`) Check the user answer and return a {class}`bool` indicating whether the user answer passes the validation or not.
   ```{seealso}
-  {ref}`pages/validator:validator`
+  {ref}`pages/validator:Validator`
   ```
 - invalid_message: (`str`) The invalid message to display to the user when `validate` failed.
   ```{seealso}
-  {ref}`pages/validator:validator`
+  {ref}`pages/validator:Validator`
   ```
 - filter: (`Callable[[Any], Any]`) A function which performs additional transformation on the result. This affects the actual value stored in the final result.
 - transformer: (`Callable[[str], Any]`) A function which performs additional transformation on the value that gets printed to the terminal. Different than the `filter` key, this

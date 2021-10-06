@@ -92,11 +92,6 @@ age = inquirer.text(
 
 #### message
 
-```{eval-rst}
-.. autoproperty:: InquirerPy.utils.InquirerPyMessage
-    :noindex:
-```
-
 ```{admonition} Category
 [Before Rendered](#before-rendered)
 ```
@@ -110,11 +105,6 @@ age = inquirer.text(
 The `message` parameter/key can either be a simple {class}`string` or a function which returns {class}`string`.
 
 #### default
-
-```{eval-rst}
-.. autodata:: InquirerPy.utils.InquirerPyDefault
-    :noindex:
-```
 
 ```{admonition} Category
 [Before Rendered](#before-rendered)
@@ -133,11 +123,6 @@ The `default` parameter/key typing can vary between different types of prompt.
 The `default` parameter/key can either be a simple value or a function which returns the `default` value.
 
 #### choices
-
-```{eval-rst}
-.. autodata:: InquirerPy.utils.InquirerPyListChoices
-    :noindex:
-```
 
 ```{admonition} Category
 [Before Rendered](#before-rendered)
