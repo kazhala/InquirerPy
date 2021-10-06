@@ -124,7 +124,7 @@ pip3 install -r examples/requirements.txt
 4. View all available examples
 
 ```{Warning}
-`demo_alternate.py` and `demo_classci.py` requires [boto3](https://github.com/boto/boto3) package and setup AWS credentials.
+`demo_alternate.py` and `demo_classic.py` requires [boto3](https://github.com/boto/boto3) package and setup AWS credentials.
 ```
 
 ```

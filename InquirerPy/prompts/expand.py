@@ -22,7 +22,12 @@ __all__ = ["ExpandPrompt", "ExpandHelp", "ExpandChoice"]
 
 @dataclass
 class ExpandHelp:
-    """Help choice for the :class:`.ExpandPrompt`."""
+    """Help choice for the :class:`.ExpandPrompt`.
+
+    Args:
+        key: The key to bind to toggle the expansion of the prompt.
+        message: The help message.
+    """
 
     key: str = "h"
     message: str = "Help, list all choices"
