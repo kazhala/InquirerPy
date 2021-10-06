@@ -92,6 +92,10 @@ age = inquirer.text(
 
 #### message
 
+```
+Union[str, Callable[["InquirerPySessionResult"], str]]
+```
+
 ```{admonition} Category
 [Before Rendered](#before-rendered)
 ```
@@ -105,6 +109,10 @@ age = inquirer.text(
 The `message` parameter/key can either be a simple {class}`string` or a function which returns {class}`string`.
 
 #### default
+
+```
+Union[Any, Callable[["InquirerPySessionResult"], Any]]
+```
 
 ```{admonition} Category
 [Before Rendered](#before-rendered)
@@ -123,6 +131,10 @@ The `default` parameter/key typing can vary between different types of prompt.
 The `default` parameter/key can either be a simple value or a function which returns the `default` value.
 
 #### choices
+
+```
+Union[List[Any], List["Choice"], List[Dict[str, Any]]]
+```
 
 ```{admonition} Category
 [Before Rendered](#before-rendered)

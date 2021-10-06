@@ -32,6 +32,10 @@ An example using `prompt` which incorporate multiple different types of prompts:
 
 ## questions
 
+```
+Union[List[Dict[str, Any]], Dict[str, Any]]
+```
+
 A {class}`list` of question to ask.
 
 ```python

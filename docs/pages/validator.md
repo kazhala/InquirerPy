@@ -85,6 +85,10 @@ result = inquirer.checkbox(
 
 ### validate
 
+```
+Union[Callable[[Any], bool], "Validator"]
+```
+
 Validation callable or class to validate user input.
 
 #### Callable
@@ -126,6 +130,10 @@ class EmptyInputValidator(Validator):
 
 ### invalid_message
 
+```
+str
+```
+
 The error message you would like to display to user when the input is invalid.
 
 ## Pre-built Validators
@@ -166,7 +174,7 @@ result = prompt(
 from InquirerPy import inquirer
 from InquirerPy.validator import PathValidator
 
-result = inquirer.filepath(message="Enter path:", validate=PathValidator())
+result = inquirer.filepath(message="Enter path:", validate=PathValidator()).execute()
 ```
 
 </details>

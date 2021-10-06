@@ -89,6 +89,10 @@ Each prompt takes an additional parameter called `keybindings`.
 
 ### keybindings
 
+```
+Dict[str, List[Dict[str, Union[str, "FilterOrBool", List[str]]]]]
+```
+
 `keybindings` should be a {class}`dict` where the `key` is the **action** and the `value` should be a list of keys that
 will be the **bindings** to trigger it.
 

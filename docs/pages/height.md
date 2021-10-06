@@ -22,6 +22,10 @@ A {class}`str` indicates a percentile in respect tot he entire visible terminal.
 
 ## height
 
+```
+Union[int, str]
+```
+
 The `height` parameter will set the prompt height to a fixed value no matter how much space the content requires.
 The following example will only display 2 choices at a time, meaning only the choice 1 and 2 will be visible. The choice 3
 will be visible when user scroll down.
@@ -103,6 +107,10 @@ result = inquirer.select(
 </details>
 
 ## max_height
+
+```
+Union[int, str]
+```
 
 ```{tip}
 The default value for `max_height` is configured to be "70%" if not specified.
