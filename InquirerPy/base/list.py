@@ -1,16 +1,20 @@
 """Contains the base class :class:`.BaseListPrompt` which can be used to create a prompt involving choices."""
 import asyncio
 from abc import abstractmethod
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, Callable, List, Union
 
-from prompt_toolkit.filters.base import Condition, FilterOrBool
+from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.base.complex import BaseComplexPrompt
 from InquirerPy.base.control import InquirerPyUIListControl
 from InquirerPy.separator import Separator
-from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle
+from InquirerPy.utils import (
+    InquirerPyKeybindings,
+    InquirerPySessionResult,
+    InquirerPyStyle,
+)
 
 
 class BaseListPrompt(BaseComplexPrompt):
@@ -40,7 +44,7 @@ class BaseListPrompt(BaseComplexPrompt):
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
-        keybindings: Dict[str, List[Dict[str, Union[str, FilterOrBool]]]] = None,
+        keybindings: InquirerPyKeybindings = None,
         cycle: bool = True,
         wrap_lines: bool = True,
         spinner_enable: bool = False,

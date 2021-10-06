@@ -1,5 +1,5 @@
 """Module contains the class to create a checkbox prompt."""
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 from prompt_toolkit.validation import ValidationError
 
@@ -12,6 +12,7 @@ from InquirerPy.enum import (
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
+    InquirerPyKeybindings,
     InquirerPyListChoices,
     InquirerPyMessage,
     InquirerPySessionResult,
@@ -176,7 +177,7 @@ class CheckboxPrompt(ListPrompt):
         max_height: Union[int, str] = None,
         validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
-        keybindings: Dict[str, List[Dict[str, Any]]] = None,
+        keybindings: InquirerPyKeybindings = None,
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,

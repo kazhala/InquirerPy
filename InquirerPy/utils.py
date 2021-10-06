@@ -27,6 +27,8 @@ from prompt_toolkit.validation import Validator
 from InquirerPy.exceptions import InvalidArgument
 
 if TYPE_CHECKING:
+    from prompt_toolkit.filters.base import FilterOrBool
+
     from InquirerPy.base.control import Choice
 
 __all__ = [
@@ -68,6 +70,9 @@ InquirerPyValidate = Union[Callable[[Any], bool], "Validator"]
 InquirerPyQuestions = Union[List[Dict[str, Any]], Dict[str, Any]]
 InquirerPyMessage = Union[str, Callable[["InquirerPySessionResult"], str]]
 InquirerPyDefault = Union[Any, Callable[["InquirerPySessionResult"], Any]]
+InquirerPyKeybindings = Dict[
+    str, List[Dict[str, Union[str, "FilterOrBool", List[str]]]]
+]
 
 
 def get_style(

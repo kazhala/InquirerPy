@@ -33,6 +33,7 @@ from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
     InquirerPyDefault,
+    InquirerPyKeybindings,
     InquirerPyListChoices,
     InquirerPyMessage,
     InquirerPySessionResult,
@@ -327,7 +328,7 @@ class FuzzyPrompt(BaseListPrompt):
         max_height: Union[str, int] = None,
         validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
-        keybindings: Dict[str, List[Dict[str, Any]]] = None,
+        keybindings: InquirerPyKeybindings = None,
         cycle: bool = True,
         wrap_lines: bool = True,
         spinner_enable: bool = False,

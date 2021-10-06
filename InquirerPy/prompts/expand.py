@@ -1,6 +1,6 @@
 """Module contains the class to create an expand prompt."""
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 from InquirerPy.base import BaseListPrompt, InquirerPyUIListControl
 from InquirerPy.base.control import Choice
@@ -10,6 +10,7 @@ from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
     InquirerPyDefault,
+    InquirerPyKeybindings,
     InquirerPyListChoices,
     InquirerPyMessage,
     InquirerPySessionResult,
@@ -290,7 +291,7 @@ class ExpandPrompt(ListPrompt):
         border: bool = False,
         validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
-        keybindings: Dict[str, List[Dict[str, Any]]] = None,
+        keybindings: InquirerPyKeybindings = None,
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
