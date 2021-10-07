@@ -139,7 +139,7 @@ class ConfirmPrompt(BaseSimplePrompt):
             key_bindings=self._kb,
             style=self._style,
             wrap_lines=self._wrap_lines,
-            bottom_toolbar=[("class:prompt_instruction", long_instruction)]
+            bottom_toolbar=[("class:long_instruction", long_instruction)]
             if long_instruction
             else None,
             input=input,

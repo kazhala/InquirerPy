@@ -163,9 +163,7 @@ def get_style(
         result["frame.border"] = result.pop("fuzzy_border")
     if result.get("validator"):
         result["validation-toolbar"] = result.pop("validator")
-    result["bottom-toolbar"] = "ansiblack"
-    result["bottom-toolbar.text"] = "ansiblack"
-    result["prompt_instruction"] = f"{result.get('long_instruction', '')} noreverse"
+    result["bottom-toolbar"] = "noreverse"
     return InquirerPyStyle(result)
 
 

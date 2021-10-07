@@ -189,7 +189,7 @@ class InputPrompt(BaseSimplePrompt):
             multiline=self._multiline,
             complete_style=self._complete_style,
             wrap_lines=wrap_lines,
-            bottom_toolbar=[("class:prompt_instruction", long_instruction)]
+            bottom_toolbar=[("class:long_instruction", long_instruction)]
             if long_instruction
             else None,
         )
