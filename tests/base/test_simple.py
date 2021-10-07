@@ -127,6 +127,11 @@ class TestBaseSimple(unittest.TestCase):
 
         self.assertRaises(KeyboardInterrupt, prompt.execute, True)
 
+        os.environ["INQUIRERPY_NO_RAISE_KBI"] = "True"
+        result = InputPrompt(message="").execute()
+        result = InputPrompt(message="", raise_keyboard_interrupt=True).execute()
+        del os.environ["INQUIRERPY_NO_RAISE_KBI"]
+
     @patch.object(InputPrompt, "_run")
     def test_execute_filter(self, mocked_run):
         mocked_run.return_value = "1"

@@ -59,6 +59,7 @@ class TestResolver(unittest.TestCase):
             message="hello",
             style=InquirerPyStyle(get_sample_style()),
             vi_mode=False,
+            raise_keyboard_interrupt=True,
             session_result=ANY,
         )
         mocked_confirm_execute.assert_called_once()
@@ -80,12 +81,14 @@ class TestResolver(unittest.TestCase):
                     message="hello",
                     style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
+                    raise_keyboard_interrupt=True,
                     session_result=ANY,
                 ),
                 call(
                     message="world",
                     style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
+                    raise_keyboard_interrupt=True,
                     session_result=ANY,
                 ),
             ]
@@ -97,12 +100,13 @@ class TestResolver(unittest.TestCase):
                     style=InquirerPyStyle(get_sample_style()),
                     default="./",
                     vi_mode=False,
+                    raise_keyboard_interrupt=True,
                     session_result=ANY,
                 )
             ]
         )
         mocked_confirm_execute.assert_has_calls(
-            [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
+            [call(), call()]
         )
         self.assertEqual(result, {0: False, "foo": False, "boo": "hello.py"})
 
@@ -128,6 +132,7 @@ class TestResolver(unittest.TestCase):
             message="Confirm?",
             style=InquirerPyStyle(get_sample_style()),
             vi_mode=False,
+            raise_keyboard_interrupt=True,
             session_result={"question1": False},
         )
         self.assertEqual(result, {"question1": False})
@@ -147,7 +152,7 @@ class TestResolver(unittest.TestCase):
             questions, style={"qmark": "#ffffff"}, vi_mode=True, style_override=False
         )
         mocked_confirm_execute.assert_has_calls(
-            [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
+            [call(), call()]
         )
         mocked_confirm_init.assert_has_calls(
             [
@@ -155,12 +160,14 @@ class TestResolver(unittest.TestCase):
                     message="Confirm?",
                     style=InquirerPyStyle(get_sample_style({"qmark": "#ffffff"})),
                     vi_mode=True,
+                    raise_keyboard_interrupt=True,
                     session_result=ANY,
                 ),
                 call(
                     message="What?",
                     style=InquirerPyStyle(get_sample_style({"qmark": "#ffffff"})),
                     vi_mode=True,
+                    raise_keyboard_interrupt=True,
                     session_result=ANY,
                 ),
             ]
@@ -188,6 +195,7 @@ class TestResolver(unittest.TestCase):
                     message="haha",
                     style=InquirerPyStyle(style),
                     vi_mode=True,
+                    raise_keyboard_interrupt=True,
                     session_result={"10": True, 1: True, 2: "111111"},
                 )
             ]
@@ -221,7 +229,7 @@ class TestResolver(unittest.TestCase):
         ]
         result = prompt(questions)
         mocked_execute.assert_has_calls(
-            [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
+            [call(), call()]
         )
         mocked_init.assert_has_calls(
             [
@@ -230,12 +238,14 @@ class TestResolver(unittest.TestCase):
                     style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
                     default=True,
+                    raise_keyboard_interrupt=True,
                     session_result=ANY,
                 ),
                 call(
                     message="Confirm second?",
                     style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
+                    raise_keyboard_interrupt=True,
                     session_result=ANY,
                 ),
             ]
@@ -266,7 +276,7 @@ class TestResolver(unittest.TestCase):
         ]
         result = prompt(questions)
         mocked_execute.assert_has_calls(
-            [call(raise_keyboard_interrupt=True), call(raise_keyboard_interrupt=True)]
+            [call(), call()]
         )
         mocked_init.assert_has_calls(
             [
@@ -275,12 +285,14 @@ class TestResolver(unittest.TestCase):
                     style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
                     default=True,
+                    raise_keyboard_interrupt=True,
                     session_result=ANY,
                 ),
                 call(
                     message="Confirm?",
                     style=InquirerPyStyle(get_sample_style()),
                     vi_mode=False,
+                    raise_keyboard_interrupt=True,
                     session_result=ANY,
                 ),
             ]
