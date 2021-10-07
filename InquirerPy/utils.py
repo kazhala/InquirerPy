@@ -117,6 +117,9 @@ def get_style(
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
             "answered_question": os.getenv("INQUIRERPY_STYLE_ANSWERED_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", "#abb2bf"),
+            "long_instruction": os.getenv(
+                "INQUIRERPY_STYLE_LONG_INSTRUCTION", "#abb2bf"
+            ),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
             "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
             "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
@@ -140,6 +143,7 @@ def get_style(
             "question": os.getenv("INQUIRERPY_STYLE_QUESTION", ""),
             "answered_question": os.getenv("INQUIRERPY_STYLE_ANSWERED_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
+            "long_instruction": os.getenv("INQUIRERPY_STYLE_LONG_INSTRUCTION", ""),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", ""),
             "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", ""),
             "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
@@ -159,6 +163,9 @@ def get_style(
         result["frame.border"] = result.pop("fuzzy_border")
     if result.get("validator"):
         result["validation-toolbar"] = result.pop("validator")
+    result["bottom-toolbar"] = "ansiblack"
+    result["bottom-toolbar.text"] = "ansiblack"
+    result["prompt_instruction"] = f"{result.get('long_instruction', '')} noreverse"
     return InquirerPyStyle(result)
 
 
