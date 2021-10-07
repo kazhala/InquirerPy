@@ -13,6 +13,8 @@ Notable changes are documented in this file.
   - `help_msg` parameter is deprecated and should use `expand_help`.
 - Added alternate way of creating choices. Introduced a new class `Choice` as an alternate option for dictionary choice.
   - Added `ExpandChoice` for `expand` prompt as well,
+- Added `raise_keyboard_interrupt` option to all prompt initialisation options.
+  - The `raise_keyboard_interrupt` in execute function will be deprecated in future releases.
 
 ### Fixed
 
