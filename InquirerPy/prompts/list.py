@@ -145,6 +145,8 @@ class ListPrompt(BaseListPrompt):
             Set to False to hide the cursor.
         cycle: Return to top item if hit bottom during navigation or vice versa.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+        raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
+            will be `None` and the question is skiped.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
 
     Examples:
@@ -185,6 +187,7 @@ class ListPrompt(BaseListPrompt):
         spinner_text: str = "",
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
+        raise_keyboard_interrupt: bool = True,
         session_result: InquirerPySessionResult = None,
     ) -> None:
         if not hasattr(self, "_content_control"):
@@ -219,6 +222,7 @@ class ListPrompt(BaseListPrompt):
             spinner_delay=spinner_delay,
             spinner_text=spinner_text,
             set_exception_handler=set_exception_handler,
+            raise_keyboard_interrupt=raise_keyboard_interrupt,
             session_result=session_result,
         )
         self._show_cursor = show_cursor

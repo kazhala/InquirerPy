@@ -51,6 +51,8 @@ class ConfirmPrompt(BaseSimplePrompt):
             Default is `y` and pressing `y` will answer the prompt with value `True`.
         reject_letter: Letter used to reject the prompt. A keybinding will be created for this letter.
             Default is `n` and pressing `n` will answer the prompt with value `False`.
+        raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
+            will be `None` and the question is skiped.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
         input: Used internally and will be removed in future updates.
         output: Used internally and will be removed in future updates.
@@ -76,6 +78,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         wrap_lines: bool = True,
         confirm_letter: str = "y",
         reject_letter: str = "n",
+        raise_keyboard_interrupt: bool = True,
         session_result: InquirerPySessionResult = None,
         input: "Input" = None,
         output: "Output" = None,
@@ -92,6 +95,7 @@ class ConfirmPrompt(BaseSimplePrompt):
             filter=filter,
             default=default,
             wrap_lines=wrap_lines,
+            raise_keyboard_interrupt=raise_keyboard_interrupt,
             session_result=session_result,
         )
         if not isinstance(self._default, bool):

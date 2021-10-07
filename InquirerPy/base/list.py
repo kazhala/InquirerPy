@@ -52,6 +52,7 @@ class BaseListPrompt(BaseComplexPrompt):
         spinner_text: str = "",
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
+        raise_keyboard_interrupt: bool = True,
         session_result: InquirerPySessionResult = None,
     ) -> None:
         super().__init__(
@@ -73,6 +74,7 @@ class BaseListPrompt(BaseComplexPrompt):
             spinner_delay=spinner_delay,
             spinner_text=spinner_text,
             set_exception_handler=set_exception_handler,
+            raise_keyboard_interrupt=raise_keyboard_interrupt,
             session_result=session_result,
         )
 

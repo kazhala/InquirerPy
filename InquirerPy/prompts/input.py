@@ -63,6 +63,8 @@ class InputPrompt(BaseSimplePrompt):
             This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
             Refer to :ref:`pages/dynamic:filter` documentation for more details.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+        raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
+            will be `None` and the question is skiped.
         is_password: Used internally for :class:`~InquirerPy.prompts.secret.SecretPrompt`.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
         input: Used internally and will be removed in future updates.
@@ -92,6 +94,7 @@ class InputPrompt(BaseSimplePrompt):
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
         wrap_lines: bool = True,
+        raise_keyboard_interrupt: bool = True,
         is_password: bool = False,
         session_result: InquirerPySessionResult = None,
         input: "Input" = None,
@@ -111,6 +114,7 @@ class InputPrompt(BaseSimplePrompt):
             session_result=session_result,
             default=default,
             wrap_lines=wrap_lines,
+            raise_keyboard_interrupt=raise_keyboard_interrupt,
         )
         if not isinstance(self._default, str):
             raise InvalidArgument(

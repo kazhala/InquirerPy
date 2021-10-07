@@ -123,13 +123,14 @@ def prompt(
                 "message": message,
                 "style": question_style,
                 "vi_mode": vi_mode,
+                "raise_keyboard_interrupt": raise_keyboard_interrupt,
                 "session_result": result,
             }
             if question_type in list_prompts:
                 args["keybindings"] = {**keybindings, **question.pop("keybindings", {})}
             result[question_name] = question_mapping[question_type](
                 **args, **question
-            ).execute(raise_keyboard_interrupt=raise_keyboard_interrupt)
+            ).execute()
         except KeyError:
             raise RequiredKeyNotFound
 

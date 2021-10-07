@@ -70,6 +70,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         spinner_text: str = "",
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
+        raise_keyboard_interrupt: bool = True,
         session_result: InquirerPySessionResult = None,
     ) -> None:
         super().__init__(
@@ -84,6 +85,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             invalid_message=invalid_message,
             validate=validate,
             wrap_lines=wrap_lines,
+            raise_keyboard_interrupt=raise_keyboard_interrupt,
             session_result=session_result,
         )
         self._invalid_message = invalid_message

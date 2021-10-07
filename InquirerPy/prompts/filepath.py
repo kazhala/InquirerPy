@@ -120,6 +120,8 @@ class FilePathPrompt(InputPrompt):
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         only_directories: Only complete directories.
         only_files: Only complete files.
+        raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
+            will be `None` and the question is skiped.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
         input: Used internally and will be removed in future updates.
         output: Used internally and will be removed in future updates.
@@ -148,6 +150,7 @@ class FilePathPrompt(InputPrompt):
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
         wrap_lines: bool = True,
+        raise_keyboard_interrupt: bool = True,
         session_result: InquirerPySessionResult = None,
         input: "Input" = None,
         output: "Output" = None,
@@ -175,6 +178,7 @@ class FilePathPrompt(InputPrompt):
             transformer=transformer,
             filter=filter,
             wrap_lines=wrap_lines,
+            raise_keyboard_interrupt=raise_keyboard_interrupt,
             session_result=session_result,
             input=input,
             output=output,

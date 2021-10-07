@@ -44,6 +44,7 @@ class BaseSimplePrompt(ABC):
         filter: Callable[[Any], Any] = None,
         default: Any = "",
         wrap_lines: bool = True,
+        raise_keyboard_interrupt: bool = True,
         session_result: InquirerPySessionResult = None,
     ) -> None:
         self._result = session_result or {}
@@ -78,6 +79,9 @@ class BaseSimplePrompt(ABC):
                 invalid_message,
                 move_cursor_to_end=True,
             )
+        self._raise_kbi = not os.getenv(
+            "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
+        )
 
         @self._kb.add("c-c")
         def _(event) -> None:
@@ -209,7 +213,7 @@ class BaseSimplePrompt(ABC):
         """
         pass
 
-    def execute(self, raise_keyboard_interrupt: bool = True) -> Any:
+    def execute(self, raise_keyboard_interrupt: bool = None) -> Any:
         """Run the prompt and get the result.
 
         Args:
@@ -222,10 +226,10 @@ class BaseSimplePrompt(ABC):
             KeyboardInterrupt: When `ctrl-c` is pressed and `raise_keyboard_interrupt` is True.
         """
         result = self._run()
+        if raise_keyboard_interrupt is not None:
+            self._raise_kbi = raise_keyboard_interrupt
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
-            if raise_keyboard_interrupt and not os.getenv(
-                "INQUIRERPY_NO_RAISE_KBI", False
-            ):
+            if self._raise_kbi:
                 raise KeyboardInterrupt
             else:
                 result = None
