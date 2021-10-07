@@ -38,6 +38,7 @@ class SecretPrompt(InputPrompt):
         qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
         amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
         instruction: Short instruction to display next to the question.
+        long_instruction: Long instructions to display at the bottom of the prompt.
         validate: Add validation to user input.
             Refer to :ref:`pages/validator:Validator` documentation for more details.
         invalid_message: Error message to display when user input is invalid.
@@ -70,6 +71,7 @@ class SecretPrompt(InputPrompt):
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
+        long_instruction: str = "",
         vi_mode: bool = False,
         validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
@@ -93,6 +95,7 @@ class SecretPrompt(InputPrompt):
             qmark=qmark,
             amark=amark,
             instruction=instruction,
+            long_instruction=long_instruction,
             validate=validate,
             invalid_message=invalid_message,
             is_password=True,

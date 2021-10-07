@@ -47,6 +47,7 @@ class InputPrompt(BaseSimplePrompt):
         qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
         amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
         instruction: Short instruction to display next to the question.
+        long_instruction: Long instructions to display at the bottom of the prompt.
         completer: Add auto completion to the prompt.
             Refer to :ref:`pages/prompts/input:Auto Completion` documentation for more details.
         multicolumn_complete: Change the auto-completion UI to a multi column display.
@@ -86,6 +87,7 @@ class InputPrompt(BaseSimplePrompt):
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
+        long_instruction: str = "",
         completer: Union[Dict[str, Optional[str]], "Completer"] = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
@@ -187,6 +189,9 @@ class InputPrompt(BaseSimplePrompt):
             multiline=self._multiline,
             complete_style=self._complete_style,
             wrap_lines=wrap_lines,
+            bottom_toolbar=[("class:prompt_instruction", long_instruction)]
+            if long_instruction
+            else None,
         )
 
     def _get_prompt_message(

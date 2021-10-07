@@ -40,6 +40,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
         amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
         instruction: Short instruction to display next to the question.
+        long_instruction: Long instructions to display at the bottom of the prompt.
         transformer: A function which performs additional transformation on the value that gets printed to the terminal.
             Different than `filter` parameter, this is only visual effect and won’t affect the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
             Refer to :ref:`pages/dynamic:transformer` documentation for more details.
@@ -73,6 +74,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
+        long_instruction: str = "",
         transformer: Callable[[bool], Any] = None,
         filter: Callable[[bool], Any] = None,
         wrap_lines: bool = True,
@@ -137,6 +139,9 @@ class ConfirmPrompt(BaseSimplePrompt):
             key_bindings=self._kb,
             style=self._style,
             wrap_lines=self._wrap_lines,
+            bottom_toolbar=[("class:prompt_instruction", long_instruction)]
+            if long_instruction
+            else None,
             input=input,
             output=output,
         )

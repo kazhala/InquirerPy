@@ -106,6 +106,7 @@ class FilePathPrompt(InputPrompt):
         qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
         amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
         instruction: Short instruction to display next to the question.
+        long_instruction: Long instructions to display at the bottom of the prompt.
         multicolumn_complete: Change the auto-completion UI to a multi column display.
         validate: Add validation to user input.
             Refer to :ref:`pages/validator:Validator` documentation for more details.
@@ -142,6 +143,7 @@ class FilePathPrompt(InputPrompt):
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
+        long_instruction: str = "",
         multicolumn_complete: bool = False,
         validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
@@ -167,6 +169,7 @@ class FilePathPrompt(InputPrompt):
             qmark=qmark,
             amark=amark,
             instruction=instruction,
+            long_instruction=long_instruction,
             completer=ThreadedCompleter(
                 FilePathCompleter(
                     only_directories=only_directories, only_files=only_files
