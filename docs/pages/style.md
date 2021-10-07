@@ -68,6 +68,7 @@ Checkout [Components](#components) to see how the following styles are applied t
     "question": "",
     "answered_question": "",
     "instruction": "#abb2bf",
+    "long_instruction": "#abb2bf",
     "pointer": "#61afef",
     "checkbox": "#98c379",
     "separator": "",

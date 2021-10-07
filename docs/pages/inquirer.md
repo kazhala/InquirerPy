@@ -40,7 +40,7 @@ individual prompt documentation for prompt specific usage.
 ```python
 from InquirerPy import inquirer
 
-result = inquirer.text(message="Name:").execute(raise_keyboard_interrupt=False)
+result = inquirer.text(message="Name:", raise_keyboard_interrupt=False).execute()
 ```
 
 ```{include} ./prompt.md
