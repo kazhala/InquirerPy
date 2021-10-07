@@ -105,9 +105,7 @@ class TestResolver(unittest.TestCase):
                 )
             ]
         )
-        mocked_confirm_execute.assert_has_calls(
-            [call(), call()]
-        )
+        mocked_confirm_execute.assert_has_calls([call(), call()])
         self.assertEqual(result, {0: False, "foo": False, "boo": "hello.py"})
 
     @patch.object(SecretPrompt, "__init__")
@@ -151,9 +149,7 @@ class TestResolver(unittest.TestCase):
         result = prompt(
             questions, style={"qmark": "#ffffff"}, vi_mode=True, style_override=False
         )
-        mocked_confirm_execute.assert_has_calls(
-            [call(), call()]
-        )
+        mocked_confirm_execute.assert_has_calls([call(), call()])
         mocked_confirm_init.assert_has_calls(
             [
                 call(
@@ -189,6 +185,7 @@ class TestResolver(unittest.TestCase):
             style[key] = ""
         style["qmark"] = "#ffffff"
         style["fuzzy_border"] = style.pop("frame.border")
+        style["bottom-toolbar"] = "noreverse"
         mocked_secret_init.assert_has_calls(
             [
                 call(
@@ -228,9 +225,7 @@ class TestResolver(unittest.TestCase):
             },
         ]
         result = prompt(questions)
-        mocked_execute.assert_has_calls(
-            [call(), call()]
-        )
+        mocked_execute.assert_has_calls([call(), call()])
         mocked_init.assert_has_calls(
             [
                 call(
@@ -275,9 +270,7 @@ class TestResolver(unittest.TestCase):
             },
         ]
         result = prompt(questions)
-        mocked_execute.assert_has_calls(
-            [call(), call()]
-        )
+        mocked_execute.assert_has_calls([call(), call()])
         mocked_init.assert_has_calls(
             [
                 call(

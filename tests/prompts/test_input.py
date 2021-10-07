@@ -218,8 +218,31 @@ class TestInputPrompt(unittest.TestCase):
             multiline=True,
             complete_style=CompleteStyle.COLUMN,
             wrap_lines=True,
+            bottom_toolbar=None,
         )
         mocked_completer.assert_has_calls(
             [call({"hello": None, "hey": None, "what": None})]
         )
         MockedLexer.assert_has_calls([call("class:input")])
+
+    @patch("InquirerPy.prompts.input.PromptSession")
+    def test_long_instruction(self, MockedSession):
+        InputPrompt(message="", long_instruction="asfasdf")
+
+        MockedSession.assert_called_once_with(
+            message=ANY,
+            key_bindings=ANY,
+            style=ANY,
+            completer=ANY,
+            validator=ANY,
+            validate_while_typing=False,
+            input=None,
+            output=None,
+            editing_mode=EditingMode.EMACS,
+            lexer=ANY,
+            is_password=False,
+            multiline=False,
+            complete_style=CompleteStyle.COLUMN,
+            wrap_lines=True,
+            bottom_toolbar=[("class:long_instruction", "asfasdf")]
+        )

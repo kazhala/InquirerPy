@@ -13,6 +13,7 @@ def get_sample_style(val=None) -> Dict[str, str]:
         "question": "",
         "answered_question": "",
         "instruction": "#abb2bf",
+        "long_instruction": "#abb2bf",
         "pointer": "#61afef",
         "checkbox": "#98c379",
         "separator": "",
@@ -25,5 +26,6 @@ def get_sample_style(val=None) -> Dict[str, str]:
         "fuzzy_match": "#c678dd",
         "spinner_pattern": "#e5c07b",
         "spinner_text": "",
+        "bottom-toolbar": "noreverse",
         **val,
     }

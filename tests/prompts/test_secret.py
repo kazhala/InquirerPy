@@ -138,6 +138,7 @@ class TestSecret(unittest.TestCase):
             multiline=False,
             complete_style=CompleteStyle.COLUMN,
             wrap_lines=True,
+            bottom_toolbar=None,
         )
         MockedStyle.assert_has_calls(
             [

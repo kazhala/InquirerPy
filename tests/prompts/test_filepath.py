@@ -252,6 +252,7 @@ class TestFilePath(unittest.TestCase):
             multiline=False,
             complete_style=CompleteStyle.MULTI_COLUMN,
             wrap_lines=True,
+            bottom_toolbar=None,
         )
 
         MockedStyle.assert_has_calls([call({"yes": ""})])

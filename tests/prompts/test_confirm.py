@@ -253,6 +253,7 @@ class TestConfirmPrompt(unittest.TestCase):
             key_bindings=kb,
             style=style,
             wrap_lines=True,
+            bottom_toolbar=None,
             input=None,
             output=None,
         )

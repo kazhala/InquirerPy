@@ -67,6 +67,7 @@ class TestUtils(unittest.TestCase):
         os.environ["INQUIRERPY_STYLE_VALIDATOR"] = "#dddddd"
         os.environ["INQUIRERPY_STYLE_SPINNER_PATTERN"] = "#ssssss"
         os.environ["INQUIRERPY_STYLE_SPINNER_TEXT"] = "#llllll"
+        os.environ["INQUIRERPY_STYLE_LONG_INSTRUCTION"] = "#kkkkkk"
         style = get_style()
         self.assertEqual(
             style,
@@ -79,6 +80,7 @@ class TestUtils(unittest.TestCase):
                     "question": "#222222",
                     "answered_question": "#222222",
                     "instruction": "#333333",
+                    "long_instruction": "#kkkkkk",
                     "pointer": "#555555",
                     "checkbox": "#66666",
                     "separator": "#777777",
@@ -91,6 +93,7 @@ class TestUtils(unittest.TestCase):
                     "frame.border": "#cccccc",
                     "spinner_pattern": "#ssssss",
                     "spinner_text": "#llllll",
+                    "bottom-toolbar": "noreverse",
                 },
             ),
         )
@@ -104,6 +107,7 @@ class TestUtils(unittest.TestCase):
             "question": "#222222",
             "answered_question": "#222222",
             "instruction": "#333333",
+            "long_instruction": "#kkkkkk",
             "pointer": "#555555",
             "checkbox": "#66666",
             "separator": "#777777",
@@ -116,6 +120,7 @@ class TestUtils(unittest.TestCase):
             "fuzzy_border": "#cccccc",
             "spinner_pattern": "#ssssss",
             "spinner_text": "#llllll",
+            "bottom-toolbar": "noreverse",
         }
         style = get_style(raw)
         raw["frame.border"] = raw.pop("fuzzy_border")
