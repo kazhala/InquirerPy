@@ -227,7 +227,9 @@ class BaseSimplePrompt(ABC):
         """
         result = self._run()
         if raise_keyboard_interrupt is not None:
-            self._raise_kbi = raise_keyboard_interrupt
+            self._raise_kbi = not os.getenv(
+                "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
+            )
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
             if self._raise_kbi:
                 raise KeyboardInterrupt

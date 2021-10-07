@@ -130,6 +130,7 @@ class TestBaseSimple(unittest.TestCase):
         os.environ["INQUIRERPY_NO_RAISE_KBI"] = "True"
         result = InputPrompt(message="").execute()
         result = InputPrompt(message="", raise_keyboard_interrupt=True).execute()
+        result = InputPrompt(message="").execute(raise_keyboard_interrupt=True)
         del os.environ["INQUIRERPY_NO_RAISE_KBI"]
 
     @patch.object(InputPrompt, "_run")
