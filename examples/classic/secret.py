@@ -12,6 +12,7 @@ def main():
             "transformer": lambda _: "[hidden]",
             "validate": lambda text: text == original_password,
             "invalid_message": "Wrong password",
+            "long_instruction": "Original password: InquirerPy45@",
         },
         {
             "type": "password",
@@ -21,6 +22,7 @@ def main():
                 length=8, cap=True, special=True, number=True
             ),
             "transformer": lambda _: "[hidden]",
+            "long_instruction": "Password require length of 8, 1 cap char, 1 special char and 1 number char.",
         },
         {"type": "confirm", "message": "Confirm?", "default": True},
     ]
