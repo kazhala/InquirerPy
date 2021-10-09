@@ -721,7 +721,7 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(prompt._buffer.cursor_position, 3)
 
     @patch.object(FuzzyPrompt, "_on_rendered")
-    @patch.object(BaseComplexPrompt, "_register_kb")
+    @patch.object(BaseComplexPrompt, "register_kb")
     def test_constructor_keybindings(self, mocked_kb, mocked_rendered):
         prompt = FuzzyPrompt(message="", choices=[1, 2, 3])
         prompt._after_render(None)

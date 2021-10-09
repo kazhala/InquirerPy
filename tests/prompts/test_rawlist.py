@@ -203,7 +203,7 @@ class TestRawList(unittest.TestCase):
             prompt._handle_enter(event)
         self.assertEqual(prompt.status, {"result": "hello", "answered": True})
 
-    @patch.object(BaseComplexPrompt, "_register_kb")
+    @patch.object(BaseComplexPrompt, "register_kb")
     def test_kb_added(self, mocked_add):
         prompt = RawlistPrompt(
             message="hello",

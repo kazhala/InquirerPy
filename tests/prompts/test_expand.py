@@ -123,7 +123,7 @@ class TestExpandPrompt(unittest.TestCase):
         prompt._instruction = "hello"
         self.assertEqual(prompt.instruction, "hello")
 
-    @patch.object(BaseComplexPrompt, "_register_kb")
+    @patch.object(BaseComplexPrompt, "register_kb")
     def test_kb_added(self, mocked_add):
         prompt = ExpandPrompt(
             message="hello",

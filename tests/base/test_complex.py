@@ -48,7 +48,7 @@ class TestBaseComplex(unittest.TestCase):
     def test_register_kb(self) -> None:
         fuzzy_prompt = FuzzyPrompt(message="hello", choices=["1", "2", "3"])
 
-        @fuzzy_prompt._register_kb("c-q")
+        @fuzzy_prompt.register_kb("c-q")
         def hello(_):
             pass
 
@@ -57,7 +57,7 @@ class TestBaseComplex(unittest.TestCase):
         hello("")  # type: ignore
         self.assertFalse(fuzzy_prompt._invalid)
 
-    @patch.object(BaseComplexPrompt, "_register_kb")
+    @patch.object(BaseComplexPrompt, "register_kb")
     @patch.object(
         InquirerPyUIListControl, "retrieve_choices", new_callable=PropertyMock
     )

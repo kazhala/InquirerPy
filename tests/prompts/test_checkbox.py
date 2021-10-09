@@ -203,7 +203,7 @@ class TestCheckbox(unittest.TestCase):
         prompt = CheckboxPrompt(message="", choices=self.choices)
         prompt._invalid = True
 
-        @prompt._register_kb("b")
+        @prompt.register_kb("b")
         def test(_):
             pass
 
