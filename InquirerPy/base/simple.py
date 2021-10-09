@@ -5,13 +5,14 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Tuple, Union, cast
 
 from prompt_toolkit.enums import EditingMode
-from prompt_toolkit.filters.base import FilterOrBool
+from prompt_toolkit.filters.base import Condition, FilterOrBool
 from prompt_toolkit.key_binding.key_bindings import KeyBindings, KeyHandlerCallable
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.styles.style import Style
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
+from InquirerPy.exceptions import RequiredKeyNotFound
 from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle, get_style
 
 
@@ -60,7 +61,7 @@ class BaseSimplePrompt(ABC):
         self._style = Style.from_dict(style.dict if style else get_style().dict)
         self._qmark = qmark
         self._amark = amark
-        self._status = {"answered": False, "result": None}
+        self._status = {"answered": False, "result": None, "skipped": False}
         self._kb = KeyBindings()
         self._lexer = "class:input"
         self._transformer = transformer
@@ -83,21 +84,49 @@ class BaseSimplePrompt(ABC):
             "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
         )
 
-        @self._kb.add("c-c")
-        def _(event) -> None:
-            self.status["answered"] = True
-            self.status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
-            event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
+        self._kb_maps = {
+            "answer": [{"key": "enter"}],
+            "interrupt": [{"key": "c-c"}],
+        }
+        self._kb_func_lookup = {
+            "answer": [{"func": self._handle_enter}],
+            "interrupt": [{"func": self._handle_interrupt}],
+        }
+
+    def _keybinding_factory(self):
+        def _factory(keys, filter, action):
+            if action not in self.kb_func_lookup:
+                raise RequiredKeyNotFound(f"keybinding action {action} not found")
+            if not isinstance(keys, list):
+                keys = [keys]
+
+            @self.register_kb(*keys, filter=filter)
+            def _(event):
+                for method in self.kb_func_lookup[action]:
+                    method["func"](event, *method.get("args", []))
+
+        for key, item in self.kb_maps.items():
+            for kb in item:
+                _factory(kb["key"], kb.get("filter", Condition(lambda: True)), key)
+
+    def _handle_interrupt(self, event) -> None:
+        self.status["answered"] = True
+        self.status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
+        self.status["skipped"] = True
+        event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
+
+    @abstractmethod
+    def _handle_enter(self, event) -> None:
+        pass
 
     @property
     def status(self) -> Dict[str, Any]:
         """Dict[str, Any]: Get current prompt status.
 
-        The status contains 2 keys: "answered" and "result".
-
-        `answered`: If the current prompt is answered.
-
-        `result`: The result of the user answer.
+        The status contains 3 keys: "answered" and "result".
+            answered: If the current prompt is answered.
+            result: The result of the user answer.
+            skipped: If the prompt is skipped.
         """
         return self._status
 
@@ -171,37 +200,36 @@ class BaseSimplePrompt(ABC):
             Formatted text in list of tuple format.
         """
         display_message = []
-        if self.status["result"] == INQUIRERPY_KEYBOARD_INTERRUPT:
+        if self.status["skipped"]:
             display_message.append(("class:skipped", self._qmark))
             display_message.append(
                 ("class:skipped", "%s%s " % (" " if self._qmark else "", self._message))
             )
+        elif self.status["answered"]:
+            display_message.append(("class:answermark", self._amark))
+            display_message.append(
+                (
+                    "class:answered_question",
+                    "%s%s" % (" " if self._amark else "", self._message),
+                )
+            )
+            display_message.append(
+                post_answer
+                if not self._transformer
+                else (
+                    "class:answer",
+                    " %s" % self._transformer(self.status["result"]),
+                )
+            )
         else:
-            if self.status["answered"]:
-                display_message.append(("class:answermark", self._amark))
-                display_message.append(
-                    (
-                        "class:answered_question",
-                        "%s%s" % (" " if self._amark else "", self._message),
-                    )
+            display_message.append(("class:questionmark", self._qmark))
+            display_message.append(
+                (
+                    "class:question",
+                    "%s%s" % (" " if self._qmark else "", self._message),
                 )
-                display_message.append(
-                    post_answer
-                    if not self._transformer
-                    else (
-                        "class:answer",
-                        " %s" % self._transformer(self.status["result"]),
-                    )
-                )
-            else:
-                display_message.append(("class:questionmark", self._qmark))
-                display_message.append(
-                    (
-                        "class:question",
-                        "%s%s" % (" " if self._qmark else "", self._message),
-                    )
-                )
-                display_message.append(pre_answer)
+            )
+            display_message.append(pre_answer)
         return display_message
 
     @abstractmethod
@@ -243,3 +271,21 @@ class BaseSimplePrompt(ABC):
     def instruction(self) -> str:
         """str: Instruction to display next to question."""
         return self._instruction
+
+    @property
+    def kb_maps(self) -> Dict[str, Any]:
+        """Dict[str, Any]: Keybinding mappings."""
+        return self._kb_maps
+
+    @kb_maps.setter
+    def kb_maps(self, value: Dict[str, Any]) -> None:
+        self._kb_maps = {**self._kb_maps, **value}
+
+    @property
+    def kb_func_lookup(self) -> Dict[str, Any]:
+        """Dict[str, Any]: Keybinding function lookup mappings.."""
+        return self._kb_func_lookup
+
+    @kb_func_lookup.setter
+    def kb_func_lookup(self, value: Dict[str, Any]) -> None:
+        self._kb_func_lookup = {**self._kb_func_lookup, **value}

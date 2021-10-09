@@ -8,6 +8,7 @@ from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.utils import (
     InquirerPyDefault,
+    InquirerPyKeybindings,
     InquirerPyMessage,
     InquirerPySessionResult,
     InquirerPyStyle,
@@ -47,6 +48,8 @@ class ConfirmPrompt(BaseSimplePrompt):
         filter: A function which performs additional transformation on the result.
             This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
             Refer to :ref:`pages/dynamic:filter` documentation for more details.
+        keybindings: Customise the builtin keybindings.
+            Refer to :ref:`pages/kb:Keybindings` for more details.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         confirm_letter: Letter used to confirm the prompt. A keybinding will be created for this letter.
             Default is `y` and pressing `y` will answer the prompt with value `True`.
@@ -77,6 +80,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         long_instruction: str = "",
         transformer: Callable[[bool], Any] = None,
         filter: Callable[[bool], Any] = None,
+        keybindings: InquirerPyKeybindings = None,
         wrap_lines: bool = True,
         confirm_letter: str = "y",
         reject_letter: str = "n",
@@ -107,32 +111,26 @@ class ConfirmPrompt(BaseSimplePrompt):
         self._confirm_letter = confirm_letter
         self._reject_letter = reject_letter
 
-        @self._kb.add(self._confirm_letter)
-        @self._kb.add(self._confirm_letter.upper())
-        def confirm(event) -> None:
-            self._session.default_buffer.text = ""
-            self.status["answered"] = True
-            self.status["result"] = True
-            event.app.exit(result=True)
-
-        @self._kb.add(self._reject_letter)
-        @self._kb.add(self._reject_letter.upper())
-        def reject(event) -> None:
-            self._session.default_buffer.text = ""
-            self.status["answered"] = True
-            self.status["result"] = False
-            event.app.exit(result=False)
-
-        @self._kb.add(Keys.Any)
-        def _(event) -> None:
-            """Disable all other key presses."""
-            pass
-
-        @self._kb.add(Keys.Enter)
-        def enter(event) -> None:
-            self.status["answered"] = True
-            self.status["result"] = self._default
-            event.app.exit(result=self._default)
+        if not keybindings:
+            keybindings = {}
+        self.kb_maps = {
+            "confirm": [
+                {"key": self._confirm_letter},
+                {"key": self._confirm_letter.upper()},
+            ],
+            "reject": [
+                {"key": self._reject_letter},
+                {"key": self._reject_letter.upper()},
+            ],
+            "any": [{"key": Keys.Any}],
+            **keybindings,
+        }
+        self.kb_func_lookup = {
+            "confirm": [{"func": self._handle_confirm}],
+            "reject": [{"func": self._handle_reject}],
+            "any": [{"func": lambda _: None}],
+        }
+        self._keybinding_factory()
 
         self._session = PromptSession(
             message=self._get_prompt_message,
@@ -145,6 +143,23 @@ class ConfirmPrompt(BaseSimplePrompt):
             input=input,
             output=output,
         )
+
+    def _handle_reject(self, event) -> None:
+        self._session.default_buffer.text = ""
+        self.status["answered"] = True
+        self.status["result"] = False
+        event.app.exit(result=False)
+
+    def _handle_confirm(self, event) -> None:
+        self._session.default_buffer.text = ""
+        self.status["answered"] = True
+        self.status["result"] = True
+        event.app.exit(result=True)
+
+    def _handle_enter(self, event) -> None:
+        self.status["answered"] = True
+        self.status["result"] = self._default
+        event.app.exit(result=self._default)
 
     def _get_prompt_message(self) -> List[Tuple[str, str]]:
         """Get message to display infront of the input buffer.

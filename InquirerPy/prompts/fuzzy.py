@@ -494,7 +494,7 @@ class FuzzyPrompt(BaseListPrompt):
             self._buffer.text = default_text
             self._buffer.cursor_position = len(default_text)
 
-    def _toggle_all(self, value: bool = None) -> None:
+    def _handle_toggle_all(self, _, value: bool = None) -> None:
         """Toggle all choice `enabled` status.
 
         Args:
@@ -592,7 +592,7 @@ class FuzzyPrompt(BaseListPrompt):
         )
         self._task.add_done_callback(self._filter_callback)
 
-    def _toggle_choice(self) -> None:
+    def _handle_toggle_choice(self, _) -> None:
         """Handle tab event, alter the `selected` state of the choice."""
         current_selected_index = self.content_control.selection["index"]
         self.content_control.choices[current_selected_index][

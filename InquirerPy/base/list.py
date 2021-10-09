@@ -78,13 +78,13 @@ class BaseListPrompt(BaseComplexPrompt):
             session_result=session_result,
         )
 
-        if not keybindings:
-            keybindings = {}
-
         self._content_control: InquirerPyUIListControl
         self._multiselect = multiselect
         self._is_multiselect = Condition(lambda: self._multiselect)
         self._cycle = cycle
+
+        if not keybindings:
+            keybindings = {}
 
         self.kb_maps = {
             "down": [
@@ -119,12 +119,18 @@ class BaseListPrompt(BaseComplexPrompt):
         self.kb_func_lookup = {
             "down": [{"func": self._handle_down}],
             "up": [{"func": self._handle_up}],
-            "toggle": [{"func": self._toggle_choice}],
-            "toggle-down": [{"func": self._toggle_choice}, {"func": self._handle_down}],
-            "toggle-up": [{"func": self._toggle_choice}, {"func": self._handle_up}],
-            "toggle-all": [{"func": self._toggle_all}],
-            "toggle-all-true": [{"func": self._toggle_all, "args": [True]}],
-            "toggle-all-false": [{"func": self._toggle_all, "args": [False]}],
+            "toggle": [{"func": self._handle_toggle_choice}],
+            "toggle-down": [
+                {"func": self._handle_toggle_choice},
+                {"func": self._handle_down},
+            ],
+            "toggle-up": [
+                {"func": self._handle_toggle_choice},
+                {"func": self._handle_up},
+            ],
+            "toggle-all": [{"func": self._handle_toggle_all}],
+            "toggle-all-true": [{"func": self._handle_toggle_all, "args": [True]}],
+            "toggle-all-false": [{"func": self._handle_toggle_all, "args": [False]}],
         }
 
     def _on_rendered(self, _) -> None:
@@ -208,7 +214,7 @@ class BaseListPrompt(BaseComplexPrompt):
 
         return list(filter(filter_choice, self.content_control.choices))
 
-    def _handle_down(self) -> bool:
+    def _handle_down(self, _) -> bool:
         """Handle event when user attempts to move down.
 
         Returns:
@@ -231,7 +237,7 @@ class BaseListPrompt(BaseComplexPrompt):
                 return True
             return False
 
-    def _handle_up(self) -> bool:
+    def _handle_up(self, _) -> bool:
         """Handle event when user attempts to move up.
 
         Returns:
@@ -250,11 +256,11 @@ class BaseListPrompt(BaseComplexPrompt):
             return False
 
     @abstractmethod
-    def _toggle_choice(self) -> None:
+    def _handle_toggle_choice(self, event) -> None:
         """Handle event when user attempting to toggle the state of the chocie."""
         pass
 
     @abstractmethod
-    def _toggle_all(self, value: bool) -> None:
+    def _handle_toggle_all(self, event, value: bool) -> None:
         """Handle event when user attempting to alter the state of all choices."""
         pass

@@ -374,7 +374,7 @@ class ExpandPrompt(ListPrompt):
             if not isinstance(choice["value"], Separator):
                 keybinding_factory(choice["key"])
 
-    def _handle_up(self) -> None:
+    def _handle_up(self, event) -> None:
         """Handle the event when user attempt to move up.
 
         Overriding this method to skip the help choice.
@@ -382,17 +382,17 @@ class ExpandPrompt(ListPrompt):
         if not self.content_control._expanded:
             return
         while True:
-            cap = BaseListPrompt._handle_up(self)
+            cap = BaseListPrompt._handle_up(self, event)
             if not isinstance(
                 self.content_control.selection["value"], Separator
             ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
                 break
             else:
                 if cap and not self._cycle:
-                    self._handle_down()
+                    self._handle_down(event)
                     break
 
-    def _handle_down(self) -> None:
+    def _handle_down(self, event) -> None:
         """Handle the event when user attempt to move down.
 
         Overriding this method to skip the help choice.
@@ -400,7 +400,7 @@ class ExpandPrompt(ListPrompt):
         if not self.content_control._expanded:
             return
         while True:
-            cap = BaseListPrompt._handle_down(self)
+            cap = BaseListPrompt._handle_down(self, event)
             if not isinstance(
                 self.content_control.selection["value"], Separator
             ) and not isinstance(self.content_control.selection["value"], ExpandHelp):
@@ -409,11 +409,11 @@ class ExpandPrompt(ListPrompt):
                 isinstance(self.content_control.selection["value"], ExpandHelp)
                 and not self._cycle
             ):
-                self._handle_up()
+                self._handle_up(event)
                 break
             else:
                 if cap and not self._cycle:
-                    self._handle_up()
+                    self._handle_up(event)
                     break
 
     @property
@@ -442,7 +442,7 @@ class ExpandPrompt(ListPrompt):
             )
         return display_message
 
-    def _toggle_all(self, value: bool = None) -> None:
+    def _handle_toggle_all(self, _, value: bool = None) -> None:
         """Override this method to ignore `ExpandHelp`.
 
         :param value: Specify a value to toggle.
@@ -456,8 +456,8 @@ class ExpandPrompt(ListPrompt):
                 continue
             choice["enabled"] = value if value else not choice["enabled"]
 
-    def _toggle_choice(self) -> None:
+    def _handle_toggle_choice(self, event) -> None:
         """Override this method to ignore keypress when not expanded."""
         if not self.content_control._expanded:
             return
-        super()._toggle_choice()
+        super()._handle_toggle_choice(event)

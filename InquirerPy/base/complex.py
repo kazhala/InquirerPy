@@ -3,7 +3,7 @@ import asyncio
 import shutil
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Callable, List, Optional, Tuple, Union, cast
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -158,6 +158,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """
         self._status["answered"] = True
         self._status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
+        self._status["skipped"] = True
         self._application.exit(exception=context["exception"])
 
     def _after_render(self, app: Optional[Application]) -> None:
@@ -179,21 +180,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             except RuntimeError:
                 pass
 
-            def keybinding_factory(keys, filter, action):
-                if not isinstance(keys, list):
-                    keys = [keys]
-
-                @self.register_kb(*keys, filter=filter)
-                def _(_):
-                    for method in self.kb_func_lookup[action]:
-                        method["func"](*method.get("args", []))
-
-            for key, item in self.kb_maps.items():
-                for kb in item:
-                    keybinding_factory(
-                        kb["key"], kb.get("filter", Condition(lambda: True)), key
-                    )
-
+            self._keybinding_factory()
             self._on_rendered(app)
 
     def _set_error(self, message: str) -> None:
@@ -317,25 +304,3 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._loading = value
         if self.loading:
             asyncio.create_task(self._spinner.start())
-
-    @property
-    def kb_maps(self) -> Dict[str, Any]:
-        """Dict[str, Any]: Keybinding mappings."""
-        if not self._kb_maps:
-            raise NotImplementedError
-        return self._kb_maps
-
-    @kb_maps.setter
-    def kb_maps(self, value: Dict[str, Any]) -> None:
-        self._kb_maps = value
-
-    @property
-    def kb_func_lookup(self) -> Dict[str, Any]:
-        """Dict[str, Any]: Keybinding function lookup mappings.."""
-        if not self._kb_func_lookup:
-            raise NotImplementedError
-        return self._kb_func_lookup
-
-    @kb_func_lookup.setter
-    def kb_func_lookup(self, value: Dict[str, Any]) -> None:
-        self._kb_func_lookup = value

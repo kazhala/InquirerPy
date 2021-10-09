@@ -5,6 +5,7 @@ from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.utils import (
     InquirerPyDefault,
+    InquirerPyKeybindings,
     InquirerPyMessage,
     InquirerPySessionResult,
     InquirerPyStyle,
@@ -49,6 +50,8 @@ class SecretPrompt(InputPrompt):
         filter: A function which performs additional transformation on the result.
             This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
             Refer to :ref:`pages/dynamic:filter` documentation for more details.
+        keybindings: Customise the builtin keybindings.
+            Refer to :ref:`pages/kb:Keybindings` for more details.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
             will be `None` and the question is skiped.
@@ -77,6 +80,7 @@ class SecretPrompt(InputPrompt):
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
+        keybindings: InquirerPyKeybindings = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         session_result: InquirerPySessionResult = None,
@@ -101,6 +105,7 @@ class SecretPrompt(InputPrompt):
             is_password=True,
             transformer=transformer,
             filter=filter,
+            keybindings=keybindings,
             wrap_lines=wrap_lines,
             raise_keyboard_interrupt=raise_keyboard_interrupt,
             session_result=session_result,

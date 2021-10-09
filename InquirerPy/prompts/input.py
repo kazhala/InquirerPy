@@ -14,6 +14,7 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.utils import (
     InquirerPyDefault,
+    InquirerPyKeybindings,
     InquirerPyMessage,
     InquirerPySessionResult,
     InquirerPyStyle,
@@ -63,6 +64,8 @@ class InputPrompt(BaseSimplePrompt):
         filter: A function which performs additional transformation on the result.
             This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
             Refer to :ref:`pages/dynamic:filter` documentation for more details.
+        keybindings: Customise the builtin keybindings.
+            Refer to :ref:`pages/kb:Keybindings` for more details.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
             will be `None` and the question is skiped.
@@ -95,6 +98,7 @@ class InputPrompt(BaseSimplePrompt):
         invalid_message: str = "Invalid input",
         transformer: Callable[[str], Any] = None,
         filter: Callable[[str], Any] = None,
+        keybindings: InquirerPyKeybindings = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         is_password: bool = False,
@@ -142,37 +146,18 @@ class InputPrompt(BaseSimplePrompt):
         def has_completion():
             return self._completer is not None
 
-        @self._kb.add("c-space", filter=has_completion)
-        def completion(event):
-            buff = event.app.current_buffer
-            if buff.complete_state:
-                buff.complete_next()
-            else:
-                buff.start_completion(select_first=False)
-
-        @self._kb.add(Keys.Enter, filter=~is_multiline)
-        def enter(event):
-            try:
-                self._session.validator.validate(self._session.default_buffer)  # type: ignore
-            except ValidationError:
-                self._session.default_buffer.validate_and_handle()
-            else:
-                self.status["answered"] = True
-                self.status["result"] = self._session.default_buffer.text
-                self._session.default_buffer.text = ""
-                event.app.exit(result=self.status["result"])
-
-        @self._kb.add(Keys.Escape, Keys.Enter, filter=is_multiline)
-        def multiline_enter(event):
-            try:
-                self._session.validator.validate(self._session.default_buffer)  # type: ignore
-            except ValidationError:
-                self._session.default_buffer.validate_and_handle()
-            else:
-                self.status["answered"] = True
-                self.status["result"] = self._session.default_buffer.text
-                self._session.default_buffer.text = ""
-                event.app.exit(result=self.status["result"])
+        if not keybindings:
+            keybindings = {}
+        self.kb_maps = {
+            "answer": [
+                {"key": Keys.Enter, "filter": ~is_multiline},
+                {"key": [Keys.Escape, Keys.Enter], "filter": is_multiline},
+            ],
+            "completion": [{"key": "c-space", "filter": has_completion}],
+            **keybindings,
+        }
+        self.kb_func_lookup = {"completion": [{"func": self._handle_completion}]}
+        self._keybinding_factory()
 
         self._session = PromptSession(
             message=self._get_prompt_message,
@@ -193,6 +178,24 @@ class InputPrompt(BaseSimplePrompt):
             if long_instruction
             else None,
         )
+
+    def _handle_enter(self, event) -> None:
+        try:
+            self._session.validator.validate(self._session.default_buffer)  # type: ignore
+        except ValidationError:
+            self._session.default_buffer.validate_and_handle()
+        else:
+            self.status["answered"] = True
+            self.status["result"] = self._session.default_buffer.text
+            self._session.default_buffer.text = ""
+            event.app.exit(result=self.status["result"])
+
+    def _handle_completion(self, event) -> None:
+        buff = event.app.current_buffer
+        if buff.complete_state:
+            buff.complete_next()
+        else:
+            buff.start_completion(select_first=False)
 
     def _get_prompt_message(
         self,

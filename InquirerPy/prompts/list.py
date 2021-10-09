@@ -301,13 +301,13 @@ class ListPrompt(BaseListPrompt):
         message.append(("", " "))  # [SetCursorPosition] require char behind it
         return message
 
-    def _toggle_choice(self) -> None:
+    def _handle_toggle_choice(self, _) -> None:
         """Toggle the `enabled` status of the choice."""
         self.content_control.selection["enabled"] = not self.content_control.selection[
             "enabled"
         ]
 
-    def _toggle_all(self, value: bool = None) -> None:
+    def _handle_toggle_all(self, _, value: bool = None) -> None:
         """Toggle all choice `enabled` status.
 
         Args:
@@ -318,26 +318,26 @@ class ListPrompt(BaseListPrompt):
                 continue
             choice["enabled"] = value if value else not choice["enabled"]
 
-    def _handle_up(self) -> None:
+    def _handle_up(self, event) -> None:
         """Handle the event when user attempt to move up."""
         while True:
-            cap = super()._handle_up()
+            cap = super()._handle_up(event)
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
             else:
                 if cap and not self._cycle:
-                    self._handle_down()
+                    self._handle_down(event)
                     break
 
-    def _handle_down(self) -> None:
+    def _handle_down(self, event) -> None:
         """Handle the event when user attempt to move down."""
         while True:
-            cap = super()._handle_down()
+            cap = super()._handle_down(event)
             if not isinstance(self.content_control.selection["value"], Separator):
                 break
             else:
                 if cap and not self._cycle:
-                    self._handle_up()
+                    self._handle_up(event)
                     break
 
     def _handle_enter(self, event) -> None:
