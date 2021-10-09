@@ -70,7 +70,7 @@ class TestBaseComplex(unittest.TestCase):
         mocked.return_value = Task(add_done_callback=lambda _: True)
         prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
         self.assertEqual(prompt._rendered, False)
-        prompt._after_render("")
+        prompt._after_render(None)
 
         mocked.assert_called()
         mocked_loading.assert_called_once()
@@ -98,7 +98,10 @@ class TestBaseComplex(unittest.TestCase):
                 ("class:instruction", " "),
             ],
         )
-        prompt.status = {"answered": True, "result": ["hello"]}
+        prompt.status["answered"] = True
+        prompt.status["result"] = ["hello"]
+        prompt.status["skipped"] = False
+
         self.assertEqual(
             prompt._get_prompt_message(),
             [
@@ -191,15 +194,15 @@ class TestBaseComplex(unittest.TestCase):
             ],
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
-        prompt._handle_down()
-        prompt._handle_down()
+        prompt._handle_down(None)
+        prompt._handle_down(None)
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 4)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
 
     def test_handle_down_no_cycle(self):
@@ -215,15 +218,15 @@ class TestBaseComplex(unittest.TestCase):
             cycle=False,
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
-        prompt._handle_down()
-        prompt._handle_down()
+        prompt._handle_down(None)
+        prompt._handle_down(None)
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 4)
-        prompt._handle_down()
-        prompt._handle_down()
-        prompt._handle_down()
+        prompt._handle_down(None)
+        prompt._handle_down(None)
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 4)
 
     def test_handle_up(self):
@@ -238,14 +241,14 @@ class TestBaseComplex(unittest.TestCase):
             ],
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 4)
-        prompt._handle_up()
-        prompt._handle_up()
+        prompt._handle_up(None)
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 2)
-        prompt._handle_up()
-        prompt._handle_up()
-        prompt._handle_up()
+        prompt._handle_up(None)
+        prompt._handle_up(None)
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 4)
 
     def test_handle_up_no_cycle(self):
@@ -261,18 +264,18 @@ class TestBaseComplex(unittest.TestCase):
             cycle=False,
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_up()
-        prompt._handle_up()
+        prompt._handle_up(None)
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_down()
-        prompt._handle_down()
+        prompt._handle_down(None)
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 2)
-        prompt._handle_up()
-        prompt._handle_up()
-        prompt._handle_up()
-        prompt._handle_up()
+        prompt._handle_up(None)
+        prompt._handle_up(None)
+        prompt._handle_up(None)
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
 
         prompt = FuzzyPrompt(
@@ -362,28 +365,6 @@ class TestBaseComplex(unittest.TestCase):
         asyncio.run(run_spinner(prompt))
         self.assertFalse(prompt.loading)
 
-    def test_kb_maps(self):
-        prompt = FuzzyPrompt(message="", choices=[1, 2, 3])
-        prompt.kb_maps
-        prompt._kb_maps = None
-
-        try:
-            prompt.kb_maps
-            self.fail("NotImplementedError not raised")
-        except NotImplementedError:
-            pass
-
-    def test_kb_func_lookup(self):
-        prompt = FuzzyPrompt(message="", choices=[1, 2, 3])
-        prompt.kb_func_lookup
-        prompt._kb_func_lookup = None
-
-        try:
-            prompt.kb_func_lookup
-            self.fail("NotImplementedError not raised")
-        except NotImplementedError:
-            pass
-
     def test_get_error_message(self):
         class SelectionValidator(Validator):
             def validate(self, document) -> None:
@@ -413,12 +394,13 @@ class TestBaseComplex(unittest.TestCase):
             prompt = FuzzyPrompt(message="", choices=[1, 2, 3])
             prompt._after_render(None)
             loop = asyncio.get_running_loop()
-            self.assertEqual(prompt._status, {"answered": False, "result": None})
+            self.assertEqual(prompt._status["answered"], False)
+            self.assertEqual(prompt._status["result"], None)
+            self.assertEqual(prompt._status["skipped"], False)
             self.assertEqual(loop.get_exception_handler(), prompt._exception_handler)
             prompt._exception_handler(None, {"exception": KeyboardInterrupt})
-            self.assertEqual(
-                prompt._status,
-                {"answered": True, "result": INQUIRERPY_KEYBOARD_INTERRUPT},
-            )
+            self.assertEqual(prompt._status["answered"], True)
+            self.assertEqual(prompt._status["result"], INQUIRERPY_KEYBOARD_INTERRUPT)
+            self.assertEqual(prompt._status["skipped"], True)
 
         asyncio.run(test_async())

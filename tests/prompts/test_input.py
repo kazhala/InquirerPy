@@ -32,9 +32,9 @@ class TestInputPrompt(unittest.TestCase):
         )
         result = input_prompt.execute()
         self.assertEqual(result, "worldhello")
-        self.assertEqual(
-            input_prompt.status, {"answered": True, "result": "worldhello"}
-        )
+        self.assertEqual(input_prompt.status["answered"], True)
+        self.assertEqual(input_prompt.status["result"], "worldhello")
+        self.assertEqual(input_prompt.status["skipped"], False)
 
     def test_prompt_filter(self):
         self.inp.send_text("hello\n")
@@ -51,9 +51,8 @@ class TestInputPrompt(unittest.TestCase):
         )
         result = input_prompt.execute()
         self.assertEqual(result, "worldhelloworldhello")
-        self.assertEqual(
-            input_prompt.status, {"answered": True, "result": "worldhello"}
-        )
+        self.assertEqual(input_prompt.status["answered"], True)
+        self.assertEqual(input_prompt.status["result"], "worldhello")
         self.assertEqual(
             input_prompt._get_prompt_message(),
             [
@@ -77,9 +76,9 @@ class TestInputPrompt(unittest.TestCase):
         )
         result = input_prompt.execute()
         self.assertEqual(result, "hello\nworld\nfoo\nboo")
-        self.assertEqual(
-            input_prompt.status, {"answered": True, "result": "hello\nworld\nfoo\nboo"}
-        )
+        self.assertEqual(input_prompt.status["answered"], True)
+        self.assertEqual(input_prompt.status["result"], "hello\nworld\nfoo\nboo")
+        self.assertEqual(input_prompt.status["skipped"], False)
 
     def test_prompt_completion(self):
         input_prompt = InputPrompt(
@@ -244,5 +243,5 @@ class TestInputPrompt(unittest.TestCase):
             multiline=False,
             complete_style=CompleteStyle.COLUMN,
             wrap_lines=True,
-            bottom_toolbar=[("class:long_instruction", "asfasdf")]
+            bottom_toolbar=[("class:long_instruction", "asfasdf")],
         )

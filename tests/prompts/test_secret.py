@@ -33,7 +33,10 @@ class TestSecret(unittest.TestCase):
         )
         result = secret_prompt.execute()
         self.assertEqual(result, "yeswhat")
-        self.assertEqual(secret_prompt.status, {"answered": True, "result": "yeswhat"})
+        self.assertEqual(
+            secret_prompt.status,
+            {"answered": True, "result": "yeswhat", "skipped": False},
+        )
 
     @patch.object(Buffer, "validate_and_handle")
     def test_prompt_validation(self, mocked_validate):

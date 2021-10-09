@@ -372,10 +372,9 @@ class TestResolver(unittest.TestCase):
         )
 
         input_prompt = InputPrompt(message="hello")
-        input_prompt.status = {
-            "answered": True,
-            "result": INQUIRERPY_KEYBOARD_INTERRUPT,
-        }
+        input_prompt.status["answered"] = True
+        input_prompt.status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
+        input_prompt.status["skipped"] = True
         self.assertEqual(
             input_prompt._get_prompt_message(),
             [("class:skipped", "?"), ("class:skipped", " hello ")],

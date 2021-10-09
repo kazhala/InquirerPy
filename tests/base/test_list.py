@@ -58,24 +58,24 @@ class TestBaseList(unittest.TestCase):
             ],
         )
 
-    def test_prompt_toggle_choice(self):
+    def test_prompt_handle_toggle_choice(self):
         prompt = ListPrompt(message="Select one:", choices=[1, 2, 3])
         self.assertEqual(
             prompt.content_control.selection,
             {"enabled": False, "name": "1", "value": 1},
         )
-        prompt._toggle_choice()
+        prompt._handle_toggle_choice(None)
         self.assertEqual(
             prompt.content_control.selection,
             {"enabled": True, "name": "1", "value": 1},
         )
-        prompt._toggle_choice()
+        prompt._handle_toggle_choice(None)
         self.assertEqual(
             prompt.content_control.selection,
             {"enabled": False, "name": "1", "value": 1},
         )
 
-    def test_prompt_toggle_all(self):
+    def test_prompt_handle_toggle_all(self):
         prompt = ListPrompt(message="Select one:", choices=[1, 2, 3])
         self.assertEqual(
             prompt.content_control.choices,
@@ -85,7 +85,7 @@ class TestBaseList(unittest.TestCase):
                 {"enabled": False, "name": "3", "value": 3},
             ],
         )
-        prompt._toggle_all()
+        prompt._handle_toggle_all(None)
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -94,7 +94,7 @@ class TestBaseList(unittest.TestCase):
                 {"enabled": True, "name": "3", "value": 3},
             ],
         )
-        prompt._toggle_all()
+        prompt._handle_toggle_all(None)
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -107,18 +107,18 @@ class TestBaseList(unittest.TestCase):
     def test_handle_up(self):
         prompt = ListPrompt(message="Select one:", choices=[1, 2, Separator(), 3])
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
 
         prompt = ListPrompt(message="Select one:", choices=[1, 2, 3, Separator()])
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 2)
 
     def test_handle_up_no_cycle(self):
@@ -128,7 +128,7 @@ class TestBaseList(unittest.TestCase):
             cycle=False,
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
 
         prompt = ListPrompt(
@@ -137,7 +137,7 @@ class TestBaseList(unittest.TestCase):
             cycle=False,
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
 
     def test_handle_down(self) -> None:
@@ -146,10 +146,10 @@ class TestBaseList(unittest.TestCase):
             choices=[1, 2, 3, Separator()],
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
-        prompt._handle_down()
+        prompt._handle_down(None)
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
 
     def test_handle_down_no_cycle(self):
@@ -159,10 +159,10 @@ class TestBaseList(unittest.TestCase):
             cycle=False,
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 2)
-        prompt._handle_down()
-        prompt._handle_down()
+        prompt._handle_down(None)
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
 
         prompt = ListPrompt(
@@ -171,10 +171,10 @@ class TestBaseList(unittest.TestCase):
             cycle=False,
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_down()
-        prompt._handle_down()
-        prompt._handle_down()
-        prompt._handle_down()
+        prompt._handle_down(None)
+        prompt._handle_down(None)
+        prompt._handle_down(None)
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 2)
 
     def test_handle_enter(self) -> None:
@@ -188,11 +188,15 @@ class TestBaseList(unittest.TestCase):
             pointer=">",
             instruction="(j/k)",
         )
-        self.assertEqual(prompt.status, {"result": None, "answered": False})
+        self.assertEqual(
+            prompt.status, {"result": None, "answered": False, "skipped": False}
+        )
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"result": "melon", "answered": True})
+        self.assertEqual(
+            prompt.status, {"result": "melon", "answered": True, "skipped": False}
+        )
 
     def test_handle_enter_multi(self) -> None:
         prompt = ListPrompt(
@@ -206,11 +210,15 @@ class TestBaseList(unittest.TestCase):
             instruction="(j/k)",
             multiselect=True,
         )
-        self.assertEqual(prompt.status, {"result": None, "answered": False})
+        self.assertEqual(
+            prompt.status, {"result": None, "answered": False, "skipped": False}
+        )
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"result": ["melon"], "answered": True})
+        self.assertEqual(
+            prompt.status, {"result": ["melon"], "answered": True, "skipped": False}
+        )
 
     def test_handle_enter_validator(self):
         prompt = ListPrompt(
@@ -225,18 +233,24 @@ class TestBaseList(unittest.TestCase):
             validate=lambda result: result != "watermelon",
         )
         self.assertFalse(prompt._invalid)
-        self.assertEqual(prompt.status, {"result": None, "answered": False})
+        self.assertEqual(
+            prompt.status, {"result": None, "answered": False, "skipped": False}
+        )
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"result": None, "answered": False})
+        self.assertEqual(
+            prompt.status, {"result": None, "answered": False, "skipped": False}
+        )
         self.assertTrue(prompt._invalid)
 
         prompt.content_control.selected_choice_index = 0
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"result": "apple", "answered": True})
+        self.assertEqual(
+            prompt.status, {"result": "apple", "answered": True, "skipped": False}
+        )
 
     @patch("InquirerPy.base.complex.shutil.get_terminal_size")
     def test_wrap_lines_offset(self, mocked_term):

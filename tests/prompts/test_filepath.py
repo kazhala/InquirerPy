@@ -122,7 +122,7 @@ class TestFilePath(unittest.TestCase):
             ]
             self.assertEqual(sorted(completions), sorted(self.dirs_to_create))
 
-    def test_completer_dir_only(self):
+    def test_completer_file_only(self):
         with self.chdir(self.test_dir):
             completer = FilePathCompleter(only_files=True)
             doc_text = "./"

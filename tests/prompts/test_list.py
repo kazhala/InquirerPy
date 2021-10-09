@@ -97,38 +97,42 @@ class TestListPrompt(unittest.TestCase):
             instruction="(j/k)",
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 2)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 2)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 2)
 
-        self.assertEqual(prompt.status, {"result": None, "answered": False})
+        self.assertEqual(
+            prompt.status, {"result": None, "answered": False, "skipped": False}
+        )
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"result": "melon", "answered": True})
+        self.assertEqual(
+            prompt.status, {"result": "melon", "answered": True, "skipped": False}
+        )
 
     def test_separator_movement(self):
         prompt = ListPrompt(message="..", choices=[Separator("hello"), "yes"])
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
 
         prompt = ListPrompt(
             message="..", choices=[Separator("hello"), "yes", Separator(), "no"]
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
 
     def test_list_enter_empty(self):

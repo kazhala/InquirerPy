@@ -92,6 +92,7 @@ class TestBaseSimple(unittest.TestCase):
         input_prompt = InputPrompt(message="Enter your name", style=None, qmark="[?]")
         input_prompt.status["answered"] = True
         input_prompt.status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
+        input_prompt.status["skipped"] = True
         message = input_prompt._get_prompt_message()
         self.assertEqual(
             message, [("class:skipped", "[?]"), ("class:skipped", " Enter your name ")]

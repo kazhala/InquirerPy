@@ -160,9 +160,9 @@ class TestExpandPrompt(unittest.TestCase):
                 ("class:input", "f"),
             ],
         )
-        prompt._handle_up()
-        prompt._handle_up()
-        prompt._handle_down()
+        prompt._handle_up(None)
+        prompt._handle_up(None)
+        prompt._handle_down(None)
         self.assertEqual(
             prompt._get_prompt_message(),
             [
@@ -173,7 +173,7 @@ class TestExpandPrompt(unittest.TestCase):
             ],
         )
         prompt.content_control._expanded = True
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(
             prompt._get_prompt_message(),
             [
@@ -199,16 +199,18 @@ class TestExpandPrompt(unittest.TestCase):
         prompt = ExpandPrompt(message="Choose one", choices=self.choices)
         prompt.content_control._expanded = True
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"result": "foo", "answered": True})
+        self.assertEqual(prompt.status["result"], "foo")
+        self.assertEqual(prompt.status["answered"], True)
+        self.assertEqual(prompt.status["skipped"], False)
 
     def test_key_not_expand(self):
         expand_help = ExpandHelp()
@@ -229,16 +231,16 @@ class TestExpandPrompt(unittest.TestCase):
             ],
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._toggle_choice()
+        prompt._handle_toggle_choice(None)
         self.assertEqual(
             prompt.content_control.selection,
             {"enabled": False, "key": "b", "name": "hello", "value": "world"},
         )
-        prompt._toggle_all()
+        prompt._handle_toggle_all(None)
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -259,17 +261,17 @@ class TestExpandPrompt(unittest.TestCase):
         expand_help = ExpandHelp()
         prompt = ExpandPrompt(message="", choices=self.choices, expand_help=expand_help)
         prompt.content_control._expanded = True
-        prompt._toggle_choice()
+        prompt._handle_toggle_choice(None)
         self.assertEqual(
             prompt.content_control.selection,
             {"enabled": True, "key": "b", "name": "hello", "value": "world"},
         )
-        prompt._toggle_choice()
+        prompt._handle_toggle_choice(None)
         self.assertEqual(
             prompt.content_control.selection,
             {"enabled": False, "key": "b", "name": "hello", "value": "world"},
         )
-        prompt._toggle_all()
+        prompt._handle_toggle_all(None)
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -285,8 +287,8 @@ class TestExpandPrompt(unittest.TestCase):
                 },
             ],
         )
-        prompt._toggle_all(True)
-        prompt._toggle_all()
+        prompt._handle_toggle_all(None, True)
+        prompt._handle_toggle_all(None)
         self.assertEqual(
             prompt.content_control.choices,
             [

@@ -188,20 +188,22 @@ class TestRawList(unittest.TestCase):
             instruction="bb",
         )
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
 
-        self.assertEqual(prompt.status, {"result": None, "answered": False})
+        self.assertEqual(prompt.status["result"], None)
+        self.assertEqual(prompt.status["answered"], False)
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"result": "hello", "answered": True})
+        self.assertEqual(prompt.status["result"], "hello")
+        self.assertEqual(prompt.status["answered"], True)
 
     @patch.object(BaseComplexPrompt, "register_kb")
     def test_kb_added(self, mocked_add):

@@ -1,6 +1,6 @@
 import asyncio
 import unittest
-from unittest.mock import ANY, call, patch
+from unittest.mock import ANY, patch
 
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
@@ -135,24 +135,27 @@ class TestCheckbox(unittest.TestCase):
     def test_checkbox_bindings(self):
         prompt = CheckboxPrompt(message="", choices=self.choices)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
-        prompt._handle_down()
+        prompt._handle_down(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 0)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 3)
-        prompt._handle_up()
+        prompt._handle_up(None)
         self.assertEqual(prompt.content_control.selected_choice_index, 1)
 
-        self.assertEqual(prompt.status, {"result": None, "answered": False})
+        self.assertEqual(prompt.status["result"], None)
+        self.assertEqual(prompt.status["answered"], False)
+        self.assertEqual(prompt.status["skipped"], False)
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"result": ["mix"], "answered": True})
+        self.assertEqual(prompt.status["result"], ["mix"])
+        self.assertEqual(prompt.status["answered"], True)
 
-        prompt._toggle_choice()
+        prompt._handle_toggle_choice(None)
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -163,7 +166,7 @@ class TestCheckbox(unittest.TestCase):
             ],
         )
 
-        prompt._toggle_all()
+        prompt._handle_toggle_all(None)
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -174,7 +177,7 @@ class TestCheckbox(unittest.TestCase):
             ],
         )
 
-        prompt._toggle_all(True)
+        prompt._handle_toggle_all(None, True)
         self.assertEqual(
             prompt.content_control.choices,
             [

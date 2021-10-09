@@ -497,7 +497,9 @@ class TestFuzzy(unittest.TestCase):
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             self.prompt._handle_enter(event)
-        self.assertEqual(self.prompt.status, {"answered": True, "result": "haah"})
+        self.assertEqual(self.prompt.status["answered"], True)
+        self.assertEqual(self.prompt.status["result"], "haah")
+        self.assertEqual(self.prompt.status["skipped"], False)
 
         prompt = FuzzyPrompt(
             message="Select one of them",
@@ -507,16 +509,21 @@ class TestFuzzy(unittest.TestCase):
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"answered": True, "result": ["haah"]})
-        prompt.status = {"answered": False, "result": None}
-        prompt._toggle_choice()
-        prompt._handle_down()
-        prompt._toggle_choice()
-        prompt._handle_down()
+        self.assertEqual(prompt.status["answered"], True)
+        self.assertEqual(prompt.status["result"], ["haah"])
+        self.assertEqual(prompt.status["skipped"], False)
+        prompt.status["answered"] = False
+        prompt.status["result"] = None
+        prompt._handle_toggle_choice(None)
+        prompt._handle_down(None)
+        prompt._handle_toggle_choice(None)
+        prompt._handle_down(None)
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"answered": True, "result": ["haah", "haha"]})
+        self.assertEqual(prompt.status["answered"], True)
+        self.assertEqual(prompt.status["result"], ["haah", "haha"])
+        self.assertEqual(prompt.status["skipped"], False)
 
         prompt = FuzzyPrompt(
             message="Select one of them",
@@ -527,7 +534,8 @@ class TestFuzzy(unittest.TestCase):
         with patch("prompt_toolkit.utils.Event") as mock:
             event = mock.return_value
             prompt._handle_enter(event)
-        self.assertEqual(prompt.status, {"answered": True, "result": []})
+        self.assertEqual(prompt.status["answered"], True)
+        self.assertEqual(prompt.status["result"], [])
 
     @patch("asyncio.create_task")
     def test_prompt_validator(self, _):
@@ -548,7 +556,7 @@ class TestFuzzy(unittest.TestCase):
         prompt._on_text_changed("")
         self.assertEqual(prompt._invalid, False)
 
-    def test_prompt_toggle(self):
+    def test_prompt_handle_toggle(self):
         prompt = FuzzyPrompt(message="", choices=["haha", "asdfa", "112321fd"])
         self.assertEqual(
             prompt.content_control.choices,
@@ -576,7 +584,7 @@ class TestFuzzy(unittest.TestCase):
                 },
             ],
         )
-        prompt._toggle_all()
+        prompt._handle_toggle_all(None)
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -603,7 +611,7 @@ class TestFuzzy(unittest.TestCase):
                 },
             ],
         )
-        prompt._toggle_all(True)
+        prompt._handle_toggle_all(None, True)
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -630,7 +638,7 @@ class TestFuzzy(unittest.TestCase):
                 },
             ],
         )
-        prompt._toggle_all()
+        prompt._handle_toggle_all(None)
         self.assertEqual(
             prompt.content_control.choices,
             [
