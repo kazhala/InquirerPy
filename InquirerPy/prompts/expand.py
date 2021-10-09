@@ -359,7 +359,7 @@ class ExpandPrompt(ListPrompt):
         self._redraw()
 
         def keybinding_factory(key):
-            @self._register_kb(key.lower())
+            @self.register_kb(key.lower())
             def keybinding(_) -> None:
                 if key == self._expand_help.key:
                     self.content_control._expanded = not self.content_control._expanded

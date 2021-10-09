@@ -263,7 +263,7 @@ class RawlistPrompt(ListPrompt):
         """
 
         def keybinding_factory(choice):
-            @self._register_kb(str(choice["display_index"]))
+            @self.register_kb(str(choice["display_index"]))
             def keybinding(_) -> None:
                 self.content_control.selected_choice_index = int(choice["actual_index"])
 

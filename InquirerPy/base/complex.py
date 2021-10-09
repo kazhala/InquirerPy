@@ -119,7 +119,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
             delay=spinner_delay,
         )
 
-        @self._register_kb("enter")
+        @self.register_kb("enter")
         def _(event):
             self._handle_enter(event)
 
@@ -127,16 +127,17 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """Redraw the application UI."""
         self._application.invalidate()
 
-    def _register_kb(
+    def register_kb(
         self, *keys: Union[Keys, str], filter: FilterOrBool = True
     ) -> Callable[[KeyHandlerCallable], KeyHandlerCallable]:
         """Decorate keybinding registration function.
 
         Ensure that the `invalid` state is cleared on next keybinding entered.
         """
+        kb_dec = super().register_kb(*keys, filter=filter)
 
         def decorator(func: KeyHandlerCallable) -> KeyHandlerCallable:
-            @self.register_kb(*keys, filter=filter)
+            @kb_dec
             def executable(event):
                 if self._invalid:
                     self._invalid = False
@@ -182,7 +183,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
                 if not isinstance(keys, list):
                     keys = [keys]
 
-                @self._register_kb(*keys, filter=filter)
+                @self.register_kb(*keys, filter=filter)
                 def _(_):
                     for method in self.kb_func_lookup[action]:
                         method["func"](*method.get("args", []))
