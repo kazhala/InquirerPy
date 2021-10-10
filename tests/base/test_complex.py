@@ -297,24 +297,6 @@ class TestBaseComplex(unittest.TestCase):
         mocked_term2.return_value = (24, 80)
         message = 15 * "i"
         qmark = "[?]"
-        instruction = 2 * "i"
-        prompt = FuzzyPrompt(
-            message=message,
-            qmark=qmark,
-            instruction=instruction,
-            choices=[
-                "haah",
-                "haha",
-                "what",
-                "waht",
-                {"name": "weaht", "value": "weaht", "enabled": True},
-            ],
-        )
-        self.assertEqual(
-            prompt.extra_lines_due_to_wrapping,
-            (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1) // 24,
-        )
-
         instruction = 3 * "i"
         prompt = FuzzyPrompt(
             message=message,
@@ -329,8 +311,26 @@ class TestBaseComplex(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            prompt.extra_lines_due_to_wrapping,
-            (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1) // 24,
+            prompt.extra_line_count,
+            (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1 - 1) // 24,
+        )
+
+        instruction = 4 * "i"
+        prompt = FuzzyPrompt(
+            message=message,
+            qmark=qmark,
+            instruction=instruction,
+            choices=[
+                "haah",
+                "haha",
+                "what",
+                "waht",
+                {"name": "weaht", "value": "weaht", "enabled": True},
+            ],
+        )
+        self.assertEqual(
+            prompt.extra_line_count,
+            (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1 - 1) // 24,
         )
 
     @patch("InquirerPy.base.complex.shutil.get_terminal_size")
@@ -338,7 +338,7 @@ class TestBaseComplex(unittest.TestCase):
         mocked_term.return_value = (24, 80)
         message = 15 * "i"
         qmark = "[?]"
-        instruction = 3 * "i"
+        instruction = 4 * "i"
         prompt = FuzzyPrompt(
             message=message, qmark=qmark, instruction=instruction, choices=[1, 2, 3]
         )
@@ -354,6 +354,12 @@ class TestBaseComplex(unittest.TestCase):
             border=True,
         )
         self.assertEqual(prompt.height_offset, 6)
+
+        instruction = 3 * "i"  # width total should be 24 and no extra lines needed
+        prompt = FuzzyPrompt(
+            message=message, qmark=qmark, instruction=instruction, choices=[1, 2, 3]
+        )
+        self.assertEqual(prompt.height_offset, 3)
 
     def test_loading(self):
         async def run_spinner(prompt) -> None:

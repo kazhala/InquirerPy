@@ -257,7 +257,7 @@ class TestBaseList(unittest.TestCase):
         mocked_term.return_value = (24, 80)
         message = 15 * "i"
         qmark = "[?]"
-        instruction = 2 * "i"
+        instruction = 3 * "i"
         prompt = ListPrompt(
             message=message,
             choices=self.choices,
@@ -271,8 +271,8 @@ class TestBaseList(unittest.TestCase):
             wrap_lines=True,
         )
         self.assertEqual(
-            prompt.wrap_lines_offset,
-            (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1 + 1) // 24,
+            prompt.extra_line_count,
+            (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1) // 24,
         )
 
         prompt = ListPrompt(
@@ -288,12 +288,8 @@ class TestBaseList(unittest.TestCase):
             wrap_lines=True,
         )
         self.assertEqual(
-            prompt.wrap_lines_offset,
-            (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1) // 24,
-        )
-        self.assertEqual(
-            prompt.wrap_lines_offset,
-            (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1) // 24,
+            prompt.extra_line_count,
+            (len(qmark) + 1 + len(message) + 1 + len(instruction) + 1 - 1) // 24,
         )
         prompt._wrap_lines = False
-        self.assertEqual(prompt.wrap_lines_offset, 0)
+        self.assertEqual(prompt.extra_line_count, 0)
