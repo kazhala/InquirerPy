@@ -1,8 +1,10 @@
 """Module contains the class to create a confirm prompt."""
 from typing import TYPE_CHECKING, Any, Callable, List, Tuple
 
+from prompt_toolkit.buffer import ValidationState
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.shortcuts import PromptSession
+from prompt_toolkit.validation import ValidationError
 
 from InquirerPy.base import BaseSimplePrompt
 from InquirerPy.exceptions import InvalidArgument
@@ -143,6 +145,10 @@ class ConfirmPrompt(BaseSimplePrompt):
             input=input,
             output=output,
         )
+
+    def _set_error(self, message: str) -> None:
+        self._session.default_buffer.validation_state = ValidationState.INVALID
+        self._session.default_buffer.validation_error = ValidationError(message=message)
 
     def _handle_reject(self, event) -> None:
         self._session.default_buffer.text = ""

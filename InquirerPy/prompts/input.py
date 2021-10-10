@@ -1,6 +1,7 @@
 """Module contains the class to create an input prompt."""
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
 
+from prompt_toolkit.buffer import ValidationState
 from prompt_toolkit.completion import NestedCompleter
 from prompt_toolkit.completion.base import Completer
 from prompt_toolkit.filters.base import Condition
@@ -178,6 +179,10 @@ class InputPrompt(BaseSimplePrompt):
             if long_instruction
             else None,
         )
+
+    def _set_error(self, message: str) -> None:
+        self._session.default_buffer.validation_state = ValidationState.INVALID
+        self._session.default_buffer.validation_error = ValidationError(message=message)
 
     def _handle_enter(self, event) -> None:
         try:
