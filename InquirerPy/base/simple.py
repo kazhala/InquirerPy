@@ -2,7 +2,17 @@
 import os
 import re
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Tuple, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters.base import Condition, FilterOrBool
@@ -13,7 +23,16 @@ from prompt_toolkit.validation import Validator
 
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import RequiredKeyNotFound
-from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle, get_style
+from InquirerPy.utils import (
+    InquirerPyMessage,
+    InquirerPySessionResult,
+    InquirerPyStyle,
+    InquirerPyValidate,
+    get_style,
+)
+
+if TYPE_CHECKING:
+    from prompt_toolkit.key_binding.key_processor import KeyPressEvent
 
 
 class BaseSimplePrompt(ABC):
@@ -33,13 +52,13 @@ class BaseSimplePrompt(ABC):
 
     def __init__(
         self,
-        message: Union[str, Callable[[InquirerPySessionResult], str]],
+        message: InquirerPyMessage,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
-        validate: Union[Callable[[Any], bool], Validator] = None,
+        validate: InquirerPyValidate = None,
         invalid_message: str = "Invalid input",
         transformer: Callable[[Any], Any] = None,
         filter: Callable[[Any], Any] = None,
@@ -85,7 +104,7 @@ class BaseSimplePrompt(ABC):
         )
 
         self._kb_maps = {
-            "answer": [{"key": "enter"}],
+            "answer": [{"key": Keys.Enter}],
             "interrupt": [{"key": "c-c"}],
         }
         self._kb_func_lookup = {
@@ -94,6 +113,13 @@ class BaseSimplePrompt(ABC):
         }
 
     def _keybinding_factory(self):
+        """Register all keybindings in `self._kb_maps`.
+
+        It's required to call this function at the end of prompt constructor if
+        it inherits from :class:`~InquirerPy.base.simple.BaseSimplePrompt` or
+        :class:`~InquirerPy.base.complex.BaseComplexPrompt`.
+        """
+
         def _factory(keys, filter, action):
             if action not in self.kb_func_lookup:
                 raise RequiredKeyNotFound(f"keybinding action {action} not found")
@@ -109,14 +135,17 @@ class BaseSimplePrompt(ABC):
             for kb in item:
                 _factory(kb["key"], kb.get("filter", Condition(lambda: True)), key)
 
-    def _handle_interrupt(self, event) -> None:
+    def _handle_interrupt(self, event: Optional["KeyPressEvent"]) -> None:
+        """Handle the event when a KeyboardInterrupt signal is sent."""
         self.status["answered"] = True
         self.status["result"] = INQUIRERPY_KEYBOARD_INTERRUPT
         self.status["skipped"] = True
-        event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
+        if event:
+            event.app.exit(result=INQUIRERPY_KEYBOARD_INTERRUPT)
 
     @abstractmethod
-    def _handle_enter(self, event) -> None:
+    def _handle_enter(self, event: Optional["KeyPressEvent"]) -> None:
+        """Handle the event when user attempt to answer the question."""
         pass
 
     @property
