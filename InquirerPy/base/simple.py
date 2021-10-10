@@ -65,8 +65,12 @@ class BaseSimplePrompt(ABC):
         default: Any = "",
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
+        mandatory: bool = True,
+        mandatory_message: str = "Mandatory prompt",
         session_result: InquirerPySessionResult = None,
     ) -> None:
+        self._mandatory = mandatory
+        self._mandatory_message = mandatory_message
         self._result = session_result or {}
         self._message = (
             message
@@ -106,10 +110,12 @@ class BaseSimplePrompt(ABC):
         self._kb_maps = {
             "answer": [{"key": Keys.Enter}],
             "interrupt": [{"key": "c-c"}],
+            "skip": [{"key": "c-z"}],
         }
         self._kb_func_lookup = {
             "answer": [{"func": self._handle_enter}],
             "interrupt": [{"func": self._handle_interrupt}],
+            "skip": [{"func": self._handle_skip}],
         }
 
     def _keybinding_factory(self):
@@ -134,6 +140,30 @@ class BaseSimplePrompt(ABC):
         for key, item in self.kb_maps.items():
             for kb in item:
                 _factory(kb["key"], kb.get("filter", Condition(lambda: True)), key)
+
+    @abstractmethod
+    def _set_error(self, message: str) -> None:
+        """Set the error message for the prompt.
+
+        Args:
+            message: Error message to set.
+        """
+        pass
+
+    def _handle_skip(self, event: Optional["KeyPressEvent"]) -> None:
+        """Handle the event when attempting to skip a prompt.
+
+        Skip the prompt if the `_mandatory` field is False, otherwise
+        show an error message that the prompt cannot be skipped.
+        """
+        if not self._mandatory:
+            self.status["answered"] = True
+            self.status["skipped"] = True
+            self.status["result"] = None
+            if event:
+                event.app.exit(result=None)
+        else:
+            self._set_error(message=self._mandatory_message)
 
     def _handle_interrupt(self, event: Optional["KeyPressEvent"]) -> None:
         """Handle the event when a KeyboardInterrupt signal is sent."""
