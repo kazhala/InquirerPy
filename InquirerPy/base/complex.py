@@ -102,6 +102,11 @@ class BaseComplexPrompt(BaseSimplePrompt):
             self._height_offset += 2
         if self._long_instruction:
             self._height_offset += 1
+        self._validation_window_bottom_offset = 0 if not self._long_instruction else 1
+        if self._wrap_lines:
+            self._validation_window_bottom_offset += (
+                self.extra_long_instruction_line_count
+            )
 
         self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
         self._is_invalid = Condition(lambda: self._invalid)
@@ -258,7 +263,7 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """int: Height offset to apply."""
         if not self._wrap_lines:
             return self._height_offset
-        return self.extra_lines_due_to_wrapping + self._height_offset
+        return self.extra_line_count + self._height_offset
 
     @property
     def total_message_length(self) -> int:
@@ -275,22 +280,45 @@ class BaseComplexPrompt(BaseSimplePrompt):
         return total_message_length
 
     @property
-    def extra_lines_due_to_wrapping(self) -> int:
+    def extra_message_line_count(self) -> int:
+        """int: Get the extra lines created caused by line wrapping.
+
+        Minus 1 on the totoal message length as we only want the extra line.
+        24 // 24 will equal to 1 however we only want the value to be 1 when we have 25 char
+        which will create an extra line.
+        """
+        term_width, _ = shutil.get_terminal_size()
+        return (self.total_message_length - 1) // term_width
+
+    @property
+    def extra_long_instruction_line_count(self) -> int:
+        """int: Get the extra lines created caused by line wrapping.
+
+        See Also:
+            :attr:`.BaseComplexPrompt.extra_message_line_count`
+        """
+        if self._long_instruction:
+            term_width, _ = shutil.get_terminal_size()
+            return (len(self._long_instruction) - 1) // term_width
+        else:
+            return 0
+
+    @property
+    def extra_line_count(self) -> int:
         """Get the extra lines created caused by line wrapping.
 
-        Used mainly to calculate how much offset should be applied when getting
+        Used mainly to calculate how much additional offset should be applied when getting
         the height.
 
         Returns:
             Total extra lines created due to line wrapping.
         """
         result = 0
-        term_width, _ = shutil.get_terminal_size()
 
         # message wrap
-        result += self.total_message_length // term_width
+        result += self.extra_message_line_count
         # long instruction wrap
-        result += len(self._long_instruction) // term_width
+        result += self.extra_long_instruction_line_count
 
         return result
 

@@ -241,47 +241,44 @@ class ListPrompt(BaseListPrompt):
         if self._border:
             main_content_window = Frame(main_content_window)
 
-        self.layout = HSplit(
-            [
-                FloatContainer(
-                    content=HSplit(
-                        [
-                            MessageWindow(
-                                message=self._get_prompt_message_with_cursor
-                                if self._show_cursor
-                                else self._get_prompt_message,
-                                filter=~self._is_loading | ~self._is_spinner_enable,
-                                wrap_lines=self._wrap_lines,
-                                show_cursor=self._show_cursor,
-                            ),
-                            self._spinner,
-                            ConditionalContainer(
-                                main_content_window,
-                                filter=~IsDone() & ~self._is_loading,
-                            ),
-                        ]
+        self.layout = FloatContainer(
+            content=HSplit(
+                [
+                    MessageWindow(
+                        message=self._get_prompt_message_with_cursor
+                        if self._show_cursor
+                        else self._get_prompt_message,
+                        filter=~self._is_loading | ~self._is_spinner_enable,
+                        wrap_lines=self._wrap_lines,
+                        show_cursor=self._show_cursor,
                     ),
-                    floats=[
-                        Float(
-                            content=ValidationWindow(
-                                invalid_message=self._get_error_message,
-                                filter=self._is_invalid & ~IsDone(),
-                            ),
-                            left=0,
-                            bottom=0,
-                        ),
-                    ],
+                    self._spinner,
+                    ConditionalContainer(
+                        main_content_window,
+                        filter=~IsDone() & ~self._is_loading,
+                    ),
+                    ConditionalContainer(
+                        Window(content=DummyControl()),
+                        filter=~IsDone() & self._is_displaying_long_instruction,
+                    ),
+                    InstructionWindow(
+                        message=self._long_instruction,
+                        filter=~IsDone() & self._is_displaying_long_instruction,
+                        wrap_lines=self._wrap_lines,
+                    ),
+                ]
+            ),
+            floats=[
+                Float(
+                    content=ValidationWindow(
+                        invalid_message=self._get_error_message,
+                        filter=self._is_invalid & ~IsDone(),
+                        wrap_lines=self._wrap_lines,
+                    ),
+                    left=0,
+                    bottom=self._validation_window_bottom_offset,
                 ),
-                ConditionalContainer(
-                    Window(content=DummyControl()),
-                    filter=~IsDone() & self._is_displaying_long_instruction,
-                ),
-                InstructionWindow(
-                    message=self._long_instruction,
-                    filter=self._is_displaying_long_instruction & ~IsDone(),
-                    wrap_lines=self._wrap_lines,
-                ),
-            ]
+            ],
         )
 
         self.application = Application(
@@ -364,18 +361,11 @@ class ListPrompt(BaseListPrompt):
                 event.app.exit(result=self.result_value)
 
     @property
-    def wrap_lines_offset(self) -> int:
-        """Get extra offset due to line wrapping.
+    def extra_message_line_count(self) -> int:
+        """int: Get extra lines created for message caused by line wrapping.
 
         Overriding it to count the cursor as well.
-
-        Returns:
-            Extra offset value.
         """
-        if not self._wrap_lines:
-            return 0
-        total_message_length = self.total_message_length
-        if self._show_cursor:
-            total_message_length += 1
+        cursor_offset = -1 if not self._show_cursor else 0
         term_width, _ = shutil.get_terminal_size()
-        return total_message_length // term_width
+        return (self.total_message_length + cursor_offset) // term_width

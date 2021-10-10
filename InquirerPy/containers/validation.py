@@ -14,11 +14,12 @@ class ValidationWindow(ConditionalContainer):
         filter: Condition to display the error window.
     """
 
-    def __init__(self, invalid_message: AnyFormattedText, filter: FilterOrBool) -> None:
+    def __init__(
+        self, invalid_message: AnyFormattedText, filter: FilterOrBool, **kwargs
+    ) -> None:
         super().__init__(
             Window(
-                FormattedTextControl(invalid_message),
-                dont_extend_height=True,
+                FormattedTextControl(invalid_message), dont_extend_height=True, **kwargs
             ),
             filter=filter,
         )

@@ -428,45 +428,42 @@ class FuzzyPrompt(BaseListPrompt):
         if self._border:
             main_content_window = Frame(main_content_window)
         self._layout = Layout(
-            HSplit(
-                [
-                    FloatContainer(
-                        content=HSplit(
-                            [
-                                MessageWindow(
-                                    message=self._get_prompt_message,
-                                    filter=~self._is_loading | ~self._is_spinner_enable,
-                                    wrap_lines=self._wrap_lines,
-                                    show_cursor=True,
-                                ),
-                                self._spinner,
-                                ConditionalContainer(
-                                    main_content_window,
-                                    filter=~IsDone() & ~self._is_loading,
-                                ),
-                            ]
+            FloatContainer(
+                content=HSplit(
+                    [
+                        MessageWindow(
+                            message=self._get_prompt_message,
+                            filter=~self._is_loading | ~self._is_spinner_enable,
+                            wrap_lines=self._wrap_lines,
+                            show_cursor=True,
                         ),
-                        floats=[
-                            Float(
-                                content=ValidationWindow(
-                                    invalid_message=self._get_error_message,
-                                    filter=self._is_invalid & ~IsDone(),
-                                ),
-                                left=0,
-                                bottom=0,
-                            ),
-                        ],
+                        self._spinner,
+                        ConditionalContainer(
+                            main_content_window,
+                            filter=~IsDone() & ~self._is_loading,
+                        ),
+                        ConditionalContainer(
+                            Window(content=DummyControl()),
+                            filter=~IsDone() & self._is_displaying_long_instruction,
+                        ),
+                        InstructionWindow(
+                            message=self._long_instruction,
+                            filter=~IsDone() & self._is_displaying_long_instruction,
+                            wrap_lines=self._wrap_lines,
+                        ),
+                    ],
+                ),
+                floats=[
+                    Float(
+                        content=ValidationWindow(
+                            invalid_message=self._get_error_message,
+                            filter=self._is_invalid & ~IsDone(),
+                            wrap_lines=self._wrap_lines,
+                        ),
+                        left=0,
+                        bottom=self._validation_window_bottom_offset,
                     ),
-                    ConditionalContainer(
-                        Window(content=DummyControl()),
-                        filter=~IsDone() & self._is_displaying_long_instruction,
-                    ),
-                    InstructionWindow(
-                        message=self._long_instruction,
-                        filter=self._is_displaying_long_instruction & ~IsDone(),
-                        wrap_lines=self._wrap_lines,
-                    ),
-                ]
+                ],
             )
         )
         self._layout.focus(input_window)

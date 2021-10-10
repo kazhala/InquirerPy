@@ -18,13 +18,13 @@ class InstructionWindow(ConditionalContainer):
         filter: Condition to display the instruction window.
     """
 
-    def __init__(self, message: str, filter: "FilterOrBool", wrap_lines: bool) -> None:
+    def __init__(self, message: str, filter: "FilterOrBool", **kwargs) -> None:
         self._message = message
         super().__init__(
             Window(
                 FormattedTextControl(text=self._get_message),
                 dont_extend_height=True,
-                wrap_lines=wrap_lines,
+                **kwargs
             ),
             filter=filter,
         )
