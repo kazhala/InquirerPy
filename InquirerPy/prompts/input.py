@@ -34,9 +34,6 @@ class InputPrompt(BaseSimplePrompt):
 
     A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
 
-    TODO:
-        Refactor and use Application over PromptSession.
-
     Args:
         message: The question to ask the user.
             Refer to :ref:`pages/dynamic:message` documentation for more details.
@@ -71,6 +68,8 @@ class InputPrompt(BaseSimplePrompt):
         raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
             will be `None` and the question is skiped.
         is_password: Used internally for :class:`~InquirerPy.prompts.secret.SecretPrompt`.
+        mandatory: Indicate if the prompt is mandatory. If True, then the question cannot be skipped.
+        mandatory_message: Error message to show when user attempts to skip mandatory prompt.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
         input: Used internally and will be removed in future updates.
         output: Used internally and will be removed in future updates.
@@ -103,6 +102,8 @@ class InputPrompt(BaseSimplePrompt):
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         is_password: bool = False,
+        mandatory: bool = True,
+        mandatory_message: str = "Mandatory prompt",
         session_result: InquirerPySessionResult = None,
         input: "Input" = None,
         output: "Output" = None,
@@ -121,6 +122,8 @@ class InputPrompt(BaseSimplePrompt):
             session_result=session_result,
             default=default,
             wrap_lines=wrap_lines,
+            mandatory=mandatory,
+            mandatory_message=mandatory_message,
             raise_keyboard_interrupt=raise_keyboard_interrupt,
         )
         if not isinstance(self._default, str):

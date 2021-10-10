@@ -53,6 +53,8 @@ class BaseListPrompt(BaseComplexPrompt):
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
         raise_keyboard_interrupt: bool = True,
+        mandatory: bool = True,
+        mandatory_message: str = "Mandatory prompt",
         session_result: InquirerPySessionResult = None,
     ) -> None:
         super().__init__(
@@ -75,6 +77,8 @@ class BaseListPrompt(BaseComplexPrompt):
             spinner_text=spinner_text,
             set_exception_handler=set_exception_handler,
             raise_keyboard_interrupt=raise_keyboard_interrupt,
+            mandatory=mandatory,
+            mandatory_message=mandatory_message,
             session_result=session_result,
         )
 

@@ -71,6 +71,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
         raise_keyboard_interrupt: bool = True,
+        mandatory: bool = True,
+        mandatory_message: str = "Mandatory prompt",
         session_result: InquirerPySessionResult = None,
     ) -> None:
         super().__init__(
@@ -86,6 +88,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
             validate=validate,
             wrap_lines=wrap_lines,
             raise_keyboard_interrupt=raise_keyboard_interrupt,
+            mandatory=mandatory,
+            mandatory_message=mandatory_message,
             session_result=session_result,
         )
         self._invalid_message = invalid_message

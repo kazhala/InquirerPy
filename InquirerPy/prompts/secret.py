@@ -24,9 +24,6 @@ class SecretPrompt(InputPrompt):
 
     A wrapper class around :class:`~prompt_toolkit.shortcuts.PromptSession`.
 
-    TODO:
-        Refactor and use Application over PromptSession.
-
     Args:
         message: The question to ask the user.
             Refer to :ref:`pages/dynamic:message` documentation for more details.
@@ -55,6 +52,8 @@ class SecretPrompt(InputPrompt):
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
             will be `None` and the question is skiped.
+        mandatory: Indicate if the prompt is mandatory. If True, then the question cannot be skipped.
+        mandatory_message: Error message to show when user attempts to skip mandatory prompt.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
         input: Used internally and will be removed in future updates.
         output: Used internally and will be removed in future updates.
@@ -83,6 +82,8 @@ class SecretPrompt(InputPrompt):
         keybindings: InquirerPyKeybindings = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
+        mandatory: bool = True,
+        mandatory_message: str = "Mandatory prompt",
         session_result: InquirerPySessionResult = None,
         input: "Input" = None,
         output: "Output" = None,
@@ -108,6 +109,8 @@ class SecretPrompt(InputPrompt):
             keybindings=keybindings,
             wrap_lines=wrap_lines,
             raise_keyboard_interrupt=raise_keyboard_interrupt,
+            mandatory=mandatory,
+            mandatory_message=mandatory_message,
             session_result=session_result,
             input=input,
             output=output,

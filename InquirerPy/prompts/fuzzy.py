@@ -297,6 +297,8 @@ class FuzzyPrompt(BaseListPrompt):
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
             will be `None` and the question is skiped.
+        mandatory: Indicate if the prompt is mandatory. If True, then the question cannot be skipped.
+        mandatory_message: Error message to show when user attempts to skip mandatory prompt.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
 
     Examples:
@@ -339,6 +341,8 @@ class FuzzyPrompt(BaseListPrompt):
         spinner_delay: float = 0.1,
         set_exception_handler: bool = True,
         raise_keyboard_interrupt: bool = True,
+        mandatory: bool = True,
+        mandatory_message: str = "Mandatory prompt",
         session_result: InquirerPySessionResult = None,
     ) -> None:
         if not keybindings:
@@ -377,6 +381,8 @@ class FuzzyPrompt(BaseListPrompt):
             spinner_text=spinner_text,
             set_exception_handler=set_exception_handler,
             raise_keyboard_interrupt=raise_keyboard_interrupt,
+            mandatory=mandatory,
+            mandatory_message=mandatory_message,
             session_result=session_result,
         )
         self._default = (
