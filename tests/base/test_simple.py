@@ -1,11 +1,14 @@
 import os
 import unittest
+from functools import partial
 from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters.base import Condition
+from prompt_toolkit.keys import Keys
 
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
+from InquirerPy.exceptions import RequiredKeyNotFound
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.utils import get_style
 from InquirerPy.validator import NumberValidator
@@ -117,6 +120,26 @@ class TestBaseSimple(unittest.TestCase):
             pass
 
         mocked_kb.assert_has_calls([call("c-i", filter=condition)])
+
+    @patch("InquirerPy.base.simple.BaseSimplePrompt.register_kb")
+    def test_keybinding_factory(self, mocked_kb):
+        InputPrompt(message="")
+        mocked_kb.assert_has_calls([call(Keys.Enter, filter=ANY)])
+        mocked_kb.assert_has_calls([call(Keys.Escape, Keys.Enter, filter=ANY)])
+        mocked_kb.reset_mock()
+        prompt = partial(
+            InputPrompt, message="", keybindings={"hello": [{"key": "c-d"}]}
+        )
+        self.assertRaises(RequiredKeyNotFound, prompt)
+
+    def test_handle_interrupt(self):
+        prompt = InputPrompt(message="")
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_interrupt(event)
+        self.assertEqual(prompt.status["answered"], True)
+        self.assertEqual(prompt.status["result"], INQUIRERPY_KEYBOARD_INTERRUPT)
+        self.assertEqual(prompt.status["skipped"], True)
 
     @patch.object(InputPrompt, "_run")
     def test_execute_kbi(self, mocked_run):
