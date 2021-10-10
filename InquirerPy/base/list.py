@@ -108,9 +108,11 @@ class BaseListPrompt(BaseComplexPrompt):
             ],
             "toggle-all": [
                 {"key": "alt-r", "filter": self._is_multiselect},
+                {"key": "c-r", "filter": self._is_multiselect},
             ],
             "toggle-all-true": [
                 {"key": "alt-a", "filter": self._is_multiselect},
+                {"key": "c-a", "filter": self._is_multiselect},
             ],
             "toggle-all-false": [],
             **keybindings,
