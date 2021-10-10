@@ -1,7 +1,6 @@
 """Contains the interface class :class:`.BaseComplexPrompt` for more complex prompts and the mocked document class :class:`.FakeDocument`."""
 import asyncio
 import shutil
-from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Any, Callable, List, Optional, Tuple, Union, cast
 
@@ -128,10 +127,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
             delay=spinner_delay,
         )
 
-        @self.register_kb("enter")
-        def _(event):
-            self._handle_enter(event)
-
     def _redraw(self) -> None:
         """Redraw the application UI."""
         self._application.invalidate()
@@ -252,15 +247,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
     @application.setter
     def application(self, value: Application) -> None:
         self._application = value
-
-    @abstractmethod
-    def _handle_enter(self, event) -> None:
-        """Handle event when user input enter key.
-
-        Make sure to use the :class:`.FakeDocument` class to validate
-        the user choice in the function implmentation.
-        """
-        pass
 
     @property
     def height_offset(self) -> int:
