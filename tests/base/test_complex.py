@@ -292,6 +292,46 @@ class TestBaseComplex(unittest.TestCase):
 
     @patch("InquirerPy.base.complex.shutil.get_terminal_size")
     @patch("InquirerPy.utils.shutil.get_terminal_size")
+    def test_extra_lines_with_long_instruction(self, mocked_term, mocked_term2):
+        mocked_term.return_value = (24, 80)
+        mocked_term2.return_value = (24, 80)
+        message = 15 * "i"
+        qmark = "[?]"
+        instruction = 3 * "i"
+        long_instruction = 24 * "i"
+        prompt = FuzzyPrompt(
+            message=message,
+            qmark=qmark,
+            instruction=instruction,
+            long_instruction=long_instruction,
+            choices=[
+                "haah",
+                "haha",
+                "what",
+                "waht",
+                {"name": "weaht", "value": "weaht", "enabled": True},
+            ],
+        )
+        self.assertEqual(prompt.extra_long_instruction_line_count, 0)
+
+        long_instruction = 25 * "i"
+        prompt = FuzzyPrompt(
+            message=message,
+            qmark=qmark,
+            instruction=instruction,
+            long_instruction=long_instruction,
+            choices=[
+                "haah",
+                "haha",
+                "what",
+                "waht",
+                {"name": "weaht", "value": "weaht", "enabled": True},
+            ],
+        )
+        self.assertEqual(prompt.extra_long_instruction_line_count, 1)
+
+    @patch("InquirerPy.base.complex.shutil.get_terminal_size")
+    @patch("InquirerPy.utils.shutil.get_terminal_size")
     def test_extra_lines_due_to_offset(self, mocked_term, mocked_term2):
         mocked_term.return_value = (24, 80)
         mocked_term2.return_value = (24, 80)
