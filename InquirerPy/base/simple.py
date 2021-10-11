@@ -106,11 +106,15 @@ class BaseSimplePrompt(ABC):
         self._raise_kbi = not os.getenv(
             "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
         )
+        self._is_rasing_kbi = Condition(lambda: self._raise_kbi)
 
         self._kb_maps = {
             "answer": [{"key": Keys.Enter}],
-            "interrupt": [{"key": "c-c"}],
-            "skip": [{"key": "c-z"}],
+            "interrupt": [
+                {"key": "c-c", "filter": self._is_rasing_kbi},
+                {"key": "c-d", "filter": ~self._is_rasing_kbi},
+            ],
+            "skip": [{"key": "c-z"}, {"key": "c-c", "filter": ~self._is_rasing_kbi}],
         }
         self._kb_func_lookup = {
             "answer": [{"func": self._handle_enter}],
@@ -318,10 +322,7 @@ class BaseSimplePrompt(ABC):
                 "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
             )
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
-            if self._raise_kbi:
-                raise KeyboardInterrupt
-            else:
-                result = None
+            raise KeyboardInterrupt
         if not self._filter:
             return result
         return self._filter(result)
