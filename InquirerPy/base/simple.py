@@ -142,6 +142,8 @@ class BaseSimplePrompt(ABC):
                     method["func"](event, *method.get("args", []))
 
         for key, item in self.kb_maps.items():
+            if not isinstance(item, list):
+                item = [item]
             for kb in item:
                 _factory(kb["key"], kb.get("filter", Condition(lambda: True)), key)
 
