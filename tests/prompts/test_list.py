@@ -191,5 +191,9 @@ class TestListPrompt(unittest.TestCase):
 
         mocked_run.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
         prompt = ListPrompt("hello world", ["yes", "no"])
-        result = prompt.execute(raise_keyboard_interrupt=False)
-        self.assertEqual(result, None)
+        try:
+            result = prompt.execute(raise_keyboard_interrupt=False)
+        except KeyboardInterrupt:
+            self.assertFalse(prompt._is_rasing_kbi())
+        else:
+            self.fail("should raise kbi")

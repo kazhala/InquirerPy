@@ -363,8 +363,12 @@ class TestResolver(unittest.TestCase):
     def test_optional_keyboard_interrupt(self, mocked_execute):
         mocked_execute.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
         questions = [{"type": "input", "message": "hello"}]
-        result = prompt(questions, raise_keyboard_interrupt=False)
-        self.assertEqual(result, {0: None})
+        try:
+            prompt(questions, raise_keyboard_interrupt=False)
+        except KeyboardInterrupt:
+            pass
+        else:
+            self.fail("should raise kbi")
 
         mocked_execute.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
         self.assertRaises(
@@ -379,14 +383,6 @@ class TestResolver(unittest.TestCase):
             input_prompt._get_prompt_message(),
             [("class:skipped", "?"), ("class:skipped", " hello ")],
         )
-
-        os.environ["INQUIRERPY_NO_RAISE_KBI"] = "true"
-        result = prompt(questions)
-        self.assertEqual(result, {0: None})
-
-        os.environ["INQUIRERPY_NO_RAISE_KBI"] = "true"
-        result = prompt(questions, raise_keyboard_interrupt=True)
-        self.assertEqual(result, {0: None})
 
     @patch.object(ListPrompt, "execute")
     @patch.object(InputPrompt, "execute")

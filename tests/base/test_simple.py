@@ -123,9 +123,12 @@ class TestBaseSimple(unittest.TestCase):
 
     @patch("InquirerPy.base.simple.BaseSimplePrompt.register_kb")
     def test_keybinding_factory(self, mocked_kb):
-        InputPrompt(message="")
+        prompt = InputPrompt(message="")
         mocked_kb.assert_has_calls([call(Keys.Enter, filter=ANY)])
         mocked_kb.assert_has_calls([call(Keys.Escape, Keys.Enter, filter=ANY)])
+        mocked_kb.assert_has_calls([call("c-c", filter=prompt._is_rasing_kbi)])
+        mocked_kb.assert_has_calls([call("c-d", filter=~prompt._is_rasing_kbi)])
+        mocked_kb.assert_has_calls([call("c-c", filter=~prompt._is_rasing_kbi)])
         mocked_kb.reset_mock()
         prompt = partial(
             InputPrompt, message="", keybindings={"hello": [{"key": "c-d"}]}
@@ -145,16 +148,12 @@ class TestBaseSimple(unittest.TestCase):
     def test_execute_kbi(self, mocked_run):
         prompt = InputPrompt(message="")
         mocked_run.return_value = INQUIRERPY_KEYBOARD_INTERRUPT
-
-        result = prompt.execute(raise_keyboard_interrupt=False)
-        self.assertEqual(result, None)
-
+        self.assertTrue(prompt._raise_kbi)
         self.assertRaises(KeyboardInterrupt, prompt.execute, True)
 
         os.environ["INQUIRERPY_NO_RAISE_KBI"] = "True"
-        result = InputPrompt(message="").execute()
-        result = InputPrompt(message="", raise_keyboard_interrupt=True).execute()
-        result = InputPrompt(message="").execute(raise_keyboard_interrupt=True)
+        prompt = InputPrompt(message="")
+        self.assertFalse(prompt._raise_kbi)
         del os.environ["INQUIRERPY_NO_RAISE_KBI"]
 
     @patch.object(InputPrompt, "_run")
