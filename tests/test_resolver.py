@@ -5,6 +5,7 @@ from unittest.mock import ANY, PropertyMock, call, patch
 from prompt_toolkit.shortcuts.prompt import PromptSession
 
 from InquirerPy.base import BaseComplexPrompt
+from InquirerPy.base.simple import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts import FuzzyPrompt
@@ -61,6 +62,7 @@ class TestResolver(unittest.TestCase):
             vi_mode=False,
             raise_keyboard_interrupt=True,
             session_result=ANY,
+            keybindings={},
         )
         mocked_confirm_execute.assert_called_once()
         self.assertEqual(result, {0: False})
@@ -83,6 +85,7 @@ class TestResolver(unittest.TestCase):
                     vi_mode=False,
                     raise_keyboard_interrupt=True,
                     session_result=ANY,
+                    keybindings={},
                 ),
                 call(
                     message="world",
@@ -90,6 +93,7 @@ class TestResolver(unittest.TestCase):
                     vi_mode=False,
                     raise_keyboard_interrupt=True,
                     session_result=ANY,
+                    keybindings={},
                 ),
             ]
         )
@@ -102,6 +106,7 @@ class TestResolver(unittest.TestCase):
                     vi_mode=False,
                     raise_keyboard_interrupt=True,
                     session_result=ANY,
+                    keybindings={},
                 )
             ]
         )
@@ -132,6 +137,7 @@ class TestResolver(unittest.TestCase):
             vi_mode=False,
             raise_keyboard_interrupt=True,
             session_result={"question1": False},
+            keybindings={},
         )
         self.assertEqual(result, {"question1": False})
         del os.environ["INQUIRERPY_VI_MODE"]
@@ -158,6 +164,7 @@ class TestResolver(unittest.TestCase):
                     vi_mode=True,
                     raise_keyboard_interrupt=True,
                     session_result=ANY,
+                    keybindings={},
                 ),
                 call(
                     message="What?",
@@ -165,6 +172,7 @@ class TestResolver(unittest.TestCase):
                     vi_mode=True,
                     raise_keyboard_interrupt=True,
                     session_result=ANY,
+                    keybindings={},
                 ),
             ]
         )
@@ -194,6 +202,7 @@ class TestResolver(unittest.TestCase):
                     vi_mode=True,
                     raise_keyboard_interrupt=True,
                     session_result={"10": True, 1: True, 2: "111111"},
+                    keybindings={},
                 )
             ]
         )
@@ -235,6 +244,7 @@ class TestResolver(unittest.TestCase):
                     default=True,
                     raise_keyboard_interrupt=True,
                     session_result=ANY,
+                    keybindings={},
                 ),
                 call(
                     message="Confirm second?",
@@ -242,6 +252,7 @@ class TestResolver(unittest.TestCase):
                     vi_mode=False,
                     raise_keyboard_interrupt=True,
                     session_result=ANY,
+                    keybindings={},
                 ),
             ]
         )
@@ -280,6 +291,7 @@ class TestResolver(unittest.TestCase):
                     default=True,
                     raise_keyboard_interrupt=True,
                     session_result=ANY,
+                    keybindings={},
                 ),
                 call(
                     message="Confirm?",
@@ -287,6 +299,7 @@ class TestResolver(unittest.TestCase):
                     vi_mode=False,
                     raise_keyboard_interrupt=True,
                     session_result=ANY,
+                    keybindings={},
                 ),
             ]
         )
@@ -386,27 +399,14 @@ class TestResolver(unittest.TestCase):
 
     @patch.object(ListPrompt, "execute")
     @patch.object(InputPrompt, "execute")
-    @patch.object(BaseComplexPrompt, "kb_maps", new_callable=PropertyMock)
+    @patch.object(BaseSimplePrompt, "register_kb")
     def test_custom_kb(self, mocked_kb, mocked_execute1, mocked_execute2):
         questions = [{"type": "input", "message": "hello"}]
-        prompt(questions, keybindings={"up": [{"key": "up"}]})
-        mocked_kb.assert_not_called()
-        questions = [{"type": "list", "message": "aasdf", "choices": [1, 2, 3]}]
-        prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
-        key_called = {
-            "down": ANY,
-            "up": ANY,
-            "toggle": ANY,
-            "toggle-down": ANY,
-            "toggle-up": ANY,
-            "toggle-all": ANY,
-            "toggle-all-true": ANY,
-            "toggle-all-false": ANY,
-        }
-        mocked_kb.assert_has_calls([call({**key_called, "up": [{"key": "c-p"}]})])
+        prompt(questions, keybindings={"answer": [{"key": "up"}]})
+        mocked_kb.assert_has_calls([call("up", filter=ANY)])
         try:
-            mocked_kb.assert_has_calls([call("k", filter=ANY)])
-            self.fail("should not have called")
+            mocked_kb.assert_has_calls([call("enter", filter=ANY)])
+            self.fail("enter should not have been bound")
         except:
             pass
 
@@ -420,7 +420,6 @@ class TestResolver(unittest.TestCase):
             }
         ]
         prompt(questions, keybindings={"up": [{"key": "c-p"}]}, vi_mode=True)
-        mocked_kb.assert_has_calls([call({**key_called, "up": [{"key": "c-w"}]})])
         try:
             mocked_kb.assert_has_calls([call("c-p", filter=ANY)])
             self.fail("should not have called")
