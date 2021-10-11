@@ -3,25 +3,27 @@
 By default, `InquirerPy` will use most of the standard `emacs` navigation keybindings. You
 can easily switch to `vim` keybindings by setting the parameter [vi_mode](#using-vim-keybindings) to `True`.
 
-You can customise the keybindings even further by utilising the parameter [keybindings](#customizing-keybindings), this page
-will explain how to change the keybindings in detail.
+You can customise the keybindings even further by utilising the parameter [keybindings](#customizing-keybindings).
 
 ## Default Keybindings
 
-The default keybinding uses the classic `emacs` keybindings.
-
-```{tip}
-This is done because on most operating systems, also the Bash shell uses Emacs bindings by default, and that is more intuitive.
+```{note}
+Each keybinding consists of 2 parts, an **action** as the key and **bindings** as the value.
 ```
 
-All prompt have the following keybindings created:
+The following dictionary contains the default keybindings for all prompts.
 
-- `enter`: Confirm and answer the prompt.
-- `ctrl-c`: Raise {class}`KeyboardInterrupt`.
-  - Classic Syntax: If you wish to change this behavior, checkout {ref}`pages/prompt:Keyboard Interrupt`.
-  - Alternate Syntax: If you wish to change this behavior, checkout {ref}`pages/inquirer:Keyboard Interrupt`.
+```{code-block} python
+{
+    "answer": [{"key": "enter"}],   # answer the prompt
+    "interrupt": [{"key": "c-c"}],  # raise KeyboardInterrupt
+    "skip": [{"key": "c-z"}],   # skip the prompt
+}
+```
 
 ### Input Buffer (Text Fields)
+
+The default keybinding for text fields uses the classic `emacs` keybindings.
 
 You can use the regular `emacs` shortcuts to move between words such as `alt-b` and `alt-f` in any input buffer
 such as `input`, `secret`, `filepath` and `fuzzy`.
@@ -32,18 +34,17 @@ You can reference keybindings through `emacs` [documentation](https://www.gnu.or
 
 ```{tip}
 Keybindings in different types of prompt can have different sets of available actions and sometimes different default bindings.
-```
 
-Each keybinding consists of 2 parts, an **action** and **bindings**.
 Please checkout the individual prompt documentation for the available actions and default bindings for specific prompts.
+```
 
 ## Using VIM Keybindings
 
-```{note}
+```{tip}
 All `InquirerPy` prompts accepts a boolean parameter `vi_mode`.
 ```
 
-`InquirerPy` comes with `vim` keybinding preset. After enabling it, the input buffer (text fields) will behave the same as
+`InquirerPy` comes with `vim` keybinding preset. After setting `vi_mode=True`, the input buffer (text fields) will behave the same as
 if you enable the `vi` mode in [readline/bash](https://www.gnu.org/software/bash/manual/html_node/Readline-vi-Mode.html).
 Other keybinding will also have different effects (e.g. `up/down` will change from `ctrl-n/ctrl-p` to `j/k`), refer to individual
 prompt documentation for more information.
@@ -85,8 +86,6 @@ result = inquirer.select(
 
 ## Customising Keybindings
 
-Each prompt takes an additional parameter called `keybindings`.
-
 ### keybindings
 
 ```
@@ -111,21 +110,11 @@ Each `binding` is another {class}`dict` which contains the following key:
 
 The `key` can be either a list or a string. If you require multiple keys to be pressed in sequence, provide the `key` with a list of keys.
 
-When providing the following {class}`dict` as an argument, pressing `c-a` followed by `space` will trigger the action `toggle-all`.
+In the following example:
 
-```python
-keybindings = {
-    "toggle": [
-        {"key": "space"}
-    ],
-    "toggle-all": [
-        {"key": ["c-a", "space"]}
-    ]
-}
-```
-
-The following example enabled `vim` keybindings for input buffer, but still uses `c-n` and `c-p` for list navigations. It also enabled
-the shortcut `alt-x` to deselect all choices/checkbox.
+- pressing `ctrl-a` followed by `space` will trigger the action `toggle-all`
+- pressing `ctrl-d` will raise {class}`KeyboardInterrupt`
+- pressing `ctrl-c` will attempt to skip the prompt
 
 <details>
   <summary>Classic Syntax</summary>
@@ -134,13 +123,9 @@ the shortcut `alt-x` to deselect all choices/checkbox.
 from InquirerPy import prompt
 
 keybindings = {
-    "down": [
-        {"key": "c-n"},
-    ],
-    "up": [
-        {"key": "c-p"},
-    ],
-    "toggle-all-false": [{"key": "alt-x"}],
+    "skip": [{"key": "c-c"}],
+    "interrupt": [{"key": "c-d"}],
+    "toggle-all": [{"key": ["c-a", "space"]}],
 }
 
 result = prompt(
@@ -149,9 +134,9 @@ result = prompt(
             "type": "list",
             "message": "Select one:",
             "choices": ["Fruit", "Meat", "Drinks", "Vegetable"],
+            "multiselect": True
         },
     ],
-    vi_mode=True,
     keybindings=keybindings,
 )
 ```
@@ -165,20 +150,16 @@ result = prompt(
 from InquirerPy import inquirer
 
 keybindings = {
-    "down": [
-        {"key": "c-n"},
-    ],
-    "up": [
-        {"key": "c-p"},
-    ],
-    "toggle-all-false": [{"key": "alt-x"}],
+    "skip": [{"key": "c-c"}],
+    "interrupt": [{"key": "c-d"}],
+    "toggle-all": [{"key": ["c-a", "space"]}],
 }
 
 result = inquirer.select(
     message="Select one:",
     choices=["Fruit", "Meat", "Drinks", "Vegetable"],
-    vi_mode=True,
     keybindings=keybindings,
+    multiselect=True
 ).execute()
 ```
 
@@ -252,8 +233,8 @@ keybindings = {
 
 ## Binding Custom Functions
 
-```{note}
-This is only available for `Alternate Syntax`.
+```{attention}
+This section only applies to {ref}`index:Alternate Syntax`.
 ```
 
 You can also create your own keybindings/actions. When creating a prompt via `inquirer`, instead of running
@@ -288,7 +269,7 @@ name = name_prompt.execute()
 
 #### keys and filter
 
-You can bind multiple keys and also have the ability to apply [filter](#filter-union-filter-bool).
+You can bind multiple keys and also have the ability to apply [filter](#filter).
 
 ```python
 from prompt_toolkit.filters.base import Condition

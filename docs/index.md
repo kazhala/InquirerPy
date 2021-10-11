@@ -170,6 +170,7 @@ pages/kb.md
 pages/height.md
 pages/env.md
 pages/dynamic.md
+pages/raise_kbi.md
 ```
 
 ```{toctree}

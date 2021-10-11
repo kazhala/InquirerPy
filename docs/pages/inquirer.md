@@ -31,19 +31,3 @@ An example using `inquirer` which incorporate multiple different types of prompt
 The `inquirer` module serves as an entry point to each prompt classes. Refer to
 individual prompt documentation for prompt specific usage.
 ```
-
-```{include} ./prompt.md
-:start-after: <!-- start raise -->
-:end-before: <!-- end raise -->
-```
-
-```python
-from InquirerPy import inquirer
-
-result = inquirer.text(message="Name:", raise_keyboard_interrupt=False).execute()
-```
-
-```{include} ./prompt.md
-:start-after: <!-- start raise continue -->
-:end-before: <!-- end raise continue -->
-```

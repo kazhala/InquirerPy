@@ -4,9 +4,11 @@ Notable changes are documented in this file.
 
 ## Dev
 
+**New Documentation: [inquirerpy.readthedocs.io](https://inquirerpy.readthedocs.io/en/latest/)**
+
 ### Added
 
-- Added optional spinner to display while loading choices for list prompts.
+- ~~Added optional spinner to display while loading choices for list prompts.~~
 - Added parameter `border` for list prompts to display a border around the choices.
 - Added parameter `long_instruction` to display longer instructions such as keybinding instructions at the bottom [#7](https://github.com/kazhala/InquirerPy/issues/7).
 - Added parameter `expand_help` for `expand` prompt to customise the help message and expansion key.
@@ -15,6 +17,8 @@ Notable changes are documented in this file.
   - Added `ExpandChoice` for `expand` prompt as well,
 - Added `raise_keyboard_interrupt` option to all prompt initialisation options.
   - The `raise_keyboard_interrupt` in execute function will be deprecated in future releases.
+- Added parameter `mandatory` and `mandatory_message` to indicate if a prompt can be skipped.
+- Added ability to skip prompt [#10](https://github.com/kazhala/InquirerPy/issues/10)
 
 ### Fixed
 
@@ -27,6 +31,7 @@ Notable changes are documented in this file.
 - Changed style `fuzzy_info` and `instruction` default color to `#abb2bf`.
 - Automatic spacing added for checkbox prompt, if you have customised the prompt using `enabled_symbol` and `disabled_symbol`,
   you may need to remove the extra space you have previously added. The change here is to align with other prompts current behavior.
+- Checkbox prompt default value for `enabled_symbol` and `disabled_symbol` is changed from hex symbol to circle [#22](https://github.com/kazhala/InquirerPy/issues/22).
 
 ## 0.2.4 (12/08/2021)
 
