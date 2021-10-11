@@ -3,6 +3,7 @@ import unittest
 from functools import partial
 from unittest.mock import ANY, call, patch
 
+from prompt_toolkit.buffer import ValidationState
 from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.keys import Keys
@@ -166,3 +167,25 @@ class TestBaseSimple(unittest.TestCase):
         prompt = InputPrompt(message="", filter=lambda result: int(result) * 2)
         result = prompt.execute()
         self.assertEqual(result, 2)
+
+    def test_handle_skip(self) -> None:
+        prompt = InputPrompt(message="", mandatory=True, mandatory_message="hello")
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_skip(event)
+
+        self.assertEqual(
+            prompt._session.default_buffer.validation_state, ValidationState.INVALID
+        )
+        self.assertEqual(str(prompt._session.default_buffer.validation_error), "hello")
+        self.assertEqual(prompt.status["answered"], False)
+        self.assertEqual(prompt.status["skipped"], False)
+        self.assertEqual(prompt.status["result"], None)
+
+        prompt = InputPrompt(message="", mandatory=False)
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_skip(event)
+        self.assertEqual(prompt.status["answered"], True)
+        self.assertEqual(prompt.status["skipped"], True)
+        self.assertEqual(prompt.status["result"], None)
