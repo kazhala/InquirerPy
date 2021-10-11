@@ -76,7 +76,6 @@ questions = [
         "type": "fuzzy",
         "choices": get_bucket,
         "name": "bucket",
-        "spinner_enable": True,
     },
     {
         "message": "Select files to download:",
@@ -84,7 +83,6 @@ questions = [
         "when": lambda _: not is_upload(_),
         "choices": walk_s3_bucket,
         "multiselect": True,
-        "spinner_enable": True,
     },
     {
         "message": "Enter destination folder:",
@@ -147,17 +145,16 @@ try:
             only_files=True,
         ).execute()
         bucket = inquirer.fuzzy(
-            message="Select a bucket:", choices=get_bucket, spinner_enable=True
+            message="Select a bucket:", choices=get_bucket
         ).execute()
     else:
         bucket = inquirer.fuzzy(
-            message="Select a bucket:", choices=get_bucket, spinner_enable=True
+            message="Select a bucket:", choices=get_bucket
         ).execute()
         file_to_download = inquirer.fuzzy(
             message="Select files to download:",
             choices=lambda _: walk_s3_bucket(bucket),
             multiselect=True,
-            spinner_enable=True,
         ).execute()
         destination = inquirer.filepath(
             message="Enter destination folder:",
