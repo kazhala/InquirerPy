@@ -125,9 +125,8 @@ def prompt(
                 "vi_mode": vi_mode,
                 "raise_keyboard_interrupt": raise_keyboard_interrupt,
                 "session_result": result,
+                "keybindings": {**keybindings, **question.pop("keybindings", {})},
             }
-            if question_type in list_prompts:
-                args["keybindings"] = {**keybindings, **question.pop("keybindings", {})}
             result[question_name] = question_mapping[question_type](
                 **args, **question
             ).execute()
