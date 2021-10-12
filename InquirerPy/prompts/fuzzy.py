@@ -211,6 +211,8 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
             Filtered choices.
         """
         if not self._current_text():
+            for choice in self.choices:
+                choice["indices"] = []
             choices = self.choices
         else:
             await asyncio.sleep(wait_time)
