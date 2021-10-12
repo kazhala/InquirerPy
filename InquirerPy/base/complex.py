@@ -1,8 +1,7 @@
 """Contains the interface class :class:`.BaseComplexPrompt` for more complex prompts and the mocked document class :class:`.FakeDocument`."""
-import asyncio
 import shutil
 from dataclasses import dataclass
-from typing import Any, Callable, List, Optional, Tuple, Union, cast
+from typing import Any, Callable, List, Optional, Tuple, Union
 
 from prompt_toolkit.application import Application
 from prompt_toolkit.enums import EditingMode
@@ -12,7 +11,6 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.validation import Validator
 
 from InquirerPy.base.simple import BaseSimplePrompt
-from InquirerPy.containers import SpinnerWindow
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle
 
@@ -64,11 +62,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         validate: Union[Callable[[Any], bool], Validator] = None,
         invalid_message: str = "Invalid input",
         wrap_lines: bool = True,
-        spinner_enable: bool = False,
-        spinner_pattern: List[str] = None,
-        spinner_text: str = "",
-        spinner_delay: float = 0.1,
-        set_exception_handler: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
@@ -96,8 +89,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         self._invalid = False
         self._loading = False
         self._application: Application
-        self._spinner_enable = spinner_enable
-        self._set_exception_handler = set_exception_handler
         self._long_instruction = long_instruction
         self._border = border
         self._height_offset = 2  # prev prompt result + current prompt question
@@ -113,18 +104,8 @@ class BaseComplexPrompt(BaseSimplePrompt):
 
         self._is_vim_edit = Condition(lambda: self._editing_mode == EditingMode.VI)
         self._is_invalid = Condition(lambda: self._invalid)
-        self._is_loading = Condition(lambda: self.loading)
-        self._is_spinner_enable = Condition(lambda: self._spinner_enable)
         self._is_displaying_long_instruction = Condition(
             lambda: self._long_instruction != ""
-        )
-
-        self._spinner = SpinnerWindow(
-            loading=self._is_loading & self._is_spinner_enable,
-            redraw=self._redraw,
-            pattern=spinner_pattern,
-            text=spinner_text or cast(str, self._message),
-            delay=spinner_delay,
         )
 
     def _redraw(self) -> None:
@@ -176,13 +157,6 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """
         if not self._rendered:
             self._rendered = True
-
-            try:
-                if self._set_exception_handler:
-                    loop = asyncio.get_running_loop()
-                    loop.set_exception_handler(self._exception_handler)
-            except RuntimeError:
-                pass
 
             self._keybinding_factory()
             self._on_rendered(app)
@@ -311,14 +285,3 @@ class BaseComplexPrompt(BaseSimplePrompt):
         result += self.extra_long_instruction_line_count
 
         return result
-
-    @property
-    def loading(self) -> bool:
-        """bool: Indicate if the prompt is loading."""
-        return self._loading
-
-    @loading.setter
-    def loading(self, value: bool) -> None:
-        self._loading = value
-        if self.loading:
-            asyncio.create_task(self._spinner.start())

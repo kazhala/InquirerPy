@@ -61,9 +61,7 @@ class InquirerPyStyle(NamedTuple):
 InquirerPySessionResult = Dict[Union[str, int], Optional[Union[str, bool, List[Any]]]]
 InquirerPyChoice = Union[List[Any], List["Choice"], List[Dict[str, Any]]]
 InquirerPyListChoices = Union[
-    Callable[
-        ["InquirerPySessionResult"], Union[Awaitable[List[Any]], InquirerPyChoice]
-    ],
+    Callable[["InquirerPySessionResult"], InquirerPyChoice],
     InquirerPyChoice,
 ]
 InquirerPyValidate = Union[Callable[[Any], bool], "Validator"]

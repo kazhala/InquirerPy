@@ -299,11 +299,6 @@ class ExpandPrompt(ListPrompt):
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
-        spinner_enable: bool = False,
-        spinner_pattern: List[str] = None,
-        spinner_text: str = "",
-        spinner_delay: float = 0.1,
-        set_exception_handler: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
@@ -345,24 +340,18 @@ class ExpandPrompt(ListPrompt):
             show_cursor=show_cursor,
             cycle=cycle,
             wrap_lines=wrap_lines,
-            spinner_enable=spinner_enable,
-            spinner_pattern=spinner_pattern,
-            spinner_delay=spinner_delay,
-            spinner_text=spinner_text,
-            set_exception_handler=set_exception_handler,
             raise_keyboard_interrupt=raise_keyboard_interrupt,
             mandatory=mandatory,
             mandatory_message=mandatory_message,
             session_result=session_result,
         )
 
-    def _choices_callback(self, _) -> None:
+    def _on_rendered(self, _) -> None:
         """Override this method to apply custom keybindings.
 
         Needs to creat these kb in the callback due to `after_render`
         retrieve the choices asynchronously.
         """
-        self._redraw()
 
         def keybinding_factory(key):
             @self.register_kb(key.lower())

@@ -134,7 +134,7 @@ class TestExpandPrompt(unittest.TestCase):
             self.fail("kb should be added in after_render")
         except:
             pass
-        prompt._choices_callback("")
+        prompt._on_rendered("")
         mocked_add.assert_has_calls([call("f")])
         mocked_add.assert_has_calls([call("h")])
 

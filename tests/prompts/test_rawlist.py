@@ -214,13 +214,13 @@ class TestRawList(unittest.TestCase):
             separator=".",
             instruction="bb",
         )
-        prompt._choices_callback("")
+        prompt._on_rendered("")
         mocked_add.assert_has_calls([call("1")])
         mocked_add.assert_has_calls([call("2")])
         mocked_add.assert_has_calls([call("3")])
 
     def test_rawlist_10(self):
         prompt = RawlistPrompt(message="", choices=[i for i in range(10)])
-        self.assertRaises(InvalidArgument, prompt._choices_callback, "")
+        self.assertRaises(InvalidArgument, prompt._on_rendered, "")
         prompt = RawlistPrompt(message="", choices=[i for i in range(9)])
         prompt._after_render(None)

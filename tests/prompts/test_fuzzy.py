@@ -8,7 +8,6 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.layout import Layout
 
 from InquirerPy.base.complex import BaseComplexPrompt
-from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
 
@@ -684,22 +683,6 @@ class TestFuzzy(unittest.TestCase):
         self.prompt.content_control.choices = [{} for _ in range(1000000)]
         self.assertEqual(self.prompt._calculate_wait_time(), 1.2)
 
-    def test_retrieve_choices(self):
-        async def retrieve_choices(content_control) -> None:
-            await content_control.retrieve_choices()
-
-        prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
-        self.assertEqual(prompt.content_control.choices, [])
-        asyncio.run(retrieve_choices(prompt.content_control))
-        self.assertEqual(
-            prompt.content_control.choices,
-            [
-                {"enabled": False, "index": 0, "indices": [], "name": "1", "value": 1},
-                {"enabled": False, "index": 1, "indices": [], "name": "2", "value": 2},
-                {"enabled": False, "index": 2, "indices": [], "name": "3", "value": 3},
-            ],
-        )
-
     def test_prompt_validator_index(self):
         class Hello(NamedTuple):
             cancelled: Callable
@@ -718,13 +701,11 @@ class TestFuzzy(unittest.TestCase):
         self.prompt._handle_enter(event)
 
     @patch.object(FuzzyPrompt, "_on_text_changed")
-    @patch.object(BaseListPrompt, "_on_rendered")
-    def test_on_rendered(self, mocked, mocked_change):
+    def test_on_rendered(self, _):
         prompt = FuzzyPrompt(message="", choices=[1, 2, 3], default="yes")
         self.assertEqual(prompt._buffer.text, "")
         self.assertEqual(prompt._buffer.cursor_position, 0)
         prompt._on_rendered(None)
-        mocked.assert_called_once()
         self.assertEqual(prompt._buffer.text, "yes")
         self.assertEqual(prompt._buffer.cursor_position, 3)
 

@@ -1,18 +1,13 @@
 """Contains the content control class :class:`.InquirerPyUIListControl`."""
-import inspect
 from abc import abstractmethod
 from dataclasses import asdict, dataclass
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Tuple, cast
+from typing import Any, Callable, Dict, List, Optional, Tuple, cast
 
 from prompt_toolkit.layout.controls import FormattedTextControl
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.separator import Separator
-from InquirerPy.utils import (
-    InquirerPyListChoices,
-    InquirerPySessionResult,
-    transform_async,
-)
+from InquirerPy.utils import InquirerPyListChoices, InquirerPySessionResult
 
 __all__ = ["Choice", "InquirerPyUIListControl"]
 
@@ -63,45 +58,21 @@ class InquirerPyUIListControl(FormattedTextControl):
         self._session_result = session_result or {}
         self._selected_choice_index: int = 0
         self._choice_func = None
-        self._loading = False
-        self._raw_choices = []
         self._multiselect = multiselect
         self._default = (
             default
             if not isinstance(default, Callable)
             else cast(Callable, default)(self._session_result)
         )
-        if isinstance(choices, Callable):
-            self._choices = []
-            self._choice_func = (
-                choices
-                if inspect.iscoroutinefunction(choices)
-                else transform_async(cast(Callable, choices))
-            )
-            self._loading = True
-        else:
-            self._raw_choices = choices
-            self._choices = self._get_choices(cast(List, choices), self._default)
-            self._safety_check()
-        self._format_choices()
-        super().__init__(self._get_formatted_choices)
-
-    async def retrieve_choices(self) -> None:
-        """Retrieve the callable choices and format them.
-
-        Should be called in the :meth:`~InquirerPy.base.complex.BaseComplexPrompt._on_rendered` method.
-
-        Examples:
-            >>> import asyncio
-            >>> asyncio.create_task(self.retrieve_choices())
-        """
-        self._raw_choices = await cast(
-            Callable[..., Awaitable[Any]], self._choice_func
-        )(self._session_result)
-        self.choices = self._get_choices(self._raw_choices, self._default)
-        self._loading = False
+        self._raw_choices = (
+            choices
+            if not isinstance(choices, Callable)
+            else cast(Callable, choices)(self._session_result)
+        )
+        self._choices = self._get_choices(self._raw_choices, self._default)
         self._safety_check()
         self._format_choices()
+        super().__init__(self._get_formatted_choices)
 
     def _get_choices(self, choices: List[Any], default: Any) -> List[Dict[str, Any]]:
         """Process the raw user input choices and format it into dictionary.
@@ -190,7 +161,7 @@ class InquirerPyUIListControl(FormattedTextControl):
                 break
         if not should_proceed:
             raise InvalidArgument(
-                "argument choices should contain content other than separator"
+                "argument choices should contain choices other than separator"
             )
 
     def _get_formatted_choices(self) -> List[Tuple[str, str]]:

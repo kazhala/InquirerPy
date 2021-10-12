@@ -1,50 +1,13 @@
-import asyncio
 import unittest
-from typing import Callable, NamedTuple
-from unittest.mock import ANY, PropertyMock, call, patch
+from unittest.mock import ANY, call, patch
 
-from prompt_toolkit.application.application import Application
-from prompt_toolkit.layout.containers import Window
-from prompt_toolkit.layout.controls import FormattedTextControl
 from prompt_toolkit.validation import ValidationError, Validator
 
 from InquirerPy.base.complex import BaseComplexPrompt
-from InquirerPy.base.control import InquirerPyUIListControl
-from InquirerPy.base.list import BaseListPrompt
-from InquirerPy.containers.spinner import SPINNERS
-from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.prompts.fuzzy import FuzzyPrompt
 
 
 class TestBaseComplex(unittest.TestCase):
-    @patch("InquirerPy.base.complex.SpinnerWindow")
-    def test_constructor(self, mocked_spinner) -> None:
-        mocked_spinner.return_value = Window(
-            content=FormattedTextControl(text=[("", "")])
-        )
-        fuzzy_prompt = FuzzyPrompt(message="hello", choices=["1", "2", "3"])
-        mocked_spinner.assert_called_with(
-            loading=ANY,
-            redraw=fuzzy_prompt._redraw,
-            pattern=None,
-            text="hello",
-            delay=0.1,
-        )
-
-        fuzzy_prompt = FuzzyPrompt(
-            message="hello",
-            choices=["1", "2", "3"],
-            spinner_text="Loading",
-            spinner_pattern=SPINNERS.line,
-        )
-        mocked_spinner.assert_called_with(
-            loading=ANY,
-            redraw=fuzzy_prompt._redraw,
-            pattern=SPINNERS.line,
-            text="Loading",
-            delay=0.1,
-        )
-
     def test_register_kb(self) -> None:
         fuzzy_prompt = FuzzyPrompt(message="hello", choices=["1", "2", "3"])
 
@@ -58,23 +21,11 @@ class TestBaseComplex(unittest.TestCase):
         self.assertFalse(fuzzy_prompt._invalid)
 
     @patch.object(BaseComplexPrompt, "register_kb")
-    @patch.object(
-        InquirerPyUIListControl, "retrieve_choices", new_callable=PropertyMock
-    )
-    @patch.object(BaseListPrompt, "loading", new_callable=PropertyMock)
-    @patch("asyncio.create_task")
-    def test_after_render(self, mocked, mocked_loading, mocked_choices, mocked_kb):
-        class Task(NamedTuple):
-            add_done_callback: Callable
-
-        mocked.return_value = Task(add_done_callback=lambda _: True)
+    def test_after_render(self, mocked_kb):
         prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
         self.assertEqual(prompt._rendered, False)
         prompt._after_render(None)
 
-        mocked.assert_called()
-        mocked_loading.assert_called_once()
-        mocked_choices.assert_called_once()
         self.assertEqual(prompt._rendered, True)
         mocked_kb.assert_has_calls(
             [
@@ -401,16 +352,6 @@ class TestBaseComplex(unittest.TestCase):
         )
         self.assertEqual(prompt.height_offset, 3)
 
-    def test_loading(self):
-        async def run_spinner(prompt) -> None:
-            prompt.loading = True
-            self.assertTrue(prompt.loading)
-            prompt.loading = False
-
-        prompt = FuzzyPrompt(message="", choices=lambda _: [1, 2, 3])
-        asyncio.run(run_spinner(prompt))
-        self.assertFalse(prompt.loading)
-
     def test_get_error_message(self):
         class SelectionValidator(Validator):
             def validate(self, document) -> None:
@@ -433,20 +374,3 @@ class TestBaseComplex(unittest.TestCase):
         self.assertEqual(
             prompt._get_error_message(), [("class:validation-toolbar", "hello")]
         )
-
-    @patch.object(Application, "exit")
-    def test_exception_handler(self, mocked):
-        async def test_async():
-            prompt = FuzzyPrompt(message="", choices=[1, 2, 3])
-            prompt._after_render(None)
-            loop = asyncio.get_running_loop()
-            self.assertEqual(prompt._status["answered"], False)
-            self.assertEqual(prompt._status["result"], None)
-            self.assertEqual(prompt._status["skipped"], False)
-            self.assertEqual(loop.get_exception_handler(), prompt._exception_handler)
-            prompt._exception_handler(None, {"exception": KeyboardInterrupt})
-            self.assertEqual(prompt._status["answered"], True)
-            self.assertEqual(prompt._status["result"], INQUIRERPY_KEYBOARD_INTERRUPT)
-            self.assertEqual(prompt._status["skipped"], True)
-
-        asyncio.run(test_async())

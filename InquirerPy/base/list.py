@@ -1,5 +1,4 @@
 """Contains the base class :class:`.BaseListPrompt` which can be used to create a prompt involving choices."""
-import asyncio
 from abc import abstractmethod
 from typing import Any, Callable, List, Union
 
@@ -47,11 +46,6 @@ class BaseListPrompt(BaseComplexPrompt):
         keybindings: InquirerPyKeybindings = None,
         cycle: bool = True,
         wrap_lines: bool = True,
-        spinner_enable: bool = False,
-        spinner_pattern: List[str] = None,
-        spinner_text: str = "",
-        spinner_delay: float = 0.1,
-        set_exception_handler: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
@@ -71,11 +65,6 @@ class BaseListPrompt(BaseComplexPrompt):
             instruction=instruction,
             long_instruction=long_instruction,
             wrap_lines=wrap_lines,
-            spinner_enable=spinner_enable,
-            spinner_pattern=spinner_pattern,
-            spinner_delay=spinner_delay,
-            spinner_text=spinner_text,
-            set_exception_handler=set_exception_handler,
             raise_keyboard_interrupt=raise_keyboard_interrupt,
             mandatory=mandatory,
             mandatory_message=mandatory_message,
@@ -139,19 +128,6 @@ class BaseListPrompt(BaseComplexPrompt):
             "toggle-all-false": [{"func": self._handle_toggle_all, "args": [False]}],
         }
 
-    def _on_rendered(self, _) -> None:
-        """Fetch all the choices and perform post processing after UI is rendered."""
-        if self.content_control._choice_func:
-            self.loading = True
-            task = asyncio.create_task(self.content_control.retrieve_choices())
-            task.add_done_callback(self._choices_callback)
-        else:
-            self._choices_callback(None)
-
-    def _choices_callback(self, _) -> None:
-        """Perform actions once all choices are retrieved."""
-        self._redraw()
-
     @property
     def content_control(self) -> InquirerPyUIListControl:
         """Get the content controller object.
@@ -171,17 +147,6 @@ class BaseListPrompt(BaseComplexPrompt):
     @content_control.setter
     def content_control(self, value: InquirerPyUIListControl) -> None:
         self._content_control = value
-
-    @property
-    def loading(self) -> bool:
-        """bool: Indicate if the prompt is loading."""
-        return self.content_control.loading
-
-    @loading.setter
-    def loading(self, value: bool) -> None:
-        self.content_control.loading = value
-        if self.loading:
-            asyncio.create_task(self._spinner.start())
 
     @property
     def result_name(self) -> Any:

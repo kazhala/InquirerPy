@@ -337,11 +337,6 @@ class FuzzyPrompt(BaseListPrompt):
         keybindings: InquirerPyKeybindings = None,
         cycle: bool = True,
         wrap_lines: bool = True,
-        spinner_enable: bool = False,
-        spinner_pattern: List[str] = None,
-        spinner_text: str = "",
-        spinner_delay: float = 0.1,
-        set_exception_handler: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
@@ -377,11 +372,6 @@ class FuzzyPrompt(BaseListPrompt):
             keybindings=keybindings,
             cycle=cycle,
             wrap_lines=wrap_lines,
-            spinner_enable=spinner_enable,
-            spinner_pattern=spinner_pattern,
-            spinner_delay=spinner_delay,
-            spinner_text=spinner_text,
-            set_exception_handler=set_exception_handler,
             raise_keyboard_interrupt=raise_keyboard_interrupt,
             mandatory=mandatory,
             mandatory_message=mandatory_message,
@@ -441,14 +431,13 @@ class FuzzyPrompt(BaseListPrompt):
                     [
                         MessageWindow(
                             message=self._get_prompt_message,
-                            filter=~self._is_loading | ~self._is_spinner_enable,
+                            filter=True,
                             wrap_lines=self._wrap_lines,
                             show_cursor=True,
                         ),
-                        self._spinner,
                         ConditionalContainer(
                             main_content_window,
-                            filter=~IsDone() & ~self._is_loading,
+                            filter=~IsDone(),
                         ),
                         ConditionalContainer(
                             Window(content=DummyControl()),
@@ -484,16 +473,12 @@ class FuzzyPrompt(BaseListPrompt):
             after_render=self._after_render,
         )
 
-    def _on_rendered(self, application) -> None:
+    def _on_rendered(self, _) -> None:
         """Render callable choices and set the buffer default text.
 
         Setting buffer default text has to be after application is rendered and choice are loaded,
         because `self._filter_choices` will use the event loop from `Application`.
-
-        Args:
-            application: The current application.
         """
-        super()._on_rendered(application)
         if self._default:
             default_text = str(self._default)
             self._buffer.text = default_text

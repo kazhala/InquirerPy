@@ -1,4 +1,3 @@
-import asyncio
 import unittest
 from unittest.mock import ANY, patch
 
@@ -219,19 +218,3 @@ class TestCheckbox(unittest.TestCase):
             event = mock.return_value
             prompt._handle_enter(event)
         self.assertEqual(prompt.status["result"], [])
-
-    def test_retrieve_choices(self) -> None:
-        async def retrieve_choices(content_control) -> None:
-            await content_control.retrieve_choices()
-
-        prompt = CheckboxPrompt(message="", choices=lambda _: [1, 2, 3])
-        self.assertEqual(prompt.content_control.choices, [])
-        asyncio.run(retrieve_choices(prompt.content_control))
-        self.assertEqual(
-            prompt.content_control.choices,
-            [
-                {"enabled": False, "name": "1", "value": 1},
-                {"enabled": False, "name": "2", "value": 2},
-                {"enabled": False, "name": "3", "value": 3},
-            ],
-        )

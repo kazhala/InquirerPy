@@ -28,8 +28,6 @@ class TestBaseControl(unittest.TestCase):
                 {"name": "3", "value": 3, "enabled": False},
             ],
         )
-        self.assertFalse(control._loading)
-        self.assertEqual(control._choice_func, None)
 
     def test_constructor_choice_callable(self):
         control = InquirerPyListControl(
@@ -42,9 +40,14 @@ class TestBaseControl(unittest.TestCase):
             marker_pl=" ",
         )
         self.assertEqual(control._default, 1)
-        self.assertNotEqual(control._choice_func, None)
-        self.assertTrue(control._loading)
-        self.assertEqual(control.choices, [])
+        self.assertEqual(
+            control.choices,
+            [
+                {"name": "1", "value": 1, "enabled": False},
+                {"name": "2", "value": 2, "enabled": False},
+                {"name": "3", "value": 3, "enabled": False},
+            ],
+        )
 
     def test_retrieve_choices(self) -> None:
         control = InquirerPyListControl(
@@ -56,9 +59,6 @@ class TestBaseControl(unittest.TestCase):
             multiselect=False,
             marker_pl=" ",
         )
-        self.assertEqual(control.choices, [])
-        self.assertTrue(control._loading)
-        asyncio.run(control.retrieve_choices())
         self.assertEqual(
             control.choices,
             [
@@ -67,7 +67,6 @@ class TestBaseControl(unittest.TestCase):
                 {"name": "3", "value": 3, "enabled": False},
             ],
         )
-        self.assertFalse(control._loading)
 
     def test_get_choices_list(self):
         sep = Separator()
