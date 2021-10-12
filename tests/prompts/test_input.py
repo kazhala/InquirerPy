@@ -245,3 +245,21 @@ class TestInputPrompt(unittest.TestCase):
             wrap_lines=True,
             bottom_toolbar=[("class:long_instruction", "asfasdf")],
         )
+
+    def test_handle_completion(self):
+        prompt = InputPrompt(message="")
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_completion(event)
+            mock.assert_not_called()
+
+        prompt = InputPrompt(message="", completer={})
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_completion(event)
+            mock.assert_has_calls(
+                [
+                    call().app.current_buffer.complete_state.__bool__(),
+                    call().app.current_buffer.complete_next(),
+                ]
+            )
