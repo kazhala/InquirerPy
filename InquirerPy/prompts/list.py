@@ -292,6 +292,8 @@ class ListPrompt(BaseListPrompt):
 
     def _handle_toggle_choice(self, _) -> None:
         """Toggle the `enabled` status of the choice."""
+        if not self._multiselect:
+            return
         self.content_control.selection["enabled"] = not self.content_control.selection[
             "enabled"
         ]
@@ -302,6 +304,8 @@ class ListPrompt(BaseListPrompt):
         Args:
             value: Sepcify a value to toggle.
         """
+        if not self._multiselect:
+            return
         for choice in self.content_control.choices:
             if isinstance(choice["value"], Separator):
                 continue

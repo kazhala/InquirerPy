@@ -484,16 +484,19 @@ class FuzzyPrompt(BaseListPrompt):
             self._buffer.text = default_text
             self._buffer.cursor_position = len(default_text)
 
-    def _handle_toggle_all(self, _, value: bool = None) -> None:
+    def _handle_toggle_all(self, event, value: bool = None) -> None:
         """Toggle all choice `enabled` status.
 
         Args:
             value: Specify the value to toggle.
         """
-        for choice in self.content_control.choices:
-            if isinstance(choice["value"], Separator):
+        if not self._multiselect:
+            return
+        for choice in self.content_control._filtered_choices:
+            raw_choice = self.content_control.choices[choice["index"]]
+            if isinstance(raw_choice["value"], Separator):
                 continue
-            choice["enabled"] = value if value else not choice["enabled"]
+            raw_choice["enabled"] = value if value else not raw_choice["enabled"]
 
     def _generate_after_input(self) -> List[Tuple[str, str]]:
         """Virtual text displayed after the user input."""
@@ -584,6 +587,8 @@ class FuzzyPrompt(BaseListPrompt):
 
     def _handle_toggle_choice(self, _) -> None:
         """Handle tab event, alter the `selected` state of the choice."""
+        if not self._multiselect:
+            return
         current_selected_index = self.content_control.selection["index"]
         self.content_control.choices[current_selected_index][
             "enabled"
