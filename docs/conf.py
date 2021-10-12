@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath("."))
 project = "InquirerPy"
 copyright = "2021, Kevin Zhuang"
 author = "Kevin Zhuang"
-version = "0.2.4"
+version = "0.3.0"
 release = version
 
 extensions = [

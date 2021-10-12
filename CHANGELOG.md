@@ -2,7 +2,7 @@
 
 Notable changes are documented in this file.
 
-## Dev
+## 0.3.0 (12/10/2021)
 
 **New Documentation: [inquirerpy.readthedocs.io](https://inquirerpy.readthedocs.io/en/latest/)**
 
