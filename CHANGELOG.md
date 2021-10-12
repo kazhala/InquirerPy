@@ -23,6 +23,8 @@ Notable changes are documented in this file.
 ### Fixed
 
 - Fixed fuzzy prompt cannot type space [#20](https://github.com/kazhala/InquirerPy/issues/20).
+- Fixed multiselect malfunction [#25](https://github.com/kazhala/InquirerPy/issues/25)
+- Fixed fuzzy prompt toggle_all [#14](https://github.com/kazhala/InquirerPy/issues/14)
 
 ### Changed
 
@@ -32,6 +34,7 @@ Notable changes are documented in this file.
 - Automatic spacing added for checkbox prompt, if you have customised the prompt using `enabled_symbol` and `disabled_symbol`,
   you may need to remove the extra space you have previously added. The change here is to align with other prompts current behavior.
 - Checkbox prompt default value for `enabled_symbol` and `disabled_symbol` is changed from hex symbol to circle [#22](https://github.com/kazhala/InquirerPy/issues/22).
+- **Behavior of `raise_keyboard_interrupt` is changed. Checkout the documentation for more info.**
 
 ## 0.2.4 (12/08/2021)
 
