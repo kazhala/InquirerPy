@@ -667,6 +667,31 @@ class TestFuzzy(unittest.TestCase):
             ],
         )
 
+    def test_prompt_handle_toggle_all_filter(self) -> None:
+        prompt = FuzzyPrompt(
+            message="", choices=["haha", "asdfa", "112321fd"], multiselect=True
+        )
+        prompt.content_control._current_text = lambda: "haha"
+        prompt.content_control._filtered_choices = asyncio.run(
+            prompt.content_control._filter_choices(0.0)
+        )
+        self.assertEqual(
+            prompt.content_control._filtered_choices,
+            [
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [0, 1, 2, 3],
+                    "name": "haha",
+                    "value": "haha",
+                }
+            ],
+        )
+        prompt._handle_toggle_all(None)
+        self.assertEqual(prompt.content_control.choices[0]["enabled"], True)
+        self.assertEqual(prompt.content_control.choices[1]["enabled"], False)
+        self.assertEqual(prompt.content_control.choices[2]["enabled"], False)
+
     def test_prompt_handle_toggle_all(self):
         prompt = FuzzyPrompt(
             message="", choices=["haha", "asdfa", "112321fd"], multiselect=True
