@@ -1,4 +1,3 @@
-import inspect
 import os
 import unittest
 from unittest.mock import PropertyMock, patch
@@ -6,13 +5,7 @@ from unittest.mock import PropertyMock, patch
 from prompt_toolkit.application.application import Application
 
 from InquirerPy.exceptions import InvalidArgument
-from InquirerPy.utils import (
-    InquirerPyStyle,
-    calculate_height,
-    color_print,
-    get_style,
-    transform_async,
-)
+from InquirerPy.utils import InquirerPyStyle, calculate_height, color_print, get_style
 
 from .style import get_sample_style
 
@@ -143,11 +136,3 @@ class TestUtils(unittest.TestCase):
         color_print([("class:aa", "haha")], style={"aa": "#ffffff"})
         mocked_term.assert_not_called()
         mocked_print.assert_called_once()
-
-    def test_transform_async(self):
-        def hello():
-            pass
-
-        self.assertFalse(inspect.iscoroutinefunction(hello))
-
-        self.assertTrue(inspect.iscoroutinefunction(transform_async(hello)))
