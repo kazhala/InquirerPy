@@ -490,10 +490,11 @@ class FuzzyPrompt(BaseListPrompt):
         Args:
             value: Specify the value to toggle.
         """
-        for choice in self.content_control.choices:
-            if isinstance(choice["value"], Separator):
+        for choice in self.content_control._filtered_choices:
+            raw_choice = self.content_control.choices[choice["index"]]
+            if isinstance(raw_choice["value"], Separator):
                 continue
-            choice["enabled"] = value if value else not choice["enabled"]
+            raw_choice["enabled"] = value if value else not raw_choice["enabled"]
 
     def _generate_after_input(self) -> List[Tuple[str, str]]:
         """Virtual text displayed after the user input."""
