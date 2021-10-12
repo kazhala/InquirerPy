@@ -146,10 +146,6 @@ class InputPrompt(BaseSimplePrompt):
         def is_multiline():
             return self._multiline
 
-        @Condition
-        def has_completion():
-            return self._completer is not None
-
         if not keybindings:
             keybindings = {}
         self.kb_maps = {
@@ -157,7 +153,7 @@ class InputPrompt(BaseSimplePrompt):
                 {"key": Keys.Enter, "filter": ~is_multiline},
                 {"key": [Keys.Escape, Keys.Enter], "filter": is_multiline},
             ],
-            "completion": [{"key": "c-space", "filter": has_completion}],
+            "completion": [{"key": "c-space"}],
             **keybindings,
         }
         self.kb_func_lookup = {"completion": [{"func": self._handle_completion}]}
@@ -199,6 +195,8 @@ class InputPrompt(BaseSimplePrompt):
             event.app.exit(result=self.status["result"])
 
     def _handle_completion(self, event) -> None:
+        if self._completer is None:
+            return
         buff = event.app.current_buffer
         if buff.complete_state:
             buff.complete_next()
