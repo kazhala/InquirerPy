@@ -91,21 +91,21 @@ class BaseListPrompt(BaseComplexPrompt):
                 {"key": "k", "filter": self._is_vim_edit},
             ],
             "toggle": [
-                {"key": "space", "filter": self._is_multiselect},
+                {"key": "space"},
             ],
             "toggle-down": [
-                {"key": Keys.Tab, "filter": self._is_multiselect},
+                {"key": Keys.Tab},
             ],
             "toggle-up": [
-                {"key": Keys.BackTab, "filter": self._is_multiselect},
+                {"key": Keys.BackTab},
             ],
             "toggle-all": [
-                {"key": "alt-r", "filter": self._is_multiselect},
-                {"key": "c-r", "filter": self._is_multiselect},
+                {"key": "alt-r"},
+                {"key": "c-r"},
             ],
             "toggle-all-true": [
-                {"key": "alt-a", "filter": self._is_multiselect},
-                {"key": "c-a", "filter": self._is_multiselect},
+                {"key": "alt-a"},
+                {"key": "c-a"},
             ],
             "toggle-all-false": [],
             **keybindings,
