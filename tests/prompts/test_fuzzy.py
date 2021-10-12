@@ -26,6 +26,7 @@ class TestFuzzy(unittest.TestCase):
         max_lines=80,
         session_result=None,
         multiselect=False,
+        marker_pl=" ",
     )
 
     @patch("InquirerPy.utils.shutil.get_terminal_size")
@@ -177,6 +178,7 @@ class TestFuzzy(unittest.TestCase):
             max_lines=80,
             session_result=None,
             multiselect=False,
+            marker_pl=" ",
         )
         self.assertEqual(
             content_control._filtered_choices,
@@ -279,6 +281,60 @@ class TestFuzzy(unittest.TestCase):
         )
         self.assertEqual(content_control.choice_count, 3)
         self.assertEqual(content_control.selected_choice_index, 0)
+
+    def test_prompt_filter2(self):
+        content_control = InquirerPyFuzzyControl(
+            choices=["meat", "what", "whaaah", "weather", "haha"],
+            pointer=INQUIRERPY_POINTER_SEQUENCE,
+            marker=INQUIRERPY_POINTER_SEQUENCE,
+            current_text=lambda: "",
+            max_lines=80,
+            session_result=None,
+            multiselect=False,
+            marker_pl=" ",
+        )
+        content_control.choices[0]["indices"] = [1, 2, 3]
+        asyncio.run(content_control._filter_choices(0.0))
+        self.assertEqual(
+            content_control._filtered_choices,
+            [
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "meat",
+                    "value": "meat",
+                },
+                {
+                    "enabled": False,
+                    "index": 1,
+                    "indices": [],
+                    "name": "what",
+                    "value": "what",
+                },
+                {
+                    "enabled": False,
+                    "index": 2,
+                    "indices": [],
+                    "name": "whaaah",
+                    "value": "whaaah",
+                },
+                {
+                    "enabled": False,
+                    "index": 3,
+                    "indices": [],
+                    "name": "weather",
+                    "value": "weather",
+                },
+                {
+                    "enabled": False,
+                    "index": 4,
+                    "indices": [],
+                    "name": "haha",
+                    "value": "haha",
+                },
+            ],
+        )
 
     @patch("InquirerPy.prompts.fuzzy.InquirerPyFuzzyControl")
     @patch("InquirerPy.prompts.fuzzy.calculate_height")
@@ -722,3 +778,37 @@ class TestFuzzy(unittest.TestCase):
             pass
         else:
             self.fail("space/j/k kb was registered")
+
+    def test_control_line_render(self) -> None:
+        control = InquirerPyFuzzyControl(
+            choices=[i for i in range(6)],
+            pointer="",
+            marker="",
+            current_text=lambda: "",
+            max_lines=4,
+            session_result=None,
+            multiselect=True,
+            marker_pl=" ",
+        )
+        # range 0-4
+        self.assertEqual(control._last_line, 4)
+        self.assertEqual(control._first_line, 0)
+        control._get_formatted_choices()
+        self.assertEqual(control._last_line, 4)
+        self.assertEqual(control._first_line, 0)
+
+        # range 1-5
+        control.selected_choice_index = 4
+        control._get_formatted_choices()
+        self.assertEqual(control._last_line, 5)
+        self.assertEqual(control._first_line, 1)
+
+        control.selected_choice_index = 6
+        control._get_formatted_choices()
+        self.assertEqual(control._last_line, 6)
+        self.assertEqual(control._first_line, 2)
+
+        control.selected_choice_index = 7
+        control._get_formatted_choices()
+        self.assertEqual(control._last_line, 6)
+        self.assertEqual(control._first_line, 2)

@@ -63,7 +63,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
         max_lines: int,
         session_result: Optional[InquirerPySessionResult],
         multiselect: bool,
-        marker_pl: str = " ",
+        marker_pl: str,
     ) -> None:
         self._pointer = pointer
         self._marker = marker
