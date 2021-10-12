@@ -1,9 +1,6 @@
-# RawlistPrompt
+# rawlist
 
-```{eval-rst}
-.. autoclass:: InquirerPy.prompts.rawlist.RawlistPrompt
-    :noindex:
-```
+A prompt that displays a list of choices and can use index numbers as key jump shortcuts.
 
 ## Example
 
@@ -43,7 +40,7 @@ For this specific prompt, due to the shortcut being created is between 1-9, the 
 {ref}`pages/prompts/list:keybindings`
 ```
 
-In addition to the keybindings mentioned {ref}`here <pages/prompts/list:keybindings>`, keybindings are created for keys 1-9
+In addition to the keybindings mentioned in {ref}`select prompt <pages/prompts/list:keybindings>`, keybindings are created for keys 1-9
 to jump to the target index choices.
 
 ## Multiple Selection
@@ -62,3 +59,10 @@ The `default` parameter for rawlist can be three types of values:
 
 - shortcut index (int): an {class}`int` value between 1-9 and the default value index choice will be highlighted.
 - choice value (Any): default value could the value of one of the choices.
+
+## Reference
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.rawlist.RawlistPrompt
+    :noindex:
+```

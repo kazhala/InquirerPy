@@ -1,9 +1,6 @@
-# CheckboxPrompt
+# checkbox
 
-```{eval-rst}
-.. autoclass:: InquirerPy.prompts.checkbox.CheckboxPrompt
-    :noindex:
-```
+A prompt which displays a list of checkboxes to toggle/tick.
 
 ## Example
 
@@ -54,6 +51,8 @@ choices = [
 {ref}`pages/prompts/list:Keybindings`
 ```
 
+This prompt shares the same keybindings as {ref}`select prompt <pages/prompts/list:keybindings>`.
+
 ## Default Value
 
 ```{seealso}
@@ -73,4 +72,11 @@ choices = [
     Choice(1, enabled=True),  # enabled by default
     Choice(2)  # not enabled
 ]
+```
+
+## Reference
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.checkbox.CheckboxPrompt
+    :noindex:
 ```

@@ -1,9 +1,6 @@
-# ExpandPrompt
+# expand
 
-```{eval-rst}
-.. autoclass:: InquirerPy.prompts.expand.ExpandPrompt
-    :noindex:
-```
+A compact prompt with the ability to expand and select available choices.
 
 ## Example
 
@@ -75,7 +72,7 @@ choices = [
 {ref}`pages/prompts/list:keybindings`
 ```
 
-In addition to the keybindings mentioned {ref}`here <pages/prompts/list:keybindings>`, keybindings are created for all the
+In addition to the keybindings mentioned in {ref}`select prompt <pages/prompts/list:keybindings>`, keybindings are created for all the
 `key` specified for each choice which you can use to jump the target choice.
 
 ## Multiple Selection
@@ -146,3 +143,10 @@ result = inquirer.expand(
 ```
 
 </details>
+
+## Reference
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.expand.ExpandPrompt
+    :noindex:
+```

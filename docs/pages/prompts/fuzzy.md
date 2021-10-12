@@ -1,9 +1,6 @@
-# FuzzyPrompt
+# fuzzy
 
-```{eval-rst}
-.. autoclass:: InquirerPy.prompts.fuzzy.FuzzyPrompt
-    :noindex:
-```
+A prompt that lists choices to select while also allowing fuzzy search like fzf.
 
 ## Example
 
@@ -49,10 +46,12 @@ This prompt does not accepts choices containing {ref}`pages/separator:Separator`
 {ref}`pages/prompts/list:keybindings`
 ```
 
-It shares the same keybindings with other list prompts. The only caveat is that it does not enable `j/k` navigation
-when `vi_mode` is True.
+This prompt shares the same keybindings as {ref}`select prompt <pages/prompts/list:keybindings>`.
 
+However it does not enable `j/k` navigation when `vi_mode` is True.
 When `vi_mode` is True in fuzzy prompt, the input buffer will become vim input mode, no other keybindings are altered.
+
+The `space` key for toggle choice is also disabled since it blocks user from typing space in the input buffer.
 
 ## Multiple Selection
 
@@ -77,4 +76,11 @@ choices = [
     Choice(1, enabled=True),  # enabled by default
     Choice(2)  # not enabled
 ]
+```
+
+## Reference
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.fuzzy.FuzzyPrompt
+    :noindex:
 ```

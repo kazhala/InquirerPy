@@ -1,9 +1,6 @@
-# FilePathPrompt
+# filepath
 
-```{eval-rst}
-.. autoclass:: InquirerPy.prompts.filepath.FilePathPrompt
-    :noindex:
-```
+A text prompt which provides auto completion for system paths.
 
 ## Example
 
@@ -32,7 +29,20 @@
 ## Keybindings
 
 ```{seealso}
-{ref}`pages/prompts/input:Keybindings`
+{ref}`pages/kb:Keybindings`
+```
+
+```{include} ../kb.md
+:start-after: <!-- start kb -->
+:end-before: <!-- end kb -->
+```
+
+In addition the default keybindings, you can use `ctrl-space` to trigger completion window popup.
+
+```
+{
+    "completion": [{"key": "c-space"}]  # force completion popup
+}
 ```
 
 ## Symbols and ENV Variables
@@ -58,4 +68,11 @@ files or directories in the completion.
 
 ```{seealso}
 [Example](#example)
+```
+
+## Reference
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.filepath.FilePathPrompt
+    :noindex:
 ```

@@ -1,9 +1,6 @@
-# InputPrompt
+# text
 
-```{eval-rst}
-.. autoclass:: InquirerPy.prompts.input.InputPrompt
-    :noindex:
-```
+A text prompt that accepts user input.
 
 ## Example
 
@@ -32,13 +29,22 @@
 ## Keybindings
 
 ```{seealso}
-{ref}`pages/kb:Default Keybindings`
+{ref}`pages/kb:Keybindings`
+```
 
-{ref}`pages/kb:Input Buffer (Text Fields)`
+```{include} ../kb.md
+:start-after: <!-- start kb -->
+:end-before: <!-- end kb -->
 ```
 
 Besides the default keybindings and input buffer keybindings, if you have autocompletion enabled, you can use
 `ctrl-space` to trigger completion window popup.
+
+```
+{
+    "completion": [{"key": "c-space"}]  # force completion popup
+}
+```
 
 ## Auto Completion
 
@@ -116,4 +122,11 @@ While `multiline` is `True`, `enter` will causing a new line to be used instead 
 from InquirerPy import inquirer
 
 result = inquirer.text(message="FooBoo:", multiline=True).execute()
+```
+
+## Reference
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.input.InputPrompt
+    :noindex:
 ```

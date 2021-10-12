@@ -241,7 +241,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
 
 
 class FuzzyPrompt(BaseListPrompt):
-    """Create a prompt that lists options while also allowing fuzzy search like fzf.
+    """Create a prompt that lists choices while also allowing fuzzy search like fzf.
 
     A wrapper class around :class:`~prompt_toolkit.application.Application`.
 

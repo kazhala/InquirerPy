@@ -1,9 +1,6 @@
-# SecretPrompt
+# secret
 
-```{eval-rst}
-.. autoclass:: InquirerPy.prompts.secret.SecretPrompt
-    :noindex:
-```
+A text prompt which transforms the input to asterisks while typing.
 
 ## Example
 
@@ -32,9 +29,12 @@
 ## Keybindings
 
 ```{seealso}
-{ref}`pages/kb:Default Keybindings`
+{ref}`pages/kb:Keybindings`
+```
 
-{ref}`pages/kb:Input Buffer (Text Fields)`
+```{include} ../kb.md
+:start-after: <!-- start kb -->
+:end-before: <!-- end kb -->
 ```
 
 There are no additional keybindings created for this prompt besides the default keybindings and input buffer keybindings.
@@ -43,4 +43,11 @@ There are no additional keybindings created for this prompt besides the default 
 
 ```{seealso}
 {ref}`pages/validator:PasswordValidator`
+```
+
+## Reference
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.secret.SecretPrompt
+    :noindex:
 ```

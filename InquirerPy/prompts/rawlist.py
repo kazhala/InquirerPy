@@ -110,7 +110,7 @@ class InquirerPyRawlistControl(InquirerPyUIListControl):
 
 
 class RawlistPrompt(ListPrompt):
-    """Create a prompt that displays a list of options with index number as shortcuts.
+    """Create a prompt that displays a list of choices with index number as shortcuts.
 
     A wrapper class around :class:`~prompt_toolkit.application.Application`.
 

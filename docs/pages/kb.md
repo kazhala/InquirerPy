@@ -13,6 +13,8 @@ Each keybinding consists of 2 parts, an **action** as the key and **bindings** a
 
 The following dictionary contains the default keybindings for all prompts.
 
+<!-- start kb -->
+
 ```{code-block} python
 {
     "answer": [{"key": "enter"}],   # answer the prompt
@@ -20,6 +22,8 @@ The following dictionary contains the default keybindings for all prompts.
     "skip": [{"key": "c-z"}],   # skip the prompt
 }
 ```
+
+<!-- end kb -->
 
 ### Input Buffer (Text Fields)
 

@@ -1,9 +1,6 @@
-# ListPrompt
+# select
 
-```{eval-rst}
-.. autoclass:: InquirerPy.prompts.list.ListPrompt
-    :noindex:
-```
+A prompt that displays a list of choices to select.
 
 ## Example
 
@@ -38,42 +35,44 @@
 ## Keybindings
 
 ```{seealso}
-Checkout {ref}`pages/kb:Keybindings` documentation for information on how to customise the keybindings.
+{ref}`pages/kb:Keybindings`
 ```
 
-```{tip}
-In addition to the following keybindings, you can use `c-c` to terminate the prompt and `enter` to answer the prompt.
+```{include} ../kb.md
+:start-after: <!-- start kb -->
+:end-before: <!-- end kb -->
 ```
 
-The following dictionary contains the default keybindings for the prompt.
+The following dictionary contains the additional keybindings created by this prompt.
 
 ```{code-block} python
 {
     "down": [
         {"key": "down"},
-        {"key": "c-n"}, # ctrl-n
+        {"key": "c-n"},   # move down
     ],
     "up": [
         {"key": "up"},
-        {"key": "c-p"}, # ctrl-p
+        {"key": "c-p"},   # move up
     ],
-    # The following will only be active if multiselect is True
     "toggle": [
-        {"key": "space"},
+        {"key": "space"},   # toggle choices
     ],
     "toggle-down": [
-        {"key": "c-i"}, # tab
+        {"key": "c-i"},   # toggle choice and move down (tab)
     ],
     "toggle-up": [
-        {"key": "s-tab"}, # shift + tab
+        {"key": "s-tab"},   # toggle choice and move up (shift+tab)
     ],
     "toggle-all": [
-        {"key": "alt-r"},
+        {"key": "alt-r"},   # toggle all choices
+        {"key": "c-r"},
     ],
     "toggle-all-true": [
-        {"key": "alt-a"},
+        {"key": "alt-a"},   # toggle all choices true
+        {"key": "c-a"}.
     ],
-    "toggle-all-false": [],
+    "toggle-all-false": [],   # toggle all choices false
 }
 ```
 
@@ -140,4 +139,11 @@ choices = [
     Choice(1, enabled=True),  # enabled by default
     Choice(2)  # not enabled
 ]
+```
+
+## Reference
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.list.ListPrompt
+    :noindex:
 ```

@@ -1,9 +1,6 @@
-# ConfirmPrompt
+# confirm
 
-```{eval-rst}
-.. autoclass:: InquirerPy.prompts.confirm.ConfirmPrompt
-    :noindex:
-```
+A prompt that provides 2 options (confirm/deny) and can be controlled via single keypress.
 
 ## Example
 
@@ -32,7 +29,12 @@
 ## Keybindings
 
 ```{seealso}
-{ref}`pages/kb:Default Keybindings`
+{ref}`pages/kb:Keybindings`
+```
+
+```{include} ../kb.md
+:start-after: <!-- start kb -->
+:end-before: <!-- end kb -->
 ```
 
 Besides the default keybindings, keybindings will be created for the parameter `confirm_letter` and `reject_letter` which
@@ -40,7 +42,18 @@ by default are `y` and `n` respectively.
 
 Pressing `y` will answer the prompt with the value True and `n` will answer the prompt with the value False.
 
+```
+{
+    "confirm": [{"key": "y"}, {"key": "Y"}],  # confirm the prompt
+    "reject": [{"key": "n"}, {"key": "N"}],   # reject the prompt
+}
+```
+
 ## Using Different Letters For Confirm/Deny
+
+```{tip}
+You can also change the letter by using the `keybindings` parameter and change the value for "confirm" and "reject" key.
+```
 
 In certain scenarios using `Y/y` for "yes" and `N/n` for "no" may not
 be appropriate (e.g. multilingual).
@@ -118,4 +131,11 @@ If `default` is `True`, the `confirm_letter` is capitalised.
 
 ```
 ? Proceed? (Y/n)
+```
+
+## Reference
+
+```{eval-rst}
+.. autoclass:: InquirerPy.prompts.confirm.ConfirmPrompt
+    :noindex:
 ```

@@ -135,6 +135,11 @@ result = inquirer.select(
 
 ### raise_keyboard_interrupt
 
+```{warning}
+If you are already customising `skip` and `interrupt` using [keybindings](#keybindings) parameter, avoid using
+[raise_keyboard_interrupt](#raise-keyboard-interrupt) since it also attempts to change `skip` and `interrupt`.
+```
+
 ```{tip}
 `raise_keyboard_interrupt` is bascially a managed way of customising keybindings similar to parameter `vi_mode`.
 ```
