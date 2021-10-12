@@ -484,7 +484,7 @@ class FuzzyPrompt(BaseListPrompt):
             self._buffer.text = default_text
             self._buffer.cursor_position = len(default_text)
 
-    def _handle_toggle_all(self, event, value: bool = None) -> None:
+    def _handle_toggle_all(self, _, value: bool = None) -> None:
         """Toggle all choice `enabled` status.
 
         Args:

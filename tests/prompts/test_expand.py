@@ -214,7 +214,9 @@ class TestExpandPrompt(unittest.TestCase):
 
     def test_key_not_expand(self):
         expand_help = ExpandHelp()
-        prompt = ExpandPrompt(message="", choices=self.choices, expand_help=expand_help)
+        prompt = ExpandPrompt(
+            message="", choices=self.choices, expand_help=expand_help, multiselect=True
+        )
         self.assertEqual(
             prompt.content_control.choices,
             [
@@ -259,7 +261,9 @@ class TestExpandPrompt(unittest.TestCase):
 
     def test_key_expand(self):
         expand_help = ExpandHelp()
-        prompt = ExpandPrompt(message="", choices=self.choices, expand_help=expand_help)
+        prompt = ExpandPrompt(
+            message="", choices=self.choices, expand_help=expand_help, multiselect=True
+        )
         prompt.content_control._expanded = True
         prompt._handle_toggle_choice(None)
         self.assertEqual(

@@ -611,8 +611,66 @@ class TestFuzzy(unittest.TestCase):
         prompt._on_text_changed("")
         self.assertEqual(prompt._invalid, False)
 
-    def test_prompt_handle_toggle(self):
-        prompt = FuzzyPrompt(message="", choices=["haha", "asdfa", "112321fd"])
+    def test_prompt_handle_toggle_no_multiselect(self):
+        prompt = FuzzyPrompt(message="", choices=[1], multiselect=False)
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "1",
+                    "value": 1,
+                }
+            ],
+        )
+        prompt._handle_toggle_choice(None)
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "1",
+                    "value": 1,
+                }
+            ],
+        )
+
+    def test_prompt_handle_toggle_all_no_multiselect(self):
+        prompt = FuzzyPrompt(message="", choices=[1], multiselect=False)
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "1",
+                    "value": 1,
+                }
+            ],
+        )
+        prompt._handle_toggle_all(None)
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "1",
+                    "value": 1,
+                }
+            ],
+        )
+
+    def test_prompt_handle_toggle_all(self):
+        prompt = FuzzyPrompt(
+            message="", choices=["haha", "asdfa", "112321fd"], multiselect=True
+        )
         self.assertEqual(
             prompt.content_control.choices,
             [

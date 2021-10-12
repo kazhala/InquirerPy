@@ -58,8 +58,20 @@ class TestBaseList(unittest.TestCase):
             ],
         )
 
+    def test_prompt_handle_toggle_choice_no_multiselect(self):
+        prompt = ListPrompt(message="Select one:", choices=[1, 2, 3], multiselect=False)
+        self.assertEqual(
+            prompt.content_control.selection,
+            {"enabled": False, "name": "1", "value": 1},
+        )
+        prompt._handle_toggle_choice(None)
+        self.assertEqual(
+            prompt.content_control.selection,
+            {"enabled": False, "name": "1", "value": 1},
+        )
+
     def test_prompt_handle_toggle_choice(self):
-        prompt = ListPrompt(message="Select one:", choices=[1, 2, 3])
+        prompt = ListPrompt(message="Select one:", choices=[1, 2, 3], multiselect=True)
         self.assertEqual(
             prompt.content_control.selection,
             {"enabled": False, "name": "1", "value": 1},
@@ -75,8 +87,28 @@ class TestBaseList(unittest.TestCase):
             {"enabled": False, "name": "1", "value": 1},
         )
 
-    def test_prompt_handle_toggle_all(self):
+    def test_prompt_handle_toggle_all_no_multiselect(self) -> None:
         prompt = ListPrompt(message="Select one:", choices=[1, 2, 3])
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "name": "1", "value": 1},
+                {"enabled": False, "name": "2", "value": 2},
+                {"enabled": False, "name": "3", "value": 3},
+            ],
+        )
+        prompt._handle_toggle_all(None)
+        self.assertEqual(
+            prompt.content_control.choices,
+            [
+                {"enabled": False, "name": "1", "value": 1},
+                {"enabled": False, "name": "2", "value": 2},
+                {"enabled": False, "name": "3", "value": 3},
+            ],
+        )
+
+    def test_prompt_handle_toggle_all(self):
+        prompt = ListPrompt(message="Select one:", choices=[1, 2, 3], multiselect=True)
         self.assertEqual(
             prompt.content_control.choices,
             [
