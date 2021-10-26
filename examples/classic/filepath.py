@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from InquirerPy import prompt
 from InquirerPy.validator import PathValidator
 
@@ -10,7 +8,7 @@ def main():
             "type": "filepath",
             "message": "Enter file to upload:",
             "name": "location",
-            "default": str(Path.cwd()),
+            "default": "~/",
             "validate": PathValidator(is_file=True, message="Input is not a file"),
             "only_files": True,
         },
