@@ -1,7 +1,6 @@
 """Module contains the class to create a secret prompt."""
 from typing import TYPE_CHECKING, Any, Callable, List, Tuple
 
-from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.utils import (
     InquirerPyDefault,
@@ -88,10 +87,6 @@ class SecretPrompt(InputPrompt):
         input: "Input" = None,
         output: "Output" = None,
     ) -> None:
-        if not isinstance(default, str):
-            raise InvalidArgument(
-                "secret prompt argument 'default' should be type of str"
-            )
         super().__init__(
             message=message,
             style=style,

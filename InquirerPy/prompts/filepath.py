@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Callable, Generator
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.completion.base import ThreadedCompleter
 
-from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.utils import (
     InquirerPyDefault,
@@ -162,10 +161,6 @@ class FilePathPrompt(InputPrompt):
         input: "Input" = None,
         output: "Output" = None,
     ) -> None:
-        if not isinstance(default, str):
-            raise InvalidArgument(
-                "filepath prompt argument default should be type of str"
-            )
         super().__init__(
             message=message,
             style=style,

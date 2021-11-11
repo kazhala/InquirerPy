@@ -128,7 +128,7 @@ class InputPrompt(BaseSimplePrompt):
         )
         if not isinstance(self._default, str):
             raise InvalidArgument(
-                "input prompt argument 'default' should be type of str"
+                f"{type(self).__name__} argument 'default' should be type of str"
             )
         self._completer = None
         if isinstance(completer, dict):
