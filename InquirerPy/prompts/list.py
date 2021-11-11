@@ -237,7 +237,7 @@ class ListPrompt(BaseListPrompt):
         if self._border:
             main_content_window = Frame(main_content_window)
 
-        self.layout = FloatContainer(
+        self._layout = FloatContainer(
             content=HSplit(
                 [
                     MessageWindow(
@@ -274,7 +274,7 @@ class ListPrompt(BaseListPrompt):
         )
 
         self.application = Application(
-            layout=Layout(self.layout),
+            layout=Layout(self._layout),
             style=self._style,
             key_bindings=self._kb,
             after_render=self._after_render,
