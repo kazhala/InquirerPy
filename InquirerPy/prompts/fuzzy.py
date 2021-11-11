@@ -10,7 +10,6 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters.cli import IsDone
 from prompt_toolkit.layout.containers import (
     ConditionalContainer,
-    Float,
     FloatContainer,
     HSplit,
     Window,
@@ -27,7 +26,7 @@ from InquirerPy.base import FakeDocument, InquirerPyUIListControl
 from InquirerPy.base.list import BaseListPrompt
 from InquirerPy.containers.instruction import InstructionWindow
 from InquirerPy.containers.message import MessageWindow
-from InquirerPy.containers.validation import ValidationWindow
+from InquirerPy.containers.validation import ValidationFloat
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.separator import Separator
@@ -451,12 +450,10 @@ class FuzzyPrompt(BaseListPrompt):
                     ],
                 ),
                 floats=[
-                    Float(
-                        content=ValidationWindow(
-                            invalid_message=self._get_error_message,
-                            filter=self._is_invalid & ~IsDone(),
-                            wrap_lines=self._wrap_lines,
-                        ),
+                    ValidationFloat(
+                        invalid_message=self._get_error_message,
+                        filter=self._is_invalid & ~IsDone(),
+                        wrap_lines=self._wrap_lines,
                         left=0,
                         bottom=self._validation_window_bottom_offset,
                     ),
