@@ -7,6 +7,7 @@ from prompt_toolkit.input import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 from prompt_toolkit.shortcuts.prompt import CompleteStyle
 
+from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.utils import InquirerPyStyle
 from InquirerPy.validator import PasswordValidator
@@ -150,3 +151,7 @@ class TestSecret(unittest.TestCase):
             ]
         )
         MockedLexer.assert_has_calls([call("class:input")])
+
+    def test_invalid_argument(self):
+        self.assertRaises(InvalidArgument, SecretPrompt, "hello", None, 12)
+        SecretPrompt(message="hello", default=lambda _: "12")

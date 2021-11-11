@@ -14,6 +14,7 @@ from prompt_toolkit.input.defaults import create_pipe_input
 from prompt_toolkit.output import DummyOutput
 from prompt_toolkit.shortcuts.prompt import CompleteStyle
 
+from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.filepath import FilePathCompleter, FilePathPrompt
 from InquirerPy.utils import InquirerPyStyle
 from InquirerPy.validator import PathValidator
@@ -256,3 +257,7 @@ class TestFilePath(unittest.TestCase):
         )
 
         MockedStyle.assert_has_calls([call({"yes": ""})])
+
+    def test_invalid_argument(self):
+        self.assertRaises(InvalidArgument, FilePathPrompt, "hello", None, False, 12)
+        FilePathPrompt(message="hello", default=lambda _: "12")
