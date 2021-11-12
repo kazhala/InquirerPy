@@ -2,6 +2,12 @@
 
 Notable changes are documented in this file.
 
+## dev
+
+### Fixed
+
+- Fixed InvalidArgument raised for callable default
+
 ## 0.3.0 (12/10/2021)
 
 **New Documentation: [inquirerpy.readthedocs.io](https://inquirerpy.readthedocs.io/en/latest/)**
