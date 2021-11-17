@@ -194,7 +194,7 @@ for more information about limitations and other advanced topics.
 Each keybinding also takes another **optional** key called `filter` which can be used to determine if certain keys should be enabled/disabled.
 The `filter` key can be either a boolean or a `prompt_toolkit` [Conditon](https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/filters.html#filters).
 
-##### bool
+**bool**
 
 ```python
 special_vim = True
@@ -212,7 +212,7 @@ keybindings = {
 # ....
 ```
 
-##### Filter
+**Filter**
 
 ```python
 from prompt_toolkit.filters.base import Condition
@@ -246,17 +246,66 @@ the `execute` function immediately, you can bind keys to your custom functions b
 
 ### register_kb
 
-{meth}`~InquirerPy.base.simple.BaseSimplePrompt.register_kb` is a decorator function that's available to use once the prompt is created.
-The function that are being bounded will be provided with an object {class}`~prompt_toolkit.key_binding.key_processor.KeyPressEvent` as an argument.
-The {class}`~prompt_toolkit.key_binding.key_processor.KeyPressEvent` can give you access to the {class}`~prompt_toolkit.application.Application`.
-
-```{tip}
-It's more of a `prompt_toolkit` concept and if you don't plan to use it, simply provide a dummy parameter `_`.
+```{seealso}
+This method directly interacts with {meth}`prompt_toolkit.key_binding.KeyBindings.add`.
 ```
 
-The following example will print "Hello World" on top of the prompt when pressing `alt-a`.
+{meth}`~InquirerPy.base.simple.BaseSimplePrompt.register_kb` is a decorator function that's available to use once the prompt is created.
+The function that are being bounded will be provided with an object {class}`~prompt_toolkit.key_binding.key_processor.KeyPressEvent` as an argument.
 
-```python
+The {class}`~prompt_toolkit.key_binding.key_processor.KeyPressEvent` can give you access to the {class}`~prompt_toolkit.application.Application` which
+will provide you with the ability to exit the prompt application with custom result.
+
+```{code-block} python
+from InquirerPy import inquirer
+
+prompt = inquirer.select(
+    message="Select item:",
+    choices=["foo", "bar"],
+    long_instruction="ENTER=view, D=delete",
+)
+
+@prompt.register_kb("d")
+def _handle_delete(event):
+    choice_name = prompt.result_name
+    choice_value= prompt.result_value
+    # some logic for processing
+    # ...
+    # you can then use the event API to exit the prompt with the value you desired
+    event.app.exit(result=None)
+
+result = prompt.execute()
+```
+
+There are also some internal APIs you could leverage within the keybinding functions.
+
+```{code-block} python
+from InquirerPy import inquirer
+
+prompt = inquirer.select(
+    message="Select item:",
+    choices=["foo", "bar"],
+    long_instruction="ENTER=view, D=delete",
+)
+
+@prompt.register_kb("d")
+def _handle_delete(event):
+    choice_name = prompt.result_name
+    choice_value= prompt.result_value
+    # some logic for processing
+    # ...
+    # skipping the prompt after processing
+    prompt._mandatory = False
+    prompt._handle_skip(event)
+    # answer the prompt normally after processing
+    prompt._handle_enter(event)
+
+result = prompt.execute()
+```
+
+The following is a simpler example which will print "Hello World" on top of the prompt when pressing `alt-a`.
+
+```{code-block} python
 from InquirerPy import inquirer
 from InquirerPy.utils import patched_print as print
 
@@ -271,7 +320,7 @@ def _(_):
 name = name_prompt.execute()
 ```
 
-#### keys and filter
+**keys and filter**
 
 You can bind multiple keys and also have the ability to apply [filter](#filter).
 
