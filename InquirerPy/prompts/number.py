@@ -1,18 +1,27 @@
 """Module contains the class to create a number prompt."""
-from typing import Any, Callable, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
 
+from prompt_toolkit.application.application import Application
+from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters.cli import IsDone
 from prompt_toolkit.layout.containers import (
-    Float,
-    FloatContainer,
+    ConditionalContainer,
+    HorizontalAlign,
     HSplit,
     VSplit,
     Window,
 )
-from prompt_toolkit.layout.controls import FormattedTextControl
-from prompt_toolkit.layout.dimension import LayoutDimension
+from prompt_toolkit.layout.controls import (
+    BufferControl,
+    DummyControl,
+    FormattedTextControl,
+)
+from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
+from prompt_toolkit.layout.layout import Layout
+from prompt_toolkit.lexers.base import SimpleLexer
 
 from InquirerPy.base.complex import BaseComplexPrompt
+from InquirerPy.containers.instruction import InstructionWindow
 from InquirerPy.containers.validation import ValidationWindow
 from InquirerPy.enum import INQUIRERPY_QMARK_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument
@@ -25,6 +34,9 @@ from InquirerPy.utils import (
     InquirerPyValidate,
 )
 
+if TYPE_CHECKING:
+    from prompt_toolkit.key_binding.key_processor import KeyPressEvent
+
 __all__ = ["NumberPrompt"]
 
 
@@ -36,7 +48,7 @@ class NumberPrompt(BaseComplexPrompt):
         message: InquirerPyMessage,
         style: InquirerPyStyle = None,
         vi_mode: bool = False,
-        default: InquirerPyDefault = "",
+        default: InquirerPyDefault = 0,
         float_allowed: bool = False,
         max_allowed: Union[int, float] = None,
         min_allowed: Union[int, float] = None,
@@ -61,12 +73,12 @@ class NumberPrompt(BaseComplexPrompt):
             vi_mode=vi_mode,
             qmark=qmark,
             amark=amark,
-            instruction=instruction,
-            long_instruction=long_instruction,
-            validate=validate,
-            invalid_message=invalid_message,
             transformer=transformer,
             filter=filter,
+            invalid_message=invalid_message,
+            validate=validate,
+            instruction=instruction,
+            long_instruction=long_instruction,
             wrap_lines=wrap_lines,
             raise_keyboard_interrupt=raise_keyboard_interrupt,
             mandatory=mandatory,
@@ -113,8 +125,41 @@ class NumberPrompt(BaseComplexPrompt):
             "right": [{"func": self._handle_right}],
         }
 
-        self._layout = FloatContainer(
-            content=HSplit(
+        self._whole_width = 1
+        self._whole_buffer = Buffer(on_text_changed=self._on_whole_text_change)
+
+        self._integral_width = 1
+        self._integral_buffer = Buffer(on_text_changed=self._on_integral_text_change)
+
+        self._whole_window = Window(
+            height=LayoutDimension.exact(1) if not self._wrap_lines else None,
+            content=BufferControl(
+                buffer=self._whole_buffer,
+                lexer=SimpleLexer("class:input"),
+            ),
+            width=lambda: Dimension(
+                min=self._whole_width,
+                max=self._whole_width,
+                preferred=self._whole_width,
+            ),
+            dont_extend_width=True,
+        )
+
+        self._integral_window = Window(
+            height=LayoutDimension.exact(1) if not self._wrap_lines else None,
+            content=BufferControl(
+                buffer=self._integral_buffer,
+                lexer=SimpleLexer("class:input"),
+            ),
+            width=lambda: Dimension(
+                min=self._integral_width,
+                max=self._integral_width,
+                preferred=self._integral_width,
+            ),
+        )
+
+        self._layout = Layout(
+            HSplit(
                 [
                     VSplit(
                         [
@@ -122,35 +167,75 @@ class NumberPrompt(BaseComplexPrompt):
                                 height=LayoutDimension.exact(1)
                                 if not self._wrap_lines
                                 else None,
-                                content=FormattedTextControl(self._message),
+                                content=FormattedTextControl(self._get_prompt_message),
                                 wrap_lines=self._wrap_lines,
                                 dont_extend_height=True,
-                            )
-                        ]
-                    )
-                ]
-            ),
-            floats=[
-                Float(
-                    content=ValidationWindow(
-                        invalid_message=self._invalid_message,
+                                dont_extend_width=True,
+                            ),
+                            self._whole_window,
+                            Window(
+                                height=LayoutDimension.exact(1)
+                                if not self._wrap_lines
+                                else None,
+                                content=FormattedTextControl([("", ". ")]),
+                                wrap_lines=self._wrap_lines,
+                                dont_extend_height=True,
+                                dont_extend_width=True,
+                            ),
+                            self._integral_window,
+                        ],
+                        align=HorizontalAlign.LEFT,
+                    ),
+                    ConditionalContainer(
+                        Window(content=DummyControl()),
+                        filter=~IsDone() & self._is_displaying_long_instruction,
+                    ),
+                    ValidationWindow(
+                        invalid_message=self._get_error_message,
                         filter=self._is_invalid & ~IsDone(),
                         wrap_lines=self._wrap_lines,
                     ),
-                    left=0,
-                    bottom=self._validation_window_bottom_offset,
-                )
-            ],
+                    InstructionWindow(
+                        message=self._long_instruction,
+                        filter=~IsDone() & self._is_displaying_long_instruction,
+                        wrap_lines=self._wrap_lines,
+                    ),
+                ]
+            ),
         )
 
-    def _handle_down(self) -> None:
+        self._layout.focus(self._integral_window)
+
+        self._application = Application(
+            layout=self._layout,
+            style=self._style,
+            key_bindings=self._kb,
+            after_render=self._after_render,
+        )
+
+    def _on_rendered(self, _) -> None:
+        self._whole_buffer.text = "0"
+        self._whole_buffer.cursor_position = 1
+        self._integral_buffer.text = "0"
+        self._integral_buffer.cursor_position = 1
+
+    def _handle_down(self, event: Optional["KeyPressEvent"]) -> None:
         pass
 
-    def _handle_up(self) -> None:
+    def _handle_up(self, event: Optional["KeyPressEvent"]) -> None:
         pass
 
-    def _handle_left(self) -> None:
+    def _handle_left(self, event: Optional["KeyPressEvent"]) -> None:
         pass
 
-    def _handle_right(self) -> None:
+    def _handle_right(self, event: Optional["KeyPressEvent"]) -> None:
         pass
+
+    def _handle_enter(self, event: Optional["KeyPressEvent"]) -> None:
+        pass
+
+    def _on_whole_text_change(self, buffer: Buffer) -> None:
+        self._whole_width = len(buffer.text) + 1
+
+    def _on_integral_text_change(self, buffer: Buffer) -> None:
+        self._integral_width = len(buffer.text) + 1
