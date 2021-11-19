@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.filters.cli import IsDone
+from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout.containers import (
     ConditionalContainer,
     HorizontalAlign,
@@ -92,10 +93,13 @@ class NumberPrompt(BaseComplexPrompt):
 
         if isinstance(default, Callable):
             default = cast(Callable, default)(session_result)
-        if self._float and not isinstance(default, float):
-            raise InvalidArgument(
-                f"{type(self).__name__} argument 'default' should return type of float"
-            )
+        if self._float:
+            default = float(cast(int, default))
+        if self._float:
+            if not isinstance(default, float):
+                raise InvalidArgument(
+                    f"{type(self).__name__} argument 'default' should return type of float"
+                )
         elif not isinstance(default, int):
             raise InvalidArgument(
                 f"{type(self).__name__} argument 'default' should return type of int"
@@ -116,6 +120,7 @@ class NumberPrompt(BaseComplexPrompt):
             ],
             "left": [{"key": "left"}],
             "right": [{"key": "right"}],
+            "focus": [{"key": Keys.Tab}, {"key": "s-tab"}],
             **keybindings,
         }
         self.kb_func_lookup = {
@@ -123,6 +128,7 @@ class NumberPrompt(BaseComplexPrompt):
             "up": [{"func": self._handle_up}],
             "left": [{"func": self._handle_left}],
             "right": [{"func": self._handle_right}],
+            "focus": [{"func": self._handle_focus}],
         }
 
         self._whole_width = 1
@@ -204,7 +210,7 @@ class NumberPrompt(BaseComplexPrompt):
             ),
         )
 
-        self._layout.focus(self._integral_window)
+        self.focus = self._whole_window
 
         self._application = Application(
             layout=self._layout,
@@ -215,9 +221,9 @@ class NumberPrompt(BaseComplexPrompt):
 
     def _on_rendered(self, _) -> None:
         self._whole_buffer.text = "0"
-        self._whole_buffer.cursor_position = 1
+        self._whole_buffer.cursor_position = 0
         self._integral_buffer.text = "0"
-        self._integral_buffer.cursor_position = 1
+        self._integral_buffer.cursor_position = 0
 
     def _handle_down(self, event: Optional["KeyPressEvent"]) -> None:
         pass
@@ -226,13 +232,43 @@ class NumberPrompt(BaseComplexPrompt):
         pass
 
     def _handle_left(self, event: Optional["KeyPressEvent"]) -> None:
-        pass
+        if self.focus == self._whole_window:
+            self._whole_buffer.cursor_position -= 1
+        else:
+            if self._integral_buffer.cursor_position == 0:
+                self.focus = self._whole_window
+            else:
+                self._integral_buffer.cursor_position -= 1
 
     def _handle_right(self, event: Optional["KeyPressEvent"]) -> None:
-        pass
+        if self.focus == self._integral_window:
+            self._integral_buffer.cursor_position += 1
+        else:
+            if self._whole_buffer.cursor_position == len(self._whole_buffer.text):
+                self.focus = self._integral_window
+            else:
+                self._whole_buffer.cursor_position += 1
 
     def _handle_enter(self, event: Optional["KeyPressEvent"]) -> None:
         pass
+
+    def _handle_focus(self, event: Optional["KeyPressEvent"]) -> None:
+        if not self._float:
+            return
+        if self.focus == self._whole_window:
+            self.focus = self._integral_window
+        else:
+            self.focus = self._whole_window
+
+    @property
+    def focus(self) -> Window:
+        """Window: Current focused window."""
+        return self._focus
+
+    @focus.setter
+    def focus(self, value: Window) -> None:
+        self._focus = value
+        self._layout.focus(self._focus)
 
     def _on_whole_text_change(self, buffer: Buffer) -> None:
         self._whole_width = len(buffer.text) + 1
