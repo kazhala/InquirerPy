@@ -132,6 +132,7 @@ class NumberPrompt(BaseComplexPrompt):
             ],
             "focus": [{"key": Keys.Tab}, {"key": "s-tab"}],
             "input": [{"key": str(i)} for i in range(10)],
+            "negative_toggle": [{"key": "-"}],
             **keybindings,
         }
         self.kb_func_lookup = {
@@ -141,6 +142,7 @@ class NumberPrompt(BaseComplexPrompt):
             "right": [{"func": self._handle_right}],
             "focus": [{"func": self._handle_focus}],
             "input": [{"func": self._handle_input}],
+            "negative_toggle": [{"func": self._handle_negative_toggle}],
         }
 
         @self.register_kb(Keys.Any)
@@ -284,6 +286,12 @@ class NumberPrompt(BaseComplexPrompt):
 
     def _handle_input(self, event: "KeyPressEvent") -> None:
         self.focus_buffer.insert_text(event.key_sequence[0].data)
+
+    def _handle_negative_toggle(self, _) -> None:
+        if self._whole_buffer.text.startswith("-"):
+            self._whole_buffer.text = self._whole_buffer.text[1:]
+        else:
+            self._whole_buffer.text = f"-{self._whole_buffer.text}"
 
     @property
     def focus_buffer(self) -> Buffer:
