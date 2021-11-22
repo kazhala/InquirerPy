@@ -38,7 +38,6 @@ from InquirerPy.utils import (
 
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding.key_processor import KeyPressEvent
-    from prompt_toolkit.layout.containers import Container
 
 __all__ = ["NumberPrompt"]
 
@@ -132,6 +131,7 @@ class NumberPrompt(BaseComplexPrompt):
                 {"key": "l", "filter": self._is_vim_edit},
             ],
             "focus": [{"key": Keys.Tab}, {"key": "s-tab"}],
+            "input": [{"key": str(i)} for i in range(10)],
             **keybindings,
         }
         self.kb_func_lookup = {
@@ -140,7 +140,12 @@ class NumberPrompt(BaseComplexPrompt):
             "left": [{"func": self._handle_left}],
             "right": [{"func": self._handle_right}],
             "focus": [{"func": self._handle_focus}],
+            "input": [{"func": self._handle_input}],
         }
+
+        @self.register_kb(Keys.Any)
+        def _(_):
+            pass
 
         self._whole_width = 1
         self._whole_buffer = Buffer(on_text_changed=self._on_whole_text_change)
@@ -162,20 +167,17 @@ class NumberPrompt(BaseComplexPrompt):
             dont_extend_width=True,
         )
 
-        self._integral_window = ConditionalContainer(
-            content=Window(
-                height=LayoutDimension.exact(1) if not self._wrap_lines else None,
-                content=BufferControl(
-                    buffer=self._integral_buffer,
-                    lexer=SimpleLexer("class:input"),
-                ),
-                width=lambda: Dimension(
-                    min=self._integral_width,
-                    max=self._integral_width,
-                    preferred=self._integral_width,
-                ),
+        self._integral_window = Window(
+            height=LayoutDimension.exact(1) if not self._wrap_lines else None,
+            content=BufferControl(
+                buffer=self._integral_buffer,
+                lexer=SimpleLexer("class:input"),
             ),
-            filter=self._is_float,
+            width=lambda: Dimension(
+                min=self._integral_width,
+                max=self._integral_width,
+                preferred=self._integral_width,
+            ),
         )
 
         self._layout = Layout(
@@ -205,7 +207,9 @@ class NumberPrompt(BaseComplexPrompt):
                                 ),
                                 filter=self._is_float,
                             ),
-                            self._integral_window,
+                            ConditionalContainer(
+                                self._integral_window, filter=self._is_float
+                            ),
                         ],
                         align=HorizontalAlign.LEFT,
                     ),
@@ -280,13 +284,20 @@ class NumberPrompt(BaseComplexPrompt):
         else:
             self.focus = self._whole_window
 
+    def _handle_input(self, event: "KeyPressEvent") -> None:
+        data = event.key_sequence[0].data
+        if self.focus == self._whole_window:
+            self._whole_buffer.insert_text(data)
+        else:
+            self._integral_buffer.insert_text(data)
+
     @property
-    def focus(self) -> "Container":
+    def focus(self) -> Window:
         """Window: Current focused window."""
         return self._focus
 
     @focus.setter
-    def focus(self, value: "Container") -> None:
+    def focus(self, value: Window) -> None:
         self._focus = value
         self._layout.focus(self._focus)
 
