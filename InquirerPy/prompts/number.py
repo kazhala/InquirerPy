@@ -252,31 +252,29 @@ class NumberPrompt(BaseComplexPrompt):
     def _handle_up(self, event: Optional["KeyPressEvent"]) -> None:
         pass
 
-    def _handle_left(self, event: Optional["KeyPressEvent"]) -> None:
-        if self.focus == self._whole_window:
-            self._whole_buffer.cursor_position -= 1
+    def _handle_left(self, _) -> None:
+        if (
+            self.focus == self._integral_window
+            and self.focus_buffer.cursor_position == 0
+        ):
+            self.focus = self._whole_window
         else:
-            if self._integral_buffer.cursor_position == 0:
-                self.focus = self._whole_window
-            else:
-                self._integral_buffer.cursor_position -= 1
+            self.focus_buffer.cursor_position -= 1
 
-    def _handle_right(self, event: Optional["KeyPressEvent"]) -> None:
-        if self.focus == self._integral_window:
-            self._integral_buffer.cursor_position += 1
+    def _handle_right(self, _) -> None:
+        if (
+            self.focus == self._whole_window
+            and self.focus_buffer.cursor_position == len(self.focus_buffer.text)
+            and self._float
+        ):
+            self.focus = self._integral_window
         else:
-            if (
-                self._whole_buffer.cursor_position == len(self._whole_buffer.text)
-                and self._float
-            ):
-                self.focus = self._integral_window
-            else:
-                self._whole_buffer.cursor_position += 1
+            self.focus_buffer.cursor_position += 1
 
-    def _handle_enter(self, event: Optional["KeyPressEvent"]) -> None:
+    def _handle_enter(self, _) -> None:
         pass
 
-    def _handle_focus(self, event: Optional["KeyPressEvent"]) -> None:
+    def _handle_focus(self, _) -> None:
         if not self._float:
             return
         if self.focus == self._whole_window:
@@ -285,11 +283,15 @@ class NumberPrompt(BaseComplexPrompt):
             self.focus = self._whole_window
 
     def _handle_input(self, event: "KeyPressEvent") -> None:
-        data = event.key_sequence[0].data
+        self.focus_buffer.insert_text(event.key_sequence[0].data)
+
+    @property
+    def focus_buffer(self) -> Buffer:
+        """Buffer: Current editable buffer."""
         if self.focus == self._whole_window:
-            self._whole_buffer.insert_text(data)
+            return self._whole_buffer
         else:
-            self._integral_buffer.insert_text(data)
+            return self._integral_buffer
 
     @property
     def focus(self) -> Window:
