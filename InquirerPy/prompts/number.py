@@ -1,5 +1,5 @@
 """Module contains the class to create a number prompt."""
-from typing import TYPE_CHECKING, Any, Callable, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Union, cast
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -92,6 +92,7 @@ class NumberPrompt(BaseComplexPrompt):
         self._is_float = Condition(lambda: self._float)
         self._max = max_allowed
         self._min = min_allowed
+        self._value_error_message = "Remove any non-integer value"
 
         if isinstance(default, Callable):
             default = cast(Callable, default)(session_result)
@@ -106,6 +107,7 @@ class NumberPrompt(BaseComplexPrompt):
             raise InvalidArgument(
                 f"{type(self).__name__} argument 'default' should return type of int"
             )
+        self._default = default
 
         if keybindings is None:
             keybindings = {}
@@ -150,10 +152,16 @@ class NumberPrompt(BaseComplexPrompt):
             pass
 
         self._whole_width = 1
-        self._whole_buffer = Buffer(on_text_changed=self._on_whole_text_change)
+        self._whole_buffer = Buffer(
+            on_text_changed=self._on_whole_text_change,
+            on_cursor_position_changed=self._on_cursor_position_change,
+        )
 
         self._integral_width = 1
-        self._integral_buffer = Buffer(on_text_changed=self._on_integral_text_change)
+        self._integral_buffer = Buffer(
+            on_text_changed=self._on_integral_text_change,
+            on_cursor_position_changed=self._on_cursor_position_change,
+        )
 
         self._whole_window = Window(
             height=LayoutDimension.exact(1) if not self._wrap_lines else None,
@@ -248,11 +256,23 @@ class NumberPrompt(BaseComplexPrompt):
         self._integral_buffer.text = "0"
         self._integral_buffer.cursor_position = 0
 
-    def _handle_down(self, event: Optional["KeyPressEvent"]) -> None:
-        pass
+    def _handle_down(self, _) -> None:
+        try:
+            if not self.focus_buffer.text:
+                self.focus_buffer.text = "0"
+            else:
+                self.focus_buffer.text = str(int(self.focus_buffer.text) - 1)
+        except ValueError:
+            self._set_error(message=self._value_error_message)
 
-    def _handle_up(self, event: Optional["KeyPressEvent"]) -> None:
-        pass
+    def _handle_up(self, _) -> None:
+        try:
+            if not self.focus_buffer.text:
+                self.focus_buffer.text = "0"
+            else:
+                self.focus_buffer.text = str(int(self.focus_buffer.text) + 1)
+        except ValueError:
+            self._set_error(message=self._value_error_message)
 
     def _handle_left(self, _) -> None:
         if (
@@ -293,6 +313,24 @@ class NumberPrompt(BaseComplexPrompt):
         else:
             self._whole_buffer.text = f"-{self._whole_buffer.text}"
 
+    def _on_whole_text_change(self, buffer: Buffer) -> None:
+        self._whole_width = len(buffer.text) + 1
+        self._on_text_change(buffer)
+
+    def _on_integral_text_change(self, buffer: Buffer) -> None:
+        self._integral_width = len(buffer.text) + 1
+        self._on_text_change(buffer)
+
+    def _on_text_change(self, buffer: Buffer) -> None:
+        if buffer.text and buffer.text != "-":
+            self.value = self.value
+        if buffer.text.startswith("-") and buffer.cursor_position == 0:
+            buffer.cursor_position = 1
+
+    def _on_cursor_position_change(self, buffer: Buffer) -> None:
+        if self.focus_buffer.text.startswith("-") and buffer.cursor_position == 0:
+            buffer.cursor_position = 1
+
     @property
     def focus_buffer(self) -> Buffer:
         """Buffer: Current editable buffer."""
@@ -311,8 +349,25 @@ class NumberPrompt(BaseComplexPrompt):
         self._focus = value
         self._layout.focus(self._focus)
 
-    def _on_whole_text_change(self, buffer: Buffer) -> None:
-        self._whole_width = len(buffer.text) + 1
+    @property
+    def value(self) -> Union[int, float]:
+        """Union[int, float]: The actual value of the prompt, combining and transforming all input buffer values."""
+        try:
+            if not self._float:
+                return int(self._whole_buffer.text)
+            else:
+                return float(f"{self._whole_buffer.text}.{self._integral_buffer.text}")
+        except ValueError:
+            self._set_error(self._value_error_message)
+            return self._default
 
-    def _on_integral_text_change(self, buffer: Buffer) -> None:
-        self._integral_width = len(buffer.text) + 1
+    @value.setter
+    def value(self, value: Union[int, float]) -> None:
+        if self._min is not None:
+            value = max(value, self._min)
+        if self._max is not None:
+            value = min(value, self._max)
+        if not self._float:
+            self._whole_buffer.text = str(value)
+        else:
+            self._whole_buffer.text, self._integral_buffer.text = str(value).split(".")
