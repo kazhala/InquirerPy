@@ -54,6 +54,7 @@ class NumberPrompt(BaseComplexPrompt):
         float_allowed: bool = False,
         max_allowed: Union[int, float] = None,
         min_allowed: Union[int, float] = None,
+        decimal_symbol: str = ". ",
         qmark: str = INQUIRERPY_QMARK_SEQUENCE,
         amark: str = "?",
         instruction: str = "",
@@ -93,6 +94,7 @@ class NumberPrompt(BaseComplexPrompt):
         self._max = max_allowed
         self._min = min_allowed
         self._value_error_message = "Remove any non-integer value"
+        self._decimal_symbol = decimal_symbol
 
         if isinstance(default, Callable):
             default = cast(Callable, default)(session_result)
@@ -210,7 +212,9 @@ class NumberPrompt(BaseComplexPrompt):
                                     height=LayoutDimension.exact(1)
                                     if not self._wrap_lines
                                     else None,
-                                    content=FormattedTextControl([("", ". ")]),
+                                    content=FormattedTextControl(
+                                        [("", self._decimal_symbol)]
+                                    ),
                                     wrap_lines=self._wrap_lines,
                                     dont_extend_height=True,
                                     dont_extend_width=True,
