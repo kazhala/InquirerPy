@@ -43,15 +43,25 @@ This prompt does not accepts choices containing {ref}`pages/separator:Separator`
 ## Keybindings
 
 ```{seealso}
-{ref}`pages/prompts/list:keybindings`
+{ref}`pages/kb:Keybindings`
 ```
 
-This prompt shares the same keybindings as {ref}`select prompt <pages/prompts/list:keybindings>`.
-
-However it does not enable `j/k` navigation when `vi_mode` is True.
-When `vi_mode` is True in fuzzy prompt, the input buffer will become vim input mode, no other keybindings are altered.
+```{hint}
+This prompt does not enable `j/k` navigation when `vi_mode` is `True`. When `vi_mode` is `True` in fuzzy prompt, the input buffer
+will become vim input mode, no other keybindings are altered.
 
 The `space` key for toggle choice is also disabled since it blocks user from typing space in the input buffer.
+```
+
+```{include} ../kb.md
+:start-after: <!-- start kb -->
+:end-before: <!-- end kb -->
+```
+
+```{include} ./list.md
+:start-after: <!-- start list kb -->
+:end-before: <!-- end list kb -->
+```
 
 ## Multiple Selection
 

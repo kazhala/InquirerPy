@@ -43,6 +43,8 @@ A prompt that displays a list of choices to select.
 :end-before: <!-- end kb -->
 ```
 
+<!-- start list kb -->
+
 The following dictionary contains the additional keybindings created by this prompt.
 
 ```{code-block} python
@@ -76,6 +78,10 @@ The following dictionary contains the additional keybindings created by this pro
 }
 ```
 
+<!-- end list kb -->
+
+<!-- start list vi kb -->
+
 When `vi_mode` is True, the "up" and "down" navigation key will be changed.
 
 ```{code-block} python
@@ -90,6 +96,8 @@ When `vi_mode` is True, the "up" and "down" navigation key will be changed.
     ],
 }
 ```
+
+<!-- end list vi kb -->
 
 ## Multiple Selection
 

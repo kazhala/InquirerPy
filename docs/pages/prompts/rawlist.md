@@ -37,11 +37,27 @@ For this specific prompt, due to the shortcut being created is between 1-9, the 
 ## Keybindings
 
 ```{seealso}
-{ref}`pages/prompts/list:keybindings`
+{ref}`pages/kb:Keybindings`
 ```
 
-In addition to the keybindings mentioned in {ref}`select prompt <pages/prompts/list:keybindings>`, keybindings are created for keys 1-9
-to jump to the target index choices.
+```{hint}
+In addition to the keybindings mentioned below, keybindings are created for keys 1-9 to jump to the target index choices.
+```
+
+```{include} ../kb.md
+:start-after: <!-- start kb -->
+:end-before: <!-- end kb -->
+```
+
+```{include} ./list.md
+:start-after: <!-- start list kb -->
+:end-before: <!-- end list kb -->
+```
+
+```{include} ./list.md
+:start-after: <!-- start list vi kb -->
+:end-before: <!-- end list vi kb -->
+```
 
 ## Multiple Selection
 

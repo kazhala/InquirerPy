@@ -69,11 +69,28 @@ choices = [
 ## Keybindings
 
 ```{seealso}
-{ref}`pages/prompts/list:keybindings`
+{ref}`pages/kb:Keybindings`
 ```
 
-In addition to the keybindings mentioned in {ref}`select prompt <pages/prompts/list:keybindings>`, keybindings are created for all the
-`key` specified for each choice which you can use to jump the target choice.
+```{hint}
+In addition to the keybindings mentioned below, keybindings are created for all the `key` specified for each choice which you can
+use to jump to the target choce.
+```
+
+```{include} ../kb.md
+:start-after: <!-- start kb -->
+:end-before: <!-- end kb -->
+```
+
+```{include} ./list.md
+:start-after: <!-- start list kb -->
+:end-before: <!-- end list kb -->
+```
+
+```{include} ./list.md
+:start-after: <!-- start list vi kb -->
+:end-before: <!-- end list vi kb -->
+```
 
 ## Multiple Selection
 

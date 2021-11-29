@@ -48,10 +48,23 @@ choices = [
 ## Keybindings
 
 ```{seealso}
-{ref}`pages/prompts/list:Keybindings`
+{ref}`pages/kb:Keybindings`
 ```
 
-This prompt shares the same keybindings as {ref}`select prompt <pages/prompts/list:keybindings>`.
+```{include} ../kb.md
+:start-after: <!-- start kb -->
+:end-before: <!-- end kb -->
+```
+
+```{include} ./list.md
+:start-after: <!-- start list kb -->
+:end-before: <!-- end list kb -->
+```
+
+```{include} ./list.md
+:start-after: <!-- start list vi kb -->
+:end-before: <!-- end list vi kb -->
+```
 
 ## Default Value
 
