@@ -266,6 +266,11 @@ class NumberPrompt(BaseComplexPrompt):
             if not self.focus_buffer.text:
                 self.focus_buffer.text = "0"
             else:
+                if (
+                    self.focus_buffer == self._integral_buffer
+                    and int(self.focus_buffer.text) == 0
+                ):
+                    return
                 self.focus_buffer.text = str(int(self.focus_buffer.text) - 1)
         except ValueError:
             self._set_error(message=self._value_error_message)
