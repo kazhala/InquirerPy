@@ -5,6 +5,6 @@ result = inquirer.number(
     long_instruction="asfasdfasdfa asdfas",
     raise_keyboard_interrupt=False,
     min_allowed=-10,
-    max_allowed=10
-    # float_allowed=True,
+    max_allowed=10,
+    float_allowed=True,
 ).execute()

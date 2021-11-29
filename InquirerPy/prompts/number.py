@@ -368,9 +368,9 @@ class NumberPrompt(BaseComplexPrompt):
     @value.setter
     def value(self, value: Union[int, float]) -> None:
         if self._min is not None:
-            value = max(value, self._min)
+            value = max(value, self._min if not self._float else float(self._min))
         if self._max is not None:
-            value = min(value, self._max)
+            value = min(value, self._max if not self._float else float(self._max))
         if not self._float:
             self._whole_buffer.text = str(value)
         else:
