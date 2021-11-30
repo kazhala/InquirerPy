@@ -1,4 +1,5 @@
 """Module contains the class to create a number prompt."""
+import re
 from typing import TYPE_CHECKING, Any, Callable, Union, cast
 
 from prompt_toolkit.application.application import Application
@@ -95,7 +96,8 @@ class NumberPrompt(BaseComplexPrompt):
         self._min = min_allowed
         self._value_error_message = "Remove any non-integer value"
         self._decimal_symbol = decimal_symbol
-        self._ending_zero = False
+        self._ending_zero = ""
+        self._zero_pattern = re.compile(r"^[0-9]+?(0+)$")
 
         if isinstance(default, Callable):
             default = cast(Callable, default)(session_result)
@@ -366,11 +368,11 @@ class NumberPrompt(BaseComplexPrompt):
             if not self._float:
                 return int(self._whole_buffer.text)
             else:
-                self._ending_zero = (
-                    self._integral_buffer.text.endswith("0")
-                    if len(self._integral_buffer.text) > 1
-                    else False
-                )
+                ending_zero = self._zero_pattern.match(self._integral_buffer.text)
+                if ending_zero is not None:
+                    self._ending_zero = ending_zero.group(1)
+                else:
+                    self._ending_zero = ""
                 return float(f"{self._whole_buffer.text}.{self._integral_buffer.text}")
         except ValueError:
             self._set_error(self._value_error_message)
@@ -386,7 +388,4 @@ class NumberPrompt(BaseComplexPrompt):
             self._whole_buffer.text = str(value)
         else:
             self._whole_buffer.text, integral_buffer_text = str(value).split(".")
-            if self._ending_zero:
-                self._integral_buffer.text = integral_buffer_text + "0"
-            else:
-                self._integral_buffer.text = integral_buffer_text
+            self._integral_buffer.text = integral_buffer_text + self._ending_zero
