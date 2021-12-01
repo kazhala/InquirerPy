@@ -1,4 +1,5 @@
 from InquirerPy import inquirer
+from InquirerPy.validator import EmptyInputValidator
 
 result = inquirer.number(
     message="hello",
@@ -8,4 +9,5 @@ result = inquirer.number(
     max_allowed=10,
     default="2.7",
     float_allowed=True,
+    validate=EmptyInputValidator(),
 ).execute()

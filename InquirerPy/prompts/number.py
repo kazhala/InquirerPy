@@ -312,15 +312,18 @@ class NumberPrompt(BaseComplexPrompt):
             self.focus_buffer.cursor_position += 1
 
     def _handle_enter(self, event) -> None:
+        result = str(self.value)
+        if not self._whole_buffer.text and not self._integral_buffer.text:
+            result = ""
         try:
-            fake_document = FakeDocument(str(self.value))
+            fake_document = FakeDocument(result)
             self._validator.validate(fake_document)  # type: ignore
         except ValidationError as e:
             self._set_error(str(e))
         else:
             self.status["answered"] = True
-            self.status["result"] = self.value
-            event.app.exit(result=self.value)
+            self.status["result"] = result
+            event.app.exit(result=result)
 
     def _handle_focus(self, _) -> None:
         if not self._float:
