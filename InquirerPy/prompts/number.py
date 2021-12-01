@@ -320,6 +320,9 @@ class NumberPrompt(BaseComplexPrompt):
         self.focus_buffer.insert_text(event.key_sequence[0].data)
 
     def _handle_negative_toggle(self, _) -> None:
+        if self._whole_buffer.text == "-":
+            self._whole_buffer.text = "0"
+            return
         if self._whole_buffer.text.startswith("-"):
             self._whole_buffer.text = self._whole_buffer.text[1:]
         else:
