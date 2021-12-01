@@ -8,8 +8,16 @@ from InquirerPy.prompts.number import NumberPrompt
 
 class TestNumberPrompt(unittest.TestCase):
     def setUp(self) -> None:
-        self.prompt = NumberPrompt(message="Hello", default=1)
-        self.float_prompt = NumberPrompt(message="Hello", float_allowed=True, default=1)
+        self.prompt = NumberPrompt(
+            message="Hello", default=1, max_allowed=10, min_allowed=-2
+        )
+        self.float_prompt = NumberPrompt(
+            message="Hello",
+            float_allowed=True,
+            default=1,
+            max_allowed=10,
+            min_allowed=-2,
+        )
 
     def test_contructor(self) -> None:
         self.assertFalse(self.prompt._float)
@@ -51,7 +59,10 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertEqual(self.prompt._whole_buffer.text, "0")
         self.prompt._handle_down(None)
         self.assertEqual(self.prompt._whole_buffer.text, "-1")
-        self.assertEqual(self.prompt._integral_buffer.text, "0")
+        self.prompt._handle_down(None)
+        self.prompt._handle_down(None)
+        self.prompt._handle_down(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "-2")
 
     def test_handle_down_float(self) -> None:
         self.float_prompt._default = 0.3
@@ -64,3 +75,55 @@ class TestNumberPrompt(unittest.TestCase):
         self.float_prompt._handle_down(None)
         self.float_prompt._handle_down(None)
         self.assertEqual(self.float_prompt._integral_buffer.text, "0")
+
+    def test_handle_up(self) -> None:
+        self.prompt._on_rendered(None)
+        self.prompt._handle_up(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "2")
+        self.prompt._handle_up(None)
+        self.prompt._handle_up(None)
+        self.prompt._handle_up(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "5")
+        self.prompt._handle_up(None)
+        self.prompt._handle_up(None)
+        self.prompt._handle_up(None)
+        self.prompt._handle_up(None)
+        self.prompt._handle_up(None)
+        self.prompt._handle_up(None)
+        self.prompt._handle_up(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "10")
+
+    def test_handle_up_float(self) -> None:
+        self.float_prompt._default = 9.0
+        self.float_prompt._on_rendered(None)
+        self.float_prompt._handle_focus(None)
+        self.float_prompt._handle_up(None)
+        self.assertEqual(self.float_prompt._integral_buffer.text, "1")
+        self.float_prompt._handle_up(None)
+        self.assertEqual(self.float_prompt._integral_buffer.text, "2")
+        self.float_prompt._handle_focus(None)
+        self.float_prompt._handle_up(None)
+        self.assertEqual(self.float_prompt._integral_buffer.text, "0")
+
+    def test_handle_left(self) -> None:
+        self.prompt._on_rendered(None)
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+        self.prompt._handle_left(None)
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 0)
+        self.prompt._handle_left(None)
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 0)
+
+    def test_handle_left_float(self) -> None:
+        self.float_prompt._on_rendered(None)
+        self.assertEqual(self.float_prompt._whole_buffer.cursor_position, 1)
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 1)
+        self.float_prompt._handle_focus(None)
+        self.float_prompt._handle_left(None)
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+        self.assertEqual(self.float_prompt.focus, self.float_prompt._integral_window)
+        self.float_prompt._handle_left(None)
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+        self.assertEqual(self.float_prompt.focus, self.float_prompt._whole_window)
+        self.assertEqual(self.float_prompt._whole_buffer.cursor_position, 1)
+        self.float_prompt._handle_left(None)
+        self.assertEqual(self.float_prompt._whole_buffer.cursor_position, 0)
