@@ -22,8 +22,9 @@ from prompt_toolkit.layout.controls import (
 from prompt_toolkit.layout.dimension import Dimension, LayoutDimension
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.lexers.base import SimpleLexer
+from prompt_toolkit.validation import ValidationError
 
-from InquirerPy.base.complex import BaseComplexPrompt
+from InquirerPy.base.complex import BaseComplexPrompt, FakeDocument
 from InquirerPy.containers.instruction import InstructionWindow
 from InquirerPy.containers.validation import ValidationWindow
 from InquirerPy.enum import INQUIRERPY_QMARK_SEQUENCE
@@ -209,7 +210,7 @@ class NumberPrompt(BaseComplexPrompt):
                                 dont_extend_height=True,
                                 dont_extend_width=True,
                             ),
-                            self._whole_window,
+                            ConditionalContainer(self._whole_window, filter=~IsDone()),
                             ConditionalContainer(
                                 Window(
                                     height=LayoutDimension.exact(1)
@@ -222,10 +223,10 @@ class NumberPrompt(BaseComplexPrompt):
                                     dont_extend_height=True,
                                     dont_extend_width=True,
                                 ),
-                                filter=self._is_float,
+                                filter=self._is_float & ~IsDone(),
                             ),
                             ConditionalContainer(
-                                self._integral_window, filter=self._is_float
+                                self._integral_window, filter=self._is_float & ~IsDone()
                             ),
                         ],
                         align=HorizontalAlign.LEFT,
@@ -310,8 +311,16 @@ class NumberPrompt(BaseComplexPrompt):
         else:
             self.focus_buffer.cursor_position += 1
 
-    def _handle_enter(self, _) -> None:
-        pass
+    def _handle_enter(self, event) -> None:
+        try:
+            fake_document = FakeDocument(str(self.value))
+            self._validator.validate(fake_document)  # type: ignore
+        except ValidationError as e:
+            self._set_error(str(e))
+        else:
+            self.status["answered"] = True
+            self.status["result"] = self.value
+            event.app.exit(result=self.value)
 
     def _handle_focus(self, _) -> None:
         if not self._float:
