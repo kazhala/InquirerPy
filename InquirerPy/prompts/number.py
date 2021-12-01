@@ -258,10 +258,15 @@ class NumberPrompt(BaseComplexPrompt):
         )
 
     def _on_rendered(self, _) -> None:
-        self._whole_buffer.text = "0"
-        self._whole_buffer.cursor_position = 0
-        self._integral_buffer.text = "0"
-        self._integral_buffer.cursor_position = 0
+        if not self._float:
+            self._whole_buffer.text = str(self._default)
+            self._integral_buffer.text = "0"
+        else:
+            self._whole_buffer.text, self._integral_buffer.text = str(
+                self._default
+            ).split(".")
+        self._whole_buffer.cursor_position = len(self._whole_buffer.text)
+        self._integral_buffer.cursor_position = len(self._integral_buffer.text)
 
     def _handle_down(self, _) -> None:
         try:
