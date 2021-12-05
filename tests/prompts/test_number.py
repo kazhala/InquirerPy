@@ -116,7 +116,8 @@ class TestNumberPrompt(unittest.TestCase):
     def test_handle_left_float(self) -> None:
         self.float_prompt._on_rendered(None)
         self.assertEqual(self.float_prompt._whole_buffer.cursor_position, 1)
-        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 1)
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+        self.float_prompt._integral_buffer.cursor_position = 1
         self.float_prompt._handle_focus(None)
         self.float_prompt._handle_left(None)
         self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
@@ -127,3 +128,28 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertEqual(self.float_prompt._whole_buffer.cursor_position, 1)
         self.float_prompt._handle_left(None)
         self.assertEqual(self.float_prompt._whole_buffer.cursor_position, 0)
+
+    def test_handle_right(self) -> None:
+        self.prompt._on_rendered(None)
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+        self.assertEqual(self.prompt.focus, self.prompt._whole_window)
+        self.prompt._handle_right(None)
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+        self.assertNotEqual(self.prompt.focus, self.prompt._integral_window)
+
+        self.prompt._whole_buffer.cursor_position = 0
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 0)
+        self.prompt._handle_right(None)
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+
+    def test_handle_right_float(self) -> None:
+        self.float_prompt._on_rendered(None)
+        self.assertEqual(self.float_prompt._whole_buffer.cursor_position, 1)
+        self.assertEqual(self.float_prompt.focus, self.float_prompt._whole_window)
+        self.float_prompt._handle_right(None)
+        self.assertEqual(self.float_prompt.focus, self.float_prompt._integral_window)
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+        self.float_prompt._handle_right(None)
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 1)
+        self.float_prompt._handle_right(None)
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 1)
