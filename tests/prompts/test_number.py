@@ -18,6 +18,8 @@ class TestNumberPrompt(unittest.TestCase):
             max_allowed=10,
             min_allowed=-2,
         )
+        self.prompt._on_rendered(None)
+        self.float_prompt._on_rendered(None)
 
     def test_contructor(self) -> None:
         self.assertFalse(self.prompt._float)
@@ -153,3 +155,49 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 1)
         self.float_prompt._handle_right(None)
         self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 1)
+
+    def test_handle_enter(self) -> None:
+        self.prompt._on_rendered(None)
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            self.prompt._handle_enter(event)
+        self.assertTrue(self.prompt.status["answered"])
+        self.assertEqual(self.prompt.status["result"], "1")
+
+    def test_handle_enter_float(self) -> None:
+        self.float_prompt._on_rendered(None)
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            self.float_prompt._handle_enter(event)
+        self.assertTrue(self.float_prompt.status["answered"])
+        self.assertEqual(self.float_prompt.status["result"], "1.0")
+
+    def test_handle_enter_validation(self) -> None:
+        prompt = NumberPrompt(message="", validate=lambda x: x == 1)
+        prompt._on_rendered(None)
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            prompt._handle_enter(event)
+        self.assertFalse(prompt.status["answered"])
+        self.assertEqual(prompt.status["result"], None)
+        self.assertEqual(
+            prompt._get_error_message(), [("class:validation-toolbar", "Invalid input")]
+        )
+
+    def test_handle_focus(self) -> None:
+        self.assertEqual(self.prompt.focus, self.prompt._whole_window)
+        self.prompt._handle_focus(None)
+        self.assertEqual(self.prompt.focus, self.prompt._whole_window)
+
+    def test_handle_focus_float(self) -> None:
+        self.assertEqual(self.float_prompt.focus, self.float_prompt._whole_window)
+        self.float_prompt._handle_focus(None)
+        self.assertEqual(self.float_prompt.focus, self.float_prompt._integral_window)
+        self.float_prompt._handle_focus(None)
+        self.assertEqual(self.float_prompt.focus, self.float_prompt._whole_window)
+
+    def test_handle_input(self) -> None:
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            self.prompt._whole_buffer.cursor_position = 0
+            self.prompt._handle_input(event)
