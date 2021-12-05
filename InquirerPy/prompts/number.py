@@ -267,7 +267,7 @@ class NumberPrompt(BaseComplexPrompt):
                 self._default
             ).split(".")
         self._whole_buffer.cursor_position = len(self._whole_buffer.text)
-        self._integral_buffer.cursor_position = len(self._integral_buffer.text)
+        self._integral_buffer.cursor_position = 0
 
     def _handle_down(self, _) -> None:
         try:
