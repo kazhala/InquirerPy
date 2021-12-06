@@ -45,7 +45,52 @@ __all__ = ["NumberPrompt"]
 
 
 class NumberPrompt(BaseComplexPrompt):
-    """Create a input prompts that only takes number as input."""
+    """Create a input prompts that only takes number as input.
+
+    A wrapper class around :class:`~prompt_toolkit.application.Application`.
+
+    Args:
+        message: The question to ask the user.
+            Refer to :ref:`pages/dynamic:message` documentation for more details.
+        style: An :class:`InquirerPyStyle` instance.
+            Refer to :ref:`Style <pages/style:Alternate Syntax>` documentation for more details.
+        vi_mode: Use vim keybinding for the prompt.
+            Refer to :ref:`pages/kb:Keybindings` documentation for more details.
+        default: Set the default value of the prompt.
+            You can enter either the floating value or integer value as the default.
+            Refer to :ref:`pages/dynamic:default` documentation for more details.
+        float_allowed: Allow decimal input. This will change the prompt to have 2 input buffer, one for the
+            whole value and one for the integral value.
+        min_allowed: Set the minimum value of the prompt. When the input value goes below this value, it
+            will automatically reset to this value.
+        max_allowed: Set the maximum value of the prompt. When the inptu value goes above this value, it
+            will automatically reset to this value.
+        qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
+        amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
+        decimal_symbol: Decimal point symbol. Custom symbol to display as the decimal point.
+        instruction: Short instruction to display next to the question.
+        long_instruction: Long instructions to display at the bottom of the prompt.
+        validate: Add validation to user input.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        invalid_message: Error message to display when user input is invalid.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        invalid_message: Error message to display when user input is invalid.
+            Refer to :ref:`pages/validator:Validator` documentation for more details.
+        transformer: A function which performs additional transformation on the value that gets printed to the terminal.
+            Different than `filter` parameter, this is only visual effect and won’t affect the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:transformer` documentation for more details.
+        filter: A function which performs additional transformation on the result.
+            This affects the actual value returned by :meth:`~InquirerPy.base.simple.BaseSimplePrompt.execute`.
+            Refer to :ref:`pages/dynamic:filter` documentation for more details.
+        keybindings: Customise the builtin keybindings.
+            Refer to :ref:`pages/kb:Keybindings` for more details.
+        wrap_lines: Soft wrap question lines when question exceeds the terminal width.
+        raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
+            will be `None` and the question is skiped.
+        mandatory: Indicate if the prompt is mandatory. If True, then the question cannot be skipped.
+        mandatory_message: Error message to show when user attempts to skip mandatory prompt.
+        session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
+    """
 
     def __init__(
         self,

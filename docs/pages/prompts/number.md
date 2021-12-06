@@ -74,6 +74,11 @@ Additionally, the input buffer can also enter normal mode by pressing `esc` when
 
 You can set the maximum allowed value as well as the minimum allowed value for the prompt via `max_allowed` and `min_allowed`.
 
+```{hint}
+When the input value goes above/below the max/min value, the input value will automatically reset to the
+configured max/min value.
+```
+
 <details>
   <summary>Classic Syntax (PyInquirer)</summary>
 
