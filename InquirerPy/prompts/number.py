@@ -256,6 +256,7 @@ class NumberPrompt(BaseComplexPrompt):
             style=self._style,
             key_bindings=self._kb,
             after_render=self._after_render,
+            editing_mode=self._editing_mode,
         )
 
     def _on_rendered(self, _) -> None:
