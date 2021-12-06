@@ -164,6 +164,13 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertTrue(self.prompt.status["answered"])
         self.assertEqual(self.prompt.status["result"], "1")
 
+        self.prompt._whole_buffer.text = ""
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            self.prompt._handle_enter(event)
+        self.assertTrue(self.prompt.status["answered"])
+        self.assertEqual(self.prompt.status["result"], "")
+
     def test_handle_enter_float(self) -> None:
         self.float_prompt._on_rendered(None)
         with patch("prompt_toolkit.utils.Event") as mock:
@@ -171,6 +178,21 @@ class TestNumberPrompt(unittest.TestCase):
             self.float_prompt._handle_enter(event)
         self.assertTrue(self.float_prompt.status["answered"])
         self.assertEqual(self.float_prompt.status["result"], "1.0")
+
+        self.float_prompt._integral_buffer.text = ""
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            self.float_prompt._handle_enter(event)
+        self.assertTrue(self.float_prompt.status["answered"])
+        self.assertEqual(self.float_prompt.status["result"], "1.0")
+
+        self.float_prompt._integral_buffer.text = ""
+        self.float_prompt._whole_buffer.text = ""
+        with patch("prompt_toolkit.utils.Event") as mock:
+            event = mock.return_value
+            self.float_prompt._handle_enter(event)
+        self.assertTrue(self.float_prompt.status["answered"])
+        self.assertEqual(self.float_prompt.status["result"], "")
 
     def test_handle_enter_validation(self) -> None:
         prompt = NumberPrompt(message="", validate=lambda x: x == 1)

@@ -358,9 +358,17 @@ class NumberPrompt(BaseComplexPrompt):
             self.focus_buffer.cursor_position += 1
 
     def _handle_enter(self, event) -> None:
-        result = str(self.value)
-        if not self._whole_buffer.text and not self._integral_buffer.text:
+        if not self._float and not self._whole_buffer.text:
             result = ""
+        elif (
+            self._float
+            and not self._whole_buffer.text
+            and not self._integral_buffer.text
+        ):
+            result = ""
+        else:
+            result = str(self.value)
+
         try:
             fake_document = FakeDocument(result)
             self._validator.validate(fake_document)  # type: ignore

@@ -1,13 +1,16 @@
 from InquirerPy import inquirer
 from InquirerPy.validator import EmptyInputValidator
 
-result = inquirer.number(
-    message="hello",
-    long_instruction="asfasdfasdfa asdfas",
-    raise_keyboard_interrupt=False,
-    min_allowed=-10,
-    max_allowed=10,
-    default="2.7",
-    float_allowed=True,
-    validate=EmptyInputValidator(),
-).execute()
+
+def main() -> None:
+    result = inquirer.number(
+        message="Enter a number:",
+        min_allowed=-2,
+        max_allowed=10,
+        validate=EmptyInputValidator(),
+        vi_mode=True,
+    ).execute()
+
+
+if __name__ == "__main__":
+    main()
