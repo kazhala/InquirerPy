@@ -201,3 +201,16 @@ class TestNumberPrompt(unittest.TestCase):
             event = mock.return_value
             self.prompt._whole_buffer.cursor_position = 0
             self.prompt._handle_input(event)
+
+    @patch("InquirerPy.prompts.number.NumberPrompt._on_text_change")
+    def test_on_text_change(self, mocked_text) -> None:
+        self.prompt._whole_buffer.text = "10"
+        mocked_text.assert_called()
+        self.assertEqual(self.prompt._whole_width, 3)
+
+        mocked_text.reset_mock()
+        self.float_prompt._integral_buffer.text = "10"
+        mocked_text.assert_called()
+        self.assertEqual(self.float_prompt._integral_width, 3)
+        self.float_prompt._integral_buffer.text = "100"
+        self.assertEqual(self.float_prompt._integral_width, 4)
