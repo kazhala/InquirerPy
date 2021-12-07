@@ -105,7 +105,7 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertEqual(self.float_prompt._integral_buffer.text, "2")
         self.float_prompt._handle_focus(None)
         self.float_prompt._handle_up(None)
-        self.assertEqual(self.float_prompt._integral_buffer.text, "0")
+        self.assertEqual(self.float_prompt._integral_buffer.text, "2")
 
     def test_handle_left(self) -> None:
         self.prompt._on_rendered(None)
