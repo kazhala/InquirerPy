@@ -6,14 +6,14 @@ def main() -> None:
     questions = [
         {
             "type": "number",
-            "message": "Enter an integer:",
+            "message": "Enter integer:",
             "min_allowed": -2,
             "max_allowed": 10,
             "validate": EmptyInputValidator(),
         },
         {
             "type": "number",
-            "message": "Enter a float:",
+            "message": "Enter float:",
             "float_allowed": True,
             "validate": EmptyInputValidator(),
         },
