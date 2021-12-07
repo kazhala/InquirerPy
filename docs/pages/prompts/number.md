@@ -4,6 +4,28 @@ A prompt for entering numbers. All non number input will be disabled for this pr
 
 ## Example
 
+![demo](https://assets.kazhala.me/InquirerPy/number.gif)
+
+<details>
+  <summary>Classic Syntax (PyInquirer)</summary>
+
+```{eval-rst}
+.. literalinclude :: ../../../examples/classic/number.py
+   :language: python
+```
+
+</details>
+
+<details open>
+  <summary>Alternate Syntax</summary>
+
+```{eval-rst}
+.. literalinclude :: ../../../examples/alternate/number.py
+   :language: python
+```
+
+</details>
+
 ## Keybindings
 
 ```{seealso}
