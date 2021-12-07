@@ -1,5 +1,6 @@
 """Module contains the class to create a number prompt."""
 import re
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Callable, Union, cast
 
 from prompt_toolkit.application.application import Application
@@ -148,11 +149,11 @@ class NumberPrompt(BaseComplexPrompt):
         if isinstance(default, Callable):
             default = cast(Callable, default)(session_result)
         if self._float:
-            default = float(cast(int, default))
+            default = Decimal(str(float(cast(int, default))))
         if self._float:
-            if not isinstance(default, float):
+            if not isinstance(default, float) and not isinstance(default, Decimal):
                 raise InvalidArgument(
-                    f"{type(self).__name__} argument 'default' should return type of float"
+                    f"{type(self).__name__} argument 'default' should return type of float or Decimal"
                 )
         elif not isinstance(default, int):
             raise InvalidArgument(
@@ -309,9 +310,9 @@ class NumberPrompt(BaseComplexPrompt):
             self._whole_buffer.text = str(self._default)
             self._integral_buffer.text = "0"
         else:
-            self._whole_buffer.text, self._integral_buffer.text = str(
-                self._default
-            ).split(".")
+            whole_buffer_text, integral_buffer_text = str(self._default).split(".")
+            self._integral_buffer.text = integral_buffer_text
+            self._whole_buffer.text = whole_buffer_text
         self._whole_buffer.cursor_position = len(self._whole_buffer.text)
         self._integral_buffer.cursor_position = 0
 
@@ -436,7 +437,7 @@ class NumberPrompt(BaseComplexPrompt):
         self._layout.focus(self._focus)
 
     @property
-    def value(self) -> Union[int, float]:
+    def value(self) -> Union[int, float, Decimal]:
         """Union[int, float]: The actual value of the prompt, combining and transforming all input buffer values."""
         try:
             if not self._float:
@@ -447,17 +448,23 @@ class NumberPrompt(BaseComplexPrompt):
                     self._ending_zero = ending_zero.group(1)
                 else:
                     self._ending_zero = ""
-                return float(f"{self._whole_buffer.text}.{self._integral_buffer.text}")
+                return Decimal(
+                    f"{self._whole_buffer.text}.{self._integral_buffer.text if self._integral_buffer.text else 0}"
+                )
         except ValueError:
             self._set_error(self._value_error_message)
             return self._default
 
     @value.setter
-    def value(self, value: Union[int, float]) -> None:
+    def value(self, value: Union[int, float, Decimal]) -> None:
         if self._min is not None:
-            value = max(value, self._min if not self._float else float(self._min))
+            value = max(
+                value, self._min if not self._float else Decimal(str(self._min))
+            )
         if self._max is not None:
-            value = min(value, self._max if not self._float else float(self._max))
+            value = min(
+                value, self._max if not self._float else Decimal(str(self._max))
+            )
         if not self._float:
             self._whole_buffer.text = str(value)
         else:
