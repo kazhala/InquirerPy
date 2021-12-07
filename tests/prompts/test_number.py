@@ -3,6 +3,7 @@ from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.keys import Keys
 
+from InquirerPy.exceptions import InvalidArgument
 from InquirerPy.prompts.number import NumberPrompt
 
 
@@ -26,6 +27,17 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertEqual(self.prompt._default, 1)
         self.assertFalse(self.prompt._is_float())
         self.assertEqual(self.prompt.focus, self.prompt._whole_window)
+
+        prompt = NumberPrompt(message="", default=lambda _: 1)
+        self.assertEqual(prompt._default, 1)
+
+        try:
+            NumberPrompt(message="", default="asdfasd")
+            NumberPrompt(message="", default="asdfas", float_allowed=True)
+        except InvalidArgument:
+            pass
+        else:
+            self.fail("InvalidArgument should be raised")
 
     def test_float_constructor(self) -> None:
         self.assertTrue(self.float_prompt._float)
@@ -66,6 +78,10 @@ class TestNumberPrompt(unittest.TestCase):
         self.prompt._handle_down(None)
         self.assertEqual(self.prompt._whole_buffer.text, "-2")
 
+        self.prompt._whole_buffer.text = ""
+        self.prompt._handle_down(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "0")
+
     def test_handle_down_float(self) -> None:
         self.float_prompt._default = 0.3
         self.float_prompt._on_rendered(None)
@@ -94,6 +110,10 @@ class TestNumberPrompt(unittest.TestCase):
         self.prompt._handle_up(None)
         self.prompt._handle_up(None)
         self.assertEqual(self.prompt._whole_buffer.text, "10")
+
+        self.prompt._whole_buffer.text = ""
+        self.prompt._handle_up(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "0")
 
     def test_handle_up_float(self) -> None:
         self.float_prompt._default = 9.0
@@ -274,3 +294,20 @@ class TestNumberPrompt(unittest.TestCase):
         self.prompt._handle_negative_toggle(None)
         self.assertEqual(self.prompt._whole_buffer.text, "10")
         self.assertEqual(self.prompt._whole_buffer.cursor_position, 0)
+
+        self.prompt._whole_buffer.text = "-"
+        self.prompt._handle_negative_toggle(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "0")
+
+    def test_cursor_position(self) -> None:
+        self.prompt._handle_negative_toggle(None)
+        self.prompt._whole_buffer.cursor_position = 0
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+
+    def test_value(self) -> None:
+        self.prompt._whole_buffer.text = "asdfad"
+        self.assertEqual(self.prompt.value, 1)
+        self.assertEqual(
+            self.prompt._get_error_message(),
+            [("class:validation-toolbar", "Remove any non-integer value")],
+        )
