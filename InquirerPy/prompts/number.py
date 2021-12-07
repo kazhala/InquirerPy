@@ -143,8 +143,7 @@ class NumberPrompt(BaseComplexPrompt):
         self._min = min_allowed
         self._value_error_message = "Remove any non-integer value"
         self._decimal_symbol = decimal_symbol
-        self._ending_zero = ""
-        self._zero_pattern = re.compile(r"^[0-9]+?(0+)$")
+        self._leading_zero_pattern = re.compile(r"^(0*)[0-9]+.*")
 
         if isinstance(default, Callable):
             default = cast(Callable, default)(session_result)
@@ -316,28 +315,43 @@ class NumberPrompt(BaseComplexPrompt):
         self._whole_buffer.cursor_position = len(self._whole_buffer.text)
         self._integral_buffer.cursor_position = 0
 
-    def _handle_down(self, _) -> None:
+    def _handle_number(self, increment: bool) -> None:
         try:
+            leading_zeros = ""
+            if self.focus_buffer == self._integral_buffer:
+                zeros = self._leading_zero_pattern.match(self._integral_buffer.text)
+                if zeros is not None:
+                    leading_zeros = zeros.group(1)
+            current_text_len = len(self.focus_buffer.text)
             if not self.focus_buffer.text:
-                self.focus_buffer.text = "0"
+                next_text = "0"
+                next_text_len = 1
             else:
-                if (
-                    self.focus_buffer == self._integral_buffer
-                    and int(self.focus_buffer.text) == 0
-                ):
-                    return
-                self.focus_buffer.text = str(int(self.focus_buffer.text) - 1)
+                if not increment:
+                    if (
+                        self.focus_buffer == self._integral_buffer
+                        and int(self.focus_buffer.text) == 0
+                    ):
+                        return
+                    next_text = leading_zeros + str(int(self.focus_buffer.text) - 1)
+                else:
+                    next_text = leading_zeros + str(int(self.focus_buffer.text) + 1)
+                next_text_len = len(next_text)
+            desired_position = (
+                self.focus_buffer.cursor_position + next_text_len - current_text_len
+            )
+            self.focus_buffer.cursor_position = desired_position
+            self.focus_buffer.text = next_text
+            if self.focus_buffer.cursor_position != desired_position:
+                self.focus_buffer.cursor_position = desired_position
         except ValueError:
             self._set_error(message=self._value_error_message)
 
+    def _handle_down(self, _) -> None:
+        self._handle_number(increment=False)
+
     def _handle_up(self, _) -> None:
-        try:
-            if not self.focus_buffer.text:
-                self.focus_buffer.text = "0"
-            else:
-                self.focus_buffer.text = str(int(self.focus_buffer.text) + 1)
-        except ValueError:
-            self._set_error(message=self._value_error_message)
+        self._handle_number(increment=True)
 
     def _handle_left(self, _) -> None:
         if (
@@ -451,11 +465,6 @@ class NumberPrompt(BaseComplexPrompt):
             if not self._float:
                 return int(self._whole_buffer.text)
             else:
-                ending_zero = self._zero_pattern.match(self._integral_buffer.text)
-                if ending_zero is not None:
-                    self._ending_zero = ending_zero.group(1)
-                else:
-                    self._ending_zero = ""
                 return Decimal(
                     f"{self._whole_buffer.text}.{self._integral_buffer.text if self._integral_buffer.text else 0}"
                 )
@@ -476,5 +485,4 @@ class NumberPrompt(BaseComplexPrompt):
         if not self._float:
             self._whole_buffer.text = str(value)
         else:
-            self._whole_buffer.text, integral_buffer_text = str(value).split(".")
-            self._integral_buffer.text = integral_buffer_text + self._ending_zero
+            self._whole_buffer.text, self._integral_buffer.text = str(value).split(".")
