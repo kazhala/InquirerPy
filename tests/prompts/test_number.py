@@ -236,3 +236,41 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertEqual(self.float_prompt._integral_width, 3)
         self.float_prompt._integral_buffer.text = "100"
         self.assertEqual(self.float_prompt._integral_width, 4)
+
+    def test_handle_negative_toggle(self) -> None:
+        self.assertEqual(self.prompt._whole_buffer.text, "1")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+        self.prompt._handle_negative_toggle(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "-1")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 2)
+        self.prompt._handle_negative_toggle(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "1")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+
+        self.prompt._min = -10
+        self.prompt._max = 10
+        self.prompt._whole_buffer.text = "10"
+
+        self.prompt._whole_buffer.cursor_position = 2
+        self.prompt._handle_negative_toggle(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "-10")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 3)
+        self.prompt._handle_negative_toggle(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "10")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 2)
+
+        self.prompt._whole_buffer.cursor_position = 1
+        self.prompt._handle_negative_toggle(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "-10")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 2)
+        self.prompt._handle_negative_toggle(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "10")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+
+        self.prompt._whole_buffer.cursor_position = 0
+        self.prompt._handle_negative_toggle(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "-10")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+        self.prompt._handle_negative_toggle(None)
+        self.assertEqual(self.prompt._whole_buffer.text, "10")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 0)
