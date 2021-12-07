@@ -396,9 +396,17 @@ class NumberPrompt(BaseComplexPrompt):
             self._whole_buffer.text = "0"
             return
         if self._whole_buffer.text.startswith("-"):
+            move_cursor = self._whole_buffer.cursor_position < len(
+                self._whole_buffer.text
+            )
             self._whole_buffer.text = self._whole_buffer.text[1:]
+            if move_cursor:
+                self._whole_buffer.cursor_position -= 1
         else:
+            move_cursor = self._whole_buffer.cursor_position != 0
             self._whole_buffer.text = f"-{self._whole_buffer.text}"
+            if move_cursor:
+                self._whole_buffer.cursor_position += 1
 
     def _on_whole_text_change(self, buffer: Buffer) -> None:
         self._whole_width = len(buffer.text) + 1
