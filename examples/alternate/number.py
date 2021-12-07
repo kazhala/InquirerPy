@@ -3,12 +3,16 @@ from InquirerPy.validator import EmptyInputValidator
 
 
 def main() -> None:
-    result = inquirer.number(
-        message="Enter a number:",
+    integer_val = inquirer.number(
+        message="Enter an integer:",
         min_allowed=-2,
         max_allowed=10,
         validate=EmptyInputValidator(),
-        vi_mode=True,
+    ).execute()
+    float_val = inquirer.number(
+        message="Enter a float:",
+        float_allowed=True,
+        validate=EmptyInputValidator(),
     ).execute()
 
 
