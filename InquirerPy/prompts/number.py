@@ -1,7 +1,7 @@
 """Module contains the class to create a number prompt."""
 import re
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Callable, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Tuple, Union, cast
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -143,7 +143,11 @@ class NumberPrompt(BaseComplexPrompt):
         self._min = min_allowed
         self._value_error_message = "Remove any non-integer value"
         self._decimal_symbol = decimal_symbol
+        self._whole_replace = False
+        self._integral_replace = False
+
         self._leading_zero_pattern = re.compile(r"^(0*)[0-9]+.*")
+        self._sn_pattern = re.compile(r"^.*E-.*")
 
         if isinstance(default, Callable):
             default = cast(Callable, default)(session_result)
@@ -382,6 +386,7 @@ class NumberPrompt(BaseComplexPrompt):
         self._handle_number(increment=True)
 
     def _handle_left(self, _) -> None:
+        self.buffer_replace = False
         if (
             self.focus == self._integral_window
             and self.focus_buffer.cursor_position == 0
@@ -391,6 +396,7 @@ class NumberPrompt(BaseComplexPrompt):
             self.focus_buffer.cursor_position -= 1
 
     def _handle_right(self, _) -> None:
+        self.buffer_replace = False
         if (
             self.focus == self._whole_window
             and self.focus_buffer.cursor_position == len(self.focus_buffer.text)
@@ -437,7 +443,12 @@ class NumberPrompt(BaseComplexPrompt):
             self.focus = self._whole_window
 
     def _handle_input(self, event: "KeyPressEvent") -> None:
-        self.focus_buffer.insert_text(event.key_sequence[0].data)
+        if self.buffer_replace:
+            self.buffer_replace = False
+            self.focus_buffer.text = event.key_sequence[0].data
+            self.focus_buffer.cursor_position += 1
+        else:
+            self.focus_buffer.insert_text(event.key_sequence[0].data)
 
     def _handle_negative_toggle(self, _) -> None:
         if self._whole_buffer.text == "-":
@@ -465,6 +476,7 @@ class NumberPrompt(BaseComplexPrompt):
         self._on_text_change(buffer)
 
     def _on_text_change(self, buffer: Buffer) -> None:
+        self.buffer_replace = False
         if buffer.text and buffer.text != "-":
             self.value = self.value
         if buffer.text.startswith("-") and buffer.cursor_position == 0:
@@ -473,6 +485,21 @@ class NumberPrompt(BaseComplexPrompt):
     def _on_cursor_position_change(self, buffer: Buffer) -> None:
         if self.focus_buffer.text.startswith("-") and buffer.cursor_position == 0:
             buffer.cursor_position = 1
+
+    @property
+    def buffer_replace(self) -> bool:
+        """bool: Current buffer replace mode."""
+        if self.focus_buffer == self._whole_buffer:
+            return self._whole_replace
+        else:
+            return self._integral_replace
+
+    @buffer_replace.setter
+    def buffer_replace(self, value) -> None:
+        if self.focus_buffer == self._whole_buffer:
+            self._whole_replace = value
+        else:
+            self._integral_replace = value
 
     @property
     def focus_buffer(self) -> Buffer:
