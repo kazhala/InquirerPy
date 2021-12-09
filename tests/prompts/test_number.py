@@ -1,4 +1,5 @@
 import unittest
+from decimal import Decimal
 from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.keys import Keys
@@ -429,3 +430,20 @@ class TestNumberPrompt(unittest.TestCase):
 
         self.float_prompt.value = Decimal("1.1")
         self.assertEqual(self.float_prompt._integral_buffer.text, "1")
+
+    def test_replace_mode(self) -> None:
+        self.assertFalse(self.prompt._whole_replace)
+        self.assertTrue(self.float_prompt._integral_replace)
+        self.float_prompt._handle_focus(None)
+        self.float_prompt._handle_left(None)
+        self.assertFalse(self.float_prompt._integral_replace)
+
+        prompt = NumberPrompt(message="", float_allowed=True)
+        prompt._on_rendered(None)
+        self.assertTrue(prompt._whole_replace)
+        self.assertTrue(prompt._integral_replace)
+        prompt._handle_up(None)
+        self.assertFalse(prompt._whole_replace)
+        prompt._handle_dot(None)
+        prompt._handle_right(None)
+        self.assertFalse(prompt._integral_replace)
