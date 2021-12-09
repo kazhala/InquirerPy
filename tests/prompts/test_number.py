@@ -61,11 +61,29 @@ class TestNumberPrompt(unittest.TestCase):
         self.prompt._on_rendered(None)
         self.assertEqual(self.prompt._whole_buffer.text, "1")
         self.assertEqual(self.prompt._integral_buffer.text, "0")
+        self.assertFalse(self.prompt._whole_replace)
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
 
         self.float_prompt._default = 1.1
         self.float_prompt._on_rendered(None)
         self.assertEqual(self.float_prompt._whole_buffer.text, "1")
         self.assertEqual(self.float_prompt._integral_buffer.text, "1")
+        self.assertTrue(self.prompt._integral_buffer)
+        self.assertEqual(self.prompt._integral_buffer.cursor_position, 0)
+
+    def test_on_rendered_sn(self) -> None:
+        prompt = NumberPrompt(message="", default=0.000000123, float_allowed=True)
+        prompt._on_rendered(None)
+        self.assertTrue(prompt._whole_replace)
+        self.assertFalse(prompt._integral_replace)
+        self.assertEqual(prompt._whole_buffer.text, "0")
+        self.assertEqual(prompt._integral_buffer.text, "000000123")
+
+        prompt = NumberPrompt(
+            message="", default=0.00000000099912312, float_allowed=True
+        )
+        prompt._on_rendered(None)
+        self.assertEqual(prompt._integral_buffer.text, "00000000099912312")
 
     def test_handle_down(self) -> None:
         self.prompt._on_rendered(None)
