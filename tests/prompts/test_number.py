@@ -405,3 +405,20 @@ class TestNumberPrompt(unittest.TestCase):
         self.float_prompt._handle_number(increment=False)
         self.assertEqual(self.float_prompt._integral_buffer.text, "009")
         self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+
+    def test_handle_dot(self) -> None:
+        self.assertEqual(self.prompt.focus_buffer, self.prompt._whole_buffer)
+        self.prompt._handle_dot(None)
+        self.assertEqual(self.prompt.focus_buffer, self.prompt._whole_buffer)
+
+        self.assertEqual(
+            self.float_prompt.focus_buffer, self.float_prompt._whole_buffer
+        )
+        self.float_prompt._handle_dot(None)
+        self.assertEqual(
+            self.float_prompt.focus_buffer, self.float_prompt._integral_buffer
+        )
+        self.float_prompt._handle_dot(None)
+        self.assertEqual(
+            self.float_prompt.focus_buffer, self.float_prompt._integral_buffer
+        )
