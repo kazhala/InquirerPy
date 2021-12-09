@@ -422,3 +422,10 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertEqual(
             self.float_prompt.focus_buffer, self.float_prompt._integral_buffer
         )
+
+    def test_sn(self) -> None:
+        self.float_prompt.value = Decimal("0.00000000099912312")
+        self.assertEqual(self.float_prompt._integral_buffer.text, "00000000099912312")
+
+        self.float_prompt.value = Decimal("1.1")
+        self.assertEqual(self.float_prompt._integral_buffer.text, "1")
