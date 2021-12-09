@@ -31,3 +31,38 @@ An example using `inquirer` which incorporate multiple different types of prompt
 The `inquirer` module serves as an entry point to each prompt classes. Refer to
 individual prompt documentation for prompt specific usage.
 ```
+
+### Synchronous execution
+
+Each prompt contains a function `execute` to start the prompt.
+
+```{code-block} python
+from InquirerPy import inquirer
+
+def main():
+  result = inquirer.text(message="Name:").execute()
+
+if __name__ == "__main__":
+  main()
+```
+
+### Asynchronous execution
+
+<!-- TODO: remove attention on release -->
+
+```{attention}
+Not yet released as of 0.3.0, it will be included in the next release.
+```
+
+Each prompt contains a function `execute_async` to start the prompt asynchronously.
+
+```{code-block} python
+import asyncio
+from InquirerPy import inquirer
+
+async def main():
+  result = await inquirer.text(message="Name:").execute_async()
+
+if __name__ == "__main__":
+  asyncio.run(main())
+```
