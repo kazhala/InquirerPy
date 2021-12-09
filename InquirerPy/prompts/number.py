@@ -183,6 +183,7 @@ class NumberPrompt(BaseComplexPrompt):
                 {"key": "c-f", "filter": ~self._is_vim_edit},
                 {"key": "l", "filter": self._is_vim_edit},
             ],
+            "dot": [{"key": "."}],
             "focus": [{"key": Keys.Tab}, {"key": "s-tab"}],
             "input": [{"key": str(i)} for i in range(10)],
             "negative_toggle": [{"key": "-"}],
@@ -196,6 +197,7 @@ class NumberPrompt(BaseComplexPrompt):
             "focus": [{"func": self._handle_focus}],
             "input": [{"func": self._handle_input}],
             "negative_toggle": [{"func": self._handle_negative_toggle}],
+            "dot": [{"func": self._handle_dot}],
         }
 
         @self.register_kb(Keys.Any)
@@ -420,8 +422,14 @@ class NumberPrompt(BaseComplexPrompt):
             self.status["result"] = result
             event.app.exit(result=result)
 
-    def _handle_focus(self, _) -> None:
+    def _handle_dot(self, _) -> None:
+        self._handle_focus(_, self._integral_window)
+
+    def _handle_focus(self, _, window: Window = None) -> None:
         if not self._float:
+            return
+        if window is not None:
+            self.focus = window
             return
         if self.focus == self._whole_window:
             self.focus = self._integral_window
