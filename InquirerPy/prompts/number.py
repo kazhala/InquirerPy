@@ -304,6 +304,20 @@ class NumberPrompt(BaseComplexPrompt):
             editing_mode=self._editing_mode,
         )
 
+    def _fix_sn(self, value: str) -> Tuple[str, str]:
+        """Fix sciencetific notation format.
+
+        Args:
+            value: Value to fix.
+
+        Returns:
+            A tuple of whole buffer text and integral buffer text.
+        """
+        left, right = value.split("E-")
+        whole_buffer_text = "0"
+        integral_buffer_text = f"{(int(right) - 1) * '0'}{left.replace('.', '')}"
+        return whole_buffer_text, integral_buffer_text
+
     def _on_rendered(self, _) -> None:
         if not self._float:
             self._whole_buffer.text = str(self._default)
