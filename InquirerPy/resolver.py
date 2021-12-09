@@ -12,6 +12,7 @@ from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.fuzzy import FuzzyPrompt
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
+from InquirerPy.prompts.number import NumberPrompt
 from InquirerPy.prompts.rawlist import RawlistPrompt
 from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.utils import InquirerPyQuestions, InquirerPySessionResult, get_style
@@ -28,9 +29,8 @@ question_mapping = {
     "rawlist": RawlistPrompt,
     "expand": ExpandPrompt,
     "fuzzy": FuzzyPrompt,
+    "number": NumberPrompt,
 }
-
-list_prompts = {"list", "checkbox", "rawlist", "expand", "fuzzy"}
 
 
 def prompt(

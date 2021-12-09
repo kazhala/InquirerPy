@@ -5,16 +5,7 @@
 :end-before: <!-- end intro -->
 ```
 
-```{Note}
-[boto3](https://github.com/boto/boto3) package and configured AWS credentials is required for the following example.
-```
-
 ![Demo](https://assets.kazhala.me/InquirerPy/InquirerPy-demo.gif)
-
-```{include} ../README.md
-:start-after: <!-- start example -->
-:end-before: <!-- end example -->
-```
 
 ## Install
 
@@ -153,6 +144,7 @@ python3 examples/classic/rawlist
 pages/prompts/input.md
 pages/prompts/secret.md
 pages/prompts/filepath.md
+pages/prompts/number.md
 pages/prompts/confirm.md
 pages/prompts/list.md
 pages/prompts/rawlist.md
