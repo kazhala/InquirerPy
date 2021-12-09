@@ -91,6 +91,12 @@ class NumberPrompt(BaseComplexPrompt):
         mandatory: Indicate if the prompt is mandatory. If True, then the question cannot be skipped.
         mandatory_message: Error message to show when user attempts to skip mandatory prompt.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
+
+    Examples:
+        >>> from InquirerPy import inquirer
+        >>> result = inquirer.number(message="Enter number:").execute()
+        >>> print(result)
+        0
     """
 
     def __init__(
@@ -348,6 +354,14 @@ class NumberPrompt(BaseComplexPrompt):
             self._integral_buffer.cursor_position = 0
 
     def _handle_number(self, increment: bool) -> None:
+        """Handle number increment and decrement.
+
+        Additional processing to handle leading zeros in integral buffer
+        as well as SN notation.
+
+        Args:
+            increment: Indicate if the operation should increment or decrement.
+        """
         try:
             leading_zeros = ""
             if self.focus_buffer == self._integral_buffer:
@@ -380,12 +394,19 @@ class NumberPrompt(BaseComplexPrompt):
             self._set_error(message=self._value_error_message)
 
     def _handle_down(self, _) -> None:
+        """Handle down key press."""
         self._handle_number(increment=False)
 
     def _handle_up(self, _) -> None:
+        """Handle up key press."""
         self._handle_number(increment=True)
 
     def _handle_left(self, _) -> None:
+        """Handle left key press.
+
+        Move to the left by one cursor position and focus the whole window
+        if applicable.
+        """
         self.buffer_replace = False
         if (
             self.focus == self._integral_window
@@ -396,6 +417,11 @@ class NumberPrompt(BaseComplexPrompt):
             self.focus_buffer.cursor_position -= 1
 
     def _handle_right(self, _) -> None:
+        """Handle right key press.
+
+        Move to the right by one cursor position and focus the integral window
+        if applicable.
+        """
         self.buffer_replace = False
         if (
             self.focus == self._whole_window
@@ -407,6 +433,7 @@ class NumberPrompt(BaseComplexPrompt):
             self.focus_buffer.cursor_position += 1
 
     def _handle_enter(self, event) -> None:
+        """Handle enter event and answer/close the prompt."""
         if not self._float and not self._whole_buffer.text:
             result = ""
         elif (
@@ -429,9 +456,11 @@ class NumberPrompt(BaseComplexPrompt):
             event.app.exit(result=result)
 
     def _handle_dot(self, _) -> None:
+        """Focus the integral window if `float_allowed`."""
         self._handle_focus(_, self._integral_window)
 
     def _handle_focus(self, _, window: Window = None) -> None:
+        """Focus either the integral window or whole window."""
         if not self._float:
             return
         if window is not None:
@@ -443,6 +472,11 @@ class NumberPrompt(BaseComplexPrompt):
             self.focus = self._whole_window
 
     def _handle_input(self, event: "KeyPressEvent") -> None:
+        """Handle user input of numbers.
+
+        Buffer will start as replace mode if the value is zero, once
+        cursor is moved or content is changed, disable replace mode.
+        """
         if self.buffer_replace:
             self.buffer_replace = False
             self.focus_buffer.text = event.key_sequence[0].data
@@ -451,6 +485,10 @@ class NumberPrompt(BaseComplexPrompt):
             self.focus_buffer.insert_text(event.key_sequence[0].data)
 
     def _handle_negative_toggle(self, _) -> None:
+        """Toggle negativity of the prompt value.
+
+        Force the `-` sign at the start.
+        """
         if self._whole_buffer.text == "-":
             self._whole_buffer.text = "0"
             return
@@ -468,14 +506,17 @@ class NumberPrompt(BaseComplexPrompt):
                 self._whole_buffer.cursor_position += 1
 
     def _on_whole_text_change(self, buffer: Buffer) -> None:
+        """Handle event of text changes in buffer."""
         self._whole_width = len(buffer.text) + 1
         self._on_text_change(buffer)
 
     def _on_integral_text_change(self, buffer: Buffer) -> None:
+        """Handle event of text changes in buffer."""
         self._integral_width = len(buffer.text) + 1
         self._on_text_change(buffer)
 
     def _on_text_change(self, buffer: Buffer) -> None:
+        """Disable replace mode and fix cursor position on text changes."""
         self.buffer_replace = False
         if buffer.text and buffer.text != "-":
             self.value = self.value
@@ -483,6 +524,7 @@ class NumberPrompt(BaseComplexPrompt):
             buffer.cursor_position = 1
 
     def _on_cursor_position_change(self, buffer: Buffer) -> None:
+        """Fix cursor position on cursor movement."""
         if self.focus_buffer.text.startswith("-") and buffer.cursor_position == 0:
             buffer.cursor_position = 1
 
