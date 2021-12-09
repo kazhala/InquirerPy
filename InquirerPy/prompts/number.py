@@ -319,15 +319,27 @@ class NumberPrompt(BaseComplexPrompt):
         return whole_buffer_text, integral_buffer_text
 
     def _on_rendered(self, _) -> None:
+        """Additional processing to adjust buffer content after render."""
         if not self._float:
             self._whole_buffer.text = str(self._default)
             self._integral_buffer.text = "0"
         else:
-            whole_buffer_text, integral_buffer_text = str(self._default).split(".")
+            if self._sn_pattern.match(str(self._default)) is None:
+                whole_buffer_text, integral_buffer_text = str(self._default).split(".")
+            else:
+                whole_buffer_text, integral_buffer_text = self._fix_sn(
+                    str(self._default)
+                )
             self._integral_buffer.text = integral_buffer_text
             self._whole_buffer.text = whole_buffer_text
         self._whole_buffer.cursor_position = len(self._whole_buffer.text)
-        self._integral_buffer.cursor_position = 0
+        self._integral_buffer.cursor_position = len(self._integral_buffer.text)
+        if self._whole_buffer.text == "0":
+            self._whole_replace = True
+            self._whole_buffer.cursor_position = 0
+        if self._integral_buffer.text == "0":
+            self._integral_replace = True
+            self._integral_buffer.cursor_position = 0
 
     def _handle_number(self, increment: bool) -> None:
         try:
