@@ -247,3 +247,6 @@ class InputPrompt(BaseSimplePrompt):
 
     def _run(self) -> str:
         return self._session.prompt(default=self._default)
+
+    async def _run_async(self) -> Any:
+        return await self._session.prompt_async(default=self._default)

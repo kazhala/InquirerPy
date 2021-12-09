@@ -301,7 +301,16 @@ class BaseSimplePrompt(ABC):
     def _run(self) -> Any:
         """Abstractmethod to enforce a run function is implemented.
 
-        All prompt instance require a `_run` call to initialise and run an instance of
+        All prompt instance requires a `_run` call to initialise and run an instance of
+        `PromptSession` or `Application`.
+        """
+        pass
+
+    @abstractmethod
+    async def _run_async(self) -> Any:
+        """Abstractmethod to enforce a run function is implemented.
+
+        All prompt instance requires a `_run_async` call to initialise and run an instance of
         `PromptSession` or `Application`.
         """
         pass
@@ -323,6 +332,22 @@ class BaseSimplePrompt(ABC):
             self._raise_kbi = not os.getenv(
                 "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
             )
+        if result == INQUIRERPY_KEYBOARD_INTERRUPT:
+            raise KeyboardInterrupt
+        if not self._filter:
+            return result
+        return self._filter(result)
+
+    async def execute_async(self) -> None:
+        """Run the prompt asynchronously and get the result.
+
+        Returns:
+            Value of the user answer. Types varies depending on the prompt.
+
+        Raises:
+            KeyboardInterrupt: When `ctrl-c` is pressed and `raise_keyboard_interrupt` is True.
+        """
+        result = await self._run_async()
         if result == INQUIRERPY_KEYBOARD_INTERRUPT:
             raise KeyboardInterrupt
         if not self._filter:

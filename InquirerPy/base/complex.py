@@ -204,6 +204,10 @@ class BaseComplexPrompt(BaseSimplePrompt):
         """Run the application."""
         return self.application.run()
 
+    async def _run_async(self) -> None:
+        """Run the application asynchronously."""
+        return await self.application.run_async()
+
     @property
     def application(self) -> Application:
         """Get the application.

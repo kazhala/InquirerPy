@@ -190,3 +190,6 @@ class ConfirmPrompt(BaseSimplePrompt):
 
     def _run(self) -> bool:
         return self._session.prompt()
+
+    async def _run_async(self) -> Any:
+        return await self._session.prompt_async()
