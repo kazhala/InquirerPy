@@ -519,4 +519,11 @@ class NumberPrompt(BaseComplexPrompt):
         if not self._float:
             self._whole_buffer.text = str(value)
         else:
-            self._whole_buffer.text, self._integral_buffer.text = str(value).split(".")
+            if self._sn_pattern.match(str(value)) is None:
+                self._whole_buffer.text, self._integral_buffer.text = str(value).split(
+                    "."
+                )
+            else:
+                self._whole_buffer.text, self._integral_buffer.text = self._fix_sn(
+                    str(value)
+                )
