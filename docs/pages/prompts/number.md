@@ -1,5 +1,7 @@
 # number
 
+<!-- TODO: remove attention on release -->
+
 ```{attention}
 Not yet released as of 0.3.0, it will be included in the next release.
 ```
