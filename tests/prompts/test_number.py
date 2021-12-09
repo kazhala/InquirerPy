@@ -342,3 +342,66 @@ class TestNumberPrompt(unittest.TestCase):
         left, right = self.prompt._fix_sn("9.88E-11")
         self.assertEqual(left, "0")
         self.assertEqual(right, "0000000000988")
+
+    def test_handle_number(self) -> None:
+        self.prompt._whole_buffer.text = "0"
+        self.prompt._handle_number(increment=True)
+        self.assertEqual(self.prompt._whole_buffer.text, "1")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+
+        self.prompt._whole_buffer.text = ""
+        self.prompt._handle_number(increment=True)
+        self.assertEqual(self.prompt._whole_buffer.text, "0")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+        self.prompt._handle_number(increment=True)
+        self.assertEqual(self.prompt._whole_buffer.text, "1")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+
+        self.prompt._whole_buffer.text = "9"
+        self.prompt._handle_number(increment=True)
+        self.assertEqual(self.prompt._whole_buffer.text, "10")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 2)
+        self.prompt._handle_number(increment=False)
+        self.assertEqual(self.prompt._whole_buffer.text, "9")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+        self.prompt._whole_buffer.cursor_position = 0
+        self.prompt._handle_number(increment=True)
+        self.assertEqual(self.prompt._whole_buffer.text, "10")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+        self.prompt._handle_number(increment=False)
+        self.assertEqual(self.prompt._whole_buffer.text, "9")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 0)
+
+        self.prompt._whole_buffer.text = "0"
+        self.prompt._whole_buffer.cursor_position = 0
+        self.prompt._handle_number(increment=False)
+        self.assertEqual(self.prompt._whole_buffer.text, "-1")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 1)
+        self.prompt._handle_number(increment=True)
+        self.assertEqual(self.prompt._whole_buffer.text, "0")
+        self.assertEqual(self.prompt._whole_buffer.cursor_position, 0)
+
+    def test_handle_number_float(self) -> None:
+        self.assertEqual(self.float_prompt._integral_buffer.text, "0")
+        self.float_prompt._handle_focus(None)
+        self.float_prompt._handle_number(increment=True)
+        self.assertEqual(self.float_prompt._integral_buffer.text, "1")
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+
+        self.float_prompt._integral_buffer.text = "001"
+        self.float_prompt._handle_number(increment=True)
+        self.assertEqual(self.float_prompt._integral_buffer.text, "002")
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+        self.float_prompt._handle_number(increment=True)
+        self.assertEqual(self.float_prompt._integral_buffer.text, "003")
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+        self.float_prompt._handle_number(increment=False)
+        self.assertEqual(self.float_prompt._integral_buffer.text, "002")
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+        self.float_prompt._integral_buffer.text = "009"
+        self.float_prompt._handle_number(increment=True)
+        self.assertEqual(self.float_prompt._integral_buffer.text, "0010")
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 1)
+        self.float_prompt._handle_number(increment=False)
+        self.assertEqual(self.float_prompt._integral_buffer.text, "009")
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
