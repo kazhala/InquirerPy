@@ -311,3 +311,16 @@ class TestNumberPrompt(unittest.TestCase):
             self.prompt._get_error_message(),
             [("class:validation-toolbar", "Remove any non-integer value")],
         )
+
+    def test_fix_sn(self) -> None:
+        left, right = self.prompt._fix_sn("0E-7")
+        self.assertEqual(left, "0")
+        self.assertEqual(right, "0000000")
+
+        left, right = self.prompt._fix_sn("1.2E-7")
+        self.assertEqual(left, "0")
+        self.assertEqual(right, "00000012")
+
+        left, right = self.prompt._fix_sn("9.88E-11")
+        self.assertEqual(left, "0")
+        self.assertEqual(right, "0000000000988")
