@@ -68,6 +68,7 @@ The following dictionary contains the additional keybindings created by this pro
     {"key": "s-tab"},
   ],
   "negative_toggle": [{"key": "-"}], # toggle result negativity
+  "dot": [{"key": "."}],  # focus the integral buffer when float_allowed=True to enter decimal points
 }
 ```
 
