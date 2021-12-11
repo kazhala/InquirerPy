@@ -2,7 +2,7 @@
 
 A `PyInquirer <https://github.com/CITGuru/PyInquirer>`_ compatible entrypoint :func:`.prompt`.
 """
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt
@@ -17,7 +17,7 @@ from InquirerPy.prompts.rawlist import RawlistPrompt
 from InquirerPy.prompts.secret import SecretPrompt
 from InquirerPy.utils import InquirerPyQuestions, InquirerPySessionResult, get_style
 
-__all__ = ["prompt"]
+__all__ = ["prompt", "prompt_async"]
 
 question_mapping = {
     "confirm": ConfirmPrompt,
@@ -31,6 +31,92 @@ question_mapping = {
     "fuzzy": FuzzyPrompt,
     "number": NumberPrompt,
 }
+
+
+def _get_questions(questions: InquirerPyQuestions) -> List[Dict[str, Any]]:
+    """Process and validate questions.
+
+    Args:
+        questions: List of questions to create prompt.
+
+    Returns:
+        List of validated questions.
+    """
+    if isinstance(questions, dict):
+        questions = [questions]
+
+    if not isinstance(questions, list):
+        raise InvalidArgument("argument questions should be type of list or dictionary")
+
+    return questions
+
+
+def _get_question(
+    original_question: Dict[str, Any], result: InquirerPySessionResult, index: int
+) -> Tuple[Optional[Dict[str, Any]], str, Union[str, int], str]:
+    """Get information from individual question.
+
+    Args:
+        original_question: Original question dictionary.
+        result: Current prompt session result.
+        index: Question index.
+
+    Returns:
+        A tuple containing question information in the order of
+            question dictionary, type of question, name of question, message of question.
+    """
+    question = original_question.copy()
+    question_type = question.pop("type")
+    question_name = question.pop("name", index)
+    message = question.pop("message")
+    question_when = question.pop("when", None)
+    if question_when and not question_when(result):
+        result[question_name] = None
+        question = None
+    return question, question_type, question_name, message
+
+
+async def prompt_async(
+    questions: InquirerPyQuestions,
+    style: Dict[str, str] = None,
+    vi_mode: bool = False,
+    raise_keyboard_interrupt: bool = True,
+    keybindings: Dict[str, List[Dict[str, Any]]] = None,
+    style_override: bool = True,
+) -> InquirerPySessionResult:
+    """Classic syntax entrypoint to create a prompt session via asynchronous method.
+
+    Refer to :func:`InquirerPy.resolver.prompt` for detailed documentation on parameters.
+    """
+    result: InquirerPySessionResult = {}
+    if not keybindings:
+        keybindings = {}
+
+    questions = _get_questions(questions=questions)
+    question_style = get_style(style, style_override)
+
+    for index, original_question in enumerate(questions):
+        try:
+            question, question_type, question_name, message = _get_question(
+                original_question=original_question, result=result, index=index
+            )
+            if question is None:
+                continue
+            args = {
+                "message": message,
+                "style": question_style,
+                "vi_mode": vi_mode,
+                "raise_keyboard_interrupt": raise_keyboard_interrupt,
+                "session_result": result,
+                "keybindings": {**keybindings, **question.pop("keybindings", {})},
+            }
+            result[question_name] = await question_mapping[question_type](
+                **args, **question
+            ).execute_async()
+        except KeyError:
+            raise RequiredKeyNotFound
+
+    return result
 
 
 def prompt(
@@ -101,23 +187,15 @@ def prompt(
     if not keybindings:
         keybindings = {}
 
-    if isinstance(questions, dict):
-        questions = [questions]
-
-    if not isinstance(questions, list):
-        raise InvalidArgument("argument questions should be type of list or dictionary")
-
+    questions = _get_questions(questions=questions)
     question_style = get_style(style, style_override)
 
     for index, original_question in enumerate(questions):
         try:
-            question = original_question.copy()
-            question_type = question.pop("type")
-            question_name = question.pop("name", index)
-            message = question.pop("message")
-            question_when = question.pop("when", None)
-            if question_when and not question_when(result):
-                result[question_name] = None
+            question, question_type, question_name, message = _get_question(
+                original_question=original_question, result=result, index=index
+            )
+            if question is None:
                 continue
             args = {
                 "message": message,
