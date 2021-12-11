@@ -16,6 +16,8 @@ It's recommended to use {ref}`pages/inquirer:inquirer` over [prompt](#prompt) fo
 This page documents the param and usage of the {func}`~InquirerPy.resolver.prompt` function.
 It's the entry point for {ref}`index:Classic Syntax (PyInquirer)`.
 
+## Synchronous execution
+
 ```{eval-rst}
 .. autofunction:: InquirerPy.resolver.prompt
     :noindex:
@@ -30,7 +32,7 @@ An example using `prompt` which incorporate multiple different types of prompts:
    :language: python
 ```
 
-## questions
+### questions
 
 ```
 Union[List[Dict[str, Any]], Dict[str, Any]]
@@ -63,7 +65,7 @@ from InquirerPy import prompt
 result = prompt(questions={"type": "input", "message": "Enter your name:"})
 ```
 
-### question
+#### question
 
 Each question is a Python {class}`dict` consisting the following keys:
 
@@ -116,3 +118,35 @@ for their specific options/parameters.
 - mandatory_message (`str`): Error message to show when user attempts to skip mandatory prompt.
 - raise_keyboard_interrupt (`bool`): Raise the {class}`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
   will be `None` and the question is skiped.
+
+## Asynchronous execution
+
+<!-- TODO: remove attention on release -->
+
+```{attention}
+Not yet released as of 0.3.0, it will be included in the next release.
+```
+
+```{eval-rst}
+.. autofunction:: InquirerPy.resolver.prompt_async
+    :noindex:
+```
+
+```{code-block} python
+import asyncio
+
+from InquirerPy import inquirer, prompt_async
+
+
+async def main():
+    questions = [
+        {"type": "input", "message": "Name:"},
+        {"type": "number", "message": "Number:"},
+        {"type": "confirm", "message": "Confirm?"},
+    ]
+    result = await prompt_async(questions)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```

@@ -25,14 +25,12 @@ An example using `inquirer` which incorporate multiple different types of prompt
    :language: python
 ```
 
-## Usage
-
 ```{important}
 The `inquirer` module serves as an entry point to each prompt classes. Refer to
 individual prompt documentation for prompt specific usage.
 ```
 
-### Synchronous execution
+## Synchronous execution
 
 Each prompt contains a function `execute` to start the prompt.
 
@@ -46,7 +44,7 @@ if __name__ == "__main__":
   main()
 ```
 
-### Asynchronous execution
+## Asynchronous execution
 
 <!-- TODO: remove attention on release -->
 

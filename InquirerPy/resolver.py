@@ -86,7 +86,7 @@ async def prompt_async(
 ) -> InquirerPySessionResult:
     """Classic syntax entrypoint to create a prompt session via asynchronous method.
 
-    Refer to :func:`InquirerPy.resolver.prompt` for detailed documentation on parameters.
+    Refer to :func:`InquirerPy.resolver.prompt` for detailed documentations.
     """
     result: InquirerPySessionResult = {}
     if not keybindings:
