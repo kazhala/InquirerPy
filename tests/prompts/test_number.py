@@ -11,7 +11,11 @@ from InquirerPy.prompts.number import NumberPrompt
 class TestNumberPrompt(unittest.TestCase):
     def setUp(self) -> None:
         self.prompt = NumberPrompt(
-            message="Hello", default=1, max_allowed=10, min_allowed=-2
+            message="Hello",
+            default=1,
+            max_allowed=10,
+            min_allowed=-2,
+            replace_mode=True,
         )
         self.float_prompt = NumberPrompt(
             message="Hello",
@@ -19,6 +23,7 @@ class TestNumberPrompt(unittest.TestCase):
             default=1,
             max_allowed=10,
             min_allowed=-2,
+            replace_mode=True,
         )
         self.prompt._on_rendered(None)
         self.float_prompt._on_rendered(None)
@@ -73,7 +78,9 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertEqual(self.prompt._integral_buffer.cursor_position, 0)
 
     def test_on_rendered_sn(self) -> None:
-        prompt = NumberPrompt(message="", default=0.000000123, float_allowed=True)
+        prompt = NumberPrompt(
+            message="", default=0.000000123, float_allowed=True, replace_mode=True
+        )
         prompt._on_rendered(None)
         self.assertTrue(prompt._whole_replace)
         self.assertFalse(prompt._integral_replace)
@@ -443,7 +450,7 @@ class TestNumberPrompt(unittest.TestCase):
         self.float_prompt._handle_left(None)
         self.assertFalse(self.float_prompt._integral_replace)
 
-        prompt = NumberPrompt(message="", float_allowed=True)
+        prompt = NumberPrompt(message="", float_allowed=True, replace_mode=True)
         prompt._on_rendered(None)
         self.assertTrue(prompt._whole_replace)
         self.assertTrue(prompt._integral_replace)

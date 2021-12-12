@@ -112,7 +112,7 @@ class NumberPrompt(BaseComplexPrompt):
         max_allowed: Union[int, float] = None,
         min_allowed: Union[int, float] = None,
         decimal_symbol: str = ". ",
-        replace_mode: bool = True,
+        replace_mode: bool = False,
         qmark: str = INQUIRERPY_QMARK_SEQUENCE,
         amark: str = "?",
         instruction: str = "",
