@@ -465,7 +465,7 @@ class TestResolver(unittest.TestCase):
     def test_prompt_async(
         self, mocked_input, mocked_confirm, mocked_input_init, mocked_confirm_init
     ):
-        if sys.version_info[2] == 7:
+        if sys.version_info.minor == 7:
             return
         mocked_confirm_init.return_value = None
         mocked_input_init.return_value = None
