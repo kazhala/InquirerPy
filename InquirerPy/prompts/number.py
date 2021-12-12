@@ -159,6 +159,11 @@ class NumberPrompt(BaseComplexPrompt):
 
         self._leading_zero_pattern = re.compile(r"^(0*)[0-9]+.*")
         self._sn_pattern = re.compile(r"^.*E-.*")
+        self._no_default = False
+
+        if default is None:
+            default = 0
+            self._no_default = True
 
         if isinstance(default, Callable):
             default = cast(Callable, default)(session_result)
@@ -337,6 +342,8 @@ class NumberPrompt(BaseComplexPrompt):
 
     def _on_rendered(self, _) -> None:
         """Additional processing to adjust buffer content after render."""
+        if self._no_default:
+            return
         if not self._float:
             self._whole_buffer.text = str(self._default)
             self._integral_buffer.text = "0"
@@ -599,10 +606,11 @@ class NumberPrompt(BaseComplexPrompt):
             self._whole_buffer.text = str(value)
         else:
             if self._sn_pattern.match(str(value)) is None:
-                self._whole_buffer.text, self._integral_buffer.text = str(value).split(
-                    "."
-                )
+                whole_buffer_text, integral_buffer_text = str(value).split(".")
             else:
-                self._whole_buffer.text, self._integral_buffer.text = self._fix_sn(
-                    str(value)
-                )
+                whole_buffer_text, integral_buffer_text = self._fix_sn(str(value))
+
+            if self._whole_buffer.text:
+                self._whole_buffer.text = whole_buffer_text
+            if self._integral_buffer.text:
+                self._integral_buffer.text = integral_buffer_text
