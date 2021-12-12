@@ -99,6 +99,41 @@ Additionally, the input buffer can also enter normal mode by pressing `esc` when
 }
 ```
 
+## Default Value
+
+The default value of the input buffer is set to `0` to help differentiate with {ref}`InputPrompt <pages/prompts/input:text>`. You could disable
+this value and have an empty input buffer by setting the parameter `default=None`.
+
+<details>
+  <summary>Classic Syntax (PyInquirer)</summary>
+
+```{code-block} python
+from InquirerPy import prompt
+
+questions = [
+  {
+    "type": "number",
+    "message": "Number:",
+    "default": None,
+  }
+]
+
+result = prompt(questions)
+```
+
+</details>
+
+<details open>
+  <summary>Alternate Syntax</summary>
+
+```{code-block} python
+from InquirerPy import inquirer
+
+result = inquirer.number(message="Number:", default=None).execute()
+```
+
+</details>
+
 ## Max and Min
 
 You can set the maximum allowed value as well as the minimum allowed value for the prompt via `max_allowed` and `min_allowed`.
