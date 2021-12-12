@@ -1,10 +1,10 @@
+import asyncio
 import os
 import unittest
-from unittest.mock import ANY, PropertyMock, call, patch
+from unittest.mock import ANY, call, patch
 
 from prompt_toolkit.shortcuts.prompt import PromptSession
 
-from InquirerPy.base import BaseComplexPrompt
 from InquirerPy.base.simple import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
@@ -15,7 +15,7 @@ from InquirerPy.prompts.filepath import FilePathPrompt
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.secret import SecretPrompt
-from InquirerPy.resolver import prompt
+from InquirerPy.resolver import prompt, prompt_async
 from InquirerPy.utils import InquirerPyStyle
 
 from .style import get_sample_style
@@ -446,3 +446,36 @@ class TestResolver(unittest.TestCase):
     def test_single_dict_question(self, mocked_execute):
         mocked_execute.return_value = None
         prompt({"type": "input", "message": "Name:"})
+
+    @patch("InquirerPy.resolver.ConfirmPrompt.execute")
+    def test_prompt_async_exception(self, mocked_execute):
+        questions = "hello"
+        try:
+            asyncio.run(prompt_async(questions))
+        except InvalidArgument:
+            pass
+        else:
+            self.fail("InvalidArgument should be raised")
+
+    @patch("InquirerPy.resolver.ConfirmPrompt.__init__")
+    @patch("InquirerPy.resolver.InputPrompt.__init__")
+    @patch("InquirerPy.resolver.ConfirmPrompt.execute_async")
+    @patch("InquirerPy.resolver.InputPrompt.execute_async")
+    def test_prompt_async(
+        self, mocked_input, mocked_confirm, mocked_input_init, mocked_confirm_init
+    ):
+        mocked_confirm_init.return_value = None
+        mocked_input_init.return_value = None
+        questions = [
+            {"type": "confirm", "message": ""},
+            {"type": "input", "message": "", "when": lambda result: result[0]},
+        ]
+        mocked_confirm.return_value = True
+        mocked_input.return_value = "1"
+        result = asyncio.run(prompt_async(questions))
+        self.assertEqual(result, {0: True, 1: "1"})
+
+        mocked_confirm.reset_mock()
+        mocked_confirm.return_value = False
+        wtf = asyncio.run(prompt_async(questions))
+        self.assertEqual(wtf, {0: False, 1: None})
