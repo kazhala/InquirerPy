@@ -384,11 +384,16 @@ class TestNumberPrompt(unittest.TestCase):
 
     def test_handle_number_float(self) -> None:
         self.assertEqual(self.float_prompt._integral_buffer.text, "0")
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+        self.assertTrue(self.float_prompt._integral_replace)
         self.float_prompt._handle_focus(None)
         self.float_prompt._handle_number(increment=True)
         self.assertEqual(self.float_prompt._integral_buffer.text, "1")
-        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 0)
+        # increased due to buffer starts as replace mode
+        self.assertFalse(self.float_prompt._integral_replace)
+        self.assertEqual(self.float_prompt._integral_buffer.cursor_position, 1)
 
+        self.float_prompt._integral_buffer.cursor_position = 0
         self.float_prompt._integral_buffer.text = "001"
         self.float_prompt._handle_number(increment=True)
         self.assertEqual(self.float_prompt._integral_buffer.text, "002")
@@ -446,4 +451,10 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertFalse(prompt._whole_replace)
         prompt._handle_dot(None)
         prompt._handle_right(None)
+        self.assertFalse(prompt._integral_replace)
+
+    def test_replace_mode_no(self) -> None:
+        prompt = NumberPrompt(message="", start_replace=False)
+        prompt._on_rendered(None)
+        self.assertFalse(prompt._whole_replace)
         self.assertFalse(prompt._integral_replace)
