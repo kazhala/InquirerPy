@@ -69,6 +69,9 @@ class NumberPrompt(BaseComplexPrompt):
         qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
         amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
         decimal_symbol: Decimal point symbol. Custom symbol to display as the decimal point.
+        start_replace: Start each input buffer in replace mode if default value is 0.
+            When typing, it will replace the 0 with the new value. The replace mode will be disabled once the value
+            is changed.
         instruction: Short instruction to display next to the question.
         long_instruction: Long instructions to display at the bottom of the prompt.
         validate: Add validation to user input.
@@ -109,6 +112,7 @@ class NumberPrompt(BaseComplexPrompt):
         max_allowed: Union[int, float] = None,
         min_allowed: Union[int, float] = None,
         decimal_symbol: str = ". ",
+        start_replace: bool = True,
         qmark: str = INQUIRERPY_QMARK_SEQUENCE,
         amark: str = "?",
         instruction: str = "",
@@ -151,6 +155,7 @@ class NumberPrompt(BaseComplexPrompt):
         self._decimal_symbol = decimal_symbol
         self._whole_replace = False
         self._integral_replace = False
+        self._start_replace = start_replace
 
         self._leading_zero_pattern = re.compile(r"^(0*)[0-9]+.*")
         self._sn_pattern = re.compile(r"^.*E-.*")
@@ -346,12 +351,14 @@ class NumberPrompt(BaseComplexPrompt):
             self._whole_buffer.text = whole_buffer_text
         self._whole_buffer.cursor_position = len(self._whole_buffer.text)
         self._integral_buffer.cursor_position = len(self._integral_buffer.text)
-        if self._whole_buffer.text == "0":
-            self._whole_replace = True
-            self._whole_buffer.cursor_position = 0
-        if self._integral_buffer.text == "0":
-            self._integral_replace = True
-            self._integral_buffer.cursor_position = 0
+        if self._start_replace:
+            # check to start replace mode if applicable
+            if self._whole_buffer.text == "0":
+                self._whole_replace = True
+                self._whole_buffer.cursor_position = 0
+            if self._integral_buffer.text == "0":
+                self._integral_replace = True
+                self._integral_buffer.cursor_position = 0
 
     def _handle_number(self, increment: bool) -> None:
         """Handle number increment and decrement.
@@ -362,6 +369,9 @@ class NumberPrompt(BaseComplexPrompt):
         Args:
             increment: Indicate if the operation should increment or decrement.
         """
+        if self.buffer_replace:
+            self.buffer_replace = False
+            self.focus_buffer.cursor_position += 1
         try:
             leading_zeros = ""
             if self.focus_buffer == self._integral_buffer:
