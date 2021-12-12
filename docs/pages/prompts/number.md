@@ -160,7 +160,7 @@ questions = [
   {
     "type": "number",
     "message": "Number:",
-    "float_allowed": True
+    "float_allowed": True,
   }
 ]
 
@@ -177,6 +177,47 @@ from InquirerPy import inquirer
 
 result = inquirer.number(
   message="Number:", float_allowed=True,
+).execute()
+```
+
+</details>
+
+## Replace Mode
+
+By default, each input buffer will start in replace mode if the value in the buffer is `0`.
+This provides a better experience for prompt requires decimal points input. Replace mode will be disabled
+once the value in the buffer is changed or the cursor is moved.
+
+However this behavior does introduce inconsistency with the terminal input behavior, and if you like to disable
+this, you can set the parameter `replace_mode=False`.
+
+<details>
+  <summary>Classic Syntax (PyInquirer)</summary>
+
+```{code-block} python
+from InquirerPy import prompt
+
+questions = [
+  {
+    "type": "number",
+    "message": "Number:",
+    "replace_mode": False,
+  }
+]
+
+result = prompt(questions)
+```
+
+</details>
+
+<details open>
+  <summary>Alternate Syntax</summary>
+
+```{code-block} python
+from InquirerPy import inquirer
+
+result = inquirer.number(
+  message="Number:", replace_mode=False,
 ).execute()
 ```
 
