@@ -454,7 +454,7 @@ class TestNumberPrompt(unittest.TestCase):
         self.assertFalse(prompt._integral_replace)
 
     def test_replace_mode_no(self) -> None:
-        prompt = NumberPrompt(message="", start_replace=False)
+        prompt = NumberPrompt(message="", replace_mode=False)
         prompt._on_rendered(None)
         self.assertFalse(prompt._whole_replace)
         self.assertFalse(prompt._integral_replace)
