@@ -184,12 +184,13 @@ result = inquirer.number(
 
 ## Replace Mode
 
-By default, each input buffer will start in replace mode if the value in the buffer is `0`.
-This provides a better experience for prompt requires decimal points input. Replace mode will be disabled
-once the value in the buffer is changed or the cursor is moved.
+By default, all input buffer has the exact same behavior as terminal input behavior. There is an optional replace mode
+which you could enable for a better experience when working with decimal points input. You can enable it via
+parameter `replace_mode=True`.
 
-However this behavior does introduce inconsistency with the terminal input behavior, and if you like to disable
-this, you can set the parameter `replace_mode=False`.
+```{warning}
+Replace mode introduce some slight inconsistency with the terminal input behavior that we are used to.
+```
 
 <details>
   <summary>Classic Syntax (PyInquirer)</summary>
@@ -201,7 +202,7 @@ questions = [
   {
     "type": "number",
     "message": "Number:",
-    "replace_mode": False,
+    "replace_mode": True,
   }
 ]
 
@@ -217,11 +218,16 @@ result = prompt(questions)
 from InquirerPy import inquirer
 
 result = inquirer.number(
-  message="Number:", replace_mode=False,
+  message="Number:", replace_mode=True,
 ).execute()
 ```
 
 </details>
+
+The following gif demonstrate the different behavior when we are trying to input number "123.102". The first prompt is `replace_mode=False`
+and the second prompt is `replace_mode=True`.
+
+![demo](https://assets.kazhala.me/InquirerPy/number-replace.gif)
 
 ## Reference
 
