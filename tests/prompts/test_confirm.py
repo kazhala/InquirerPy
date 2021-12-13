@@ -1,3 +1,4 @@
+import asyncio
 import unittest
 from unittest.mock import patch
 
@@ -265,3 +266,30 @@ class TestConfirmPrompt(unittest.TestCase):
         self.assertRaises(KeyboardInterrupt, prompt.execute)
         mocked_session.return_value = False
         prompt.execute()
+
+    def test_input_y_async(self):
+        self.inp.send_text("y")
+        confirm_prompt = ConfirmPrompt(
+            message="hello",
+            style=None,
+            default=True,
+            qmark="?",
+            output=DummyOutput(),
+            input=self.inp,
+        )
+        result = asyncio.run(confirm_prompt._run_async())
+        self.assertEqual(result, True)
+        self.assertEqual(confirm_prompt.status["answered"], True)
+        self.assertEqual(confirm_prompt.status["result"], True)
+
+        self.inp.send_text("Y")
+        confirm_prompt = ConfirmPrompt(
+            message="hello",
+            style=None,
+            default=True,
+            qmark="?",
+            output=DummyOutput(),
+            input=self.inp,
+        )
+        result = asyncio.run(confirm_prompt.execute_async())
+        self.assertEqual(result, True)

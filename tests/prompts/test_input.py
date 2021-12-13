@@ -1,3 +1,4 @@
+import asyncio
 import unittest
 from unittest.mock import ANY, call, patch
 
@@ -263,3 +264,20 @@ class TestInputPrompt(unittest.TestCase):
                     call().app.current_buffer.complete_next(),
                 ]
             )
+
+    def test_prompt_result_async(self):
+        self.inp.send_text("hello\n")
+        input_prompt = InputPrompt(
+            message="yes",
+            style=None,
+            default="world",
+            qmark="!",
+            vi_mode=False,
+            input=self.inp,
+            output=DummyOutput(),
+        )
+        result = asyncio.run(input_prompt.execute_async())
+        self.assertEqual(result, "worldhello")
+        self.assertEqual(input_prompt.status["answered"], True)
+        self.assertEqual(input_prompt.status["result"], "worldhello")
+        self.assertEqual(input_prompt.status["skipped"], False)
