@@ -46,12 +46,6 @@ if __name__ == "__main__":
 
 ## Asynchronous execution
 
-<!-- TODO: remove attention on release -->
-
-```{attention}
-Not yet released as of 0.3.0, it will be included in the next release.
-```
-
 Each prompt contains a function `execute_async` to start the prompt asynchronously.
 
 ```{code-block} python
