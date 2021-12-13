@@ -17,6 +17,8 @@ Notable changes are documented in this file.
   - Non number input is disabled
   - Supports thresholds
 - async support [#30](https://github.com/kazhala/InquirerPy/issues/30)
+  - [classic syntax](https://inquirerpy.readthedocs.io/en/latest/pages/prompt.html#asynchronous-execution)
+  - [alternate syntax](https://inquirerpy.readthedocs.io/en/latest/pages/inquirer.html#asynchronous-execution)
 
 ## 0.3.0 (12/10/2021)
 

@@ -183,5 +183,6 @@ pages/color_print.md
 
 pages/faq.md
 pages/api.md
+pages/changelog.md
 GitHub Repository <https://github.com/kazhala/InquirerPy>
 ```

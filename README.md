@@ -6,7 +6,6 @@
 [![Coverage](https://img.shields.io/coveralls/github/kazhala/InquirerPy?logo=coveralls)](https://coveralls.io/github/kazhala/InquirerPy?branch=master)
 [![Version](https://img.shields.io/pypi/pyversions/InquirerPy)](https://pypi.org/project/InquirerPy/)
 [![PyPi](https://img.shields.io/pypi/v/InquirerPy)](https://pypi.org/project/InquirerPy/)
-[![License](https://img.shields.io/pypi/l/InquirerPy)](https://github.com/kazhala/InquirerPy/blob/master/LICENSE)
 
 Documentation: [inquirerpy.readthedocs.io](https://inquirerpy.readthedocs.io/)
 
