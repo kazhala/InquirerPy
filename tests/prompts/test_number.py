@@ -465,3 +465,30 @@ class TestNumberPrompt(unittest.TestCase):
         prompt._on_rendered(None)
         self.assertFalse(prompt._whole_replace)
         self.assertFalse(prompt._integral_replace)
+
+    def test_empty_default(self) -> None:
+        prompt = NumberPrompt(message="", default=None)
+        prompt._on_rendered(None)
+        self.assertEqual(prompt._whole_buffer.text, "")
+        self.assertEqual(prompt._integral_buffer.text, "")
+
+        prompt = NumberPrompt(message="", default=None, float_allowed=True)
+        prompt._on_rendered(None)
+        self.assertEqual(prompt._whole_buffer.text, "")
+        self.assertEqual(prompt._integral_buffer.text, "")
+
+    def test_empty_buffer(self) -> None:
+        prompt = NumberPrompt(message="", default=None, float_allowed=True)
+        prompt._on_rendered(None)
+        self.assertEqual(prompt._whole_buffer.text, "")
+        self.assertEqual(prompt._integral_buffer.text, "")
+        prompt._whole_buffer.text = "1"
+        self.assertEqual(prompt._whole_buffer.text, "1")
+        self.assertEqual(prompt._integral_buffer.text, "")
+        self.assertEqual(str(prompt.value), "1.0")
+
+        prompt._whole_buffer.text = ""
+        prompt._integral_buffer.text = "1"
+        self.assertEqual(prompt._whole_buffer.text, "")
+        self.assertEqual(prompt._integral_buffer.text, "1")
+        self.assertEqual(str(prompt.value), "0.1")
