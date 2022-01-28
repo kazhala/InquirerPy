@@ -88,6 +88,48 @@ choices = [
 ]
 ```
 
+## Exact Sub-String Match
+
+This prompt uses the [fzy](https://github.com/jhawthorn/fzy) fuzzy match algorithm by default. You can enable exact sub-string match
+by using the parameter `match_exact`.
+
+<details>
+  <summary>Classic Syntax (PyInquirer)</summary>
+
+```{code-block} python
+from InquirerPy import prompt
+
+questions = [
+    {
+        "type": "fuzzy",
+        "message": "Select actions:",
+        "choices": ["hello", "weather", "what", "whoa", "hey", "yo"],
+        "match_exact": True,
+        "exact_symbol": " E",   # indicator of exact match
+    },
+]
+
+result = prompt(questions=questions)
+```
+
+</details>
+
+<details open>
+  <summary>Alternate Syntax</summary>
+
+```{code-block} python
+from InquirerPy import inquirer
+
+result = inquirer.fuzzy(
+    message="Select actions:",
+    choices=["hello", "weather", "what", "whoa", "hey", "yo"],
+    match_exact=True,
+    exact_symbol=" E",  # indicator of exact match
+).execute()
+```
+
+</details>
+
 ## Reference
 
 ```{eval-rst}

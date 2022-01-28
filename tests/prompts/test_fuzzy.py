@@ -3,6 +3,7 @@ import unittest
 from typing import Callable, NamedTuple
 from unittest.mock import ANY, MagicMock, call, patch
 
+from pfzy.score import fzy_scorer, substr_scorer
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.layout import Layout
@@ -27,6 +28,7 @@ class TestFuzzy(unittest.TestCase):
         session_result=None,
         multiselect=False,
         marker_pl=" ",
+        match_exact=False,
     )
 
     @patch("InquirerPy.utils.shutil.get_terminal_size")
@@ -179,6 +181,7 @@ class TestFuzzy(unittest.TestCase):
             session_result=None,
             multiselect=False,
             marker_pl=" ",
+            match_exact=False,
         )
         self.assertEqual(
             content_control._filtered_choices,
@@ -292,6 +295,7 @@ class TestFuzzy(unittest.TestCase):
             session_result=None,
             multiselect=False,
             marker_pl=" ",
+            match_exact=False,
         )
         content_control.choices[0]["indices"] = [1, 2, 3]
         asyncio.run(content_control._filter_choices(0.0))
@@ -381,6 +385,7 @@ class TestFuzzy(unittest.TestCase):
             session_result=None,
             multiselect=False,
             marker_pl=" ",
+            match_exact=False,
         )
 
         prompt = FuzzyPrompt(
@@ -411,6 +416,7 @@ class TestFuzzy(unittest.TestCase):
             session_result=None,
             multiselect=False,
             marker_pl=" ",
+            match_exact=False,
         )
 
     def test_prompt_after_input(self):
@@ -427,6 +433,15 @@ class TestFuzzy(unittest.TestCase):
             info=False,
         )
         self.assertEqual(prompt._generate_after_input(), [])
+
+    def test_prompt_after_input2(self):
+        prompt = FuzzyPrompt(
+            message="", choices=["1", "2", "3"], match_exact=True, exact_symbol=" *"
+        )
+        self.assertEqual(
+            prompt._generate_after_input(),
+            [("", "  "), ("class:fuzzy_info", "3/3"), ("class:fuzzy_info", " *")],
+        )
 
     def test_prompt_before_input(self):
         prompt = FuzzyPrompt(
@@ -872,6 +887,7 @@ class TestFuzzy(unittest.TestCase):
             session_result=None,
             multiselect=True,
             marker_pl=" ",
+            match_exact=False,
         )
         # range 0-4
         self.assertEqual(control._last_line, 4)
@@ -895,3 +911,80 @@ class TestFuzzy(unittest.TestCase):
         control._get_formatted_choices()
         self.assertEqual(control._last_line, 6)
         self.assertEqual(control._first_line, 2)
+
+    def test_control_exact_match(self) -> None:
+        content_control = InquirerPyFuzzyControl(
+            choices=["meat", "what", "whaaah", "weather", "haha"],
+            pointer=INQUIRERPY_POINTER_SEQUENCE,
+            marker=INQUIRERPY_POINTER_SEQUENCE,
+            current_text=lambda: "aa",
+            max_lines=80,
+            session_result=None,
+            multiselect=False,
+            marker_pl=" ",
+            match_exact=True,
+        )
+        self.assertEqual(
+            content_control._filtered_choices,
+            [
+                {
+                    "enabled": False,
+                    "index": 0,
+                    "indices": [],
+                    "name": "meat",
+                    "value": "meat",
+                },
+                {
+                    "enabled": False,
+                    "index": 1,
+                    "indices": [],
+                    "name": "what",
+                    "value": "what",
+                },
+                {
+                    "enabled": False,
+                    "index": 2,
+                    "indices": [],
+                    "name": "whaaah",
+                    "value": "whaaah",
+                },
+                {
+                    "enabled": False,
+                    "index": 3,
+                    "indices": [],
+                    "name": "weather",
+                    "value": "weather",
+                },
+                {
+                    "enabled": False,
+                    "index": 4,
+                    "indices": [],
+                    "name": "haha",
+                    "value": "haha",
+                },
+            ],
+        )
+        result = asyncio.run(content_control._filter_choices(0.0))
+        self.assertEqual(
+            result,
+            [
+                {
+                    "enabled": False,
+                    "index": 2,
+                    "indices": [2, 3],
+                    "name": "whaaah",
+                    "value": "whaaah",
+                }
+            ],
+        )
+
+    def test_toggle_exact(self):
+        self.assertEqual(self.prompt.content_control._scorer, fzy_scorer)
+        self.prompt._toggle_exact(None)
+        self.assertEqual(self.prompt.content_control._scorer, substr_scorer)
+        self.prompt._toggle_exact(None)
+        self.assertEqual(self.prompt.content_control._scorer, fzy_scorer)
+        self.prompt._toggle_exact(None, True)
+        self.assertEqual(self.prompt.content_control._scorer, substr_scorer)
+        self.prompt._toggle_exact(None, False)
+        self.assertEqual(self.prompt.content_control._scorer, fzy_scorer)
