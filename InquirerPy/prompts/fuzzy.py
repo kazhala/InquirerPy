@@ -292,7 +292,7 @@ class FuzzyPrompt(BaseListPrompt):
         prompt: Input prompt symbol. Custom symbol to display infront of the input buffer to indicate for input.
         border: Create border around the choice window.
         info: Display choice information similar to fzf --info=inline next to the prompt.
-        match_exact: Use exact sub-string match instead of using fzy fuzzy match algorithem.
+        match_exact: Use exact sub-string match instead of using fzy fuzzy match algorithm.
         exact_symbol: Custom symbol to display in the info section when `info=True`.
         marker: Marker Symbol. Custom symbol to indicate if a choice is selected.
             This will take effects when `multiselect` is True.
@@ -483,7 +483,7 @@ class FuzzyPrompt(BaseListPrompt):
         )
 
     def _toggle_exact(self, _, value: bool = None) -> None:
-        """Toggle matching algorithem.
+        """Toggle matching algorithm.
 
         Switch between fzy fuzzy match or sub-string exact match.
 
