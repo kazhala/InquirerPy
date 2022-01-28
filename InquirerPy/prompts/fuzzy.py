@@ -291,8 +291,9 @@ class FuzzyPrompt(BaseListPrompt):
             Setting to True will also change the result from a single value to a list of values.
         prompt: Input prompt symbol. Custom symbol to display infront of the input buffer to indicate for input.
         border: Create border around the choice window.
-        info: Display choice information similar to fzf --info=inline next tot he prompt.
+        info: Display choice information similar to fzf --info=inline next to the prompt.
         match_exact: Use exact sub-string match instead of using fzy fuzzy match algorithem.
+        exact_symbol: Custom symbol to display in the info section when `info=True`.
         marker: Marker Symbol. Custom symbol to indicate if a choice is selected.
             This will take effects when `multiselect` is True.
         marker_pl: Marker place holder when the choice is not selected.
@@ -335,6 +336,7 @@ class FuzzyPrompt(BaseListPrompt):
         border: bool = False,
         info: bool = True,
         match_exact: bool = False,
+        exact_symbol: str = " E",
         height: Union[str, int] = None,
         max_height: Union[str, int] = None,
         validate: InquirerPyValidate = None,
@@ -353,11 +355,13 @@ class FuzzyPrompt(BaseListPrompt):
         self._info = info
         self._task = None
         self._rendered = False
+        self._exact_symbol = exact_symbol
 
         keybindings = {
             "up": [{"key": "up"}, {"key": "c-p"}],
             "down": [{"key": "down"}, {"key": "c-n"}],
             "toggle": [],
+            "toggle-exact": [],
             **keybindings,
         }
         super().__init__(
@@ -382,6 +386,7 @@ class FuzzyPrompt(BaseListPrompt):
             mandatory_message=mandatory_message,
             session_result=session_result,
         )
+        self.kb_func_lookup = {"toggle-exact": [{"func": self._toggle_exact}]}
         self._default = (
             default
             if not isinstance(default, Callable)
@@ -477,6 +482,23 @@ class FuzzyPrompt(BaseListPrompt):
             after_render=self._after_render,
         )
 
+    def _toggle_exact(self, _, value: bool = None) -> None:
+        """Toggle matching algorithem.
+
+        Switch between fzy fuzzy match or sub-string exact match.
+
+        Args:
+            value: Specify the value to toggle.
+        """
+        if value is not None:
+            self.content_control._scorer = fzy_scorer if not value else substr_scorer
+        else:
+            self.content_control._scorer = (
+                fzy_scorer
+                if self.content_control._scorer == substr_scorer
+                else substr_scorer
+            )
+
     def _on_rendered(self, _) -> None:
         """Render callable choices and set the buffer default text.
 
@@ -510,17 +532,15 @@ class FuzzyPrompt(BaseListPrompt):
             display_message.append(
                 (
                     "class:fuzzy_info",
-                    "%s/%s"
-                    % (
-                        self.content_control.choice_count,
-                        len(self.content_control.choices),
-                    ),
+                    f"{self.content_control.choice_count}/{len(self.content_control.choices)}",
                 )
             )
             if self._multiselect:
                 display_message.append(
-                    ("class:fuzzy_info", " (%s)" % len(self.selected_choices))
+                    ("class:fuzzy_info", f" ({len(self.selected_choices)})")
                 )
+            if self.content_control._scorer == substr_scorer:
+                display_message.append(("class:fuzzy_info", self._exact_symbol))
         return display_message
 
     def _generate_before_input(self) -> List[Tuple[str, str]]:
