@@ -3,6 +3,7 @@ import unittest
 from typing import Callable, NamedTuple
 from unittest.mock import ANY, MagicMock, call, patch
 
+from pfzy.score import fzy_scorer, substr_scorer
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.layout import Layout
@@ -432,6 +433,15 @@ class TestFuzzy(unittest.TestCase):
             info=False,
         )
         self.assertEqual(prompt._generate_after_input(), [])
+
+    def test_prompt_after_input2(self):
+        prompt = FuzzyPrompt(
+            message="", choices=["1", "2", "3"], match_exact=True, exact_symbol=" *"
+        )
+        self.assertEqual(
+            prompt._generate_after_input(),
+            [("", "  "), ("class:fuzzy_info", "3/3"), ("class:fuzzy_info", " *")],
+        )
 
     def test_prompt_before_input(self):
         prompt = FuzzyPrompt(
@@ -967,3 +977,14 @@ class TestFuzzy(unittest.TestCase):
                 }
             ],
         )
+
+    def test_toggle_exact(self):
+        self.assertEqual(self.prompt.content_control._scorer, fzy_scorer)
+        self.prompt._toggle_exact(None)
+        self.assertEqual(self.prompt.content_control._scorer, substr_scorer)
+        self.prompt._toggle_exact(None)
+        self.assertEqual(self.prompt.content_control._scorer, fzy_scorer)
+        self.prompt._toggle_exact(None, True)
+        self.assertEqual(self.prompt.content_control._scorer, substr_scorer)
+        self.prompt._toggle_exact(None, False)
+        self.assertEqual(self.prompt.content_control._scorer, fzy_scorer)
