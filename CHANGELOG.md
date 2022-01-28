@@ -2,6 +2,10 @@
 
 Notable changes are documented in this file.
 
+## 0.3.2 (28/01/2021)
+
+- Added exact match option for fuzzy prompt [#34](https://github.com/kazhala/InquirerPy/issues/34)
+
 ## 0.3.1 (13/12/2021)
 
 ### Fixed
