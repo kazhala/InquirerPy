@@ -4,6 +4,7 @@ import math
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union, cast
 
 from pfzy import fuzzy_match
+from pfzy.score import fzy_scorer, substr_scorer
 from pfzy.types import HAYSTACKS
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -63,12 +64,14 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
         session_result: Optional[InquirerPySessionResult],
         multiselect: bool,
         marker_pl: str,
+        match_exact: bool,
     ) -> None:
         self._pointer = pointer
         self._marker = marker
         self._marker_pl = marker_pl
         self._current_text = current_text
         self._max_lines = max_lines if max_lines > 0 else 1
+        self._scorer = fzy_scorer if not match_exact else substr_scorer
         super().__init__(
             choices=choices,
             default=None,
@@ -219,6 +222,7 @@ class InquirerPyFuzzyControl(InquirerPyUIListControl):
                 self._current_text(),
                 cast(HAYSTACKS, self.choices),
                 key="name",
+                scorer=self._scorer,
             )
         return choices
 
@@ -288,6 +292,7 @@ class FuzzyPrompt(BaseListPrompt):
         prompt: Input prompt symbol. Custom symbol to display infront of the input buffer to indicate for input.
         border: Create border around the choice window.
         info: Display choice information similar to fzf --info=inline next tot he prompt.
+        match_exact: Use exact sub-string match instead of using fzy fuzzy match algorithem.
         marker: Marker Symbol. Custom symbol to indicate if a choice is selected.
             This will take effects when `multiselect` is True.
         marker_pl: Marker place holder when the choice is not selected.
@@ -329,6 +334,7 @@ class FuzzyPrompt(BaseListPrompt):
         marker_pl: str = " ",
         border: bool = False,
         info: bool = True,
+        match_exact: bool = False,
         height: Union[str, int] = None,
         max_height: Union[str, int] = None,
         validate: InquirerPyValidate = None,
@@ -395,6 +401,7 @@ class FuzzyPrompt(BaseListPrompt):
             session_result=session_result,
             multiselect=multiselect,
             marker_pl=marker_pl,
+            match_exact=match_exact,
         )
 
         self._buffer = Buffer(on_text_changed=self._on_text_changed)
