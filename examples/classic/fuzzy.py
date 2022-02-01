@@ -8,6 +8,7 @@ from InquirerPy import prompt
 def get_choices(_):
     p = Path(__file__).resolve().parent.joinpath("sample.txt")
     choices = []
+    result = []
 
     with ExitStack() as stack:
         if not p.exists():
@@ -23,7 +24,11 @@ def get_choices(_):
             file = stack.enter_context(p.open("r"))
         for line in file.readlines():
             choices.append(line[:-1])
-    return choices
+        for choice in choices:
+            if not choice:
+                continue
+            result.append(choice)
+    return result
 
 
 def main():
