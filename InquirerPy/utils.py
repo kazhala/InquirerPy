@@ -98,7 +98,7 @@ def get_style(
         >>> from InquirerPy import get_style
         >>> from InquirerPy import inquirer
         >>> style = get_style({"questionmark": "#ffffff", "answer": "#000000"}, style_override=False)
-        >>> result = inquirer.confirm(message="Confirm?", style=style)
+        >>> result = inquirer.confirm(message="Confirm?", style=style).execute()
     """
     if not style_override or style is None:
         if not style:
