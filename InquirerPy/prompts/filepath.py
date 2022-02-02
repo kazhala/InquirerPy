@@ -37,6 +37,7 @@ class FilePathCompleter(Completer):
     def __init__(self, only_directories: bool = False, only_files: bool = False):
         self._only_directories = only_directories
         self._only_files = only_files
+        self._delimiter = "/" if os.name == "posix" else "\\"
 
     def get_completions(
         self, document, complete_event
@@ -51,11 +52,11 @@ class FilePathCompleter(Completer):
             dirname = Path.cwd()
             validation = lambda file, doc_text: True
         elif document.text.startswith("~"):
-            dirname = Path(os.path.dirname("%s%s" % (Path.home(), document.text[1:])))
+            dirname = Path(os.path.dirname(f"{Path.home()}{document.text[1:]}"))
             validation = lambda file, doc_text: str(file).startswith(
-                "%s%s" % (Path.home(), doc_text[1:])
+                f"{Path.home()}{doc_text[1:]}"
             )
-        elif document.text.startswith("./"):
+        elif document.text.startswith(f".{self._delimiter}"):
             dirname = Path(os.path.dirname(document.text))
             validation = lambda file, doc_text: str(file).startswith(doc_text[2:])
         else:
@@ -78,9 +79,9 @@ class FilePathCompleter(Completer):
                 file_name = file.name
                 display_name = file_name
                 if file.is_dir():
-                    display_name = "%s/" % file_name
+                    display_name = f"{file_name}{self._delimiter}"
                 yield Completion(
-                    "%s" % file.name,
+                    file.name,
                     start_position=-1 * len(os.path.basename(document.text)),
                     display=display_name,
                 )

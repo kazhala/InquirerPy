@@ -1,14 +1,17 @@
+import os
+
 from InquirerPy import prompt
 from InquirerPy.validator import PathValidator
 
 
 def main():
+    home_path = "~/" if os.name == "posix" else "C:\\"
     questions = [
         {
             "type": "filepath",
             "message": "Enter file to upload:",
             "name": "location",
-            "default": "~/",
+            "default": home_path,
             "validate": PathValidator(is_file=True, message="Input is not a file"),
             "only_files": True,
         },

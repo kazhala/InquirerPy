@@ -261,3 +261,32 @@ class TestFilePath(unittest.TestCase):
     def test_invalid_argument(self):
         self.assertRaises(InvalidArgument, FilePathPrompt, "hello", None, False, 12)
         FilePathPrompt(message="hello", default=lambda _: "12")
+
+    @patch("platform.system")
+    def test_completer_explicit_currdir_all_win(self, mocked_platform):
+        with self.chdir(self.test_dir):
+            completer = FilePathCompleter()
+            doc_text = ".\\"
+            doc = Document(doc_text, len(doc_text))
+            event = CompleteEvent()
+            completions = [
+                completion.text
+                for completion in list(completer.get_completions(doc, event))
+            ]
+            self.assertEqual(
+                sorted(completions),
+                sorted(self.dirs_to_create + self.files_to_create),
+            )
+
+    @patch("platform.system")
+    def test_completer_currdir_file_win(self, mocked_platform):
+        with self.chdir(self.test_dir):
+            completer = FilePathCompleter()
+            doc_text = ".\\file"
+            doc = Document(doc_text, len(doc_text))
+            event = CompleteEvent()
+            completions = [
+                completion.text
+                for completion in list(completer.get_completions(doc, event))
+            ]
+            self.assertEqual(sorted(completions), ["file1", "file2", "file3"])
