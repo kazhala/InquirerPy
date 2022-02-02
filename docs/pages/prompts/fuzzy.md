@@ -63,6 +63,18 @@ The `space` key for toggle choice is also disabled since it blocks user from typ
 :end-before: <!-- end list kb -->
 ```
 
+In addition, with the release of [0.3.2](https://github.com/kazhala/InquirerPy/releases/tag/0.3.2), you can now also toggle string matching algorithm.
+
+```{seealso}
+{ref}`pages/prompts/fuzzy:Exact Sub-String match`
+```
+
+```{code-block}
+{
+    "toggle-exact": []  # toggle string matching algorithm between fuzzy or exact
+}
+```
+
 ## Multiple Selection
 
 ```{seealso}
@@ -125,6 +137,43 @@ result = inquirer.fuzzy(
     choices=["hello", "weather", "what", "whoa", "hey", "yo"],
     match_exact=True,
     exact_symbol=" E",  # indicator of exact match
+).execute()
+```
+
+</details>
+
+You can also enable a keybinding to toggle the matching algorithm.
+
+<details>
+  <summary>Classic Syntax (PyInquirer)</summary>
+
+```{code-block} python
+from InquirerPy import prompt
+
+questions = [
+    {
+        "type": "fuzzy",
+        "message": "Select actions:",
+        "choices": ["hello", "weather", "what", "whoa", "hey", "yo"],
+        "keybindings": {"toggle-exact": [{"key": "c-t"}]},
+    },
+]
+
+result = prompt(questions=questions)
+```
+
+</details>
+
+<details open>
+  <summary>Alternate Syntax</summary>
+
+```{code-block} python
+from InquirerPy import inquirer
+
+result = inquirer.fuzzy(
+    message="Select actions:",
+    choices=["hello", "weather", "what", "whoa", "hey", "yo"],
+    keybindings={"toggle-exact": [{"key": "c-t"}]},
 ).execute()
 ```
 
