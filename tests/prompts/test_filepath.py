@@ -262,7 +262,7 @@ class TestFilePath(unittest.TestCase):
         self.assertRaises(InvalidArgument, FilePathPrompt, "hello", None, False, 12)
         FilePathPrompt(message="hello", default=lambda _: "12")
 
-    @patch("platform.system")
+    @patch("os.name")
     def test_completer_explicit_currdir_all_win(self, mocked_platform):
         with self.chdir(self.test_dir):
             completer = FilePathCompleter()
@@ -278,7 +278,7 @@ class TestFilePath(unittest.TestCase):
                 sorted(self.dirs_to_create + self.files_to_create),
             )
 
-    @patch("platform.system")
+    @patch("os.name")
     def test_completer_currdir_file_win(self, mocked_platform):
         with self.chdir(self.test_dir):
             completer = FilePathCompleter()
