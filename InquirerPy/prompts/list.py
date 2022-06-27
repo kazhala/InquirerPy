@@ -1,6 +1,6 @@
 """Module contains the class to create a list prompt."""
 import shutil
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple, Union
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.filters.cli import IsDone
@@ -26,6 +26,7 @@ from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
     InquirerPyDefault,
+    InquirerPyKeybindings,
     InquirerPyListChoices,
     InquirerPyMessage,
     InquirerPySessionResult,
@@ -33,6 +34,9 @@ from InquirerPy.utils import (
     InquirerPyValidate,
     calculate_height,
 )
+
+if TYPE_CHECKING:
+    from prompt_toolkit.key_binding.key_processor import KeyPressEvent
 
 __all__ = ["ListPrompt"]
 
@@ -162,31 +166,31 @@ class ListPrompt(BaseListPrompt):
         message: InquirerPyMessage,
         choices: InquirerPyListChoices,
         default: InquirerPyDefault = None,
-        style: InquirerPyStyle = None,
+        style: Optional[InquirerPyStyle] = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Callable[[Any], Any] = None,
-        filter: Callable[[Any], Any] = None,
-        height: Union[int, str] = None,
-        max_height: Union[int, str] = None,
+        transformer: Optional[Callable[[Any], Any]] = None,
+        filter: Optional[Callable[[Any], Any]] = None,
+        height: Optional[Union[int, str]] = None,
+        max_height: Optional[Union[int, str]] = None,
         multiselect: bool = False,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
         border: bool = False,
-        validate: InquirerPyValidate = None,
+        validate: Optional[InquirerPyValidate] = None,
         invalid_message: str = "Invalid input",
-        keybindings: Dict[str, List[Dict[str, Any]]] = None,
+        keybindings: Optional[InquirerPyKeybindings] = None,
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: InquirerPySessionResult = None,
+        session_result: Optional[InquirerPySessionResult] = None,
     ) -> None:
         if not hasattr(self, "_content_control"):
             self.content_control = InquirerPyListControl(
@@ -295,7 +299,7 @@ class ListPrompt(BaseListPrompt):
             "enabled"
         ]
 
-    def _handle_toggle_all(self, _, value: bool = None) -> None:
+    def _handle_toggle_all(self, _, value: Optional[bool] = None) -> None:
         """Toggle all choice `enabled` status.
 
         Args:
@@ -330,7 +334,7 @@ class ListPrompt(BaseListPrompt):
                     self._handle_up(event)
                     break
 
-    def _handle_enter(self, event) -> None:
+    def _handle_enter(self, event: "KeyPressEvent") -> None:
         """Handle the event when user hit `enter` key.
 
         1. Set the prompt state to answered.

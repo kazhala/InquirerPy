@@ -274,35 +274,35 @@ class ExpandPrompt(ListPrompt):
         message: InquirerPyMessage,
         choices: InquirerPyListChoices,
         default: InquirerPyDefault = "",
-        style: InquirerPyStyle = None,
+        style: Optional[InquirerPyStyle] = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         pointer: str = " ",
         separator: str = ") ",
         help_msg: str = "Help, list all choices",
-        expand_help: ExpandHelp = None,
+        expand_help: Optional[ExpandHelp] = None,
         expand_pointer: str = "%s " % INQUIRERPY_POINTER_SEQUENCE,
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Callable[[Any], Any] = None,
-        filter: Callable[[Any], Any] = None,
-        height: Union[int, str] = None,
-        max_height: Union[int, str] = None,
+        transformer: Optional[Callable[[Any], Any]] = None,
+        filter: Optional[Callable[[Any], Any]] = None,
+        height: Optional[Union[int, str]] = None,
+        max_height: Optional[Union[int, str]] = None,
         multiselect: bool = False,
         marker: str = INQUIRERPY_POINTER_SEQUENCE,
         marker_pl: str = " ",
         border: bool = False,
-        validate: InquirerPyValidate = None,
+        validate: Optional[InquirerPyValidate] = None,
         invalid_message: str = "Invalid input",
-        keybindings: InquirerPyKeybindings = None,
+        keybindings: Optional[InquirerPyKeybindings] = None,
         show_cursor: bool = True,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: InquirerPySessionResult = None,
+        session_result: Optional[InquirerPySessionResult] = None,
     ) -> None:
         if expand_help is None:
             expand_help = ExpandHelp(message=help_msg)
@@ -437,7 +437,7 @@ class ExpandPrompt(ListPrompt):
             )
         return display_message
 
-    def _handle_toggle_all(self, _, value: bool = None) -> None:
+    def _handle_toggle_all(self, _, value: Optional[bool] = None) -> None:
         """Override this method to ignore `ExpandHelp`.
 
         :param value: Specify a value to toggle.

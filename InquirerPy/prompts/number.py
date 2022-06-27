@@ -1,7 +1,7 @@
 """Module contains the class to create a number prompt."""
 import re
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Callable, Tuple, Union, cast
+from typing import TYPE_CHECKING, Any, Callable, Optional, Tuple, Union, cast
 
 from prompt_toolkit.application.application import Application
 from prompt_toolkit.buffer import Buffer
@@ -105,28 +105,28 @@ class NumberPrompt(BaseComplexPrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: InquirerPyStyle = None,
+        style: Optional[InquirerPyStyle] = None,
         vi_mode: bool = False,
         default: InquirerPyDefault = 0,
         float_allowed: bool = False,
-        max_allowed: Union[int, float] = None,
-        min_allowed: Union[int, float] = None,
+        max_allowed: Optional[Union[int, float]] = None,
+        min_allowed: Optional[Union[int, float]] = None,
         decimal_symbol: str = ". ",
         replace_mode: bool = False,
         qmark: str = INQUIRERPY_QMARK_SEQUENCE,
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        validate: InquirerPyValidate = None,
+        validate: Optional[InquirerPyValidate] = None,
         invalid_message: str = "Invalid input",
-        transformer: Callable[[str], Any] = None,
-        filter: Callable[[str], Any] = None,
-        keybindings: InquirerPyKeybindings = None,
+        transformer: Optional[Callable[[str], Any]] = None,
+        filter: Optional[Callable[[str], Any]] = None,
+        keybindings: Optional[InquirerPyKeybindings] = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: InquirerPySessionResult = None,
+        session_result: Optional[InquirerPySessionResult] = None,
     ) -> None:
         super().__init__(
             message=message,
@@ -449,7 +449,7 @@ class NumberPrompt(BaseComplexPrompt):
         else:
             self.focus_buffer.cursor_position += 1
 
-    def _handle_enter(self, event) -> None:
+    def _handle_enter(self, event: "KeyPressEvent") -> None:
         """Handle enter event and answer/close the prompt."""
         if not self._float and not self._whole_buffer.text:
             result = ""
@@ -476,7 +476,7 @@ class NumberPrompt(BaseComplexPrompt):
         """Focus the integral window if `float_allowed`."""
         self._handle_focus(_, self._integral_window)
 
-    def _handle_focus(self, _, window: Window = None) -> None:
+    def _handle_focus(self, _, window: Optional[Window] = None) -> None:
         """Focus either the integral window or whole window."""
         if not self._float:
             return

@@ -1,18 +1,19 @@
 """Contains the base class :class:`.BaseListPrompt` which can be used to create a prompt involving choices."""
 from abc import abstractmethod
-from typing import Any, Callable, List, Union
+from typing import Any, Callable, List, Optional
 
 from prompt_toolkit.filters.base import Condition
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.validation import Validator
 
 from InquirerPy.base.complex import BaseComplexPrompt
 from InquirerPy.base.control import InquirerPyUIListControl
 from InquirerPy.separator import Separator
 from InquirerPy.utils import (
     InquirerPyKeybindings,
+    InquirerPyMessage,
     InquirerPySessionResult,
     InquirerPyStyle,
+    InquirerPyValidate,
 )
 
 
@@ -30,26 +31,26 @@ class BaseListPrompt(BaseComplexPrompt):
 
     def __init__(
         self,
-        message: Union[str, Callable[[InquirerPySessionResult], str]],
-        style: InquirerPyStyle = None,
+        message: InquirerPyMessage,
+        style: Optional[InquirerPyStyle] = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
         border: bool = False,
-        transformer: Callable[[Any], Any] = None,
-        filter: Callable[[Any], Any] = None,
-        validate: Union[Callable[[Any], bool], Validator] = None,
+        transformer: Optional[Callable[[Any], Any]] = None,
+        filter: Optional[Callable[[Any], Any]] = None,
+        validate: Optional[InquirerPyValidate] = None,
         invalid_message: str = "Invalid input",
         multiselect: bool = False,
-        keybindings: InquirerPyKeybindings = None,
+        keybindings: Optional[InquirerPyKeybindings] = None,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: InquirerPySessionResult = None,
+        session_result: Optional[InquirerPySessionResult] = None,
     ) -> None:
         super().__init__(
             message=message,

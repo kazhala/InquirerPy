@@ -70,7 +70,7 @@ InquirerPyKeybindings = Dict[
 
 
 def get_style(
-    style: Dict[str, str] = None, style_override: bool = True
+    style: Optional[Dict[str, str]] = None, style_override: bool = True
 ) -> InquirerPyStyle:
     """Obtain an :class:`.InquirerPyStyle` instance which can be consumed by the `style` parameter in prompts.
 
@@ -262,7 +262,7 @@ def patched_print(*values) -> None:
 
 
 def color_print(
-    formatted_text: List[Tuple[str, str]], style: Dict[str, str] = None
+    formatted_text: List[Tuple[str, str]], style: Optional[Dict[str, str]] = None
 ) -> None:
     """Print colored text leveraging :func:`~prompt_toolkit.shortcuts.print_formatted_text`.
 

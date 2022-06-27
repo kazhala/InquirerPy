@@ -1,5 +1,5 @@
 """Module contains the class to create a secret prompt."""
-from typing import TYPE_CHECKING, Any, Callable, List, Tuple
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple
 
 from InquirerPy.prompts.input import InputPrompt
 from InquirerPy.utils import (
@@ -67,25 +67,25 @@ class SecretPrompt(InputPrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: InquirerPyStyle = None,
+        style: Optional[InquirerPyStyle] = None,
         default: InquirerPyDefault = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
         vi_mode: bool = False,
-        validate: InquirerPyValidate = None,
+        validate: Optional[InquirerPyValidate] = None,
         invalid_message: str = "Invalid input",
-        transformer: Callable[[str], Any] = None,
-        filter: Callable[[str], Any] = None,
-        keybindings: InquirerPyKeybindings = None,
+        transformer: Optional[Callable[[str], Any]] = None,
+        filter: Optional[Callable[[str], Any]] = None,
+        keybindings: Optional[InquirerPyKeybindings] = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: InquirerPySessionResult = None,
-        input: "Input" = None,
-        output: "Output" = None,
+        session_result: Optional[InquirerPySessionResult] = None,
+        input: Optional["Input"] = None,
+        output: Optional["Output"] = None,
     ) -> None:
         super().__init__(
             message=message,

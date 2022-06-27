@@ -24,6 +24,7 @@ from InquirerPy.utils import (
 
 if TYPE_CHECKING:
     from prompt_toolkit.input.base import Input
+    from prompt_toolkit.key_binding.key_processor import KeyPressEvent
     from prompt_toolkit.output.base import Output
 
 __all__ = ["InputPrompt"]
@@ -84,29 +85,29 @@ class InputPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: InquirerPyStyle = None,
+        style: Optional[InquirerPyStyle] = None,
         vi_mode: bool = False,
         default: InquirerPyDefault = "",
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        completer: Union[Dict[str, Optional[str]], "Completer"] = None,
+        completer: Optional[Union[Dict[str, Optional[str]], "Completer"]] = None,
         multicolumn_complete: bool = False,
         multiline: bool = False,
-        validate: InquirerPyValidate = None,
+        validate: Optional[InquirerPyValidate] = None,
         invalid_message: str = "Invalid input",
-        transformer: Callable[[str], Any] = None,
-        filter: Callable[[str], Any] = None,
-        keybindings: InquirerPyKeybindings = None,
+        transformer: Optional[Callable[[str], Any]] = None,
+        filter: Optional[Callable[[str], Any]] = None,
+        keybindings: Optional[InquirerPyKeybindings] = None,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         is_password: bool = False,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: InquirerPySessionResult = None,
-        input: "Input" = None,
-        output: "Output" = None,
+        session_result: Optional[InquirerPySessionResult] = None,
+        input: Optional["Input"] = None,
+        output: Optional["Output"] = None,
     ) -> None:
         super().__init__(
             message,
@@ -183,7 +184,7 @@ class InputPrompt(BaseSimplePrompt):
         self._session.default_buffer.validation_state = ValidationState.INVALID
         self._session.default_buffer.validation_error = ValidationError(message=message)
 
-    def _handle_enter(self, event) -> None:
+    def _handle_enter(self, event: "KeyPressEvent") -> None:
         try:
             self._session.validator.validate(self._session.default_buffer)  # type: ignore
         except ValidationError:

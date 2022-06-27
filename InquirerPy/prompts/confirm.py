@@ -1,5 +1,5 @@
 """Module contains the class to create a confirm prompt."""
-from typing import TYPE_CHECKING, Any, Callable, List, Tuple
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Tuple
 
 from prompt_toolkit.buffer import ValidationState
 from prompt_toolkit.keys import Keys
@@ -18,6 +18,7 @@ from InquirerPy.utils import (
 
 if TYPE_CHECKING:
     from prompt_toolkit.input.base import Input
+    from prompt_toolkit.key_binding.key_processor import KeyPressEvent
     from prompt_toolkit.output.base import Output
 
 __all__ = ["ConfirmPrompt"]
@@ -72,25 +73,25 @@ class ConfirmPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: InquirerPyStyle = None,
+        style: Optional[InquirerPyStyle] = None,
         default: InquirerPyDefault = False,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Callable[[bool], Any] = None,
-        filter: Callable[[bool], Any] = None,
-        keybindings: InquirerPyKeybindings = None,
+        transformer: Optional[Callable[[bool], Any]] = None,
+        filter: Optional[Callable[[bool], Any]] = None,
+        keybindings: Optional[InquirerPyKeybindings] = None,
         wrap_lines: bool = True,
         confirm_letter: str = "y",
         reject_letter: str = "n",
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: InquirerPySessionResult = None,
-        input: "Input" = None,
-        output: "Output" = None,
+        session_result: Optional[InquirerPySessionResult] = None,
+        input: Optional["Input"] = None,
+        output: Optional["Output"] = None,
     ) -> None:
         vi_mode = False
         super().__init__(
@@ -165,7 +166,7 @@ class ConfirmPrompt(BaseSimplePrompt):
         self.status["result"] = True
         event.app.exit(result=True)
 
-    def _handle_enter(self, event) -> None:
+    def _handle_enter(self, event: "KeyPressEvent") -> None:
         self.status["answered"] = True
         self.status["result"] = self._default
         event.app.exit(result=self._default)

@@ -53,7 +53,7 @@ class InquirerPyUIListControl(FormattedTextControl):
         choices: InquirerPyListChoices,
         default: Any = None,
         multiselect: bool = False,
-        session_result: InquirerPySessionResult = None,
+        session_result: Optional[InquirerPySessionResult] = None,
     ) -> None:
         self._session_result = session_result or {}
         self._selected_choice_index: int = 0

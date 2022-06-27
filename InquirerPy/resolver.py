@@ -15,7 +15,12 @@ from InquirerPy.prompts.list import ListPrompt
 from InquirerPy.prompts.number import NumberPrompt
 from InquirerPy.prompts.rawlist import RawlistPrompt
 from InquirerPy.prompts.secret import SecretPrompt
-from InquirerPy.utils import InquirerPyQuestions, InquirerPySessionResult, get_style
+from InquirerPy.utils import (
+    InquirerPyKeybindings,
+    InquirerPyQuestions,
+    InquirerPySessionResult,
+    get_style,
+)
 
 __all__ = ["prompt", "prompt_async"]
 
@@ -78,10 +83,10 @@ def _get_question(
 
 async def prompt_async(
     questions: InquirerPyQuestions,
-    style: Dict[str, str] = None,
+    style: Optional[Dict[str, str]] = None,
     vi_mode: bool = False,
     raise_keyboard_interrupt: bool = True,
-    keybindings: Dict[str, List[Dict[str, Any]]] = None,
+    keybindings: Optional[InquirerPyKeybindings] = None,
     style_override: bool = True,
 ) -> InquirerPySessionResult:
     """Classic syntax entrypoint to create a prompt session via asynchronous method.
@@ -121,10 +126,10 @@ async def prompt_async(
 
 def prompt(
     questions: InquirerPyQuestions,
-    style: Dict[str, str] = None,
+    style: Optional[Dict[str, str]] = None,
     vi_mode: bool = False,
     raise_keyboard_interrupt: bool = True,
-    keybindings: Dict[str, List[Dict[str, Any]]] = None,
+    keybindings: Optional[InquirerPyKeybindings] = None,
     style_override: bool = True,
 ) -> InquirerPySessionResult:
     """Classic syntax entrypoint to create a prompt session.

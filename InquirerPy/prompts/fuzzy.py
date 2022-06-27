@@ -1,7 +1,17 @@
 """Module contains the class to create a fuzzy prompt."""
 import asyncio
 import math
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Tuple,
+    Union,
+    cast,
+)
 
 from pfzy import fuzzy_match
 from pfzy.score import fzy_scorer, substr_scorer
@@ -41,6 +51,9 @@ from InquirerPy.utils import (
     InquirerPyValidate,
     calculate_height,
 )
+
+if TYPE_CHECKING:
+    from prompt_toolkit.key_binding.key_processor import KeyPressEvent
 
 __all__ = ["FuzzyPrompt"]
 
@@ -321,12 +334,12 @@ class FuzzyPrompt(BaseListPrompt):
         choices: InquirerPyListChoices,
         default: InquirerPyDefault = "",
         pointer: str = INQUIRERPY_POINTER_SEQUENCE,
-        style: InquirerPyStyle = None,
+        style: Optional[InquirerPyStyle] = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
-        transformer: Callable[[Any], Any] = None,
-        filter: Callable[[Any], Any] = None,
+        transformer: Optional[Callable[[Any], Any]] = None,
+        filter: Optional[Callable[[Any], Any]] = None,
         instruction: str = "",
         long_instruction: str = "",
         multiselect: bool = False,
@@ -337,17 +350,17 @@ class FuzzyPrompt(BaseListPrompt):
         info: bool = True,
         match_exact: bool = False,
         exact_symbol: str = " E",
-        height: Union[str, int] = None,
-        max_height: Union[str, int] = None,
-        validate: InquirerPyValidate = None,
+        height: Optional[Union[str, int]] = None,
+        max_height: Optional[Union[str, int]] = None,
+        validate: Optional[InquirerPyValidate] = None,
         invalid_message: str = "Invalid input",
-        keybindings: InquirerPyKeybindings = None,
+        keybindings: Optional[InquirerPyKeybindings] = None,
         cycle: bool = True,
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: InquirerPySessionResult = None,
+        session_result: Optional[InquirerPySessionResult] = None,
     ) -> None:
         if not keybindings:
             keybindings = {}
@@ -482,7 +495,7 @@ class FuzzyPrompt(BaseListPrompt):
             after_render=self._after_render,
         )
 
-    def _toggle_exact(self, _, value: bool = None) -> None:
+    def _toggle_exact(self, _, value: Optional[bool] = None) -> None:
         """Toggle matching algorithm.
 
         Switch between fzy fuzzy match or sub-string exact match.
@@ -510,7 +523,7 @@ class FuzzyPrompt(BaseListPrompt):
             self._buffer.text = default_text
             self._buffer.cursor_position = len(default_text)
 
-    def _handle_toggle_all(self, _, value: bool = None) -> None:
+    def _handle_toggle_all(self, _, value: Optional[bool] = None) -> None:
         """Toggle all choice `enabled` status.
 
         Args:
@@ -618,7 +631,7 @@ class FuzzyPrompt(BaseListPrompt):
             "enabled"
         ] = not self.content_control.choices[current_selected_index]["enabled"]
 
-    def _handle_enter(self, event) -> None:
+    def _handle_enter(self, event: "KeyPressEvent") -> None:
         """Handle enter event.
 
         Validate the result first.

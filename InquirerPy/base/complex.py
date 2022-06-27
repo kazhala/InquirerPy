@@ -8,11 +8,14 @@ from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.filters.base import Condition, FilterOrBool
 from prompt_toolkit.key_binding.key_bindings import KeyHandlerCallable
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.validation import Validator
 
 from InquirerPy.base.simple import BaseSimplePrompt
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT
-from InquirerPy.utils import InquirerPySessionResult, InquirerPyStyle
+from InquirerPy.utils import (
+    InquirerPySessionResult,
+    InquirerPyStyle,
+    InquirerPyValidate,
+)
 
 
 @dataclass
@@ -50,22 +53,22 @@ class BaseComplexPrompt(BaseSimplePrompt):
     def __init__(
         self,
         message: Union[str, Callable[[InquirerPySessionResult], str]],
-        style: InquirerPyStyle = None,
+        style: Optional[InquirerPyStyle] = None,
         border: bool = False,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
         long_instruction: str = "",
-        transformer: Callable[[Any], Any] = None,
-        filter: Callable[[Any], Any] = None,
-        validate: Union[Callable[[Any], bool], Validator] = None,
+        transformer: Optional[Callable[[Any], Any]] = None,
+        filter: Optional[Callable[[Any], Any]] = None,
+        validate: Optional[InquirerPyValidate] = None,
         invalid_message: str = "Invalid input",
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: InquirerPySessionResult = None,
+        session_result: Optional[InquirerPySessionResult] = None,
     ) -> None:
         super().__init__(
             message=message,

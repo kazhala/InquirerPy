@@ -53,21 +53,21 @@ class BaseSimplePrompt(ABC):
     def __init__(
         self,
         message: InquirerPyMessage,
-        style: InquirerPyStyle = None,
+        style: Optional[InquirerPyStyle] = None,
         vi_mode: bool = False,
         qmark: str = "?",
         amark: str = "?",
         instruction: str = "",
-        validate: InquirerPyValidate = None,
+        validate: Optional[InquirerPyValidate] = None,
         invalid_message: str = "Invalid input",
-        transformer: Callable[[Any], Any] = None,
-        filter: Callable[[Any], Any] = None,
+        transformer: Optional[Callable[[Any], Any]] = None,
+        filter: Optional[Callable[[Any], Any]] = None,
         default: Any = "",
         wrap_lines: bool = True,
         raise_keyboard_interrupt: bool = True,
         mandatory: bool = True,
         mandatory_message: str = "Mandatory prompt",
-        session_result: InquirerPySessionResult = None,
+        session_result: Optional[InquirerPySessionResult] = None,
     ) -> None:
         self._mandatory = mandatory
         self._mandatory_message = mandatory_message
@@ -315,7 +315,7 @@ class BaseSimplePrompt(ABC):
         """
         pass
 
-    def execute(self, raise_keyboard_interrupt: bool = None) -> Any:
+    def execute(self, raise_keyboard_interrupt: Optional[bool] = None) -> Any:
         """Run the prompt and get the result.
 
         Args:
