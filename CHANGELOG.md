@@ -2,11 +2,13 @@
 
 Notable changes are documented in this file.
 
-## 0.3.3 (04/02/2021)
+## 0.3.4 (28/06/22)
+
+## 0.3.3 (04/02/2022)
 
 - Fixed windows filepath completion [#32](https://github.com/kazhala/InquirerPy/issues/32)
 
-## 0.3.2 (28/01/2021)
+## 0.3.2 (28/01/2022)
 
 - Added exact match option for fuzzy prompt [#34](https://github.com/kazhala/InquirerPy/issues/34)
 
