@@ -5,6 +5,20 @@ See Also:
 
 `inquirer` directly interact with individual prompt classes. It’s more flexible, easier to customise and also provides IDE type hintings/completions.
 """
+
+__all__ = [
+    "checkbox",
+    "confirm",
+    "expand",
+    "filepath",
+    "fuzzy",
+    "text",
+    "select",
+    "number",
+    "rawlist",
+    "secret",
+]
+
 from InquirerPy.prompts import CheckboxPrompt as checkbox
 from InquirerPy.prompts import ConfirmPrompt as confirm
 from InquirerPy.prompts import ExpandPrompt as expand

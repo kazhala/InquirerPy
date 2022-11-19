@@ -1,4 +1,18 @@
 """Module contains import of all prompts classes."""
+
+__all__ = [
+    "CheckboxPrompt",
+    "ConfirmPrompt",
+    "ExpandPrompt",
+    "FilePathPrompt",
+    "FuzzyPrompt",
+    "InputPrompt",
+    "ListPrompt",
+    "NumberPrompt",
+    "RawlistPrompt",
+    "SecretPrompt",
+]
+
 from InquirerPy.prompts.checkbox import CheckboxPrompt
 from InquirerPy.prompts.confirm import ConfirmPrompt
 from InquirerPy.prompts.expand import ExpandPrompt
