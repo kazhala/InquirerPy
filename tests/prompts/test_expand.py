@@ -46,7 +46,13 @@ class TestExpandPrompt(unittest.TestCase):
                 {"name": "---------------", "value": ANY, "enabled": False},
                 {"key": "b", "name": "hello", "value": "world", "enabled": False},
                 {"name": "**********", "value": ANY, "enabled": False},
-                {"key": "f", "name": "foo", "value": "boo", "enabled": False},
+                {
+                    "key": "f",
+                    "name": "foo",
+                    "value": "boo",
+                    "enabled": False,
+                    "instruction": None,
+                },
                 {
                     "key": "h",
                     "name": "(haha)",
@@ -223,7 +229,13 @@ class TestExpandPrompt(unittest.TestCase):
                 {"enabled": False, "name": "---------------", "value": ANY},
                 {"enabled": False, "key": "b", "name": "hello", "value": "world"},
                 {"enabled": False, "name": "**********", "value": ANY},
-                {"enabled": False, "key": "f", "name": "foo", "value": "boo"},
+                {
+                    "enabled": False,
+                    "key": "f",
+                    "name": "foo",
+                    "value": "boo",
+                    "instruction": None,
+                },
                 {
                     "enabled": False,
                     "key": "h",
@@ -249,7 +261,13 @@ class TestExpandPrompt(unittest.TestCase):
                 {"enabled": False, "name": "---------------", "value": ANY},
                 {"enabled": False, "key": "b", "name": "hello", "value": "world"},
                 {"enabled": False, "name": "**********", "value": ANY},
-                {"enabled": False, "key": "f", "name": "foo", "value": "boo"},
+                {
+                    "enabled": False,
+                    "key": "f",
+                    "name": "foo",
+                    "value": "boo",
+                    "instruction": None,
+                },
                 {
                     "enabled": False,
                     "key": "h",
@@ -260,6 +278,7 @@ class TestExpandPrompt(unittest.TestCase):
         )
 
     def test_key_expand(self):
+        self.maxDiff = None
         expand_help = ExpandHelp()
         prompt = ExpandPrompt(
             message="", choices=self.choices, expand_help=expand_help, multiselect=True
@@ -280,9 +299,20 @@ class TestExpandPrompt(unittest.TestCase):
             prompt.content_control.choices,
             [
                 {"enabled": False, "name": "---------------", "value": ANY},
-                {"enabled": True, "key": "b", "name": "hello", "value": "world"},
+                {
+                    "enabled": True,
+                    "key": "b",
+                    "name": "hello",
+                    "value": "world",
+                },
                 {"enabled": False, "name": "**********", "value": ANY},
-                {"enabled": True, "key": "f", "name": "foo", "value": "boo"},
+                {
+                    "enabled": True,
+                    "key": "f",
+                    "name": "foo",
+                    "value": "boo",
+                    "instruction": None,
+                },
                 {
                     "enabled": False,
                     "key": "h",
@@ -296,10 +326,29 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(
             prompt.content_control.choices,
             [
-                {"enabled": False, "name": "---------------", "value": ANY},
-                {"enabled": False, "key": "b", "name": "hello", "value": "world"},
-                {"enabled": False, "name": "**********", "value": ANY},
-                {"enabled": False, "key": "f", "name": "foo", "value": "boo"},
+                {
+                    "enabled": False,
+                    "name": "---------------",
+                    "value": ANY,
+                },
+                {
+                    "enabled": False,
+                    "key": "b",
+                    "name": "hello",
+                    "value": "world",
+                },
+                {
+                    "enabled": False,
+                    "name": "**********",
+                    "value": ANY,
+                },
+                {
+                    "enabled": False,
+                    "key": "f",
+                    "name": "foo",
+                    "value": "boo",
+                    "instruction": None,
+                },
                 {
                     "enabled": False,
                     "key": "h",
@@ -325,10 +374,34 @@ class TestExpandPrompt(unittest.TestCase):
         self.assertEqual(
             prompt.content_control.choices,
             [
-                {"enabled": False, "key": "1", "name": "1", "value": 1},
-                {"enabled": False, "key": "2", "name": "2", "value": 2},
-                {"enabled": False, "key": "a", "name": "ava", "value": "ava"},
-                {"enabled": False, "key": "b", "name": "Bva", "value": "Bva"},
+                {
+                    "enabled": False,
+                    "key": "1",
+                    "name": "1",
+                    "value": 1,
+                    "instruction": None,
+                },
+                {
+                    "enabled": False,
+                    "key": "2",
+                    "name": "2",
+                    "value": 2,
+                    "instruction": None,
+                },
+                {
+                    "enabled": False,
+                    "key": "a",
+                    "name": "ava",
+                    "value": "ava",
+                    "instruction": None,
+                },
+                {
+                    "enabled": False,
+                    "key": "b",
+                    "name": "Bva",
+                    "value": "Bva",
+                    "instruction": None,
+                },
                 {
                     "enabled": False,
                     "key": "h",

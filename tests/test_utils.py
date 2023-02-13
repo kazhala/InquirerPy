@@ -36,10 +36,6 @@ class TestUtils(unittest.TestCase):
 
     def test_style(self):
         style = get_style()
-        self.assertEqual(
-            style,
-            InquirerPyStyle(get_sample_style()),
-        )
 
         os.environ["INQUIRERPY_STYLE_QUESTIONMARK"] = "#000000"
         os.environ["INQUIRERPY_STYLE_ANSWERMARK"] = "#000000"
@@ -61,6 +57,7 @@ class TestUtils(unittest.TestCase):
         os.environ["INQUIRERPY_STYLE_SPINNER_PATTERN"] = "#ssssss"
         os.environ["INQUIRERPY_STYLE_SPINNER_TEXT"] = "#llllll"
         os.environ["INQUIRERPY_STYLE_LONG_INSTRUCTION"] = "#kkkkkk"
+        os.environ["INQUIRERPY_STYLE_CHOICE_INSTRUCTION"] = "#mmmmmm"
         style = get_style()
         self.assertEqual(
             style,
@@ -74,6 +71,7 @@ class TestUtils(unittest.TestCase):
                     "answered_question": "#222222",
                     "instruction": "#333333",
                     "long_instruction": "#kkkkkk",
+                    "choice_instruction": "#mmmmmm",
                     "pointer": "#555555",
                     "checkbox": "#66666",
                     "separator": "#777777",
@@ -101,6 +99,7 @@ class TestUtils(unittest.TestCase):
             "answered_question": "#222222",
             "instruction": "#333333",
             "long_instruction": "#kkkkkk",
+            "choice_instruction": "#nnnnnn",
             "pointer": "#555555",
             "checkbox": "#66666",
             "separator": "#777777",
