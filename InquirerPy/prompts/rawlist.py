@@ -88,6 +88,10 @@ class InquirerPyRawlistControl(InquirerPyUIListControl):
             )
         display_choices.append(("[SetCursorPosition]", ""))
         display_choices.append(("class:pointer", choice["name"]))
+        if "instruction" in choice:
+            display_choices.append(
+                ("class:choice_instruction", " " + choice["instruction"])
+            )
         return display_choices
 
     def _get_normal_text(self, choice) -> List[Tuple[str, str]]:

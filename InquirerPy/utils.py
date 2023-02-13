@@ -114,6 +114,9 @@ def get_style(
             "long_instruction": os.getenv(
                 "INQUIRERPY_STYLE_LONG_INSTRUCTION", "#abb2bf"
             ),
+            "choice_instruction": os.getenv(
+                "INQUIRERPY_STYLE_CHOICE_INSTRUCTION", "grey italic"
+            ),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", "#61afef"),
             "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", "#98c379"),
             "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
@@ -138,6 +141,7 @@ def get_style(
             "answered_question": os.getenv("INQUIRERPY_STYLE_ANSWERED_QUESTION", ""),
             "instruction": os.getenv("INQUIRERPY_STYLE_INSTRUCTION", ""),
             "long_instruction": os.getenv("INQUIRERPY_STYLE_LONG_INSTRUCTION", ""),
+            "choice_instruction": os.getenv("INQUIRERPY_STYLE_CHOICE_INSTRUCTION", ""),
             "pointer": os.getenv("INQUIRERPY_STYLE_POINTER", ""),
             "checkbox": os.getenv("INQUIRERPY_STYLE_CHECKBOX", ""),
             "separator": os.getenv("INQUIRERPY_STYLE_SEPARATOR", ""),
