@@ -78,7 +78,7 @@ class InquirerPyListControl(InquirerPyUIListControl):
         )
         display_choices.append(("[SetCursorPosition]", ""))
         display_choices.append(("class:pointer", choice["name"]))
-        if "instruction" in choice:
+        if "instruction" in choice and choice["instruction"]:
             display_choices.append(
                 ("class:choice_instruction", " " + choice["instruction"])
             )
