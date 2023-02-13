@@ -25,11 +25,14 @@ class Choice:
             This value is optional, if not provided, it will fallback to the string representation of `value`.
         enabled: Indicates if the choice should be pre-selected.
             This only has effects when the prompt has `multiselect` enabled.
+        instruction: Extra details that should be presented to the user when hovering the choice.
+            This value is optional, if not provided, no information will be shown on hover.
     """
 
     value: Any
     name: Optional[str] = None
     enabled: bool = False
+    instruction: Optional[str] = None
 
     def __post_init__(self):
         """Assign strinify value to name if not present."""

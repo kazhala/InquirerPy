@@ -270,13 +270,16 @@ class TestBaseControl(unittest.TestCase):
             multiselect=False,
             marker_pl=" ",
         )
-        self.assertEqual(control.selection, {"name": "2", "value": 2, "enabled": False})
+        self.assertEqual(
+            control.selection,
+            {"name": "2", "value": 2, "enabled": False, "instruction": None},
+        )
         self.assertEqual(
             control.choices,
             [
-                {"enabled": False, "name": "1", "value": 1},
-                {"enabled": False, "name": "2", "value": 2},
-                {"enabled": False, "name": "3", "value": 3},
+                {"enabled": False, "name": "1", "value": 1, "instruction": None},
+                {"enabled": False, "name": "2", "value": 2, "instruction": None},
+                {"enabled": False, "name": "3", "value": 3, "instruction": None},
             ],
         )
 
@@ -293,12 +296,12 @@ class TestBaseControl(unittest.TestCase):
             multiselect=True,
             marker_pl=" ",
         )
-        self.assertEqual(control.selection, {"name": "1", "value": 1, "enabled": False})
+        self.assertEqual(control.selection, {"name": "1", "value": 1, "enabled": False, "instruction": None})
         self.assertEqual(
             control.choices,
             [
-                {"enabled": False, "name": "1", "value": 1},
-                {"enabled": False, "name": "2", "value": 2},
-                {"enabled": True, "name": "3", "value": 3},
+                {"enabled": False, "name": "1", "value": 1, "instruction": None},
+                {"enabled": False, "name": "2", "value": 2, "instruction": None},
+                {"enabled": True, "name": "3", "value": 3, "instruction": None},
             ],
         )

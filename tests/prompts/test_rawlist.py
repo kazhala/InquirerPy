@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import ANY, call, patch
 
 from InquirerPy.base import BaseComplexPrompt
+from InquirerPy.base.control import Choice
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.rawlist import InquirerPyRawlistControl, RawlistPrompt
 from InquirerPy.separator import Separator
@@ -224,3 +225,11 @@ class TestRawList(unittest.TestCase):
         self.assertRaises(InvalidArgument, prompt._on_rendered, "")
         prompt = RawlistPrompt(message="", choices=[i for i in range(9)])
         prompt._after_render(None)
+
+    def test_rawlist_instruction(self):
+        prompt = RawlistPrompt(
+            message="", choices=[Choice(value="test", instruction="instruction")]
+        )
+        self.assertEqual(
+            "instruction", prompt.content_control.choices[0]["instruction"]
+        )

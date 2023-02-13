@@ -9,6 +9,7 @@ from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.layout.layout import Layout
 
 from InquirerPy.base.complex import BaseComplexPrompt
+from InquirerPy.base.control import Choice
 from InquirerPy.enum import INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.prompts.fuzzy import FuzzyPrompt, InquirerPyFuzzyControl
 
@@ -988,3 +989,11 @@ class TestFuzzy(unittest.TestCase):
         self.assertEqual(self.prompt.content_control._scorer, substr_scorer)
         self.prompt._toggle_exact(None, False)
         self.assertEqual(self.prompt.content_control._scorer, fzy_scorer)
+
+    def test_fuzzy_instruction(self):
+        prompt = FuzzyPrompt(
+            message="", choices=[Choice(value="test", instruction="instruction")]
+        )
+        self.assertEqual(
+            "instruction", prompt.content_control.choices[0]["instruction"]
+        )

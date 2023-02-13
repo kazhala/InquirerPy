@@ -14,6 +14,7 @@ def get_sample_style(val=None) -> Dict[str, str]:
         "answered_question": "",
         "instruction": "#abb2bf",
         "long_instruction": "#abb2bf",
+        "choice_instruction": "grey italic",
         "pointer": "#61afef",
         "checkbox": "#98c379",
         "separator": "",
