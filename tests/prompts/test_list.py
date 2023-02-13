@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
 
+from InquirerPy.base.control import Choice
 from InquirerPy.enum import INQUIRERPY_KEYBOARD_INTERRUPT, INQUIRERPY_POINTER_SEQUENCE
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.list import InquirerPyListControl, ListPrompt
@@ -180,3 +181,11 @@ class TestListPrompt(unittest.TestCase):
             self.assertFalse(prompt._is_rasing_kbi())
         else:
             self.fail("should raise kbi")
+
+    def test_list_instruction(self):
+        prompt = ListPrompt(
+            message="", choices=[Choice(value="test", instruction="instruction")]
+        )
+        self.assertEqual(
+            "instruction", prompt.content_control.choices[0]["instruction"]
+        )

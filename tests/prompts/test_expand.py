@@ -410,3 +410,11 @@ class TestExpandPrompt(unittest.TestCase):
                 },
             ],
         )
+
+    def test_expand_instruction(self):
+        prompt = ExpandPrompt(
+            message="Select one:",
+            choices=[ExpandChoice(value="test", instruction="instruction")],
+            expand_help=ExpandHelp(),
+        )
+        self.assertEqual("instruction", prompt.content_control.selection["instruction"])

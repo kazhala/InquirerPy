@@ -5,6 +5,7 @@ from prompt_toolkit.enums import EditingMode
 from prompt_toolkit.key_binding.key_bindings import KeyBindings
 from prompt_toolkit.styles.style import Style
 
+from InquirerPy.base.control import Choice
 from InquirerPy.exceptions import InvalidArgument, RequiredKeyNotFound
 from InquirerPy.prompts.checkbox import CheckboxPrompt, InquirerPyCheckboxControl
 from InquirerPy.separator import Separator
@@ -218,3 +219,10 @@ class TestCheckbox(unittest.TestCase):
             event = mock.return_value
             prompt._handle_enter(event)
         self.assertEqual(prompt.status["result"], [])
+
+    def test_checkbox_choice_instruction(self):
+        prompt = CheckboxPrompt(
+            message="", choices=[Choice(value="test", instruction="instruction")]
+        )
+        print(prompt.content_control.selection["instruction"])
+        self.assertEqual("instruction", prompt.content_control.selection["instruction"])
