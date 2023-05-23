@@ -308,3 +308,45 @@ result = inquirer.text(message="Age:", validate=NumberValidator()).execute()
 ```
 
 </details>
+
+### DateValidator
+
+```{eval-rst}
+.. autoclass:: InquirerPy.validator.DateValidator
+    :noindex:
+```
+
+<details>
+  <summary>Classic Syntax</summary>
+
+```python
+from InquirerPy import prompt
+from InquirerPy.validator import DateValidator
+
+result = prompt(
+    [
+        {
+            "type": "input",
+            "message": "Date of birth:",
+            "validate": DateValidator(
+                message="Invalid date format",
+                formats=["%Y-%m-%d"]
+            ),
+        }
+    ]
+)
+```
+
+</details>
+
+<details open>
+  <summary>Alternate Syntax</summary>
+
+```python
+from InquirerPy import inquirer
+from InquirerPy.validator import NumberValidator
+
+result = inquirer.text(message="Date of birth:", validate=DateValidator()).execute()
+```
+
+</details>
