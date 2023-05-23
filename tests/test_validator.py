@@ -73,3 +73,21 @@ class TestValidators(unittest.TestCase):
         self.assertRaises(ValidationError, validator.validate, self.document)
         validator = NumberValidator(float_allowed=True)
         self.execute_success_case(validator, "test_numberValidator")
+
+    def test_dateValidator(self):
+        validator = DateValidator()
+        self.document._text = "2042-04-02"
+        self.execute_success_case(validator, "test_dateValidator")
+        self.document._text = "0001-12-12"
+        self.execute_success_case(validator, "test_dateValidator")
+        self.document._text = "11-12-11"
+        self.assertRaises(ValidationError, validator.validate, self.document)
+        self.document._text = "1212-12-12 12:12:12"
+        self.execute_success_case(validator, "test_dateValidator")
+        self.document._text = "1212-12-12T12:12:12"
+        self.execute_success_case(validator, "test_dateValidator")
+        self.document._text = "2023-02-29"
+        self.assertRaises(ValidationError, validator.validate, self.document)
+        validator = DateValidator(formats=["%d/%m/%Y"])
+        self.document._text = "28/02/2023"
+        self.execute_success_case(validator, "test_dateValidator")

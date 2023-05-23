@@ -1,5 +1,6 @@
 """Module contains pre-built validators."""
 import re
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -10,6 +11,7 @@ __all__ = [
     "EmptyInputValidator",
     "PasswordValidator",
     "NumberValidator",
+    "DateValidator"
 ]
 
 
@@ -163,3 +165,41 @@ class PasswordValidator(Validator):
             raise ValidationError(
                 message=self._message, cursor_position=document.cursor_position
             )
+
+
+class DateValidator(Validator):
+    """:class:`~prompt_toolkit.validation.Validator` to validate if input is a valid date.
+
+    Args:
+        message: Error message to display in the validatation toolbar when validation failed.
+        format: Specify the desired date format.
+    """
+
+    def __init__(
+        self,
+        message: str = "Invalid date format",
+        formats: list[str] = ["%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"],
+    ) -> None:
+        self._message = message
+        self._formats = formats
+
+    def validate(self, input_date) -> None:
+        """Check if the user's date input is valid and well-formatted.
+
+        This method is used internally by `prompt_toolkit <https://python-prompt-toolkit.readthedocs.io/en/master/>`_.
+
+        See Also:
+            https://python-prompt-toolkit.readthedocs.io/en/master/pages/asking_for_input.html?highlight=validator#input-validation
+
+        """
+
+        for form in self._formats:
+            try:
+                return datetime.strptime(input_date.text, form)
+            except ValueError:
+                continue
+
+        raise ValidationError(
+            message=self._message,
+            cursor_position=input_date.cursor_position,
+        )
