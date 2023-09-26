@@ -127,9 +127,9 @@ class TestBaseSimple(unittest.TestCase):
         prompt = InputPrompt(message="")
         mocked_kb.assert_has_calls([call(Keys.Enter, filter=ANY)])
         mocked_kb.assert_has_calls([call(Keys.Escape, Keys.Enter, filter=ANY)])
-        mocked_kb.assert_has_calls([call("c-c", filter=prompt._is_rasing_kbi)])
-        mocked_kb.assert_has_calls([call("c-d", filter=~prompt._is_rasing_kbi)])
-        mocked_kb.assert_has_calls([call("c-c", filter=~prompt._is_rasing_kbi)])
+        mocked_kb.assert_has_calls([call("c-c", filter=prompt._is_raising_kbi)])
+        mocked_kb.assert_has_calls([call("c-d", filter=~prompt._is_raising_kbi)])
+        mocked_kb.assert_has_calls([call("c-c", filter=~prompt._is_raising_kbi)])
         mocked_kb.reset_mock()
         prompt = partial(
             InputPrompt, message="", keybindings={"hello": [{"key": "c-d"}]}

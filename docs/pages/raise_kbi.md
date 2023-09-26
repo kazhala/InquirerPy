@@ -23,7 +23,7 @@ Default keybinding for skip is `ctrl-z`.
 ````
 
 When `mandator=False` for a prompt, user will be able to skip the prompt. In the case of a skip attempt when
-`mandatory=True`, an error message will be displayed using the parameter `madatory_message="Mandatory prompt"`.
+`mandatory=True`, an error message will be displayed using the parameter `mandatory_message="Mandatory prompt"`.
 
 <details>
   <summary>Classic Syntax</summary>
@@ -141,7 +141,7 @@ If you are already customising `skip` and `interrupt` using [keybindings](#keybi
 ```
 
 ```{tip}
-`raise_keyboard_interrupt` is bascially a managed way of customising keybindings similar to parameter `vi_mode`.
+`raise_keyboard_interrupt` is basically a managed way of customising keybindings similar to parameter `vi_mode`.
 ```
 
 ```{tip}

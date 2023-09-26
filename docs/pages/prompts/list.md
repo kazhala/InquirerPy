@@ -124,7 +124,7 @@ choices = [
 ]
 
 result = inquirer.select(
-    message="Selct one:", choices=choices, multiselect=True
+    message="Select one:", choices=choices, multiselect=True
 ).execute()
 ```
 

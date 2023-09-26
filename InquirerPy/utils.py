@@ -205,35 +205,35 @@ def calculate_height(
         _, term_lines = shutil.get_terminal_size()
         term_lines = term_lines
         if not height:
-            dimmension_height = None
+            dimension_height = None
         else:
             if isinstance(height, str):
                 height = height.replace("%", "")
                 height = int(height)
-                dimmension_height = (
+                dimension_height = (
                     math.floor(term_lines * (height / 100)) - height_offset
                 )
             else:
-                dimmension_height = height
+                dimension_height = height
 
         if not max_height:
             max_height = "70%" if not height else "100%"
         if isinstance(max_height, str):
             max_height = max_height.replace("%", "")
             max_height = int(max_height)
-            dimmension_max_height = (
+            dimension_max_height = (
                 math.floor(term_lines * (max_height / 100)) - height_offset
             )
         else:
-            dimmension_max_height = max_height
+            dimension_max_height = max_height
 
-        if dimmension_height and dimmension_height > dimmension_max_height:
-            dimmension_height = dimmension_max_height
-        if dimmension_height and dimmension_height <= 0:
-            dimmension_height = 1
-        if dimmension_max_height <= 0:
-            dimmension_max_height = 1
-        return dimmension_height, dimmension_max_height
+        if dimension_height and dimension_height > dimension_max_height:
+            dimension_height = dimension_max_height
+        if dimension_height and dimension_height <= 0:
+            dimension_height = 1
+        if dimension_max_height <= 0:
+            dimension_max_height = 1
+        return dimension_height, dimension_max_height
 
     except ValueError:
         raise InvalidArgument(

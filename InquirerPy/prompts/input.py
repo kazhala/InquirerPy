@@ -52,7 +52,7 @@ class InputPrompt(BaseSimplePrompt):
             Refer to :ref:`pages/prompts/input:Auto Completion` documentation for more details.
         multicolumn_complete: Change the auto-completion UI to a multi column display.
         multiline: Enable multiline edit. While multiline edit is active, pressing `enter` won't complete the answer.
-            and will create a new line. Use `esc` followd by `enter` to complete the question.
+            and will create a new line. Use `esc` followed by `enter` to complete the question.
         validate: Add validation to user input.
             Refer to :ref:`pages/validator:Validator` documentation for more details.
         invalid_message: Error message to display when user input is invalid.
@@ -67,7 +67,7 @@ class InputPrompt(BaseSimplePrompt):
             Refer to :ref:`pages/kb:Keybindings` for more details.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
-            will be `None` and the question is skiped.
+            will be `None` and the question is skipped.
         is_password: Used internally for :class:`~InquirerPy.prompts.secret.SecretPrompt`.
         mandatory: Indicate if the prompt is mandatory. If True, then the question cannot be skipped.
         mandatory_message: Error message to show when user attempts to skip mandatory prompt.

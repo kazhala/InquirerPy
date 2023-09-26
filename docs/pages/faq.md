@@ -12,7 +12,7 @@ as a list is not ideal in a lot of scenarios. Use `transformer` parameter to cus
 ## How can I do unittest when using `InquirerPy`?
 
 ```{tip}
-Since `InquirerPy` module itself is tested, there's no need to mock any futher/deeper than the API entrypoint (`prompt` and `inquirer`).
+Since `InquirerPy` module itself is tested, there's no need to mock any further/deeper than the API entrypoint (`prompt` and `inquirer`).
 ```
 
 For {ref}`index:Classic Syntax (PyInquirer)` user, it would be just a direct mock on the {ref}`pages/prompt:prompt` function.
