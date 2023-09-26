@@ -50,7 +50,7 @@ class SecretPrompt(InputPrompt):
             Refer to :ref:`pages/kb:Keybindings` for more details.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
-            will be `None` and the question is skiped.
+            will be `None` and the question is skipped.
         mandatory: Indicate if the prompt is mandatory. If True, then the question cannot be skipped.
         mandatory_message: Error message to show when user attempts to skip mandatory prompt.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.

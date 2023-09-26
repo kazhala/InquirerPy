@@ -177,6 +177,6 @@ class TestListPrompt(unittest.TestCase):
         try:
             result = prompt.execute(raise_keyboard_interrupt=False)
         except KeyboardInterrupt:
-            self.assertFalse(prompt._is_rasing_kbi())
+            self.assertFalse(prompt._is_raising_kbi())
         else:
             self.fail("should raise kbi")

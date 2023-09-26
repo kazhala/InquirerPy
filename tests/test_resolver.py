@@ -429,7 +429,7 @@ class TestResolver(unittest.TestCase):
 
     @patch.object(FuzzyPrompt, "__init__")
     @patch.object(FuzzyPrompt, "execute")
-    def test_resolver_when_not_poped(self, mocked_execute, mocked_init):
+    def test_resolver_when_not_popped(self, mocked_execute, mocked_init):
         mocked_init.return_value = None
         mocked_execute.return_value = 1
         questions = [

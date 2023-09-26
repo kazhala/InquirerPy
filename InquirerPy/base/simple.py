@@ -106,15 +106,15 @@ class BaseSimplePrompt(ABC):
         self._raise_kbi = not os.getenv(
             "INQUIRERPY_NO_RAISE_KBI", not raise_keyboard_interrupt
         )
-        self._is_rasing_kbi = Condition(lambda: self._raise_kbi)
+        self._is_raising_kbi = Condition(lambda: self._raise_kbi)
 
         self._kb_maps = {
             "answer": [{"key": Keys.Enter}],
             "interrupt": [
-                {"key": "c-c", "filter": self._is_rasing_kbi},
-                {"key": "c-d", "filter": ~self._is_rasing_kbi},
+                {"key": "c-c", "filter": self._is_raising_kbi},
+                {"key": "c-d", "filter": ~self._is_raising_kbi},
             ],
-            "skip": [{"key": "c-z"}, {"key": "c-c", "filter": ~self._is_rasing_kbi}],
+            "skip": [{"key": "c-z"}, {"key": "c-c", "filter": ~self._is_raising_kbi}],
         }
         self._kb_func_lookup = {
             "answer": [{"func": self._handle_enter}],
@@ -205,7 +205,7 @@ class BaseSimplePrompt(ABC):
         """Keybinding registration decorator.
 
         This decorator wraps around the :meth:`prompt_toolkit.key_binding.KeyBindings.add` with
-        added feature to process `alt` realted keybindings.
+        added feature to process `alt` related keybindings.
 
         By default, `prompt_toolkit` doesn't process `alt` related keybindings,
         it requires `alt-ANY` to `escape` + `ANY`.
@@ -215,7 +215,7 @@ class BaseSimplePrompt(ABC):
             filter: :class:`~prompt_toolkit.filter.Condition` to indicate if this keybinding should be active.
 
         Returns:
-            A decorator that should be applied to the function thats intended to be active when the keys
+            A decorator that should be applied to the function that's intended to be active when the keys
             are pressed.
 
         Examples:

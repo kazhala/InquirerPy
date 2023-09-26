@@ -149,7 +149,7 @@ class ListPrompt(BaseListPrompt):
         cycle: Return to top item if hit bottom during navigation or vice versa.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
-            will be `None` and the question is skiped.
+            will be `None` and the question is skipped.
         mandatory: Indicate if the prompt is mandatory. If True, then the question cannot be skipped.
         mandatory_message: Error message to show when user attempts to skip mandatory prompt.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
@@ -225,14 +225,14 @@ class ListPrompt(BaseListPrompt):
             session_result=session_result,
         )
         self._show_cursor = show_cursor
-        self._dimmension_height, self._dimmension_max_height = calculate_height(
+        self._dimension_height, self._dimension_max_height = calculate_height(
             height, max_height, height_offset=self.height_offset
         )
         main_content_window = Window(
             content=self.content_control,
             height=Dimension(
-                max=self._dimmension_max_height,
-                preferred=self._dimmension_height,
+                max=self._dimension_max_height,
+                preferred=self._dimension_height,
             ),
             dont_extend_height=True,
         )
@@ -303,7 +303,7 @@ class ListPrompt(BaseListPrompt):
         """Toggle all choice `enabled` status.
 
         Args:
-            value: Sepcify a value to toggle.
+            value: Specify a value to toggle.
         """
         if not self._multiselect:
             return

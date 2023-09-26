@@ -40,7 +40,7 @@ expansion key or navigation key.
 ```{tip}
 It is recommended to use {class}`~InquirerPy.prompts.expand.ExpandChoice` to create choices for expand prompt.
 
-However if you prefer {class}`dict` chocies, in addition to the 2 required keys `name` and `value`, an additional
+However if you prefer {class}`dict` choices, in addition to the 2 required keys `name` and `value`, an additional
 key called `key` is also required. The value from `key` should be a single char and will be binded to the choice. Pressing
 the value will jump to the choice.
 ```

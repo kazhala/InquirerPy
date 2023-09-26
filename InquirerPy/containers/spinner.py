@@ -25,7 +25,7 @@ class SPINNERS(NamedTuple):
     See Also:
         https://github.com/pavdmyt/yaspin/blob/master/yaspin/data/spinners.json
 
-    This only contains some basic ones thats ready to use. For more patterns, checkout the
+    This only contains some basic ones that's ready to use. For more patterns, checkout the
     URL above.
 
     Examples:

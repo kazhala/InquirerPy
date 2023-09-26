@@ -12,7 +12,7 @@ class ValidationWindow(ConditionalContainer):
     """Conditional `prompt_toolkit` :class:`~prompt_toolkit.layout.Window` that displays error.
 
     Args:
-        invalid_message: Error message to display when error occured.
+        invalid_message: Error message to display when error occurred.
         filter: Condition to display the error window.
     """
 
@@ -31,7 +31,7 @@ class ValidationFloat(Float):
     """:class:`~prompt_toolkit.layout.Float` wrapper around :class:`.ValidationWindow`.
 
     Args:
-        invalid_message: Error message to display when error occured.
+        invalid_message: Error message to display when error occurred.
         filter: Condition to display the error window.
         left: Distance to left.
         right: Distance to right.

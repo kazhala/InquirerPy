@@ -192,7 +192,7 @@ for more information about limitations and other advanced topics.
 #### filter
 
 Each keybinding also takes another **optional** key called `filter` which can be used to determine if certain keys should be enabled/disabled.
-The `filter` key can be either a boolean or a `prompt_toolkit` [Conditon](https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/filters.html#filters).
+The `filter` key can be either a boolean or a `prompt_toolkit` [Condition](https://python-prompt-toolkit.readthedocs.io/en/master/pages/advanced_topics/filters.html#filters).
 
 **bool**
 

@@ -61,7 +61,7 @@ __all__ = ["FuzzyPrompt"]
 class InquirerPyFuzzyControl(InquirerPyUIListControl):
     """An :class:`~prompt_toolkit.layout.UIControl` class that displays a list of choices.
 
-    This only displays the chocies. The actual input buffer will be handled by a separate
+    This only displays the chices. The actual input buffer will be handled by a separate
     :class:`~prompt_toolkit.layout.BufferControl`.
 
     Reference the parameter definition in :class:`.FuzzyPrompt`.
@@ -277,7 +277,7 @@ class FuzzyPrompt(BaseListPrompt):
             Refer to :ref:`pages/kb:Keybindings` documentation for more details.
         default: Set the default value in the search buffer.
             Different than other list type prompts, the `default` parameter tries to replicate what fzf does and
-            add the value in `default` to search buffer so it starts searching immediatelly.
+            add the value in `default` to search buffer so it starts searching immediately.
             Refer to :ref:`pages/dynamic:default` documentation for more details.
         qmark: Question mark symbol. Custom symbol that will be displayed infront of the question before its answered.
         amark: Answer mark symbol. Custom symbol that will be displayed infront of the question after its answered.
@@ -316,7 +316,7 @@ class FuzzyPrompt(BaseListPrompt):
         cycle: Return to top item if hit bottom during navigation or vice versa.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
-            will be `None` and the question is skiped.
+            will be `None` and the question is skipped.
         mandatory: Indicate if the prompt is mandatory. If True, then the question cannot be skipped.
         mandatory_message: Error message to show when user attempts to skip mandatory prompt.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.
@@ -406,7 +406,7 @@ class FuzzyPrompt(BaseListPrompt):
             else cast(Callable, default)(self._result)
         )
         self._height_offset += 1  # search input
-        self._dimmension_height, self._dimmension_max_height = calculate_height(
+        self._dimension_height, self._dimension_max_height = calculate_height(
             height, max_height, height_offset=self.height_offset
         )
 
@@ -415,7 +415,7 @@ class FuzzyPrompt(BaseListPrompt):
             pointer=pointer,
             marker=marker,
             current_text=self._get_current_text,
-            max_lines=self._dimmension_max_height,
+            max_lines=self._dimension_max_height,
             session_result=session_result,
             multiselect=multiselect,
             marker_pl=marker_pl,
@@ -435,14 +435,14 @@ class FuzzyPrompt(BaseListPrompt):
             ),
         )
 
-        choice_height_dimmension = lambda: Dimension(
-            max=self._dimmension_max_height,
-            preferred=self._dimmension_height,
+        choice_height_dimension = lambda: Dimension(
+            max=self._dimension_max_height,
+            preferred=self._dimension_height,
             min=self.content_control._height if self.content_control._height > 0 else 1,
         )
         self.choice_window = Window(
             content=self.content_control,
-            height=choice_height_dimmension,
+            height=choice_height_dimension,
             dont_extend_height=True,
         )
 
@@ -640,7 +640,7 @@ class FuzzyPrompt(BaseListPrompt):
         highlighted choice and return the value in a list.
         Otherwise, return all TAB choices as a list.
 
-        In normal scenario, reutrn the current highlighted choice.
+        In normal scenario, return the current highlighted choice.
 
         If current UI contains no choice due to filter, return None.
         """

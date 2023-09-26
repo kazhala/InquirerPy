@@ -199,7 +199,7 @@ class ExpandPrompt(ListPrompt):
 
     A wrapper class around :class:`~prompt_toolkit.application.Application`.
 
-    Contains a list of chocies binded to a shortcut letter.
+    Contains a list of choices binded to a shortcut letter.
     The prompt can be expanded using `h` key.
 
     Args:
@@ -257,7 +257,7 @@ class ExpandPrompt(ListPrompt):
         cycle: Return to top item if hit bottom during navigation or vice versa.
         wrap_lines: Soft wrap question lines when question exceeds the terminal width.
         raise_keyboard_interrupt: Raise the :class:`KeyboardInterrupt` exception when `ctrl-c` is pressed. If false, the result
-            will be `None` and the question is skiped.
+            will be `None` and the question is skipped.
         mandatory: Indicate if the prompt is mandatory. If True, then the question cannot be skipped.
         mandatory_message: Error message to show when user attempts to skip mandatory prompt.
         session_result: Used internally for :ref:`index:Classic Syntax (PyInquirer)`.

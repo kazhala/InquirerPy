@@ -28,7 +28,7 @@ class TestNumberPrompt(unittest.TestCase):
         self.prompt._on_rendered(None)
         self.float_prompt._on_rendered(None)
 
-    def test_contructor(self) -> None:
+    def test_constructor(self) -> None:
         self.assertFalse(self.prompt._float)
         self.assertEqual(self.prompt._default, 1)
         self.assertFalse(self.prompt._is_float())
