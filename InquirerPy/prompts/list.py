@@ -310,8 +310,8 @@ class ListPrompt(BaseListPrompt):
         for choice in self.content_control.choices:
             if isinstance(choice["value"], Separator):
                 continue
-            choice["enabled"] = value if value else not choice["enabled"]
-
+            choice["enabled"] = not choice["enabled"] if value is None else value
+    
     def _handle_up(self, event) -> None:
         """Handle the event when user attempt to move up."""
         while True:
