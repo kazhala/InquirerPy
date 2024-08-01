@@ -15,49 +15,45 @@ from tests.style import get_sample_style
 
 
 class TestSecret(unittest.TestCase):
-    def setUp(self):
-        self.inp = create_pipe_input()
-
-    def tearDown(self):
-        self.inp.close()
-
     def test_prompt_result(self):
-        self.inp.send_text("what\n")
-        secret_prompt = SecretPrompt(
-            message="hello",
-            style=InquirerPyStyle({"answer": ""}),
-            default="yes",
-            qmark="~",
-            vi_mode=False,
-            input=self.inp,
-            output=DummyOutput(),
-        )
-        result = secret_prompt.execute()
-        self.assertEqual(result, "yeswhat")
-        self.assertEqual(
-            secret_prompt.status,
-            {"answered": True, "result": "yeswhat", "skipped": False},
-        )
+        with create_pipe_input() as inp:
+            inp.send_text("what\n")
+            secret_prompt = SecretPrompt(
+                message="hello",
+                style=InquirerPyStyle({"answer": ""}),
+                default="yes",
+                qmark="~",
+                vi_mode=False,
+                input=inp,
+                output=DummyOutput(),
+            )
+            result = secret_prompt.execute()
+            self.assertEqual(result, "yeswhat")
+            self.assertEqual(
+                secret_prompt.status,
+                {"answered": True, "result": "yeswhat", "skipped": False},
+            )
 
     @patch.object(Buffer, "validate_and_handle")
     def test_prompt_validation(self, mocked_validate):
         def _hello():
             secret_prompt._session.app.exit(result="yes")
 
-        mocked_validate.side_effect = _hello
-        self.inp.send_text("afas\n")
-        secret_prompt = SecretPrompt(
-            message="what",
-            style=InquirerPyStyle({}),
-            validate=PasswordValidator(length=8),
-            input=self.inp,
-            output=DummyOutput(),
-        )
-        result = secret_prompt.execute()
-        mocked_validate.assert_called_once()
-        self.assertEqual(result, "yes")
-        self.assertEqual(secret_prompt.status["answered"], False)
-        self.assertEqual(secret_prompt.status["result"], None)
+        with create_pipe_input() as inp:
+            mocked_validate.side_effect = _hello
+            inp.send_text("afas\n")
+            secret_prompt = SecretPrompt(
+                message="what",
+                style=InquirerPyStyle({}),
+                validate=PasswordValidator(length=8),
+                input=inp,
+                output=DummyOutput(),
+            )
+            result = secret_prompt.execute()
+            mocked_validate.assert_called_once()
+            self.assertEqual(result, "yes")
+            self.assertEqual(secret_prompt.status["answered"], False)
+            self.assertEqual(secret_prompt.status["result"], None)
 
     def test_prompt_message(self):
         secret_prompt = SecretPrompt(

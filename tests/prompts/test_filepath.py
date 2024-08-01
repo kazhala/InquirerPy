@@ -22,14 +22,12 @@ from InquirerPy.validator import PathValidator
 
 class TestFilePath(unittest.TestCase):
     def setUp(self):
-        self.inp = create_pipe_input()
         self.dirs_to_create = ["dir1", "dir2", "dir3", ".dir"]
         self.files_to_create = ["file1", "file2", "file3", ".file"]
         self.test_dir = Path(tempfile.mkdtemp())
         self.create_temp_files()
 
     def tearDown(self):
-        self.inp.close()
         shutil.rmtree(self.test_dir)
 
     @contextmanager
@@ -136,52 +134,55 @@ class TestFilePath(unittest.TestCase):
             self.assertEqual(sorted(completions), sorted(self.files_to_create))
 
     def test_input(self):
-        self.inp.send_text("./file1\n")
-        filepath_prompt = FilePathPrompt(
-            message="hello",
-            style=InquirerPyStyle({"qmark": "bold"}),
-            input=self.inp,
-            output=DummyOutput(),
-        )
-        result = filepath_prompt.execute()
-        self.assertEqual(result, "./file1")
-        self.assertEqual(filepath_prompt.status["answered"], True)
-        self.assertEqual(filepath_prompt.status["result"], "./file1")
+        with create_pipe_input() as inp:
+            inp.send_text("./file1\n")
+            filepath_prompt = FilePathPrompt(
+                message="hello",
+                style=InquirerPyStyle({"qmark": "bold"}),
+                input=inp,
+                output=DummyOutput(),
+            )
+            result = filepath_prompt.execute()
+            self.assertEqual(result, "./file1")
+            self.assertEqual(filepath_prompt.status["answered"], True)
+            self.assertEqual(filepath_prompt.status["result"], "./file1")
 
     def test_default_answer(self):
-        self.inp.send_text("\n")
-        filepath_prompt = FilePathPrompt(
-            message="hello",
-            style=InquirerPyStyle({"qmark": "bold"}),
-            default=".vim",
-            input=self.inp,
-            output=DummyOutput(),
-        )
-        result = filepath_prompt.execute()
-        self.assertEqual(result, ".vim")
-        self.assertEqual(filepath_prompt.status["answered"], True)
-        self.assertEqual(filepath_prompt.status["result"], ".vim")
+        with create_pipe_input() as inp:
+            inp.send_text("\n")
+            filepath_prompt = FilePathPrompt(
+                message="hello",
+                style=InquirerPyStyle({"qmark": "bold"}),
+                default=".vim",
+                input=inp,
+                output=DummyOutput(),
+            )
+            result = filepath_prompt.execute()
+            self.assertEqual(result, ".vim")
+            self.assertEqual(filepath_prompt.status["answered"], True)
+            self.assertEqual(filepath_prompt.status["result"], ".vim")
 
     @patch.object(Buffer, "validate_and_handle")
     def test_validation(self, mocked_validate):
         def _hello():
             filepath_prompt._session.app.exit(result="hello")
 
-        mocked_validate.side_effect = _hello
-        self.inp.send_text("hello\n")
-        filepath_prompt = FilePathPrompt(
-            message="fooboo",
-            style=InquirerPyStyle({"qmark": ""}),
-            default=".vim",
-            validate=PathValidator(),
-            input=self.inp,
-            output=DummyOutput(),
-        )
-        result = filepath_prompt.execute()
-        mocked_validate.assert_called_once()
-        self.assertEqual(result, "hello")
-        self.assertEqual(filepath_prompt.status["answered"], False)
-        self.assertEqual(filepath_prompt.status["result"], None)
+        with create_pipe_input() as inp:
+            mocked_validate.side_effect = _hello
+            inp.send_text("hello\n")
+            filepath_prompt = FilePathPrompt(
+                message="fooboo",
+                style=InquirerPyStyle({"qmark": ""}),
+                default=".vim",
+                validate=PathValidator(),
+                input=inp,
+                output=DummyOutput(),
+            )
+            result = filepath_prompt.execute()
+            mocked_validate.assert_called_once()
+            self.assertEqual(result, "hello")
+            self.assertEqual(filepath_prompt.status["answered"], False)
+            self.assertEqual(filepath_prompt.status["result"], None)
 
     def test_get_prompt_message(self):
         filepath_prompt = FilePathPrompt(

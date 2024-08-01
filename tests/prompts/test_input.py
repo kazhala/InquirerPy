@@ -14,95 +14,93 @@ from InquirerPy.prompts.input import InputPrompt
 
 
 class TestInputPrompt(unittest.TestCase):
-    def setUp(self):
-        self.inp = create_pipe_input()
-
-    def tearDown(self):
-        self.inp.close()
-
     def test_prompt_result(self):
-        self.inp.send_text("hello\n")
-        input_prompt = InputPrompt(
-            message="yes",
-            style=None,
-            default="world",
-            qmark="!",
-            vi_mode=False,
-            input=self.inp,
-            output=DummyOutput(),
-        )
-        result = input_prompt.execute()
-        self.assertEqual(result, "worldhello")
-        self.assertEqual(input_prompt.status["answered"], True)
-        self.assertEqual(input_prompt.status["result"], "worldhello")
-        self.assertEqual(input_prompt.status["skipped"], False)
+        with create_pipe_input() as inp:
+            inp.send_text("hello\n")
+            input_prompt = InputPrompt(
+                message="yes",
+                style=None,
+                default="world",
+                qmark="!",
+                vi_mode=False,
+                input=inp,
+                output=DummyOutput(),
+            )
+            result = input_prompt.execute()
+            self.assertEqual(result, "worldhello")
+            self.assertEqual(input_prompt.status["answered"], True)
+            self.assertEqual(input_prompt.status["result"], "worldhello")
+            self.assertEqual(input_prompt.status["skipped"], False)
 
     def test_prompt_filter(self):
-        self.inp.send_text("hello\n")
-        input_prompt = InputPrompt(
-            message="yes",
-            style=None,
-            default="world",
-            qmark="!",
-            vi_mode=False,
-            input=self.inp,
-            output=DummyOutput(),
-            filter=lambda x: x * 2,
-            transformer=lambda _: "what",
-        )
-        result = input_prompt.execute()
-        self.assertEqual(result, "worldhelloworldhello")
-        self.assertEqual(input_prompt.status["answered"], True)
-        self.assertEqual(input_prompt.status["result"], "worldhello")
-        self.assertEqual(
-            input_prompt._get_prompt_message(),
-            [
-                ("class:answermark", "?"),
-                ("class:answered_question", " yes"),
-                ("class:answer", " what"),
-            ],
-        )
+        with create_pipe_input() as inp:
+            inp.send_text("hello\n")
+            input_prompt = InputPrompt(
+                message="yes",
+                style=None,
+                default="world",
+                qmark="!",
+                vi_mode=False,
+                input=inp,
+                output=DummyOutput(),
+                filter=lambda x: x * 2,
+                transformer=lambda _: "what",
+            )
+            result = input_prompt.execute()
+            self.assertEqual(result, "worldhelloworldhello")
+            self.assertEqual(input_prompt.status["answered"], True)
+            self.assertEqual(input_prompt.status["result"], "worldhello")
+            self.assertEqual(
+                input_prompt._get_prompt_message(),
+                [
+                    ("class:answermark", "?"),
+                    ("class:answered_question", " yes"),
+                    ("class:answer", " what"),
+                ],
+            )
 
     def test_prompt_result_multiline(self):
-        self.inp.send_text("hello\nworld\nfoo\nboo\x1b\r")
-        input_prompt = InputPrompt(
-            message="yes",
-            style=None,
-            default="",
-            qmark="!",
-            vi_mode=False,
-            input=self.inp,
-            output=DummyOutput(),
-            multiline=True,
-        )
-        result = input_prompt.execute()
-        self.assertEqual(result, "hello\nworld\nfoo\nboo")
-        self.assertEqual(input_prompt.status["answered"], True)
-        self.assertEqual(input_prompt.status["result"], "hello\nworld\nfoo\nboo")
-        self.assertEqual(input_prompt.status["skipped"], False)
+        with create_pipe_input() as inp:
+            inp.send_text("hello\nworld\nfoo\nboo\x1b\r")
+            input_prompt = InputPrompt(
+                message="yes",
+                style=None,
+                default="",
+                qmark="!",
+                vi_mode=False,
+                input=inp,
+                output=DummyOutput(),
+                multiline=True,
+            )
+            result = input_prompt.execute()
+            self.assertEqual(result, "hello\nworld\nfoo\nboo")
+            self.assertEqual(input_prompt.status["answered"], True)
+            self.assertEqual(input_prompt.status["result"], "hello\nworld\nfoo\nboo")
+            self.assertEqual(input_prompt.status["skipped"], False)
 
     def test_prompt_completion(self):
-        input_prompt = InputPrompt(
-            message="yes",
-            style=None,
-            default="",
-            qmark="!",
-            vi_mode=False,
-            input=self.inp,
-            output=DummyOutput(),
-            multiline=True,
-            completer={"hello": None, "hey": None, "what": None},
-        )
+        with create_pipe_input() as inp:
+            input_prompt = InputPrompt(
+                message="yes",
+                style=None,
+                default="",
+                qmark="!",
+                vi_mode=False,
+                input=inp,
+                output=DummyOutput(),
+                multiline=True,
+                completer={"hello": None, "hey": None, "what": None},
+            )
 
-        completer = input_prompt._completer
-        doc_text = "he"
-        doc = Document(doc_text, len(doc_text))
-        event = CompleteEvent()
-        completions = [
-            completion.text
-            for completion in list(completer.get_completions(doc, event))  # type: ignore
-        ]
-        self.assertEqual(sorted(completions), ["hello", "hey"])
+            completer = input_prompt._completer
+            doc_text = "he"
+            doc = Document(doc_text, len(doc_text))
+            event = CompleteEvent()
+            completions = [
+                completion.text
+                for completion in list(completer.get_completions(doc, event))  # type: ignore
+            ]
+            self.assertEqual(sorted(completions), ["hello", "hey"])
 
     def test_prompt_message_multiline(self):
         input_prompt = InputPrompt(
@@ -266,18 +264,19 @@ class TestInputPrompt(unittest.TestCase):
             )
 
     def test_prompt_result_async(self):
-        self.inp.send_text("hello\n")
-        input_prompt = InputPrompt(
-            message="yes",
-            style=None,
-            default="world",
-            qmark="!",
-            vi_mode=False,
-            input=self.inp,
-            output=DummyOutput(),
-        )
-        result = asyncio.run(input_prompt.execute_async())
-        self.assertEqual(result, "worldhello")
-        self.assertEqual(input_prompt.status["answered"], True)
-        self.assertEqual(input_prompt.status["result"], "worldhello")
-        self.assertEqual(input_prompt.status["skipped"], False)
+        with create_pipe_input() as inp:
+            inp.send_text("hello\n")
+            input_prompt = InputPrompt(
+                message="yes",
+                style=None,
+                default="world",
+                qmark="!",
+                vi_mode=False,
+                input=inp,
+                output=DummyOutput(),
+            )
+            result = asyncio.run(input_prompt.execute_async())
+            self.assertEqual(result, "worldhello")
+            self.assertEqual(input_prompt.status["answered"], True)
+            self.assertEqual(input_prompt.status["result"], "worldhello")
+            self.assertEqual(input_prompt.status["skipped"], False)
