@@ -624,7 +624,7 @@ class FuzzyPrompt(BaseListPrompt):
 
     def _handle_toggle_choice(self, _) -> None:
         """Handle tab event, alter the `selected` state of the choice."""
-        if not self._multiselect:
+        if not self._multiselect or self.content_control.choice_count == 0:
             return
         current_selected_index = self.content_control.selection["index"]
         self.content_control.choices[current_selected_index][
