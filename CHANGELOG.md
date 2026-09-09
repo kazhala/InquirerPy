@@ -2,6 +2,12 @@
 
 Notable changes are documented in this file.
 
+## Unreleased
+
+### Fixed
+
+- Fixed fuzzy prompt crashing on up/down/tab when the filter matches no choices [#53](https://github.com/kazhala/InquirerPy/issues/53)
+
 ## 0.3.4 (28/06/22)
 
 ## 0.3.3 (04/02/2022)

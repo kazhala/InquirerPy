@@ -192,6 +192,8 @@ class BaseListPrompt(BaseComplexPrompt):
         Returns:
             Boolean indicating if the action hits the cap.
         """
+        if self.content_control.choice_count == 0:
+            return True
         if self._cycle:
             self.content_control.selected_choice_index = (
                 self.content_control.selected_choice_index + 1
@@ -215,6 +217,8 @@ class BaseListPrompt(BaseComplexPrompt):
         Returns:
             Boolean indicating if the action hits the cap.
         """
+        if self.content_control.choice_count == 0:
+            return True
         if self._cycle:
             self.content_control.selected_choice_index = (
                 self.content_control.selected_choice_index - 1
